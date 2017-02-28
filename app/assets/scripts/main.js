@@ -13,6 +13,7 @@ import store from './utils/store';
 import App from './views/app';
 import Home from './views/home';
 import UhOh from './views/uhoh';
+import ProjectPage from './views/project-page';
 
 const history = syncHistoryWithStore(hashHistory, store);
 
@@ -25,7 +26,9 @@ render((
   <Provider store={store}>
     <Router history={history} render={applyRouterMiddleware(scrollerMiddleware)}>
       <Route path='/' component={App}>
+        <Route path="/projects/:projectId" component={ProjectPage}/>
         <IndexRoute component={Home} pageClass='page--homepage' />
+        <Route path="/404" component={UhOh}/>
         <Route path="*" component={UhOh}/>
       </Route>
     </Router>

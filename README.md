@@ -37,10 +37,12 @@ The `production.js` file serves as base and the other 2 will override it as need
   - `local.js` will be loaded if it exists.
 
 The following options must be set: (The used file will depend on the context):
+  - `api` - The address for the rra api
 
 Example:
 ```
 module.exports = {
+  api: 'http://localhost:4000'
 };
 ```
 

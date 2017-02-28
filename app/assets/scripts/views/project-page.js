@@ -1,37 +1,39 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
 import { connect } from 'react-redux';
+import { hashHistory } from 'react-router';
 
-import { invalidateProjects, fetchProjects } from '../actions';
+import { invalidateProjectItem, fetchProjectItem } from '../actions';
 import { prettyPrint } from '../utils/utils';
 
-var Home = React.createClass({
-  displayName: 'Home',
+var ProejctPage = React.createClass({
+  displayName: 'ProejctPage',
 
   propTypes: {
-    _invalidateProjects: T.func,
-    _fetchProjects: T.func,
+    _invalidateProjectItem: T.func,
+    _fetchProjectItem: T.func,
 
-    projects: T.object
+    params: T.object,
+    project: T.object
   },
 
   componentDidMount: function () {
-    this.props._fetchProjects();
+    this.props._fetchProjectItem(this.props.params.projectId);
   },
 
-  renderProjectListItem: function (project) {
-    delete project.files; // remove
-    return (
-      <li key={project.id}>
-        <pre>
-          {JSON.stringify(project, null, '  ')}
-        </pre>
-      </li>
-    );
+  componentWillReceiveProps: function (nextProps) {
+    if (this.props.params.projectId !== nextProps.params.projectId) {
+      this.props._fetchProjectItem(nextProps.params.projectId);
+    }
+
+    var error = nextProps.project.error;
+    if (error && (error.statusCode === 404 || error.statusCode === 400)) {
+      hashHistory.push(`/404`);
+    }
   },
 
-  renderProjectList: function () {
-    let { fetched, fetching, error, data } = this.props.projects;
+  render: function () {
+    let { fetched, fetching, error, data } = this.props.project;
 
     if (!fetched && !fetching) {
       return null;
@@ -46,14 +48,6 @@ var Home = React.createClass({
     }
 
     return (
-      <ol className>
-        {data.results.map(o => this.renderProjectListItem(o))}
-      </ol>
-    );
-  },
-
-  render: function () {
-    return (
       <section className='inpage inpage--hub'>
         <header className='inpage__header'>
           <div className='inner'>
@@ -62,7 +56,7 @@ var Home = React.createClass({
                 <li><a href='' title='View page'>Lorem</a></li>
                 <li><a href='' title='View page'>Ipsum</a></li>
               </ol>
-              <h1 className='inpage__title'>Projects</h1>
+              <h1 className='inpage__title'>{data.name}</h1>
             </div>
             <div className='inpage__actions'>
               <p>lorem</p>
@@ -71,7 +65,9 @@ var Home = React.createClass({
         </header>
         <div className='inpage__body'>
           <div className='inner'>
-            {this.renderProjectList()}
+            <pre>
+              {JSON.stringify(data, null, '  ')}
+            </pre>
           </div>
         </div>
 
@@ -85,15 +81,15 @@ var Home = React.createClass({
 
 function selector (state) {
   return {
-    projects: state.projects
+    project: state.projectItem
   };
 }
 
 function dispatcher (dispatch) {
   return {
-    _invalidateProjects: (...args) => dispatch(invalidateProjects(...args)),
-    _fetchProjects: (...args) => dispatch(fetchProjects(...args))
+    _invalidateProjectItem: (...args) => dispatch(invalidateProjectItem(...args)),
+    _fetchProjectItem: (...args) => dispatch(fetchProjectItem(...args))
   };
 }
 
-module.exports = connect(selector, dispatcher)(Home);
+module.exports = connect(selector, dispatcher)(ProejctPage);
