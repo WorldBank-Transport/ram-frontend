@@ -1,5 +1,4 @@
-import React from 'react'
-import config from '../config'
+import React from 'react';
 
 const Footer = React.createClass({
 
@@ -15,8 +14,8 @@ const Footer = React.createClass({
           </p>
         </div>
       </footer>
-    )
+    );
   }
-})
+});
 
-export default Footer
+export default Footer;

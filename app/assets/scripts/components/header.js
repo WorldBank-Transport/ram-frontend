@@ -23,7 +23,7 @@ const Header = React.createClass({
           </nav>
         </div>
       </header>
-    )
+    );
   }
 });
 
