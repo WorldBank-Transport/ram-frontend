@@ -12,10 +12,12 @@
 
     > .inner {
       @extend .row, .row--centered;
+      min-height: 3rem;
+      display: flex;
+      align-items: flex-end;
     }
 
     a {
-      display: block;
       color: inherit;
     }
   }

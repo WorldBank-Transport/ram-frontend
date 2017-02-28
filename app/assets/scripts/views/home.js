@@ -21,7 +21,7 @@ var Home = React.createClass({
               <h1 className='inpage__title'>Projects</h1>
             </div>
             <div className='inpage__actions'>
-              <p>lorem</p>
+              <a className='b-new'><span>New project</span></a>
             </div>
           </div>
         </header>
@@ -32,6 +32,8 @@ var Home = React.createClass({
               <li>Project 2</li>
               <li>Project 3</li>
               <li>Project 4</li>
+
+              <li><a className='button button--achromic button--large'><span>Button</span></a></li>
             </ol>
           </div>
         </div>
