@@ -9,6 +9,7 @@ export const INVALIDATE_PROJECTS = 'INVALIDATE_PROJECTS';
 export const REQUEST_PROJECT_ITEM = 'REQUEST_PROJECT_ITEM';
 export const RECEIVE_PROJECT_ITEM = 'RECEIVE_PROJECT_ITEM';
 export const INVALIDATE_PROJECT_ITEM = 'INVALIDATE_PROJECT_ITEM';
+export const REMOVE_PROJECT_ITEM_FILE = 'REMOVE_PROJECT_ITEM_FILE';
 
 // Projects
 
@@ -25,7 +26,7 @@ export function receiveProjects (projects, error = null) {
 }
 
 export function fetchProjects () {
-  return fetcher(`${config.api}/projects`, requestProjects, receiveProjects);
+  return getAndDispatch(`${config.api}/projects`, requestProjects, receiveProjects);
 }
 
 // Project item
@@ -43,39 +44,49 @@ export function receiveProjectItem (project, error = null) {
 }
 
 export function fetchProjectItem (id) {
-  return fetcher(`${config.api}/projects/${id}`, requestProjectItem, receiveProjectItem);
+  return getAndDispatch(`${config.api}/projects/${id}`, requestProjectItem, receiveProjectItem);
+}
+
+// Removes the given file id from the projects file array, avoiding a
+// new request.
+export function removeProjectItemFile (fileId) {
+  return { type: REMOVE_PROJECT_ITEM_FILE, fileId };
 }
 
 // Fetcher function
 
-function f (url, options, requestFn, receiveFn) {
+function getAndDispatch (url, requestFn, receiveFn) {
+  return fetchDispatchFactory(url, null, requestFn, receiveFn);
+}
+
+function fetchDispatchFactory (url, options, requestFn, receiveFn) {
   return function (dispatch, getState) {
     dispatch(requestFn());
 
-    fetch(url, options)
-      .then(response => {
-        return response.text().then(body => {
-          var json;
-          try {
-            json = JSON.parse(body);
-          } catch (e) {
-            console.log('json parse error', e);
-            return dispatch(receiveFn(null, {
-              error: e.message,
-              body
-            }));
-          }
-
-          if (response.status >= 400) {
-            return dispatch(receiveFn(null, json));
-          }
-
-          return dispatch(receiveFn(json));
-        });
-      });
+    fetchJSON(url, options)
+      .then(json => dispatch(receiveFn(json)))
+      .catch(err => dispatch(receiveFn(null, err)));
   };
 }
 
-function fetcher (url, requestFn, receiveFn) {
-  return f(url, null, requestFn, receiveFn);
+export function fetchJSON (url, options) {
+  return fetch(url, options)
+    .then(response => {
+      return response.text().then(body => {
+        var json;
+        try {
+          json = JSON.parse(body);
+        } catch (e) {
+          console.log('json parse error', e);
+          return Promise.reject({
+            error: e.message,
+            body
+          });
+        }
+
+        return response.status >= 400
+          ? Promise.reject(json)
+          : Promise.resolve(json);
+      });
+    });
 }
