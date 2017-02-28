@@ -1,15 +1,10 @@
-import { REQUEST_PROJECT_ITEM, RECEIVE_PROJECT_ITEM, INVALIDATE_PROJECT_ITEM } from '../actions';
+import { REQUEST_PROJECT_ITEM, RECEIVE_PROJECT_ITEM, INVALIDATE_PROJECT_ITEM, REMOVE_PROJECT_ITEM_FILE } from '../actions';
+import _ from 'lodash';
 
 const initialState = {
   fetching: false,
   fetched: false,
   data: {
-    meta: {
-      page: null,
-      limit: null,
-      found: null
-    },
-    results: []
   }
 };
 
@@ -27,6 +22,10 @@ export default function reducer (state = initialState, action) {
         state.data = action.data;
       }
       break;
+    case REMOVE_PROJECT_ITEM_FILE:
+      state = _.cloneDeep(state);
+      state.data.files = state.data.files.filter(o => o.id !== action.fileId);
+      return state;
   }
   return state;
 }
