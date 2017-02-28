@@ -1,0 +1,4 @@
+rra-dashboard:
+  image: wbtransport/rra-dashboard
+  ports:
+    - 80:80

@@ -110,3 +110,5 @@ temp
 tmp
 .tmp
 dist
+
+docker-compose-generated.yml
