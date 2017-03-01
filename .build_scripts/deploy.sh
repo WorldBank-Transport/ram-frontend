@@ -1,8 +1,12 @@
 #!/bin/bash
 set -e
 
-echo "Generating .htpasswd file"
-perl -le 'print crypt($HTPASSWD, "f9")' | awk '{print "$HTUSER:"$1}' > ./.htpasswd
+# If user and password are not provided, the frontend will be served without
+# authentication.
+if [ -n "$HTPASSWD" ] && [ -n "$HTUSER" ]; then
+  echo "Generating .htpasswd file"
+  perl -le 'print crypt($HTPASSWD, "f9")' | awk '{print "$HTUSER:"$1}' > ./.htpasswd
+fi  
 
 echo "Building source image"
 docker build -t $DOCKER_SRC_IMAGE .
