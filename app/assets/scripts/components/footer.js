@@ -1,4 +1,5 @@
-import React from 'react'
+'use strict';
+import React from 'react';
 import { Link, IndexLink } from 'react-router';
 
 const Footer = React.createClass({
@@ -21,8 +22,8 @@ const Footer = React.createClass({
           </div>
         </div>
       </footer>
-    )
+    );
   }
-})
+});
 
-export default Footer
+export default Footer;
