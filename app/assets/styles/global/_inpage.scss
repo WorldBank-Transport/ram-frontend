@@ -8,17 +8,13 @@
     background: $accent-color;
     color: #fff;
     padding: ($global-spacing * 1.5) 0;
-    box-shadow: 0 8px 32px 0 $base-alpha-color;
+    box-shadow: 0 4px 8px -4px rgba($base-color, 0.48);
 
     > .inner {
       @extend .row, .row--centered;
       min-height: 3rem;
       display: flex;
       align-items: flex-end;
-    }
-
-    a {
-      color: inherit;
     }
   }
 
@@ -42,6 +38,10 @@
     line-height: 1rem;
     text-transform: uppercase;
     color: rgba(#fff, 0.8);
+
+    a {
+      color: inherit;
+    }
 
     * {
       display: inline-block;

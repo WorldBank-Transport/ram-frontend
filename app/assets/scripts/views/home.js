@@ -1,10 +1,18 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router';
+import c from 'classnames';
+import TimeAgo from 'timeago-react';
 
 import { invalidateProjects, fetchProjects } from '../actions';
 import { prettyPrint } from '../utils/utils';
-import { t } from '../utils/i18n';
+import { t, getLanguage } from '../utils/i18n';
+
+const projectStatusMatrix = {
+  active: 'Active',
+  pending: 'Draft'
+}
 
 var Home = React.createClass({
   displayName: 'Home',
@@ -23,10 +31,35 @@ var Home = React.createClass({
   renderProjectListItem: function (project) {
     delete project.files; // remove
     return (
-      <li key={project.id}>
-        <pre>
-          {JSON.stringify(project, null, '  ')}
-        </pre>
+      <li className='' key={project.id}>
+        <article className='project project--card card' id={`project-${project.id}`}>
+          <Link to={`/${getLanguage()}/projects/${project.id}`} className='card__contents' title='View project'>
+            <figure className='card__media'>
+              <div className='card__thumbnail'>
+                <img alt='Project thumbnail' width='640' height='320' src='/assets/graphics/layout/projects-thumbnail-placeholder.png' />
+              </div>
+            </figure>
+            <div className='card__copy'>
+              <header className='card__header'>
+                <h1 className='card__title'>{project.name}</h1>
+                <p className='card__subtitle'>{project.status === 'pending' ? 'Pending scenarios' : 'X scenarios'}</p>
+              </header>
+              <div className='card__body'>
+                <div className='card__summary'>
+                  <p>{project.description}</p>
+                </div>
+              </div>
+              <footer className='card__footer'>
+                <dl className='card__system-details'>
+                  <dt>Updated</dt>
+                  <dd className='updated'><TimeAgo datetime={project.updated_at} /></dd>
+                  <dt>Status</dt>
+                  <dd className='status'><span className={c('label', {'label--success': project.status === 'active', 'label--danger': project.status === 'pending' })}>{projectStatusMatrix[project.status]}</span></dd>
+                </dl>
+              </footer>
+            </div>
+          </Link>
+        </article>
       </li>
     );
   },
@@ -47,9 +80,11 @@ var Home = React.createClass({
     }
 
     return (
-      <ol className>
+      <ol className='card-list projects-card-list'>
         {data.results.map(o => this.renderProjectListItem(o))}
-        <li><a className='button button--achromic button--large'><span>Button</span></a></li>
+        <li>
+          <button className='card__button card__button--add'><span>New project</span></button>
+        </li>
       </ol>
     );
   },
@@ -60,25 +95,18 @@ var Home = React.createClass({
         <header className='inpage__header'>
           <div className='inner'>
             <div className='inpage__headline'>
-              <ol className='inpage__breadcrumb'>
-                <li><a href='' title='View page'>Lorem</a></li>
-                <li><a href='' title='View page'>Ipsum</a></li>
-              </ol>
               <h1 className='inpage__title'>{t('Projects')}</h1>
             </div>
             <div className='inpage__actions'>
-              <a className='b-new'><span>New project</span></a>
+              <button title='Create new project' className='b-new' type='button'><span>New project</span></button>
             </div>
           </div>
         </header>
         <div className='inpage__body'>
           <div className='inner'>
-
             {this.renderProjectList()}
-
           </div>
         </div>
-
       </section>
     );
   }

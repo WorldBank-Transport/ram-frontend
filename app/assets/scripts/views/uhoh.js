@@ -1,22 +1,26 @@
 'use strict';
 import React from 'react';
+import { Link, IndexLink } from 'react-router';
 
 var UhOh = React.createClass({
   displayName: 'UhOh',
 
   render: function () {
     return (
-      <section className='section section--page'>
-        <header className='section__header'>
+      <section className='inpage inpage--uhoh'>
+        <header className='inpage__header'>
           <div className='inner'>
-            <div className='section__headline'>
-              <h1 className='section__title'>Uh Oh!</h1>
+            <div className='inpage__headline'>
+              <h1 className='inpage__title'>Page not found</h1>
             </div>
           </div>
         </header>
-        <div className='section__body'>
+        <div className='inpage__body'>
           <div className='inner'>
-            You're seaching for something that doesn't exist...
+            <div className='prose prose--responsive'>
+              <p>The requested page does not exist or may have been removed.</p>
+              <p>Visit the <IndexLink to='/' title='Visit projects page'>Projects page</IndexLink> or <a href='mailto:email@domain.com' title='Get in touch'>contact us</a> about the problem.</p>
+            </div>
           </div>
         </div>
       </section>
