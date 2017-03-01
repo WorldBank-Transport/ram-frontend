@@ -12,8 +12,11 @@ const ProjectFileInput = React.createClass({
     description: T.string,
     type: T.string,
     projectId: T.number,
+    scenarioId: T.number,
     onFileUploadComplete: T.func
   },
+
+  xhr: null,
 
   getInitialState: function () {
     return {
@@ -22,6 +25,12 @@ const ProjectFileInput = React.createClass({
       uploaded: 0,
       loading: false
     };
+  },
+
+  componentWillUnmount: function () {
+    if (this.xhr) {
+      this.xhr.abort();
+    }
   },
 
   onFileSelected: function (event) {
@@ -38,7 +47,7 @@ const ProjectFileInput = React.createClass({
     const file = this.state.file;
     if (!file) return;
 
-    const { type, projectId } = this.props;
+    const { type, projectId, scenarioId } = this.props;
 
     let url;
     switch (type) {
@@ -49,7 +58,7 @@ const ProjectFileInput = React.createClass({
         break;
       case 'poi':
       case 'road-network':
-        throw new Error('not implemented');
+        url = `${config.api}/projects/${projectId}/scenarios/${scenarioId}/upload?type=${type}`;
         break;
     }
 
@@ -58,24 +67,24 @@ const ProjectFileInput = React.createClass({
     fetchJSON(url)
       .then(res => {
         const { presignedUrl } = res;
-        const xhr = new window.XMLHttpRequest();
+        this.xhr = new window.XMLHttpRequest();
 
-        xhr.upload.addEventListener('progress', (evt) => {
+        this.xhr.upload.addEventListener('progress', (evt) => {
           if (evt.lengthComputable) {
             this.setState({uploaded: evt.loaded});
           }
         }, false);
 
-        xhr.onreadystatechange = e => {
-          if (xhr.readyState === XMLHttpRequest.DONE) {
+        this.xhr.onreadystatechange = e => {
+          if (this.xhr.readyState === XMLHttpRequest.DONE) {
             this.setState(this.getInitialState());
             this.props.onFileUploadComplete();
           }
         };
 
         // start upload
-        xhr.open('PUT', presignedUrl, true);
-        xhr.send(file);
+        this.xhr.open('PUT', presignedUrl, true);
+        this.xhr.send(file);
       })
       .catch(err => {
         console.log('err', err);

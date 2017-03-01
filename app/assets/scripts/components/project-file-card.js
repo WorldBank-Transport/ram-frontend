@@ -12,6 +12,7 @@ const ProjectFileCard = React.createClass({
     name: T.string,
     type: T.string,
     projectId: T.number,
+    scenarioId: T.number,
     description: T.string,
     onFileDeleteComplete: T.func
   },
@@ -23,7 +24,7 @@ const ProjectFileCard = React.createClass({
   },
 
   onRemove: function () {
-    const { type, projectId, fileId } = this.props;
+    const { type, projectId, scenarioId, fileId } = this.props;
 
     let url;
     switch (type) {
@@ -34,7 +35,7 @@ const ProjectFileCard = React.createClass({
         break;
       case 'poi':
       case 'road-network':
-        throw new Error('not implemented');
+        url = `${config.api}/projects/${projectId}/scenarios/${scenarioId}/files/${fileId}`;
         break;
     }
 
