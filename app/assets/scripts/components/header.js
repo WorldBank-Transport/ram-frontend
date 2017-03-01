@@ -1,6 +1,10 @@
 'use strict';
 import React from 'react';
-import { Link, IndexLink } from 'react-router';
+import { Link } from 'react-router';
+
+import { t, getLanguage } from '../utils/i18n';
+
+import NavGlobalMenu from '../components/nav-global-menu';
 
 const Header = React.createClass({
 
@@ -11,9 +15,7 @@ const Header = React.createClass({
       <header className='page__header' role='banner'>
         <div className='inner'>
           <div className='page__headline'>
-            <a href='/' title='Visit page'>
-              <h1 className='page__title'>Rural Road Accessibility</h1>
-            </a>
+            <Link to={`/${getLanguage()}/`} title='Visit page'><h1 className='page__title'>Rural Road Accessibility</h1></Link>
           </div>
           <nav className='page__prime-nav' role='navigation'>
             <div className='nav-language-switcher drop drop--down drop--align-left'>
@@ -27,11 +29,7 @@ const Header = React.createClass({
               </div>
             </div>
 
-            <ul className='nav-global-menu'>
-              <li><IndexLink to='/' title='Visit projects page'><span>Projects</span></IndexLink></li>
-              <li><Link to='/about' title='Visit about page'><span>About</span></Link></li>
-              <li><Link to='/help' title='Visit help page'><span>Help</span></Link></li>
-            </ul>
+            <NavGlobalMenu />
           </nav>
         </div>
       </header>

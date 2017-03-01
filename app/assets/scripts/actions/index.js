@@ -64,8 +64,7 @@ function fetchDispatchFactory (url, options, requestFn, receiveFn) {
     dispatch(requestFn());
 
     fetchJSON(url, options)
-      .then(json => dispatch(receiveFn(json)))
-      .catch(err => dispatch(receiveFn(null, err)));
+      .then(json => dispatch(receiveFn(json)), err => dispatch(receiveFn(null, err)));
   };
 }
 

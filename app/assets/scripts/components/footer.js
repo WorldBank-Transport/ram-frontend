@@ -1,6 +1,8 @@
 'use strict';
 import React from 'react';
-import { Link, IndexLink } from 'react-router';
+import { Link } from 'react-router';
+
+import NavGlobalMenu from '../components/nav-global-menu';
 
 const Footer = React.createClass({
 
@@ -11,11 +13,7 @@ const Footer = React.createClass({
       <footer className='page__footer' role='contentinfo'>
         <div className='inner'>
           <nav className='page__footer-nav' role='navigation'>
-            <ul className='nav-global-menu'>
-              <li><IndexLink to='/' title='Visit projects page'><span>Projects</span></IndexLink></li>
-              <li><Link to='/about' title='Visit about page'><span>About</span></Link></li>
-              <li><Link to='/help' title='Visit help page'><span>Help</span></Link></li>
-            </ul>
+            <NavGlobalMenu />
           </nav>
           <div className='footer-credits'>
             <p>Rural Road Accessibility <small>2017 © <a href='http://www.worldbank.org/' title='Visit website'>World Bank Group</a></small></p>

@@ -1,8 +1,10 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
-import { Link, IndexLink } from 'react-router';
+import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import { hashHistory } from 'react-router';
+
+import Breadcrumb from '../components/breadcrumb';
 
 import { invalidateProjectItem, fetchProjectItem, removeProjectItemFile } from '../actions';
 import { prettyPrint } from '../utils/utils';
@@ -116,9 +118,7 @@ var ProjectPage = React.createClass({
         <header className='inpage__header'>
           <div className='inner'>
             <div className='inpage__headline'>
-              <ol className='inpage__breadcrumb'>
-                <li><IndexLink to='/' title='Visit projects page'>Projects</IndexLink></li>
-              </ol>
+              <Breadcrumb />
               <h1 className='inpage__title'>{data.name}</h1>
             </div>
             <div className='inpage__actions'>

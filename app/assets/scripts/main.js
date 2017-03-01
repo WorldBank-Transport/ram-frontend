@@ -38,6 +38,7 @@ render((
         <Route path="404" component={UhOh}/>
         <Route path="projects/:projectId" component={ProjectPage}/>
         <IndexRoute component={Home} pageClass='page--homepage' />
+        <Redirect from='projects' to='/' />
         <Route path="*" component={UhOh}/>
       </Route>
       <Redirect from='/' to='/en' />
