@@ -1,29 +1,44 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
-import { Link } from 'react-router';
-import { connect } from 'react-redux';
 import { hashHistory } from 'react-router';
+import { connect } from 'react-redux';
 
 import Breadcrumb from '../components/breadcrumb';
 
-import { invalidateProjectItem, fetchProjectItem, removeProjectItemFile } from '../actions';
+import {
+  invalidateProjectItem,
+  fetchProjectItem,
+  removeProjectItemFile,
+  invalidateScenarioItem,
+  fetchScenarioItem,
+  removeScenarioItemFile
+} from '../actions';
 import { prettyPrint } from '../utils/utils';
+import { t } from '../utils/i18n';
 
 import ProjectFileInput from '../components/project-file-input';
 import ProjectFileCard from '../components/project-file-card';
 
 const fileTypesMatrix = {
   profile: {
-    display: 'Profile',
-    description: 'The profile is used to convert osm to osrm'
+    display: t('Profile'),
+    description: t('The profile is used to convert osm to osrm')
   },
   'admin-bounds': {
-    display: 'Administrative Boundaries',
-    description: 'GeoJSON file containing the administrative boundaries'
+    display: t('Administrative Boundaries'),
+    description: t('GeoJSON file containing the administrative boundaries')
   },
   villages: {
-    display: 'Village and population data',
-    description: 'Villages GeoJSON with population data'
+    display: t('Village and population data'),
+    description: t('Villages GeoJSON with population data')
+  },
+  poi: {
+    display: t('Points of interest'),
+    description: t('GeoJSON for the points of interest (banks, hospitals...)')
+  },
+  'road-network': {
+    display: t('Road Network'),
+    description: t('Road network to use')
   }
 };
 
@@ -34,18 +49,24 @@ var ProjectPage = React.createClass({
     _invalidateProjectItem: T.func,
     _fetchProjectItem: T.func,
     _removeProjectItemFile: T.func,
+    _invalidateScenarioItem: T.func,
+    _fetchScenarioItem: T.func,
+    _removeScenarioItemFile: T.func,
 
     params: T.object,
+    scenario: T.object,
     project: T.object
   },
 
   componentDidMount: function () {
     this.props._fetchProjectItem(this.props.params.projectId);
+    this.props._fetchScenarioItem(this.props.params.projectId, 0);
   },
 
   componentWillReceiveProps: function (nextProps) {
     if (this.props.params.projectId !== nextProps.params.projectId) {
       this.props._fetchProjectItem(nextProps.params.projectId);
+      this.props._fetchScenarioItem(nextProps.params.projectId, 0);
     }
 
     var error = nextProps.project.error;
@@ -56,15 +77,56 @@ var ProjectPage = React.createClass({
 
   onFileUploadComplete: function () {
     this.props._fetchProjectItem(this.props.params.projectId);
+    this.props._fetchScenarioItem(this.props.params.projectId, 0);
   },
 
-  onFileDeleteComplete: function (fileId) {
-    this.props._removeProjectItemFile(fileId);
+  onFileDeleteComplete: function (file) {
+    switch (file.type) {
+      case 'profile':
+      case 'admin-bounds':
+      case 'villages':
+        this.props._removeProjectItemFile(file.id);
+        break;
+      case 'poi':
+      case 'road-network':
+        this.props._removeScenarioItemFile(file.id);
+        break;
+    }
   },
 
-  renderFile: function (key) {
+  renderFileUploadSection: function () {
+    let { fetched, fetching, error, data, receivedAt } = this.props.scenario;
+
+    let scenarioData;
+    if (!fetched && !fetching) {
+      scenarioData = null;
+    // Show if it's the first loading time.
+    } else if (!receivedAt && fetching) {
+      scenarioData = <p className='loading-indicator'>Loading...</p>;
+    } else if (error) {
+      scenarioData = <div>Error: {prettyPrint(error)}</div>;
+    } else {
+      scenarioData = (
+        <div>
+          {this.renderFile('road-network', data.files)}
+          {this.renderFile('poi', data.files)}
+        </div>
+      );
+    }
+
+    return (
+      <div>
+        {this.renderFile('profile', this.props.project.data.files)}
+        {this.renderFile('admin-bounds', this.props.project.data.files)}
+        {this.renderFile('villages', this.props.project.data.files)}
+        {scenarioData}
+      </div>
+    );
+  },
+
+  renderFile: function (key, files) {
     // Check if the file exists in the project.
-    const file = this.props.project.data.files.find(f => f.type === key);
+    const file = files.find(f => f.type === key);
 
     return file
       ? this.renderFileCard(file)
@@ -80,6 +142,7 @@ var ProjectPage = React.createClass({
         description={description}
         type={key}
         projectId={projectId}
+        scenarioId={0}
         onFileUploadComplete={this.onFileUploadComplete} />
     );
   },
@@ -94,18 +157,20 @@ var ProjectPage = React.createClass({
         description={description}
         type={file.type}
         projectId={projectId}
-        onFileDeleteComplete={this.onFileDeleteComplete.bind(null, file.id)} />
+        scenarioId={0}
+        onFileDeleteComplete={this.onFileDeleteComplete.bind(null, file)} />
     );
   },
 
   render: function () {
-    let { fetched, fetching, error, data } = this.props.project;
+    let { fetched, fetching, error, data, receivedAt } = this.props.project;
 
     if (!fetched && !fetching) {
       return null;
     }
 
-    if (fetching) {
+    // Show if it's the first loading time.
+    if (!receivedAt && fetching) {
       return <p className='loading-indicator'>Loading...</p>;
     }
 
@@ -128,13 +193,10 @@ var ProjectPage = React.createClass({
         </header>
         <div className='inpage__body'>
           <div className='inner'>
-            <pre>
-              {JSON.stringify(data, null, '  ')}
-            </pre>
 
-            {this.renderFile('profile')}
-            {this.renderFile('admin-bounds')}
-            {this.renderFile('villages')}
+            {prettyPrint(data)}
+
+            {this.renderFileUploadSection()}
           </div>
         </div>
 
@@ -148,7 +210,8 @@ var ProjectPage = React.createClass({
 
 function selector (state) {
   return {
-    project: state.projectItem
+    project: state.projectItem,
+    scenario: state.scenarioItem
   };
 }
 
@@ -156,7 +219,10 @@ function dispatcher (dispatch) {
   return {
     _invalidateProjectItem: (...args) => dispatch(invalidateProjectItem(...args)),
     _fetchProjectItem: (...args) => dispatch(fetchProjectItem(...args)),
-    _removeProjectItemFile: (...args) => dispatch(removeProjectItemFile(...args))
+    _removeProjectItemFile: (...args) => dispatch(removeProjectItemFile(...args)),
+    _invalidateScenarioItem: (...args) => dispatch(invalidateScenarioItem(...args)),
+    _fetchScenarioItem: (...args) => dispatch(fetchScenarioItem(...args)),
+    _removeScenarioItemFile: (...args) => dispatch(removeScenarioItemFile(...args))
   };
 }
 
