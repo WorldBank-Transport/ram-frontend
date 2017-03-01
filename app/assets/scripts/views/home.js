@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 
 import { invalidateProjects, fetchProjects } from '../actions';
 import { prettyPrint } from '../utils/utils';
+import { t } from '../utils/i18n';
 
 var Home = React.createClass({
   displayName: 'Home',
@@ -63,7 +64,7 @@ var Home = React.createClass({
                 <li><a href='' title='View page'>Lorem</a></li>
                 <li><a href='' title='View page'>Ipsum</a></li>
               </ol>
-              <h1 className='inpage__title'>Projects</h1>
+              <h1 className='inpage__title'>{t('Projects')}</h1>
             </div>
             <div className='inpage__actions'>
               <a className='b-new'><span>New project</span></a>
