@@ -29,7 +29,7 @@ var Home = React.createClass({
           <Link to={`/${getLanguage()}/projects/${project.id}`} className='card__contents' title='View project'>
             <figure className='card__media'>
               <div className='card__thumbnail'>
-                <img alt='Card thumb' width='768' height='384' src='http://placehold.it/768x384' />
+                <img alt='Project thumbnail' width='640' height='320' src='/assets/graphics/layout/projects-thumbnail-placeholder.png' />
               </div>
             </figure>
             <div className='card__copy'>
@@ -43,7 +43,7 @@ var Home = React.createClass({
                 </div>
               </div>
               <footer className='card__footer'>
-                <dl className='project__system-details'>
+                <dl className='card__system-details'>
                   <dt>Updated</dt>
                   <dd className='updated'>{project.updated_at}</dd>
                   <dt>Status</dt>
