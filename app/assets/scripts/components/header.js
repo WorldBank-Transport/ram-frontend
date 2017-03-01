@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router';
 
-import { t, getLanguage } from '../utils/i18n';
+import { getLanguage } from '../utils/i18n';
 
 import NavGlobalMenu from '../components/nav-global-menu';
 
@@ -25,7 +25,7 @@ const Header = React.createClass({
                 <ul className='drop__menu drop__menu--select' role='menu'>
                   <li><a href='#' title='Select language' className='drop__menu-item drop__menu-item--active'>English</a></li>
                   <li><a href='#' title='Select language' className='drop__menu-item'>Language 2</a></li>
-                </ul>      
+                </ul>
               </div>
             </div>
 

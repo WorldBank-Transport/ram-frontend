@@ -12,7 +12,7 @@ import { t, getLanguage } from '../utils/i18n';
 const projectStatusMatrix = {
   active: 'Active',
   pending: 'Draft'
-}
+};
 
 var Home = React.createClass({
   displayName: 'Home',
@@ -54,7 +54,7 @@ var Home = React.createClass({
                   <dt>Updated</dt>
                   <dd className='updated'><TimeAgo datetime={project.updated_at} /></dd>
                   <dt>Status</dt>
-                  <dd className='status'><span className={c('label', {'label--success': project.status === 'active', 'label--danger': project.status === 'pending' })}>{projectStatusMatrix[project.status]}</span></dd>
+                  <dd className='status'><span className={c('label', {'label--success': project.status === 'active', 'label--danger': project.status === 'pending'})}>{projectStatusMatrix[project.status]}</span></dd>
                 </dl>
               </footer>
             </div>

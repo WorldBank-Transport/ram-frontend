@@ -6,7 +6,6 @@ import { Router, Route, IndexRoute, Redirect, hashHistory, applyRouterMiddleware
 import { useScroll } from 'react-router-scroll';
 import { syncHistoryWithStore } from 'react-router-redux';
 
-import config from './config';
 import store from './utils/store';
 import { isValidLanguage, setLanguage } from './utils/i18n';
 
