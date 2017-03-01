@@ -3,7 +3,7 @@
    ========================================================================== */
 
 .button {
-  @include user-select(none);
+  user-select: none;
   display: inline-block;
   text-align: center;
   white-space: nowrap;
