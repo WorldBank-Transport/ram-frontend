@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+echo "Generating .htpasswd file"
+perl -le 'print crypt($HTPASSWD, "f9")' | awk '{print "$HTUSER:"$1}' > ./.htpasswd
+
 echo "Building source image"
 docker build -t $DOCKER_SRC_IMAGE .
 
