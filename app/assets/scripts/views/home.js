@@ -2,10 +2,16 @@
 import React, { PropTypes as T } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
+import c from 'classnames';
 
 import { invalidateProjects, fetchProjects } from '../actions';
 import { prettyPrint } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
+
+const projectStatusMatrix = {
+  active: 'Active',
+  pending: 'Draft'
+}
 
 var Home = React.createClass({
   displayName: 'Home',
@@ -35,19 +41,19 @@ var Home = React.createClass({
             <div className='card__copy'>
               <header className='card__header'>
                 <h1 className='card__title'>{project.name}</h1>
-                <p className='card__subtitle'>Scenarios info</p>
+                <p className='card__subtitle'>{project.status === 'pending' ? 'Pending scenarios' : 'X scenarios'}</p>
               </header>
               <div className='card__body'>
-                <div className='prose'>
+                <div className='card__summary'>
                   <p>{project.description}</p>
                 </div>
               </div>
               <footer className='card__footer'>
                 <dl className='card__system-details'>
                   <dt>Updated</dt>
-                  <dd className='updated'>{project.updated_at}</dd>
+                  <dd className='updated'><span>{project.updated_at}</span></dd>
                   <dt>Status</dt>
-                  <dd className='status'>{project.status}</dd>
+                  <dd className='status'><span className={c('label', {'label--success': project.status === 'active', 'label--danger': project.status === 'pending' })}>{projectStatusMatrix[project.status]}</span></dd>
                 </dl>
               </footer>
             </div>

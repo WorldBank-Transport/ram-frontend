@@ -28,7 +28,11 @@
   transition: all 0.16s ease 0s;
 
   .card--active & {
-    box-shadow: 0 0 0 2px rgba($base-color, 0.32);
+    box-shadow: 0 2px 8px 2px rgba($primary-color, 0.32);
+  }
+
+  > *:last-child {
+    margin-bottom: 0;
   }
 }
 
@@ -94,12 +98,17 @@
 .card__title {
   @include heading(1.25rem);
   margin: 0;
+
+  a.card__contents & {
+    color: $link-color;
+  }
 }
 
 .card__subtitle {
   @extend .heading-alt;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  margin-top: $global-spacing / 4;
 }
 
 
@@ -107,11 +116,62 @@
    ========================================================================== */
 
 .card__body {
-  margin-bottom: $global-spacing / 2;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
+  margin-bottom: $global-spacing;
 
   > *:last-child {
     margin-bottom: 0;
+  }
+}
+
+.card__summary {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: tint($base-color, 36%);
+
+  > *:last-child {
+    margin-bottom: 0;
+  }
+}
+
+
+/* Card footer
+   ========================================================================== */
+
+.card__footer {
+  > *:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.card__system-details {
+  margin-bottom: 0;
+
+  dt {
+    @extend .visually-hidden;
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  .updated {
+    @extend .heading-alt;
+    position: relative;
+    float: left;
+    font-size: 0.75rem;
+    line-height: 1.25rem;
+    padding: 0 0 0 1.25rem;
+
+    &::before {
+      @extend %collecticon-clock;
+      position: absolute;
+      top: 0.125rem;
+      left: 0;
+      font-size: 1rem;
+    }
+  }
+
+  .status {
+    float: right;
   }
 }
