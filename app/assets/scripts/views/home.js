@@ -83,9 +83,7 @@ var Home = React.createClass({
       <ol className='card-list projects-card-list'>
         {data.results.map(o => this.renderProjectListItem(o))}
         <li>
-          <div className='card'>
-            <a className='card__contents'>New project</a>
-          </div>
+          <button className='card__button card__button--add'><span>New project</span></button>
         </li>
       </ol>
     );
