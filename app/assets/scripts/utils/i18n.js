@@ -26,7 +26,9 @@ export function t (string, replace = {}) {
   // Transifex provides 1 file per language which we can require.
   let l = {
     en: { // require('./langfiles/en')
-      'Projects': 'Projects'
+      'Projects': 'Projects',
+      'About': 'About',
+      'Help': 'Help'
     }
   };
 
