@@ -1,13 +1,3 @@
 /* ==========================================================================
    Projects: Global
    ========================================================================== */
-
-
-  .b-new {
-    @extend .button, .button--primary, .button--medium;
-    vertical-align: top;
-    
-    &::before {
-      @extend %collecticon-sm-plus;
-    }
-  }

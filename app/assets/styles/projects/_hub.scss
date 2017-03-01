@@ -2,6 +2,20 @@
    Projects: Hub
    ========================================================================== */
 
+/* Actions */
+
+.b-new {
+  @extend .button, .button--primary, .button--medium;
+  vertical-align: top;
+  
+  &::before {
+    @extend %collecticon-sm-plus;
+  }
+}
+
+
+/* Project list */
+
 .projects-card-list {
   list-style: none;
   margin: 0;
@@ -17,4 +31,22 @@
       margin-top: 0;
     }
   }
+}
+
+
+/* flex experiment */
+
+.projects-card-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.projects-card-list > li {
+  display: flex;
+}
+
+.projects-card-list .card,
+.projects-card-list .card__contents {
+  display: flex;
+  flex-wrap: wrap;
 }
