@@ -17,8 +17,8 @@ const Header = React.createClass({
           </div>
           <nav className='page__prime-nav' role='navigation'>
             <div className='nav-language-switcher drop drop--down drop--align-left'>
-              <button className='drop__toggle' type='button'><span>English</span></button>
-              <div className='drop__content'>
+              <a href='#lang-switcher' title='Change language' className='drop__toggle drop__toggle--caret'><span>English</span></a>
+              <div className='drop__content' id='lang-switcher'>
                 <h6 className='drop__title'>Change language</h6>
                 <ul className='drop__menu drop__menu--select' role='menu'>
                   <li><a href='#' title='Select language' className='drop__menu-item drop__menu-item--active'>English</a></li>

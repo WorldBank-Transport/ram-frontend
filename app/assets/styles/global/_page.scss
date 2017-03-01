@@ -40,7 +40,15 @@
 }
 
 .nav-language-switcher {
- float: left;
+  float: left;
+
+  .drop__toggle {
+    text-transform: uppercase;
+    font-weight: $base-font-bold;
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+
 }
 
 
