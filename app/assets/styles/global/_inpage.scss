@@ -16,10 +16,6 @@
       display: flex;
       align-items: flex-end;
     }
-
-    a {
-      color: inherit;
-    }
   }
 
   &__headline {
@@ -42,6 +38,10 @@
     line-height: 1rem;
     text-transform: uppercase;
     color: rgba(#fff, 0.8);
+
+    a {
+      color: inherit;
+    }
 
     * {
       display: inline-block;

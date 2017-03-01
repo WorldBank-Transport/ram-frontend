@@ -60,10 +60,6 @@ var Home = React.createClass({
         <header className='inpage__header'>
           <div className='inner'>
             <div className='inpage__headline'>
-              <ol className='inpage__breadcrumb'>
-                <li><a href='' title='View page'>Lorem</a></li>
-                <li><a href='' title='View page'>Ipsum</a></li>
-              </ol>
               <h1 className='inpage__title'>{t('Projects')}</h1>
             </div>
             <div className='inpage__actions'>

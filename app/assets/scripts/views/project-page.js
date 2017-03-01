@@ -1,5 +1,6 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
+import { Link, IndexLink } from 'react-router';
 import { connect } from 'react-redux';
 import { hashHistory } from 'react-router';
 
@@ -116,13 +117,12 @@ var ProjectPage = React.createClass({
           <div className='inner'>
             <div className='inpage__headline'>
               <ol className='inpage__breadcrumb'>
-                <li><a href='' title='View page'>Lorem</a></li>
-                <li><a href='' title='View page'>Ipsum</a></li>
+                <li><IndexLink to='/' title='Visit projects page'>Projects</IndexLink></li>
               </ol>
               <h1 className='inpage__title'>{data.name}</h1>
             </div>
             <div className='inpage__actions'>
-              <p>lorem</p>
+              <a className='button button--achromic'><span>Action</span></a>
             </div>
           </div>
         </header>
