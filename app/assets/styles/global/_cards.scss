@@ -162,6 +162,13 @@
     line-height: 1.25rem;
     padding: 0 0 0 1.25rem;
 
+    > span {
+      display: inline-block;
+      @extend .truncated;
+      max-width: 8rem;
+      vertical-align: top;
+    }
+
     &::before {
       @extend %collecticon-clock;
       position: absolute;

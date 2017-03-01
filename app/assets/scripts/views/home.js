@@ -3,6 +3,7 @@ import React, { PropTypes as T } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import c from 'classnames';
+import TimeAgo from 'timeago-react';
 
 import { invalidateProjects, fetchProjects } from '../actions';
 import { prettyPrint } from '../utils/utils';
@@ -51,7 +52,7 @@ var Home = React.createClass({
               <footer className='card__footer'>
                 <dl className='card__system-details'>
                   <dt>Updated</dt>
-                  <dd className='updated'><span>{project.updated_at}</span></dd>
+                  <dd className='updated'><TimeAgo datetime={project.updated_at} /></dd>
                   <dt>Status</dt>
                   <dd className='status'><span className={c('label', {'label--success': project.status === 'active', 'label--danger': project.status === 'pending' })}>{projectStatusMatrix[project.status]}</span></dd>
                 </dl>
@@ -81,7 +82,11 @@ var Home = React.createClass({
     return (
       <ol className='card-list projects-card-list'>
         {data.results.map(o => this.renderProjectListItem(o))}
-        <li><a className='button button--achromic button--large'><span>Button</span></a></li>
+        <li>
+          <div className='card'>
+            <a className='card__contents'>New project</a>
+          </div>
+        </li>
       </ol>
     );
   },
@@ -95,7 +100,7 @@ var Home = React.createClass({
               <h1 className='inpage__title'>{t('Projects')}</h1>
             </div>
             <div className='inpage__actions'>
-              <a className='b-new'><span>New project</span></a>
+              <button title='Create new project' className='b-new' type='button'><span>New project</span></button>
             </div>
           </div>
         </header>
