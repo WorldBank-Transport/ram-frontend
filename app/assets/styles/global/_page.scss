@@ -41,12 +41,13 @@
 
 .nav-language-switcher {
   float: left;
+  line-height: 1rem;
 
   .drop__toggle {
     text-transform: uppercase;
     font-weight: $base-font-bold;
     font-size: 0.75rem;
-    line-height: 1rem;
+    vertical-align: top;
   }
 }
 
