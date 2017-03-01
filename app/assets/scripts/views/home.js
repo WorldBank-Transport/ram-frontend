@@ -48,6 +48,7 @@ var Home = React.createClass({
     return (
       <ol className>
         {data.results.map(o => this.renderProjectListItem(o))}
+        <li><a className='button button--achromic button--large'><span>Button</span></a></li>
       </ol>
     );
   },
@@ -65,13 +66,15 @@ var Home = React.createClass({
               <h1 className='inpage__title'>Projects</h1>
             </div>
             <div className='inpage__actions'>
-              <p>lorem</p>
+              <a className='b-new'><span>New project</span></a>
             </div>
           </div>
         </header>
         <div className='inpage__body'>
           <div className='inner'>
+
             {this.renderProjectList()}
+
           </div>
         </div>
 

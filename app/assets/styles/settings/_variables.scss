@@ -6,7 +6,7 @@
    ========================================================================== */
 
 $base-color: #2E4C45;                                   // Dark gray-ish green
-$primary-color: #0da081;                                // Green
+$primary-color: #43C272;                                // Green
 $secondary-color: #287895;                              // Jelly Bean
 
 $accent-color: #00B380;                                 // Dark green
@@ -69,7 +69,7 @@ $global-spacing: 1rem;
 
 /* Rows */
 
-$row-min-width: 980px;
+$row-min-width: 768px;
 $row-max-width: 1280px;
 $jeet-max-width: $row-max-width; // reset jeet.gs max width
 

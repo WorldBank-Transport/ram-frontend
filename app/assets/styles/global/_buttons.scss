@@ -38,7 +38,7 @@
 
   /* Icon handling */
   &::before, &::after,
-  [class^="oam-ds-icon-"], [class*=" oam-ds-icon-"],
+  [class^="openaq-ds-icon-"], [class*=" openaq-ds-icon-"],
   [class^="collecticons-"], [class*=" collecticons-"] {
     font-size: 1rem;
   }
@@ -70,13 +70,19 @@
 /* Base */
 
 .button--base {
-  @include button-variation("filled", "dark", tint($base-color, 32%));
+  @include button-variation("filled", "dark", $base-color);
+}
+
+/* Base Bounded */
+
+.button--base-bounded {
+  @include button-variation("bounded", null, $base-color);
 }
 
 /* Base Unbounded */
 
 .button--base-unbounded {
-  @include button-variation("unbounded", null, $base-font-color);
+  @include button-variation("unbounded", null, $base-color);
 }
 
 /* Achromic */
@@ -97,6 +103,12 @@
   @include button-variation("filled", "dark", $primary-color);
 }
 
+/* Primary Bounded */
+
+.button--primary-bounded {
+  @include button-variation("bounded", null, $primary-color);
+}
+
 /* Primary Unbounded */
 
 .button--primary-unbounded {
@@ -107,6 +119,12 @@
 
 .button--secondary {
   @include button-variation("filled", "dark", $secondary-color);
+}
+
+/* Secondary Bounded */
+
+.button--secondary-bounded {
+  @include button-variation("bounded", null, $secondary-color);
 }
 
 /* Secondary Unbounded */
@@ -146,7 +164,7 @@
 .button--large,
 .button-group--large .button {
   line-height: 1.5rem;
-  font-size: 1.25rem;
+  font-size: 1rem;
   padding: 0.5rem 1rem;
   min-width: 2.5rem;
 }
@@ -156,7 +174,7 @@
 .button--xlarge,
 .button-group--xlarge .button {
   line-height: 2rem;
-  font-size: 1.25rem;
+  font-size: 1rem;
   padding: 0.5rem 1rem;
   min-width: 3rem;
 }
@@ -170,17 +188,27 @@
   &::after {
     margin: 0;
   }
-  
-  > *:not([class^="oam-ds-icon-"]):not([class*=" oam-ds-icon-"]):not([class^="collecticons-"]):not([class*=" collecticons-"]) {
+  > *:not([class^="openaq-ds-icon-"]):not([class*=" openaq-ds-icon-"]):not([class^="collecticons-"]):not([class*=" collecticons-"]) {
     @extend .visually-hidden;
   }
-
   :not(.button-group) & {
     padding-left: 0;
     padding-right: 0;
   }
 }
 
+
+/* Button misc modifiers
+   ========================================================================== */
+
+.button--block {
+  display: block;
+  width: 100%;
+}
+
+.button--semi-fluid {
+  min-width: 16rem;
+}
 
 /* ==========================================================================
    Button groups
@@ -190,7 +218,6 @@
   position: relative;
   display: inline-block;
   vertical-align: middle;
-
   > .button {
     display: block;
     position: relative;
@@ -204,23 +231,19 @@
   > .button {
     float: left;
   }
-
   > .button:first-child:not(:last-child) {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
   }
-
   > .button:last-child:not(:first-child) {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
   }
-
   > .button:not(:first-child):not(:last-child) {
     border-radius: 0;
   }
-
   > .button + .button {
-    margin-left: -1px;
+    margin-left: -2px;
   }
 }
 
@@ -231,27 +254,22 @@
     clear: both;
     width: 100%;
     border-radius: $base-border-radius;
-
     &:hover {
       z-index: 2;
     }
   }
-
   > .button:first-child:not(:last-child) {
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
   }
-
   > .button:last-child:not(:first-child) {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
   }
-
   > .button:not(:first-child):not(:last-child) {
     border-radius: 0;
   }
-
   > .button + .button {
-    margin-top: -1px;
+    margin-top: -2px;
   }
 }
