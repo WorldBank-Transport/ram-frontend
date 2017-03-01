@@ -27,8 +27,6 @@
   }
 }
 
-/* Headline */
-
 .page__headline {
   position: absolute;
   left: 50%;
@@ -45,6 +43,9 @@
  float: left;
 }
 
+
+/* Global menu */
+
 .nav-global-menu {
   list-style: none;
   margin: 0;
@@ -53,7 +54,14 @@
   font-weight: $base-font-bold;
   font-size: 0.75rem;
   line-height: 1rem;
-  float: right;
+
+  .page__header & {
+    float: right;
+  }
+
+  .page__footer & {
+    float: left;
+  }
 
   a {
     color: inherit;

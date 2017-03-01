@@ -11,7 +11,7 @@ const Footer = React.createClass({
       <footer className='page__footer' role='contentinfo'>
         <div className='inner'>
           <nav className='page__footer-nav' role='navigation'>
-            <ul className='nav-menu'>
+            <ul className='nav-global-menu'>
               <li><IndexLink to='/' title='Visit projects page'><span>Projects</span></IndexLink></li>
               <li><Link to='/about' title='Visit about page'><span>About</span></Link></li>
               <li><Link to='/help' title='Visit help page'><span>Help</span></Link></li>
