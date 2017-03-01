@@ -11,20 +11,24 @@
   line-height: $base-line-height;                       // 24px
 
   > * {
-    margin-bottom: 1rem;
+    margin-bottom: $base-font-size * $base-line-height; // same as line-height
+  }
+
+  > *:last-child {
+    margin-bottom: 0;
   }
 }
 
 .prose--responsive {
-  $prose-resp-font-size: 1.125rem;                       // 18px
-  $prose-resp-line-height: 1.75rem;                      // 26px
+  $prose-resp-font-size: 1.25rem;                       // 20px
+  $prose-resp-line-height: 1.6;                         // 32px
 
   @include media(medium-up) {
     font-size: $prose-resp-font-size;
     line-height: $prose-resp-line-height;
   
     > * {
-      margin-bottom: 1.75rem;
+      margin-bottom: $prose-resp-font-size * $prose-resp-line-height; // same as line-height
     }
   }
 }

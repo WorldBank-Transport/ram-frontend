@@ -1,10 +1,11 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router';
 
 import { invalidateProjects, fetchProjects } from '../actions';
 import { prettyPrint } from '../utils/utils';
-import { t } from '../utils/i18n';
+import { t, getLanguage } from '../utils/i18n';
 
 var Home = React.createClass({
   displayName: 'Home',
@@ -23,10 +24,35 @@ var Home = React.createClass({
   renderProjectListItem: function (project) {
     delete project.files; // remove
     return (
-      <li key={project.id}>
-        <pre>
-          {JSON.stringify(project, null, '  ')}
-        </pre>
+      <li className='' key={project.id}>
+        <article className='project project--card card' id={`project-${project.id}`}>
+          <Link to={`/${getLanguage()}/projects/${project.id}`} className='card__contents' title='View project'>
+            <figure className='card__media'>
+              <div className='card__thumbnail'>
+                <img alt='Card thumb' width='768' height='384' src='http://placehold.it/768x384' />
+              </div>
+            </figure>
+            <div className='card__copy'>
+              <header className='card__header'>
+                <h1 className='card__title'>{project.name}</h1>
+                <p className='card__subtitle'>Scenarios info</p>
+              </header>
+              <div className='card__body'>
+                <div className='prose'>
+                  <p>{project.description}</p>
+                </div>
+              </div>
+              <footer className='card__footer'>
+                <dl className='project__system-details'>
+                  <dt>Updated</dt>
+                  <dd className='updated'>{project.updated_at}</dd>
+                  <dt>Status</dt>
+                  <dd className='status'>{project.status}</dd>
+                </dl>
+              </footer>
+            </div>
+          </Link>
+        </article>
       </li>
     );
   },
@@ -47,7 +73,7 @@ var Home = React.createClass({
     }
 
     return (
-      <ol className>
+      <ol className='card-list projects-card-list'>
         {data.results.map(o => this.renderProjectListItem(o))}
         <li><a className='button button--achromic button--large'><span>Button</span></a></li>
       </ol>
