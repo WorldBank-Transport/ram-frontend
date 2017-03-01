@@ -72,12 +72,9 @@ var Home = React.createClass({
         </header>
         <div className='inpage__body'>
           <div className='inner'>
-
             {this.renderProjectList()}
-
           </div>
         </div>
-
       </section>
     );
   }
