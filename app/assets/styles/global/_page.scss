@@ -12,6 +12,8 @@
 
 .page__header {
   @extend .antialiased;
+  position: relative;
+  z-index: 1;
   background: $accent-color;
   color: #fff;
   padding: ($global-spacing * 1.5) 0;
@@ -29,13 +31,15 @@
 
 .page__headline {
   position: absolute;
+  top: 50%;
   left: 50%;
-  transform: translate(-50%, 0);
+  transform: translate(-50%, -50%);
+  line-height: 1.25rem;
 }
 
 .page__title {
   font-size: 1.25rem;
-  line-height: 1;
+  line-height: 1.25rem;
   margin: 0;
 }
 
