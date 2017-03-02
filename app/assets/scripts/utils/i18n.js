@@ -10,9 +10,14 @@ export function getLanguage () {
   return currentLang;
 }
 
+export function getLanguageName () {
+  return getAvailableLanguages().find(l => l.key === getLanguage()).name;
+}
+
 export function getAvailableLanguages () {
   return [
-    {key: 'en', name: 'English'}
+    {key: 'en', name: 'English'},
+    {key: 'eo', name: 'Esperanto'}
   ];
 }
 
@@ -27,6 +32,8 @@ export function t (string, replace = {}) {
   let l = {
     en: { // require('./langfiles/en')
       'Projects': 'Projects'
+    },
+    eo: {
     }
   };
 
