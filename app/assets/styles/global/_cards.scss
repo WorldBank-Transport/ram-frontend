@@ -204,6 +204,7 @@ a.card__contents {
    ========================================================================== */
 
 .card__button {
+  @extend .antialiased;
   display: block;
   width: 100%;
   user-select: none;
@@ -224,10 +225,12 @@ a.card__contents {
   background: #fff;
 
   /* Animation */
-  transition: all 0.16s ease 0s;
+  transition: all 0.24s ease 0s;
 
   &:hover {
-    background-color: tint($link-color, 92%);
+    background-color: $link-color;
+    box-shadow: 0 2px 8px 2px rgba($link-color, 0.32);
+    color: #fff;
   }
 
   &:active {
