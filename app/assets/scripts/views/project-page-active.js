@@ -28,6 +28,10 @@ var ProjectPageActive = React.createClass({
     this.props._fetchProjectItem(this.props.params.projectId);
   },
 
+  componentWillUnmount: function () {
+    this.props._invalidateProjectItem();
+  },
+
   componentWillReceiveProps: function (nextProps) {
     if (!this.props.project.fetched && nextProps.project.fetched) {
       // Project just fetched. Validate status;

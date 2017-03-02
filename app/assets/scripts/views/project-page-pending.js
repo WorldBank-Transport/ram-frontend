@@ -65,6 +65,10 @@ var ProjectPagePending = React.createClass({
     this.props._fetchScenarioItem(this.props.params.projectId, 0);
   },
 
+  componentWillUnmount: function () {
+    this.props._invalidateProjectItem();
+  },
+
   componentWillReceiveProps: function (nextProps) {
     if (!this.props.project.fetched && nextProps.project.fetched) {
       // Project just fetched. Validate status;

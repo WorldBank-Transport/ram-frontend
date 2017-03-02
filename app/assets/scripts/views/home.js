@@ -5,9 +5,11 @@ import { Link } from 'react-router';
 import c from 'classnames';
 import TimeAgo from 'timeago-react';
 
-import { invalidateProjects, fetchProjects } from '../actions';
+import { invalidateProjects, fetchProjects, postProject } from '../actions';
 import { prettyPrint } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
+
+import ProjectFormModal from '../components/project/project-form-modal';
 
 const projectStatusMatrix = {
   active: 'Active',
@@ -20,8 +22,24 @@ var Home = React.createClass({
   propTypes: {
     _invalidateProjects: T.func,
     _fetchProjects: T.func,
+    _postProject: T.func,
 
-    projects: T.object
+    projects: T.object,
+    projectForm: T.object
+  },
+
+  getInitialState: function () {
+    return {
+      projectFormModal: false
+    };
+  },
+
+  openModal: function () {
+    this.setState({projectFormModal: true});
+  },
+
+  closeModal: function () {
+    this.setState({projectFormModal: false});
   },
 
   componentDidMount: function () {
@@ -90,7 +108,7 @@ var Home = React.createClass({
       <ol className='card-list projects-card-list'>
         {data.results.map(o => this.renderProjectListItem(o))}
         <li>
-          <button className='card__button card__button--add'><span>New project</span></button>
+          <button title='Create new project' className='card__button card__button--add' type='button' onClick={this.openModal}><span>New project</span></button>
         </li>
       </ol>
     );
@@ -105,7 +123,7 @@ var Home = React.createClass({
               <h1 className='inpage__title'>{t('Projects')}</h1>
             </div>
             <div className='inpage__actions'>
-              <button title='Create new project' className='ipa-plus' type='button'><span>New project</span></button>
+              <button title='Create new project' className='ipa-plus' type='button' onClick={this.openModal}><span>New project</span></button>
             </div>
           </div>
         </header>
@@ -114,6 +132,12 @@ var Home = React.createClass({
             {this.renderProjectList()}
           </div>
         </div>
+        <ProjectFormModal
+          revealed={this.state.projectFormModal}
+          onCloseClick={this.closeModal}
+          projectForm={this.props.projectForm}
+          postProject={this.props._postProject}
+        />
       </section>
     );
   }
@@ -124,14 +148,16 @@ var Home = React.createClass({
 
 function selector (state) {
   return {
-    projects: state.projects
+    projects: state.projects,
+    projectForm: state.projectForm
   };
 }
 
 function dispatcher (dispatch) {
   return {
     _invalidateProjects: (...args) => dispatch(invalidateProjects(...args)),
-    _fetchProjects: (...args) => dispatch(fetchProjects(...args))
+    _fetchProjects: (...args) => dispatch(fetchProjects(...args)),
+    _postProject: (...args) => dispatch(postProject(...args))
   };
 }
 
