@@ -52,7 +52,7 @@ const ProjectFileCard = React.createClass({
 
   render: function () {
     return (
-      <div className='file-card'>
+      <div className='file-card diptych'>
         <h2>{this.props.name}</h2>
         <strong>File was uploaded</strong>
         <p>{this.props.description}</p>

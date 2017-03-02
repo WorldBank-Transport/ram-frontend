@@ -94,7 +94,7 @@ const ProjectFileInput = React.createClass({
 
   render: function () {
     return (
-      <form className='file-input'>
+      <form className='file-input diptych'>
         <h2>{this.props.name}</h2>
         <input type='file' className='form__control--upload' ref='file' onChange={this.onFileSelected}/>
         <p>{this.props.description}</p>

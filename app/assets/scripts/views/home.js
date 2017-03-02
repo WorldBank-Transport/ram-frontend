@@ -34,7 +34,7 @@ var Home = React.createClass({
       : `/${getLanguage()}/projects/${project.id}`;
 
     return (
-      <li className='' key={project.id}>
+      <li key={project.id}>
         <article className='project project--card card' id={`project-${project.id}`}>
           <div className='card__contents' title='View project'>
             <figure className='card__media'>
