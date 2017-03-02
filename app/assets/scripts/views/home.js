@@ -136,7 +136,7 @@ var Home = React.createClass({
           revealed={this.state.projectFormModal}
           onCloseClick={this.closeModal}
           projectForm={this.props.projectForm}
-          postProject={this.props._postProject}
+          saveProject={this.props._postProject}
         />
       </section>
     );

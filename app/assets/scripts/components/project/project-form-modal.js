@@ -15,7 +15,11 @@ const ProjectFormModal = React.createClass({
     onCloseClick: T.func,
 
     projectForm: T.object,
-    postProject: T.func
+    saveProject: T.func,
+
+    // Only available when editing.
+    editing: T.bool,
+    projectData: T.object
   },
 
   getInitialState: function () {
@@ -24,15 +28,19 @@ const ProjectFormModal = React.createClass({
         name: null
       },
       data: {
-        name: '',
-        description: ''
+        name: _.get(this.props.projectData, 'name', ''),
+        description: _.get(this.props.projectData, 'description', '') || ''
       }
     };
   },
 
   componentWillReceiveProps: function (nextProps) {
     if (this.props.projectForm.processing && !nextProps.projectForm.processing && !nextProps.projectForm.error) {
-      hashHistory.push(`${getLanguage()}/projects/${nextProps.projectForm.data.id}/setup`);
+      if (!this.props.editing) {
+        hashHistory.push(`${getLanguage()}/projects/${nextProps.projectForm.data.id}/setup`);
+      } else {
+        this.props.onCloseClick();
+      }
     }
   },
 
@@ -56,9 +64,13 @@ const ProjectFormModal = React.createClass({
         description: this.state.data.description || null
       };
 
-      // On create we only want to send properties that were filled in.
-      payload = _.pickBy(payload, v => v !== null);
-      this.props.postProject(payload);
+      if (this.props.editing) {
+        this.props.saveProject(this.props.projectData.id, payload);
+      } else {
+        // On create we only want to send properties that were filled in.
+        payload = _.pickBy(payload, v => v !== null);
+        this.props.saveProject(payload);
+      }
     }
   },
 
@@ -93,7 +105,7 @@ const ProjectFormModal = React.createClass({
 
         <ModalHeader>
           <div className='modal__headline'>
-            <h1 className='modal__title'>New Project</h1>
+            <h1 className='modal__title'>{this.props.editing ? 'Edit Project' : 'New Project'}</h1>
           </div>
         </ModalHeader>
         <ModalBody>

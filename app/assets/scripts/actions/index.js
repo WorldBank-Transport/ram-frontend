@@ -104,6 +104,10 @@ export function postProject (data) {
   return postAndDispatch(`${config.api}/projects`, data, startSubmitProject, finishSubmitProject);
 }
 
+export function patchProject (projectId, data) {
+  return patchAndDispatch(`${config.api}/projects/${projectId}`, data, startSubmitProject, finishSubmitProject);
+}
+
 // Fetcher function
 
 function getAndDispatch (url, requestFn, receiveFn) {
@@ -113,6 +117,14 @@ function getAndDispatch (url, requestFn, receiveFn) {
 function postAndDispatch (url, data, requestFn, receiveFn) {
   let opt = {
     method: 'POST',
+    body: JSON.stringify(data)
+  };
+  return fetchDispatchFactory(url, opt, requestFn, receiveFn);
+}
+
+function patchAndDispatch (url, data, requestFn, receiveFn) {
+  let opt = {
+    method: 'PATCH',
     body: JSON.stringify(data)
   };
   return fetchDispatchFactory(url, opt, requestFn, receiveFn);

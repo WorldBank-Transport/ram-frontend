@@ -9,7 +9,8 @@ import {
   removeProjectItemFile,
   invalidateScenarioItem,
   fetchScenarioItem,
-  removeScenarioItemFile
+  removeScenarioItemFile,
+  patchProject
 } from '../actions';
 import { prettyPrint } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
@@ -18,6 +19,7 @@ import Breadcrumb from '../components/breadcrumb';
 import Dropdown from '../components/dropdown';
 import ProjectFileInput from '../components/project/project-file-input';
 import ProjectFileCard from '../components/project/project-file-card';
+import ProjectFormModal from '../components/project/project-form-modal';
 
 const fileTypesMatrix = {
   profile: {
@@ -52,13 +54,30 @@ var ProjectPagePending = React.createClass({
     _invalidateScenarioItem: T.func,
     _fetchScenarioItem: T.func,
     _removeScenarioItemFile: T.func,
+    _patchProject: T.func,
 
     params: T.object,
     scenario: T.object,
-    project: T.object
+    project: T.object,
+    projectForm: T.object
   },
 
   forceLoading: false,
+
+  getInitialState: function () {
+    return {
+      projectFormModal: false
+    };
+  },
+
+  openModal: function (e) {
+    e.preventDefault();
+    this.setState({projectFormModal: true});
+  },
+
+  closeModal: function () {
+    this.setState({projectFormModal: false});
+  },
 
   componentDidMount: function () {
     this.props._fetchProjectItem(this.props.params.projectId);
@@ -210,10 +229,10 @@ var ProjectPagePending = React.createClass({
                 direction='down'
                 alignment='center' >
                   <ul className='drop__menu drop__menu--iconified' role='menu'>
-                    <li><a href='#' title='action' className='drop__menu-item dmi-pencil'>Edit meta data</a></li>
+                    <li><a href='#' title='action' className='drop__menu-item dmi-pencil' data-hook='dropdown:close' onClick={this.openModal}>Edit meta data</a></li>
                   </ul>
                   <ul className='drop__menu drop__menu--iconified' role='menu'>
-                    <li><a href='#' title='action' className='drop__menu-item dmi-trash'>Delete project</a></li>
+                    <li><a href='#' title='action' className='drop__menu-item dmi-trash' data-hook='dropdown:close'>Delete project</a></li>
                   </ul>
               </Dropdown>
               <button title='Finish setup' className='ipa-tick' type='button'><span>Finish setup</span></button>
@@ -229,6 +248,15 @@ var ProjectPagePending = React.createClass({
           </div>
         </div>
 
+        <ProjectFormModal
+          editing
+          revealed={this.state.projectFormModal}
+          onCloseClick={this.closeModal}
+          projectForm={this.props.projectForm}
+          projectData={this.props.project.data}
+          saveProject={this.props._patchProject}
+        />
+
       </section>
     );
   }
@@ -240,7 +268,8 @@ var ProjectPagePending = React.createClass({
 function selector (state) {
   return {
     project: state.projectItem,
-    scenario: state.scenarioItem
+    scenario: state.scenarioItem,
+    projectForm: state.projectForm
   };
 }
 
@@ -251,7 +280,8 @@ function dispatcher (dispatch) {
     _removeProjectItemFile: (...args) => dispatch(removeProjectItemFile(...args)),
     _invalidateScenarioItem: (...args) => dispatch(invalidateScenarioItem(...args)),
     _fetchScenarioItem: (...args) => dispatch(fetchScenarioItem(...args)),
-    _removeScenarioItemFile: (...args) => dispatch(removeScenarioItemFile(...args))
+    _removeScenarioItemFile: (...args) => dispatch(removeScenarioItemFile(...args)),
+    _patchProject: (...args) => dispatch(patchProject(...args))
   };
 }
 
