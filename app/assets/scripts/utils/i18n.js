@@ -31,9 +31,22 @@ export function t (string, replace = {}) {
   // Transifex provides 1 file per language which we can require.
   let l = {
     en: { // require('./langfiles/en')
-      'Projects': 'Projects'
+      'Projects': 'Projects',
+      'Change language': 'Change language',
+      'Select language': 'Select language',
+      'About': 'About',
+      'Help': 'Help',
+      'Page not found': 'Page not found',
+      'The requested page does not exist or may have been removed.': 'The requested page does not exist or may have been removed.'
     },
     eo: {
+      'Projects': 'Projektoj',
+      'Change language': 'Ŝanĝo lingvo',
+      'Select language': 'Elektu lingvo',
+      'About': 'Pri',
+      'Help': 'Helpi',
+      'Page not found': 'Paĝo ne trovita',
+      'The requested page does not exist or may have been removed.': 'La petita paĝo ne ekzistas aŭ povas esti forigitaj.'
     }
   };
 
