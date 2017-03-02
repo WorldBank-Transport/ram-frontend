@@ -4,6 +4,7 @@ import { hashHistory } from 'react-router';
 import { connect } from 'react-redux';
 
 import Breadcrumb from '../components/breadcrumb';
+import Dropdown from '../components/dropdown';
 
 import {
   invalidateProjectItem,
@@ -187,7 +188,17 @@ var ProjectPage = React.createClass({
               <h1 className='inpage__title'>{data.name}</h1>
             </div>
             <div className='inpage__actions'>
-              <a className='button button--achromic'><span>Action</span></a>
+              <Dropdown
+                triggerClassName='button button--achromic'
+                triggerText='Action'
+                triggerTitle='Action'
+                direction='down'
+                alignment='right' >
+                  <ul className='drop__menu drop__menu--select' role='menu'>
+                    <li><a href='#' title='action' className='drop__menu-item drop__menu-item--active'>Action A</a></li>
+                    <li><a href='#' title='action' className='drop__menu-item'>Action B</a></li>
+                  </ul>
+              </Dropdown>
             </div>
           </div>
         </header>
