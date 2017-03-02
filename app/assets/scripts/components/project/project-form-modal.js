@@ -39,9 +39,14 @@ const ProjectFormModal = React.createClass({
       if (!this.props.editing) {
         hashHistory.push(`${getLanguage()}/projects/${nextProps.projectForm.data.id}/setup`);
       } else {
-        this.props.onCloseClick();
+        this.onClose();
       }
     }
+  },
+
+  onClose: function () {
+    this.setState(this.getInitialState());
+    this.props.onCloseClick();
   },
 
   checkErrors: function () {
@@ -100,7 +105,7 @@ const ProjectFormModal = React.createClass({
       <Modal
         id='modal-showcase'
         className='modal--large'
-        onCloseClick={this.props.onCloseClick}
+        onCloseClick={this.onClose}
         revealed={this.props.revealed} >
 
         <ModalHeader>
@@ -131,7 +136,7 @@ const ProjectFormModal = React.createClass({
           </form>
         </ModalBody>
         <ModalFooter>
-          <button className='button button--achromic' type='button' onClick={this.props.onCloseClick}><span>Cancel</span></button>
+          <button className='button button--achromic' type='button' onClick={this.onClose}><span>Cancel</span></button>
           <button className='button button--base' type='submit' onClick={this.onSubmit}><span>Save</span></button>
         </ModalFooter>
       </Modal>
