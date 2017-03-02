@@ -3,9 +3,6 @@ import React, { PropTypes as T } from 'react';
 import { hashHistory } from 'react-router';
 import { connect } from 'react-redux';
 
-import Breadcrumb from '../components/breadcrumb';
-import Dropdown from '../components/dropdown';
-
 import {
   invalidateProjectItem,
   fetchProjectItem,
@@ -15,10 +12,12 @@ import {
   removeScenarioItemFile
 } from '../actions';
 import { prettyPrint } from '../utils/utils';
-import { t } from '../utils/i18n';
+import { t, getLanguage } from '../utils/i18n';
 
-import ProjectFileInput from '../components/project-file-input';
-import ProjectFileCard from '../components/project-file-card';
+import Breadcrumb from '../components/breadcrumb';
+import Dropdown from '../components/dropdown';
+import ProjectFileInput from '../components/project/project-file-input';
+import ProjectFileCard from '../components/project/project-file-card';
 
 const fileTypesMatrix = {
   profile: {
@@ -43,8 +42,8 @@ const fileTypesMatrix = {
   }
 };
 
-var ProjectPage = React.createClass({
-  displayName: 'ProjectPage',
+var ProjectPagePending = React.createClass({
+  displayName: 'ProjectPagePending',
 
   propTypes: {
     _invalidateProjectItem: T.func,
@@ -59,20 +58,31 @@ var ProjectPage = React.createClass({
     project: T.object
   },
 
+  forceLoading: false,
+
   componentDidMount: function () {
     this.props._fetchProjectItem(this.props.params.projectId);
     this.props._fetchScenarioItem(this.props.params.projectId, 0);
   },
 
   componentWillReceiveProps: function (nextProps) {
+    if (!this.props.project.fetched && nextProps.project.fetched) {
+      // Project just fetched. Validate status;
+      if (nextProps.project.data.status !== 'pending') {
+        return hashHistory.push(`/${getLanguage()}/projects/${this.props.params.projectId}`);
+      }
+    }
+
     if (this.props.params.projectId !== nextProps.params.projectId) {
+      // We're changing project. Invalidate.
+      this.props._invalidateProjectItem();
       this.props._fetchProjectItem(nextProps.params.projectId);
       this.props._fetchScenarioItem(nextProps.params.projectId, 0);
     }
 
     var error = nextProps.project.error;
     if (error && (error.statusCode === 404 || error.statusCode === 400)) {
-      hashHistory.push(`/404`);
+      return hashHistory.push(`/${getLanguage()}/404`);
     }
   },
 
@@ -237,4 +247,4 @@ function dispatcher (dispatch) {
   };
 }
 
-module.exports = connect(selector, dispatcher)(ProjectPage);
+module.exports = connect(selector, dispatcher)(ProjectPagePending);

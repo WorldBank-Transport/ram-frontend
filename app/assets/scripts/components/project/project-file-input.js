@@ -2,8 +2,8 @@
 import React, { PropTypes as T } from 'react';
 import c from 'classnames';
 
-import { fetchJSON } from '../actions';
-import config from '../config';
+import { fetchJSON } from '../../actions';
+import config from '../../config';
 
 const ProjectFileInput = React.createClass({
 

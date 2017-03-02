@@ -29,13 +29,16 @@ var Home = React.createClass({
   },
 
   renderProjectListItem: function (project) {
-    delete project.files; // remove
+    let projectUrl = project.status === 'pending'
+      ? `/${getLanguage()}/projects/${project.id}/setup`
+      : `/${getLanguage()}/projects/${project.id}`;
+
     return (
       <li className='' key={project.id}>
         <article className='project project--card card' id={`project-${project.id}`}>
           <div className='card__contents' title='View project'>
             <figure className='card__media'>
-              <Link to={`/${getLanguage()}/projects/${project.id}`} title='View project' className='link-wrapper'>
+              <Link to={projectUrl} title='View project' className='link-wrapper'>
                 <div className='card__thumbnail'>
                   <img alt='Project thumbnail' width='640' height='320' src='/assets/graphics/layout/projects-thumbnail-placeholder.png' />
                 </div>
@@ -43,7 +46,7 @@ var Home = React.createClass({
             </figure>
             <header className='card__header'>
               <div className='card__headline'>
-                <Link to={`/${getLanguage()}/projects/${project.id}`} title='View project' className='link-wrapper'>
+                <Link to={projectUrl} title='View project' className='link-wrapper'>
                   <h1 className='card__title'>{project.name}</h1>
                 </Link>
                 <p className='card__subtitle'>{project.status === 'pending' ? 'Pending scenarios' : 'X scenarios'}</p>
