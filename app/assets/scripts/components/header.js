@@ -25,6 +25,7 @@ const Header = React.createClass({
           <Dropdown
             id='lang-switcher'
             triggerClassName='drop__toggle--caret'
+            triggerActiveClassName='active'
             triggerText={getLanguageName()}
             triggerTitle={t('Change language')}
             triggerElement='a'

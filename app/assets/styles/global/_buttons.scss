@@ -3,6 +3,7 @@
    ========================================================================== */
 
 .button {
+  @extend .antialiased;
   user-select: none;
   display: inline-block;
   text-align: center;
@@ -67,70 +68,46 @@
 /* Button color modifiers
    ========================================================================== */
 
-/* Base */
+/* Base Raised Light */
 
-.button--base {
-  @include button-variation("filled", "dark", $base-color);
+.button--base-raised-light {
+  @include button-variation($base-color, "raised", "light");
 }
 
-/* Base Bounded */
+/* Base Raised Dark */
 
-.button--base-bounded {
-  @include button-variation("bounded", null, $base-color);
+.button--base-raised-dark {
+  @include button-variation($base-color, "raised", "dark");
 }
 
-/* Base Unbounded */
+/* Base Plain */
 
-.button--base-unbounded {
-  @include button-variation("unbounded", null, $base-color);
+.button--base-plain {
+  @include button-variation($base-color, "plain", "light");
 }
 
-/* Achromic */
+/* Primary Raised Light */
+
+.button--primary-raised-light {
+  @include button-variation($primary-color, "raised", "light");
+}
+
+/* Primary Raised Dark */
+
+.button--primary-raised-dark {
+  @include button-variation($primary-color, "raised", "dark");
+}
+
+/* Primary Plain */
+
+.button--primary-plain {
+  @include button-variation($primary-color, "plain", "light");
+}
+
+/* Base Achromic */
 
 .button--achromic {
-  @include button-variation("filled", "light", #fff);
-}
-
-/* Achromic Unbounded */
-
-.button--achromic-unbounded {
-  @include button-variation("unbounded", null, #fff);
-}
-
-/* Primary */
-
-.button--primary {
-  @include button-variation("filled", "dark", $primary-color);
-}
-
-/* Primary Bounded */
-
-.button--primary-bounded {
-  @include button-variation("bounded", null, $primary-color);
-}
-
-/* Primary Unbounded */
-
-.button--primary-unbounded {
-  @include button-variation("unbounded", null, $primary-color);
-}
-
-/* Secondary */
-
-.button--secondary {
-  @include button-variation("filled", "dark", $secondary-color);
-}
-
-/* Secondary Bounded */
-
-.button--secondary-bounded {
-  @include button-variation("bounded", null, $secondary-color);
-}
-
-/* Secondary Unbounded */
-
-.button--secondary-unbounded {
-  @include button-variation("unbounded", null, $secondary-color);
+  @include button-variation(#fff, "plain", null);
 }
 
 

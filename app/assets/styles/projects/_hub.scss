@@ -2,18 +2,6 @@
    Projects: Hub
    ========================================================================== */
 
-/* Actions */
-
-.b-new {
-  @extend .button, .button--primary, .button--medium;
-  vertical-align: top;
-  
-  &::before {
-    @extend %collecticon-sm-plus;
-  }
-}
-
-
 /* Project list */
 
 .projects-card-list {

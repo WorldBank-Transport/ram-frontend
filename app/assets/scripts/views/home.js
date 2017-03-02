@@ -105,7 +105,7 @@ var Home = React.createClass({
               <h1 className='inpage__title'>{t('Projects')}</h1>
             </div>
             <div className='inpage__actions'>
-              <button title='Create new project' className='b-new' type='button'><span>New project</span></button>
+              <button title='Create new project' className='ipa-plus' type='button'><span>New project</span></button>
             </div>
           </div>
         </header>

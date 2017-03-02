@@ -1,3 +1,11 @@
 /* ==========================================================================
    Projects: Global
    ========================================================================== */
+
+.dmi-pencil::before {
+  @extend %collecticon-pencil;
+}
+
+.dmi-trash::before {
+  @extend %collecticon-trash-bin;
+}
