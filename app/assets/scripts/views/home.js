@@ -33,15 +33,19 @@ var Home = React.createClass({
     return (
       <li className='' key={project.id}>
         <article className='project project--card card' id={`project-${project.id}`}>
-          <Link to={`/${getLanguage()}/projects/${project.id}`} className='card__contents' title='View project'>
+          <div className='card__contents' title='View project'>
             <figure className='card__media'>
-              <div className='card__thumbnail'>
-                <img alt='Project thumbnail' width='640' height='320' src='/assets/graphics/layout/projects-thumbnail-placeholder.png' />
-              </div>
+              <Link to={`/${getLanguage()}/projects/${project.id}`} title='View project' className='link-wrapper'>
+                <div className='card__thumbnail'>
+                  <img alt='Project thumbnail' width='640' height='320' src='/assets/graphics/layout/projects-thumbnail-placeholder.png' />
+                </div>
+              </Link>
             </figure>
             <header className='card__header'>
               <div className='card__headline'>
-                <h1 className='card__title'>{project.name}</h1>
+                <Link to={`/${getLanguage()}/projects/${project.id}`} title='View project' className='link-wrapper'>
+                  <h1 className='card__title'>{project.name}</h1>
+                </Link>
                 <p className='card__subtitle'>{project.status === 'pending' ? 'Pending scenarios' : 'X scenarios'}</p>
               </div>
             </header>
@@ -58,7 +62,7 @@ var Home = React.createClass({
                 <dd className='status'><span className={c('label', {'label--success': project.status === 'active', 'label--danger': project.status === 'pending'})}>{projectStatusMatrix[project.status]}</span></dd>
               </dl>
             </footer>
-          </Link>
+          </div>
         </article>
       </li>
     );

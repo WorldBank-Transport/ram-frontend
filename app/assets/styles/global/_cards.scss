@@ -22,10 +22,6 @@
   padding: $global-spacing;
   overflow: hidden;
 
-  &, &:visited {
-    color: inherit;
-  }
-
   /* Animation */
   transition: all 0.16s ease 0s;
 
@@ -35,6 +31,15 @@
 
   > *:last-child {
     margin-bottom: 0;
+  }
+}
+
+a.card__contents {
+  color: inherit;
+
+  &:hover {
+    opacity: 1;
+    background-color: tint($link-color, 92%);
   }
 }
 
@@ -84,6 +89,7 @@
     pointer-events: none;
   }
 }
+
 
 /* Card header
    ========================================================================== */
@@ -208,7 +214,6 @@
   white-space: nowrap;
   line-height: 1.75rem;
   font-size: 1.25rem;
-  background: none; 
   text-shadow: none;
   border: 0;
   font-weight: $base-font-bold;
@@ -218,8 +223,11 @@
   transition: opacity 0.24s ease 0s;
   background: #fff;
 
+  /* Animation */
+  transition: all 0.16s ease 0s;
+
   &:hover {
-     opacity: 0.64;
+    background-color: tint($link-color, 92%);
   }
 
   &:active {
