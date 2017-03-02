@@ -20,10 +20,13 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  display: flex;
+  flex-wrap: wrap;
 
   > li {
     @include column(4/12, $cycle: 3);
     margin-top: $global-spacing * 2;
+    display: flex;
 
     &:nth-child(1),
     &:nth-child(2),
@@ -31,22 +34,4 @@
       margin-top: 0;
     }
   }
-}
-
-
-/* flex experiment */
-
-.projects-card-list {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.projects-card-list > li {
-  display: flex;
-}
-
-.projects-card-list .card,
-.projects-card-list .card__contents {
-  display: flex;
-  flex-wrap: wrap;
 }

@@ -27,7 +27,7 @@
 .label--info,
 .label--warning,
 .label--danger {
-  padding: 0 0.75rem 0 1.5rem;
+  padding: 0 0.75rem 0 1.25rem;
 
   &::before {
     position: absolute;
@@ -40,7 +40,6 @@
     transform: translate(0, -50%);
   }
 }
-
 
 .label--success {
   &::before {

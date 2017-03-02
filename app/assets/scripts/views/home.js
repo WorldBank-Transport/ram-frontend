@@ -39,25 +39,25 @@ var Home = React.createClass({
                 <img alt='Project thumbnail' width='640' height='320' src='/assets/graphics/layout/projects-thumbnail-placeholder.png' />
               </div>
             </figure>
-            <div className='card__copy'>
-              <header className='card__header'>
+            <header className='card__header'>
+              <div className='card__headline'>
                 <h1 className='card__title'>{project.name}</h1>
                 <p className='card__subtitle'>{project.status === 'pending' ? 'Pending scenarios' : 'X scenarios'}</p>
-              </header>
-              <div className='card__body'>
-                <div className='card__summary'>
-                  <p>{project.description}</p>
-                </div>
               </div>
-              <footer className='card__footer'>
-                <dl className='card__system-details'>
-                  <dt>Updated</dt>
-                  <dd className='updated'><TimeAgo datetime={project.updated_at} /></dd>
-                  <dt>Status</dt>
-                  <dd className='status'><span className={c('label', {'label--success': project.status === 'active', 'label--danger': project.status === 'pending'})}>{projectStatusMatrix[project.status]}</span></dd>
-                </dl>
-              </footer>
+            </header>
+            <div className='card__body'>
+              <div className='card__summary'>
+                <p>{project.description}</p>
+              </div>
             </div>
+            <footer className='card__footer'>
+              <dl className='card__system-details'>
+                <dt>Updated</dt>
+                <dd className='updated'><TimeAgo datetime={project.updated_at} /></dd>
+                <dt>Status</dt>
+                <dd className='status'><span className={c('label', {'label--success': project.status === 'active', 'label--danger': project.status === 'pending'})}>{projectStatusMatrix[project.status]}</span></dd>
+              </dl>
+            </footer>
           </Link>
         </article>
       </li>
