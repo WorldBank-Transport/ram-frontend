@@ -284,6 +284,10 @@ label[for] {
   font-size: 1rem;
   line-height: 1.5;
   margin: 0 0 ($global-spacing / 2) 0;
+
+  small {
+    opacity: 0.48;
+  }
 }
 
 

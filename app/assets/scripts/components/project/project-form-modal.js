@@ -136,7 +136,7 @@ const ProjectFormModal = React.createClass({
 
           <form className={c({'disable': processing})}>
             <div className='form__group'>
-              <label className='form__label' htmlFor='project-name'>{t('Project name')} <small>({t('required')}</small></label>
+              <label className='form__label' htmlFor='project-name'>{t('Project name')} <small>({t('required')})</small></label>
               <input type='text' className='form__control form__control--medium' id='project-name' name='project-name' placeholder={t('Untitled project')} value={this.state.data.name} onChange={this.onFieldChange.bind(null, 'name')} />
 
                 {this.state.errors.name ? <p className='form__error'>{t('A project name is required.')}</p> : null }
