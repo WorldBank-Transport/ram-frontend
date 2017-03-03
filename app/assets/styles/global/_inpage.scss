@@ -80,33 +80,3 @@
     }
   }
 }
-
-
-/* Actions
-   ========================================================================== */
-
-[class^="ipa-"],
-[class*=" ipa-"] {
-  @extend .button;
-}
-
-.ipa-plus,
-.ipa-tick, {
-  @extend .button--primary-raised-dark;
-}
-
-.ipa-plus::before {
-  @extend %collecticon-sm-plus;
-}
-
-.ipa-tick::before {
-  @extend %collecticon-sm-tick;
-}
-
-.ipa-ellipsis {
-  @extend .button--achromic, .button--text-hidden;
-
-  &::before {
-    @extend %collecticon-ellipsis-vertical;
-  }
-}

@@ -230,10 +230,10 @@ var ProjectPagePending = React.createClass({
                     <li><a href='#' title='action' className='drop__menu-item dmi-pencil' data-hook='dropdown:close' onClick={this.openModal}>Edit meta data</a></li>
                   </ul>
                   <ul className='drop__menu drop__menu--iconified' role='menu'>
-                    <li><a href='#' title='action' className='drop__menu-item dmi-trash' data-hook='dropdown:close'>Delete project</a></li>
+                    <li><a href='#' title='action' className='drop__menu-item drop__menu-item--danger dmi-trash' data-hook='dropdown:close'>Delete project</a></li>
                   </ul>
               </Dropdown>
-              <button title='Finish setup' className='ipa-tick' type='button'><span>Finish setup</span></button>
+              <button title='Finish setup' className='ipa-tick disabled' type='button'><span>Finish setup</span></button>
             </div>
           </div>
         </header>

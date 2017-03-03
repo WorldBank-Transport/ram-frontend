@@ -298,6 +298,17 @@
       opacity: 1;
     }
   }
+
+  /* Menu item modifiers */
+
+  .drop__menu-item--danger {
+    color: $danger-color;
+
+    &:hover,
+    &:focus {
+      background-color: tint($danger-color, 92%);
+    }
+  }
 }
 
 /* Select modifier */
