@@ -77,7 +77,14 @@ var ProjectPageActive = React.createClass({
 
     var error = nextProps.project.error;
     if (error && (error.statusCode === 404 || error.statusCode === 400)) {
-      hashHistory.push(`/${getLanguage()}/404`);
+      return hashHistory.push(`/${getLanguage()}/404`);
+    }
+
+    if (this.props.projectForm.action === 'delete' &&
+        this.props.projectForm.processing &&
+        !nextProps.projectForm.processing &&
+        !nextProps.projectForm.error) {
+      return hashHistory.push(`/${getLanguage()}/projects`);
     }
   },
 
