@@ -2,8 +2,8 @@
 import React, { PropTypes as T } from 'react';
 import c from 'classnames';
 
-import { fetchJSON } from '../actions';
-import config from '../config';
+import { fetchJSON } from '../../actions';
+import config from '../../config';
 
 const ProjectFileCard = React.createClass({
 
@@ -52,7 +52,7 @@ const ProjectFileCard = React.createClass({
 
   render: function () {
     return (
-      <div className='file-card'>
+      <div className='file-card diptych'>
         <h2>{this.props.name}</h2>
         <strong>File was uploaded</strong>
         <p>{this.props.description}</p>

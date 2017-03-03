@@ -6,23 +6,21 @@
   position: relative;
   text-align: initial;
   font-size: 1rem;
-  line-height: 1.5rem;
+  line-height: 1.5;
+  display: flex;
 }
 
 .card__contents {
   position: relative;
   z-index: 1;
-  display: block;
+  display: flex;
+  flex-direction: column;
   background: #fff;
   box-shadow: 0 2px 8px 2px rgba($base-color, 0.12);
   border-radius: $base-border-radius;
   backface-visibility: hidden;
   padding: $global-spacing;
   overflow: hidden;
-
-  &, &:visited {
-    color: inherit;
-  }
 
   /* Animation */
   transition: all 0.16s ease 0s;
@@ -36,13 +34,22 @@
   }
 }
 
+a.card__contents {
+  color: inherit;
+
+  &:hover {
+    opacity: 1;
+    background-color: tint($link-color, 92%);
+  }
+}
+
 
 /* Card media
    ========================================================================== */
 
 .card__media {
   position: relative;
-  margin: 0 (- $global-spacing) ($global-spacing / 2) (- $global-spacing);
+  margin: 0 (- $global-spacing) $global-spacing (- $global-spacing);
 
   img {
     position: relative;
@@ -67,8 +74,7 @@
   position: relative;
   overflow: hidden;
   background: tint($base-color, 96%);
-  margin: 0 0 $global-spacing 0;
-  border-radius: $base-border-radius $base-border-radius 0 0;
+  margin: 0;
   min-height: 4rem;
 
   &::before {
@@ -84,12 +90,21 @@
   }
 }
 
+
 /* Card header
    ========================================================================== */
 
 .card__header {
+  flex: 1;
+  width: 100%;
   margin-bottom: $global-spacing;
 
+  > *:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.card__headline {
   > *:last-child {
     margin-bottom: 0;
   }
@@ -116,6 +131,8 @@
    ========================================================================== */
 
 .card__body {
+  flex: 1;
+  width: 100%;
   margin-bottom: $global-spacing;
 
   > *:last-child {
@@ -144,7 +161,8 @@
 }
 
 .card__system-details {
-  margin-bottom: 0;
+  font-size: 0.75rem;
+  line-height: 1.25rem;
 
   dt {
     @extend .visually-hidden;
@@ -158,8 +176,6 @@
     @extend .heading-alt;
     position: relative;
     float: left;
-    font-size: 0.75rem;
-    line-height: 1.25rem;
     padding: 0 0 0 1.25rem;
 
     > span {
@@ -188,6 +204,7 @@
    ========================================================================== */
 
 .card__button {
+  @extend .antialiased;
   display: block;
   width: 100%;
   user-select: none;
@@ -198,8 +215,6 @@
   white-space: nowrap;
   line-height: 1.75rem;
   font-size: 1.25rem;
-  min-height: 18rem;
-  background: none; 
   text-shadow: none;
   border: 0;
   font-weight: $base-font-bold;
@@ -207,9 +222,15 @@
   color: $link-color;
   text-decoration: none;
   transition: opacity 0.24s ease 0s;
+  background: #fff;
+
+  /* Animation */
+  transition: all 0.24s ease 0s;
 
   &:hover {
-     opacity: 0.64;
+    background-color: $link-color;
+    box-shadow: 0 2px 8px 2px rgba($link-color, 0.32);
+    color: #fff;
   }
 
   &:active {

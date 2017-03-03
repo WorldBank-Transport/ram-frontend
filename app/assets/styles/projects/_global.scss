@@ -3,11 +3,81 @@
    ========================================================================== */
 
 
-  .b-new {
-    @extend .button, .button--primary, .button--medium;
-    vertical-align: top;
-    
-    &::before {
-      @extend %collecticon-sm-plus;
-    }
+/* Inpage actions
+   ========================================================================== */
+
+/**
+ * "ipa-" prefix stands for "inpage action"
+ */
+
+[class^="ipa-"],
+[class*=" ipa-"] {
+  @extend .button;
+}
+
+.ipa-plus,
+.ipa-tick, {
+  @extend .button--primary-raised-dark;
+}
+
+.ipa-plus::before {
+  @extend %collecticon-sm-plus;
+}
+
+.ipa-tick::before {
+  @extend %collecticon-sm-tick;
+}
+
+.ipa-ellipsis {
+  @extend .button--achromic, .button--text-hidden;
+
+  &::before {
+    @extend %collecticon-ellipsis-vertical;
   }
+}
+
+
+/* Drop menu actions
+   ========================================================================== */
+
+/**
+ * "dmi-" prefix stands for "drop menu item"
+ */
+
+.dmi-pencil::before {
+  @extend %collecticon-pencil;
+}
+
+.dmi-trash::before {
+  @extend %collecticon-trash-bin;
+}
+
+
+/* Modal footer actions
+   ========================================================================== */
+
+/**
+ * "mfa-" prefix stands for "modal footer action"
+ */
+
+[class^="mfa-"],
+[class*=" mfa-"] {
+  @extend .button;
+  min-width: 6rem;
+}
+
+.mfa-tick, {
+  @extend .button--primary-raised-dark;
+}
+
+.mfa-tick::before {
+  @extend %collecticon-sm-tick;
+}
+
+.mfa-xmark, {
+  @extend .button--primary-raised-light;
+}
+
+.mfa-xmark::before {
+  @extend %collecticon-sm-xmark;
+}

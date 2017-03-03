@@ -13,7 +13,8 @@ import { isValidLanguage, setLanguage } from './utils/i18n';
 import App from './views/app';
 import Home from './views/home';
 import UhOh from './views/uhoh';
-import ProjectPage from './views/project-page';
+import ProjectPageActive from './views/project-page-active';
+import ProjectPagePending from './views/project-page-pending';
 
 const history = syncHistoryWithStore(hashHistory, store);
 
@@ -35,7 +36,8 @@ render((
     <Router history={history} render={applyRouterMiddleware(scrollerMiddleware)}>
       <Route path='/:lang' component={App} onEnter={validateLanguage}>
         <Route path="404" component={UhOh}/>
-        <Route path="projects/:projectId" component={ProjectPage}/>
+        <Route path="projects/:projectId/setup" component={ProjectPagePending}/>
+        <Route path="projects/:projectId" component={ProjectPageActive}/>
         <IndexRoute component={Home} pageClass='page--homepage' />
         <Redirect from='/:lang/projects' to='/:lang' />
         <Route path="*" component={UhOh}/>

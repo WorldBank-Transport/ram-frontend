@@ -5,6 +5,8 @@
 .inpage {
   &__header {
     @extend .antialiased;
+    position: relative;
+    z-index: 2;
     background: $accent-color;
     color: #fff;
     padding: ($global-spacing * 1.5) 0;
@@ -58,6 +60,12 @@
   .inpage__actions {
     @include column(4/12);
     text-align: right;
+    font-size: 0;
+
+    > * {
+      vertical-align: top;
+      margin-left: $global-spacing / 2;
+    }
   }
 
   &__body {

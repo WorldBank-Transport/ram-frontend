@@ -2,8 +2,8 @@
 import React, { PropTypes as T } from 'react';
 import c from 'classnames';
 
-import { fetchJSON } from '../actions';
-import config from '../config';
+import { fetchJSON } from '../../actions';
+import config from '../../config';
 
 const ProjectFileInput = React.createClass({
 
@@ -94,16 +94,20 @@ const ProjectFileInput = React.createClass({
 
   render: function () {
     return (
-      <form className='file-input'>
-        <h2>{this.props.name}</h2>
-        <input type='file' className='form__control--upload' ref='file' onChange={this.onFileSelected}/>
-        <p>{this.props.description}</p>
-        <button type='button' className={c('button button--primary', {'disabled': this.state.loading || !this.state.file})} onClick={this.onSumbit}><span>Upload</span></button>
-        {this.state.file !== null
-          ? <div>{Math.round(this.state.uploaded / (1024 * 1024))}MB / {Math.round(this.state.size / (1024 * 1024))}MB</div>
-          : null
-        }
-      </form>
+      <section className='p-setup-comp'>
+        <header className='p-setup-comp__header'>
+          <h2 className='p-setup-comp__title'>{this.props.name}</h2>
+        </header>
+        <form>
+          <input type='file' className='form__control--upload' ref='file' onChange={this.onFileSelected}/>
+          <p>{this.props.description}</p>
+          <button type='button' className={c('button button--primary', {'disabled': this.state.loading || !this.state.file})} onClick={this.onSumbit}><span>Upload</span></button>
+          {this.state.file !== null
+            ? <div>{Math.round(this.state.uploaded / (1024 * 1024))}MB / {Math.round(this.state.size / (1024 * 1024))}MB</div>
+            : null
+          }
+        </form>
+      </section>
     );
   }
 });

@@ -16,6 +16,12 @@ export const RECEIVE_SCENARIO_ITEM = 'RECEIVE_SCENARIO_ITEM';
 export const INVALIDATE_SCENARIO_ITEM = 'INVALIDATE_SCENARIO_ITEM';
 export const REMOVE_SCENARIO_ITEM_FILE = 'REMOVE_SCENARIO_ITEM_FILE';
 
+export const RESET_PROJECT_FORM = 'RESET_PROJECT_FORM';
+export const START_SUBMIT_PROJECT = 'START_SUBMIT_PROJECT';
+export const FINISH_SUBMIT_PROJECT = 'FINISH_SUBMIT_PROJECT';
+export const START_DELETE_PROJECT = 'START_DELETE_PROJECT';
+export const FINISH_DELETE_PROJECT = 'FINISH_DELETE_PROJECT';
+
 // Projects
 
 export function invalidateProjects () {
@@ -82,10 +88,67 @@ export function removeScenarioItemFile (fileId) {
   return { type: REMOVE_SCENARIO_ITEM_FILE, fileId };
 }
 
+// Project Form
+
+export function resetProjectFrom () {
+  return { type: RESET_PROJECT_FORM };
+}
+
+export function startSubmitProject () {
+  return { type: START_SUBMIT_PROJECT };
+}
+
+export function finishSubmitProject (project, error = null) {
+  return { type: FINISH_SUBMIT_PROJECT, data: project, error, receivedAt: Date.now() };
+}
+
+export function postProject (data) {
+  return postAndDispatch(`${config.api}/projects`, data, startSubmitProject, finishSubmitProject);
+}
+
+export function patchProject (projectId, data) {
+  return patchAndDispatch(`${config.api}/projects/${projectId}`, data, startSubmitProject, finishSubmitProject);
+}
+
+export function startDeleteProject () {
+  return { type: START_DELETE_PROJECT };
+}
+
+export function finishDeleteProject (project, error = null) {
+  return { type: FINISH_DELETE_PROJECT, data: project, error, receivedAt: Date.now() };
+}
+
+export function deleteProject (projectId) {
+  return deleteAndDispatch(`${config.api}/projects/${projectId}`, startDeleteProject, finishDeleteProject);
+}
+
 // Fetcher function
 
 function getAndDispatch (url, requestFn, receiveFn) {
   return fetchDispatchFactory(url, null, requestFn, receiveFn);
+}
+
+function postAndDispatch (url, data, requestFn, receiveFn) {
+  let opt = {
+    method: 'POST',
+    body: JSON.stringify(data)
+  };
+  return fetchDispatchFactory(url, opt, requestFn, receiveFn);
+}
+
+function patchAndDispatch (url, data, requestFn, receiveFn) {
+  let opt = {
+    method: 'PATCH',
+    body: JSON.stringify(data)
+  };
+  return fetchDispatchFactory(url, opt, requestFn, receiveFn);
+}
+
+function deleteAndDispatch (url, requestFn, receiveFn) {
+  let opt = {
+    method: 'DELETE'
+  };
+  return fetchDispatchFactory(url, opt, requestFn, receiveFn);
 }
 
 function fetchDispatchFactory (url, options, requestFn, receiveFn) {
@@ -100,7 +163,9 @@ function fetchDispatchFactory (url, options, requestFn, receiveFn) {
 export function fetchJSON (url, options) {
   return fetch(url, options)
     .then(response => {
-      return response.text().then(body => {
+      return response.text()
+      // .then(body => ((new Promise(resolve => setTimeout(() => resolve(body), 1000)))))
+      .then(body => {
         var json;
         try {
           json = JSON.parse(body);

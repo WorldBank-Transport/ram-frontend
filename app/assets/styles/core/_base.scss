@@ -71,6 +71,11 @@ a:focus {
   outline: none; // This causes usability problems. Needs fixing.
 }
 
+.link-wrapper {
+  display: inline-block;
+  vertical-align: top;
+}
+
 
 /* Rows
    ========================================================================== */

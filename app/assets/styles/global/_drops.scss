@@ -34,7 +34,7 @@
   font-size: 1rem;
   line-height: 1.5;
   background: #fff;
-  box-shadow: 0 8px 16px 8px rgba($primary-color, 0.24);
+  box-shadow: 0 2px 12px 2px rgba($base-color, 0.16);
   border-radius: $base-border-radius;
 
   /* Animation */
@@ -298,6 +298,17 @@
       opacity: 1;
     }
   }
+
+  /* Menu item modifiers */
+
+  .drop__menu-item--danger {
+    color: $danger-color;
+
+    &:hover,
+    &:focus {
+      background-color: tint($danger-color, 92%);
+    }
+  }
 }
 
 /* Select modifier */
@@ -320,7 +331,7 @@
       right: $global-spacing / 2;
       font-size: 1rem;
       line-height: 1.5rem;
-      opacity: 0.32;
+      opacity: 0.48;
       width: 1.5rem;
       text-align: center;
     }
