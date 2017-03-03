@@ -6,6 +6,7 @@ import c from 'classnames';
 
 import Header from '../components/header';
 import Footer from '../components/footer';
+import LoadingGlobal from '../components/loading-global';
 
 var App = React.createClass({
   displayName: 'App',
@@ -25,6 +26,7 @@ var App = React.createClass({
           {this.props.children}
         </main>
         <Footer />
+        <LoadingGlobal />
       </div>
     );
   }
