@@ -81,3 +81,40 @@
 .mfa-xmark::before {
   @extend %collecticon-sm-xmark;
 }
+
+
+/* Project setup actions
+   ========================================================================== */
+
+/**
+ * "psba-" prefix stands for "project setup block action"
+ */
+
+[class^="psba-"],
+[class*=" psba-"] {
+  @extend .button;
+}
+
+.psba-tick, {
+  @extend .button--primary-raised-dark;
+}
+
+.psba-tick::before {
+  @extend %collecticon-sm-tick;
+}
+
+.psba-trash, {
+  @extend .button--danger-raised-light;
+}
+
+.psba-trash::before {
+  @extend %collecticon-trash-bin;
+}
+
+.psba-download, {
+  @extend .button--primary-raised-light;
+}
+
+.psba-download::before {
+  @extend %collecticon-download-3;
+}

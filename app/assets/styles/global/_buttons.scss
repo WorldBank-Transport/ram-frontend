@@ -110,6 +110,24 @@
   @include button-variation(#fff, "plain", null);
 }
 
+/* Danger Raised Light */
+
+.button--danger-raised-light {
+  @include button-variation($danger-color, "raised", "light");
+}
+
+/* Danger Raised Dark */
+
+.button--danger-raised-dark {
+  @include button-variation($danger-color, "raised", "dark");
+}
+
+/* Danger Plain */
+
+.button--danger-plain {
+  @include button-variation($danger-color, "plain", "light");
+}
+
 
 /* Button size modifiers
    ========================================================================== */

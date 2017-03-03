@@ -5,6 +5,8 @@ import c from 'classnames';
 import { fetchJSON } from '../../actions';
 import config from '../../config';
 
+import ProjectSetupBlock from './project-setup-block';
+
 const ProjectFileCard = React.createClass({
 
   propTypes: {
@@ -52,12 +54,16 @@ const ProjectFileCard = React.createClass({
 
   render: function () {
     return (
-      <div className='file-card diptych'>
-        <h2>{this.props.name}</h2>
-        <strong>File was uploaded</strong>
-        <p>{this.props.description}</p>
-        <button type='button' className={c('button button--secondary', {'disabled': this.state.loading})} onClick={this.onRemove}><span>Remove</span></button>
-      </div>
+      <ProjectSetupBlock
+        name={this.props.name}
+        description={this.props.description}
+        complete >
+
+        <div className='psb__actions'>
+          <button type='button' className={c('psba-trash', {'disabled': this.state.loading})} onClick={this.onRemove}><span>Remove</span></button>
+          <a href='#' title='Download file' className='psba-download'><span>Download</span></a>
+        </div>
+      </ProjectSetupBlock>
     );
   }
 });

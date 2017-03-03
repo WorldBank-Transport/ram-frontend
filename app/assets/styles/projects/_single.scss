@@ -2,6 +2,96 @@
    Projects: Single
    ========================================================================== */
 
+
+/* Project setup block
+   ========================================================================== */
+
+.psb {
+  @include column(6/12, $cycle: 2);
+  margin-top: $global-spacing * 3;
+
+  &:nth-child(1),
+  &:nth-child(2) {
+    margin-top: 0;
+  }
+
+  > .inner {
+    position: relative;
+    padding-left: $global-spacing * 2;
+
+    &::before {
+      @extend %collecticon-sm-tick;
+      position: absolute;
+      top: 0.05rem;
+      left: 0;
+      background: $base-font-color;
+      height: 1.5rem;
+      width: 1.5rem;
+      border-radius: $full-border-radius;
+      color: #fff;
+      font-size: 1rem;
+      line-height: 1.5rem;
+      text-align: center;
+      opacity: 0.32;
+
+      /* Animation */
+      transition: all 0.32s ease 0s;
+    }
+  }
+
+  &--complete > .inner::before {
+    opacity: 1;
+  }
+
+  &__header {
+    margin-bottom: $global-spacing * 1.5;
+
+    > *:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__headline {
+    > *:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__title {
+    @include heading(1.25rem);
+    margin-bottom: $global-spacing / 2;
+  }
+
+  &__description {
+    color: rgba($base-font-color, 0.64);
+
+    > *:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__actions {
+    font-size: 0;
+
+    .button {
+      margin: 0 ($global-spacing / 4);
+
+      &:first-child {
+        margin-left: 0;
+      }
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+
+  .form__label {
+    @extend .visually-hidden;
+  }
+}
+
+
 .diptych {
   @include column(6/12, $cycle: 2);
   margin-top: $global-spacing * 2;
@@ -10,14 +100,23 @@
   &:nth-child(2) {
     margin-top: 0;
   }
+
+  &__title {
+    @include heading(1.25rem);
+  }
 }
 
-.diptych--details {
+.diptych--info {
   overflow: hidden; // Temporary
+
+  .prose {
+    margin-bottom: $global-spacing * 3;
+  }
 }
 
 
-/* Scenarios list */
+/* Scenarios list
+   ========================================================================== */
 
 .scenarios-card-list {
   list-style: none;

@@ -254,8 +254,6 @@ var ProjectPagePending = React.createClass({
               : null
             }
 
-            {prettyPrint(data)}
-
             {this.renderFileUploadSection()}
           </div>
         </div>
