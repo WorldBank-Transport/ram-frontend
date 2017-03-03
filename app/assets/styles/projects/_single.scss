@@ -100,10 +100,18 @@
   &:nth-child(2) {
     margin-top: 0;
   }
+
+  &__title {
+    @include heading(1.25rem);
+  }
 }
 
-.diptych--details {
+.diptych--info {
   overflow: hidden; // Temporary
+
+  .prose {
+    margin-bottom: $global-spacing * 3;
+  }
 }
 
 

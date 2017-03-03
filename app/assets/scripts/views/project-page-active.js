@@ -120,8 +120,13 @@ var ProjectPageActive = React.createClass({
         <div className='inpage__body'>
           <div className='inner'>
 
-            <section className='diptych diptych--details'>
-              <h2>Details</h2>
+            <section className='diptych diptych--info'>
+              <h2 className='diptych__title'>Description</h2>
+              <div className='prose'>
+                <p>Lorem ipsum dolor sit amet description.</p>
+              </div>
+
+              <h2 className='diptych__title'>Data</h2>
               <dl>
                 <dt>Description</dt>
                 <dd>Lorem ipsum dolor sit amet description.</dd>
@@ -135,8 +140,7 @@ var ProjectPageActive = React.createClass({
             </section>
 
             <section className='diptych diptych--scenarios'>
-              <h2>Scenarios</h2>
-              <p>Lorem ipsum dolor sit amet.</p>
+              <h2 className='diptych__title'>Scenarios</h2>
 
               <ol className='card-list scenarios-card-list'>
                 <li>
