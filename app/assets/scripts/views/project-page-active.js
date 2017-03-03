@@ -83,10 +83,10 @@ var ProjectPageActive = React.createClass({
                 direction='down'
                 alignment='center' >
                   <ul className='drop__menu drop__menu--iconified' role='menu'>
-                    <li><a href='#' title='action' className='drop__menu-item dmi-pencil'>Edit meta data</a></li>
+                    <li><a href='#' title='Edit metadata' className='drop__menu-item dmi-pencil'>Edit metadata</a></li>
                   </ul>
                   <ul className='drop__menu drop__menu--iconified' role='menu'>
-                    <li><a href='#' title='action' className='drop__menu-item drop__menu-item--danger dmi-trash'>Delete project</a></li>
+                    <li><a href='#' title='Delete project' className='drop__menu-item drop__menu-item--danger dmi-trash'>Delete project</a></li>
                   </ul>
               </Dropdown>
               <button title='Create new scenario' className='ipa-plus' type='button'><span>New scenario</span></button>
