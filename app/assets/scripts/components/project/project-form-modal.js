@@ -130,22 +130,22 @@ const ProjectFormModal = React.createClass({
         </ModalHeader>
         <ModalBody>
 
-        {processing ? <p>Processing...</p> : null}
+          {processing ? <p>Processing...</p> : null}
 
-        {this.renderError()}
+          {this.renderError()}
 
           <form className={c({'disable': processing})}>
             <div className='form__group'>
-              <label className='form__label' htmlFor='project-name'>{t('Project name')} <small>({t('required')})</small></label>
+              <label className='form__label' htmlFor='project-name'>{t('Project name')}</label>
               <input type='text' className='form__control form__control--medium' id='project-name' name='project-name' placeholder={t('Untitled project')} value={this.state.data.name} onChange={this.onFieldChange.bind(null, 'name')} />
 
-                {this.state.errors.name ? <p className='form__error'>{t('A project name is required.')}</p> : null }
+              {this.state.errors.name ? <p className='form__error'>{t('A project name is required.')}</p> : null }
 
-                <p className='form__help'>Keep it short and sweet.</p>
+              <p className='form__help'>Keep it short and sweet.</p>
             </div>
 
             <div className='form__group'>
-              <label className='form__label' htmlFor='project-desc'>{t('Description')}</label>
+              <label className='form__label' htmlFor='project-desc'>{t('Description')} <small>({t('optional')})</small></label>
               <textarea ref='description' className='form__control' id='project-desc' rows='2' placeholder={t('Say something about this project')} value={this.state.data.description} onChange={this.onFieldChange.bind(null, 'description')}></textarea>
             </div>
           </form>
