@@ -1,13 +1,19 @@
 'use strict';
-import React from 'react';
+import React, { PropTypes as T } from 'react';
 
-import { t, getLanguage, getLanguageName, getAvailableLanguages } from '../utils/i18n';
+import { t } from '../utils/i18n';
 
 const LoadingGlobal = React.createClass({
 
-  propTypes: {},
+  propTypes: {
+    revealed: T.bool
+  },
 
   render: function () {
+    if (!this.props.revealed) {
+      return null;
+    }
+
     return (
       <div className='loading-pane'>
         <div className='inner'>

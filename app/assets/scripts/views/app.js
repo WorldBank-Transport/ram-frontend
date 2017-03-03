@@ -12,6 +12,8 @@ var App = React.createClass({
   displayName: 'App',
 
   propTypes: {
+    globalLoading: T.bool,
+
     routes: T.array,
     children: T.object
   },
@@ -26,7 +28,7 @@ var App = React.createClass({
           {this.props.children}
         </main>
         <Footer />
-        <LoadingGlobal />
+        <LoadingGlobal revealed={this.props.globalLoading}/>
       </div>
     );
   }
@@ -37,6 +39,7 @@ var App = React.createClass({
 
 function selector (state) {
   return {
+    globalLoading: state.app.globalLoading
   };
 }
 

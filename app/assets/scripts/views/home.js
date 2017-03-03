@@ -5,7 +5,7 @@ import { Link } from 'react-router';
 import c from 'classnames';
 import TimeAgo from 'timeago-react';
 
-import { invalidateProjects, fetchProjects, postProject } from '../actions';
+import { invalidateProjects, fetchProjects, postProject, showGlobalLoading, hideGlobalLoading } from '../actions';
 import { prettyPrint } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
 
@@ -23,6 +23,8 @@ var Home = React.createClass({
     _invalidateProjects: T.func,
     _fetchProjects: T.func,
     _postProject: T.func,
+    _showGlobalLoading: T.func,
+    _hideGlobalLoading: T.func,
 
     projects: T.object,
     projectForm: T.object
@@ -44,6 +46,13 @@ var Home = React.createClass({
 
   componentDidMount: function () {
     this.props._fetchProjects();
+    this.props._showGlobalLoading();
+  },
+
+  componentWillReceiveProps: function (nextProps) {
+    if (this.props.projects.fetching && !nextProps.projects.fetching) {
+      this.props._hideGlobalLoading();
+    }
   },
 
   renderProjectListItem: function (project) {
@@ -97,7 +106,7 @@ var Home = React.createClass({
     }
 
     if (fetching) {
-      return <p className='loading-indicator'>Loading...</p>;
+      return null;
     }
 
     if (error) {
@@ -157,7 +166,9 @@ function dispatcher (dispatch) {
   return {
     _invalidateProjects: (...args) => dispatch(invalidateProjects(...args)),
     _fetchProjects: (...args) => dispatch(fetchProjects(...args)),
-    _postProject: (...args) => dispatch(postProject(...args))
+    _postProject: (...args) => dispatch(postProject(...args)),
+    _showGlobalLoading: (...args) => dispatch(showGlobalLoading(...args)),
+    _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args))
   };
 }
 
