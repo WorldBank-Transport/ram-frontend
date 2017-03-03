@@ -11,14 +11,6 @@ let fs = require('fs')
 let obj = YAML.load(input)
 
 var splitEnvs = [
-  'AWS_ACCESS_KEY_ID',
-  'AWS_SECRET_ACCESS_KEY',
-  'AWS_REGION',
-  'AWS_ECS_CLUSTER',
-  'DOCKER_SRC_IMAGE',
-  'DOCKER_REPOSITORY',
-  'DOCKER_USERNAME',
-  'DOCKER_PASSWORD'
 ]
 
 var envs = splitEnvs.map(function (e) {
