@@ -10,16 +10,17 @@ import {
   invalidateScenarioItem,
   fetchScenarioItem,
   removeScenarioItemFile,
-  patchProject
+  patchProject,
+  deleteProject
 } from '../actions';
 import { prettyPrint } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
 
 import Breadcrumb from '../components/breadcrumb';
-import Dropdown from '../components/dropdown';
 import ProjectFileInput from '../components/project/project-file-input';
 import ProjectFileCard from '../components/project/project-file-card';
 import ProjectFormModal from '../components/project/project-form-modal';
+import ProjectHeaderActions from '../components/project/project-header-actions';
 
 const fileTypesMatrix = {
   profile: {
@@ -55,6 +56,7 @@ var ProjectPagePending = React.createClass({
     _fetchScenarioItem: T.func,
     _removeScenarioItemFile: T.func,
     _patchProject: T.func,
+    _deleteProject: T.func,
 
     params: T.object,
     scenario: T.object,
@@ -70,13 +72,42 @@ var ProjectPagePending = React.createClass({
     };
   },
 
-  openModal: function (e) {
-    e.preventDefault();
-    this.setState({projectFormModal: true});
-  },
-
   closeModal: function () {
     this.setState({projectFormModal: false});
+  },
+
+  onFileUploadComplete: function () {
+    this.props._fetchProjectItem(this.props.params.projectId);
+    this.props._fetchScenarioItem(this.props.params.projectId, 0);
+  },
+
+  onFileDeleteComplete: function (file) {
+    switch (file.type) {
+      case 'profile':
+      case 'admin-bounds':
+      case 'villages':
+        this.props._removeProjectItemFile(file.id);
+        break;
+      case 'poi':
+      case 'road-network':
+        this.props._removeScenarioItemFile(file.id);
+        break;
+    }
+  },
+
+  onProjectAction: function (what, event) {
+    event.preventDefault();
+
+    switch (what) {
+      case 'edit':
+        this.setState({projectFormModal: true});
+        break;
+      case 'delete':
+        this.props._deleteProject(this.props.params.projectId);
+        break;
+      default:
+        throw new Error(`Project action not implemented: ${what}`);
+    }
   },
 
   componentDidMount: function () {
@@ -107,24 +138,12 @@ var ProjectPagePending = React.createClass({
     if (error && (error.statusCode === 404 || error.statusCode === 400)) {
       return hashHistory.push(`/${getLanguage()}/404`);
     }
-  },
 
-  onFileUploadComplete: function () {
-    this.props._fetchProjectItem(this.props.params.projectId);
-    this.props._fetchScenarioItem(this.props.params.projectId, 0);
-  },
-
-  onFileDeleteComplete: function (file) {
-    switch (file.type) {
-      case 'profile':
-      case 'admin-bounds':
-      case 'villages':
-        this.props._removeProjectItemFile(file.id);
-        break;
-      case 'poi':
-      case 'road-network':
-        this.props._removeScenarioItemFile(file.id);
-        break;
+    if (this.props.projectForm.action === 'delete' &&
+        this.props.projectForm.processing &&
+        !nextProps.projectForm.processing &&
+        !nextProps.projectForm.error) {
+      return hashHistory.push(`/${getLanguage()}/projects`);
     }
   },
 
@@ -218,27 +237,22 @@ var ProjectPagePending = React.createClass({
               <Breadcrumb />
               <h1 className='inpage__title'>{data.name}</h1>
             </div>
-            <div className='inpage__actions'>
-              <Dropdown
-                triggerClassName='ipa-ellipsis'
-                triggerActiveClassName='button--active'
-                triggerText='Action'
-                triggerTitle='Action'
-                direction='down'
-                alignment='center' >
-                  <ul className='drop__menu drop__menu--iconified' role='menu'>
-                    <li><a href='#' title='Edit metadata' className='drop__menu-item dmi-pencil' data-hook='dropdown:close' onClick={this.openModal}>Edit metadata</a></li>
-                  </ul>
-                  <ul className='drop__menu drop__menu--iconified' role='menu'>
-                    <li><a href='#' title='Delete project' className='drop__menu-item drop__menu-item--danger dmi-trash' data-hook='dropdown:close'>Delete project</a></li>
-                  </ul>
-              </Dropdown>
-              <button title='Finish setup' className='ipa-tick disabled' type='button'><span>Finish setup</span></button>
-            </div>
+            <ProjectHeaderActions
+              project={data}
+              onAction={this.onProjectAction} />
           </div>
         </header>
         <div className='inpage__body'>
           <div className='inner'>
+
+            {this.props.projectForm.action === 'delete' && this.props.projectForm.processing
+              ? <p>Project is being deleted. Please wait</p>
+              : null
+            }
+            {this.props.projectForm.action === 'delete' && this.props.projectForm.error
+              ? prettyPrint(this.props.projectForm.error)
+              : null
+            }
 
             {prettyPrint(data)}
 
@@ -251,7 +265,7 @@ var ProjectPagePending = React.createClass({
           revealed={this.state.projectFormModal}
           onCloseClick={this.closeModal}
           projectForm={this.props.projectForm}
-          projectData={this.props.project.data}
+          projectData={data}
           saveProject={this.props._patchProject}
         />
 
@@ -279,7 +293,8 @@ function dispatcher (dispatch) {
     _invalidateScenarioItem: (...args) => dispatch(invalidateScenarioItem(...args)),
     _fetchScenarioItem: (...args) => dispatch(fetchScenarioItem(...args)),
     _removeScenarioItemFile: (...args) => dispatch(removeScenarioItemFile(...args)),
-    _patchProject: (...args) => dispatch(patchProject(...args))
+    _patchProject: (...args) => dispatch(patchProject(...args)),
+    _deleteProject: (...args) => dispatch(deleteProject(...args))
   };
 }
 

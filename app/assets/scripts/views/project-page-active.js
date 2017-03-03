@@ -5,13 +5,16 @@ import { connect } from 'react-redux';
 
 import {
   invalidateProjectItem,
-  fetchProjectItem
+  fetchProjectItem,
+  patchProject,
+  deleteProject
 } from '../actions';
 import { prettyPrint } from '../utils/utils';
 import { getLanguage } from '../utils/i18n';
 
 import Breadcrumb from '../components/breadcrumb';
-import Dropdown from '../components/dropdown';
+import ProjectFormModal from '../components/project/project-form-modal';
+import ProjectHeaderActions from '../components/project/project-header-actions';
 
 var ProjectPageActive = React.createClass({
   displayName: 'ProjectPageActive',
@@ -19,9 +22,37 @@ var ProjectPageActive = React.createClass({
   propTypes: {
     _invalidateProjectItem: T.func,
     _fetchProjectItem: T.func,
+    _patchProject: T.func,
+    _deleteProject: T.func,
 
     params: T.object,
-    project: T.object
+    project: T.object,
+    projectForm: T.object
+  },
+
+  getInitialState: function () {
+    return {
+      projectFormModal: false
+    };
+  },
+
+  closeModal: function () {
+    this.setState({projectFormModal: false});
+  },
+
+  onProjectAction: function (what, event) {
+    event.preventDefault();
+
+    switch (what) {
+      case 'edit':
+        this.setState({projectFormModal: true});
+        break;
+      case 'delete':
+        this.props._deleteProject(this.props.params.projectId);
+        break;
+      default:
+        throw new Error(`Project action not implemented: ${what}`);
+    }
   },
 
   componentDidMount: function () {
@@ -74,23 +105,9 @@ var ProjectPageActive = React.createClass({
               <Breadcrumb />
               <h1 className='inpage__title'>{data.name}</h1>
             </div>
-            <div className='inpage__actions'>
-              <Dropdown
-                triggerClassName='ipa-ellipsis'
-                triggerActiveClassName='button--active'
-                triggerText='Action'
-                triggerTitle='Action'
-                direction='down'
-                alignment='center' >
-                  <ul className='drop__menu drop__menu--iconified' role='menu'>
-                    <li><a href='#' title='Edit metadata' className='drop__menu-item dmi-pencil'>Edit metadata</a></li>
-                  </ul>
-                  <ul className='drop__menu drop__menu--iconified' role='menu'>
-                    <li><a href='#' title='Delete project' className='drop__menu-item drop__menu-item--danger dmi-trash'>Delete project</a></li>
-                  </ul>
-              </Dropdown>
-              <button title='Create new scenario' className='ipa-plus' type='button'><span>New scenario</span></button>
-            </div>
+            <ProjectHeaderActions
+              project={data}
+              onAction={this.onProjectAction} />
           </div>
         </header>
         <div className='inpage__body'>
@@ -106,7 +123,6 @@ var ProjectPageActive = React.createClass({
                 <dt>Description</dt>
                 <dd>Lorem ipsum dolor sit amet description.</dd>
               </dl>
-
 
               {prettyPrint(data)}
             </section>
@@ -144,6 +160,15 @@ var ProjectPageActive = React.createClass({
           </div>
         </div>
 
+        <ProjectFormModal
+          editing
+          revealed={this.state.projectFormModal}
+          onCloseClick={this.closeModal}
+          projectForm={this.props.projectForm}
+          projectData={data}
+          saveProject={this.props._patchProject}
+        />
+
       </section>
     );
   }
@@ -155,14 +180,17 @@ var ProjectPageActive = React.createClass({
 function selector (state) {
   return {
     project: state.projectItem,
-    scenario: state.scenarioItem
+    scenario: state.scenarioItem,
+    projectForm: state.projectForm
   };
 }
 
 function dispatcher (dispatch) {
   return {
     _invalidateProjectItem: (...args) => dispatch(invalidateProjectItem(...args)),
-    _fetchProjectItem: (...args) => dispatch(fetchProjectItem(...args))
+    _fetchProjectItem: (...args) => dispatch(fetchProjectItem(...args)),
+    _patchProject: (...args) => dispatch(patchProject(...args)),
+    _deleteProject: (...args) => dispatch(deleteProject(...args))
   };
 }
 
