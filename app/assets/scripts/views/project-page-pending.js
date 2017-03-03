@@ -131,29 +131,25 @@ var ProjectPagePending = React.createClass({
   renderFileUploadSection: function () {
     let { fetched, fetching, error, data, receivedAt } = this.props.scenario;
 
-    let scenarioData;
-    if (!fetched && !fetching) {
-      scenarioData = null;
-    // Show if it's the first loading time.
-    } else if (!receivedAt && fetching) {
-      scenarioData = <p className='loading-indicator'>Loading...</p>;
-    } else if (error) {
-      scenarioData = <div>Error: {prettyPrint(error)}</div>;
-    } else {
-      scenarioData = (
-        <div>
-          {this.renderFile('road-network', data.files)}
-          {this.renderFile('poi', data.files)}
-        </div>
-      );
+    let filesBLock = [
+      this.renderFile('profile', this.props.project.data.files),
+      this.renderFile('admin-bounds', this.props.project.data.files),
+      this.renderFile('villages', this.props.project.data.files)
+    ];
+
+    if (!fetched && !receivedAt && fetching) {
+      // Show if it's the first loading time.
+      filesBLock.push(<p key='loading' className='loading-indicator'>Loading...</p>);
+    } else if (fetched && error) {
+      filesBLock.push(<div key='error'>Error: {prettyPrint(error)}</div>);
+    } else if (fetched) {
+      filesBLock.push(this.renderFile('road-network', data.files));
+      filesBLock.push(this.renderFile('poi', data.files));
     }
 
     return (
       <div>
-        {this.renderFile('profile', this.props.project.data.files)}
-        {this.renderFile('admin-bounds', this.props.project.data.files)}
-        {this.renderFile('villages', this.props.project.data.files)}
-        {scenarioData}
+        {filesBLock}
       </div>
     );
   },
@@ -172,6 +168,7 @@ var ProjectPagePending = React.createClass({
     let projectId = this.props.project.data.id;
     return (
       <ProjectFileInput
+        key={key}
         name={display}
         description={description}
         type={key}
@@ -186,6 +183,7 @@ var ProjectPagePending = React.createClass({
     let projectId = this.props.project.data.id;
     return (
       <ProjectFileCard
+        key={file.type}
         fileId={file.id}
         name={display}
         description={description}
