@@ -28,19 +28,31 @@ const ProjectFormModal = React.createClass({
         name: null
       },
       data: {
-        name: _.get(this.props.projectData, 'name', ''),
-        description: _.get(this.props.projectData, 'description', '') || ''
+        name: '',
+        description: ''
       }
     };
   },
 
   componentWillReceiveProps: function (nextProps) {
-    if (this.props.projectForm.processing && !nextProps.projectForm.processing && !nextProps.projectForm.error) {
+    if (this.props.projectForm.action === 'edit' &&
+        this.props.projectForm.processing &&
+        !nextProps.projectForm.processing &&
+        !nextProps.projectForm.error) {
       if (!this.props.editing) {
         hashHistory.push(`${getLanguage()}/projects/${nextProps.projectForm.data.id}/setup`);
       } else {
         this.onClose();
       }
+      return;
+    }
+
+    if (!this.props.revealed && nextProps.revealed) {
+      // Modal was revealed. Be sure the data is correct.
+      this.setState({data: {
+        name: _.get(nextProps.projectData, 'name', ''),
+        description: _.get(nextProps.projectData, 'description', '') || ''
+      }});
     }
   },
 
