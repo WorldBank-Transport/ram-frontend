@@ -200,6 +200,7 @@ var ProjectPagePending = React.createClass({
   renderFileCard: function (file) {
     let { display, description } = fileTypesMatrix[file.type];
     let projectId = this.props.project.data.id;
+    let scenarioId = this.props.project.data.id;
     return (
       <ProjectFileCard
         key={file.type}
@@ -208,7 +209,7 @@ var ProjectPagePending = React.createClass({
         description={description}
         type={file.type}
         projectId={projectId}
-        scenarioId={0}
+        scenarioId={scenarioId}
         onFileDeleteComplete={this.onFileDeleteComplete.bind(null, file)} />
     );
   },

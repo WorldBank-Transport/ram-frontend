@@ -4,6 +4,7 @@ import c from 'classnames';
 
 import { fetchJSON } from '../../actions';
 import config from '../../config';
+import { t } from '../../utils/i18n';
 
 import ProjectSetupBlock from './project-setup-block';
 
@@ -53,6 +54,21 @@ const ProjectFileCard = React.createClass({
   },
 
   render: function () {
+    const { type, projectId, scenarioId, fileId } = this.props;
+
+    let downloadLink;
+    switch (type) {
+      case 'profile':
+      case 'admin-bounds':
+      case 'villages':
+        downloadLink = `${config.api}/projects/${projectId}/files/${fileId}/download`;
+        break;
+      case 'poi':
+      case 'road-network':
+        downloadLink = `${config.api}/projects/${projectId}/scenarios/${scenarioId}/files/${fileId}/download`;
+        break;
+    }
+
     return (
       <ProjectSetupBlock
         name={this.props.name}
@@ -60,8 +76,8 @@ const ProjectFileCard = React.createClass({
         complete >
 
         <div className='psb__actions'>
-          <button type='button' className={c('psba-trash', {'disabled': this.state.loading})} onClick={this.onRemove}><span>Remove</span></button>
-          <a href='#' title='Download file' className='psba-download'><span>Download</span></a>
+          <button type='button' className={c('psba-trash', {'disabled': this.state.loading})} onClick={this.onRemove}><span>{t('Remove')}</span></button>
+          <a href={downloadLink} title={t('Download file')} className='psba-download'><span>{t('Download')}</span></a>
         </div>
       </ProjectSetupBlock>
     );
