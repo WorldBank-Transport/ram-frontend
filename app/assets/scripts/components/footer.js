@@ -15,7 +15,7 @@ const Footer = React.createClass({
             <NavGlobalMenu />
           </nav>
           <div className='footer-credits'>
-            <p>Rural Road Accessibility <small>2017 © <a href='http://www.worldbank.org/' title='Visit website'>World Bank Group</a></small></p>
+            <p>Rural Road Accessibility <small>2017 © <a href='http://www.worldbank.org/' title='Visit website'>The World Bank Group</a></small></p>
           </div>
         </div>
       </footer>
