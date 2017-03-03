@@ -110,7 +110,10 @@ const ProjectFormModal = React.createClass({
 
         <ModalHeader>
           <div className='modal__headline'>
-            <h1 className='modal__title'>{this.props.editing ? 'Edit Project' : 'New Project'}</h1>
+            <h1 className='modal__title'>{this.props.editing ? 'Edit project metadata' : 'Create new project'}</h1>
+            <div className='modal__description'>
+              <p>{this.props.editing ? 'Edit the attributes of your project.' : 'Name and describe your new project.'}</p>
+            </div>
           </div>
         </ModalHeader>
         <ModalBody>
@@ -136,8 +139,8 @@ const ProjectFormModal = React.createClass({
           </form>
         </ModalBody>
         <ModalFooter>
-          <button className='button button--achromic' type='button' onClick={this.onClose}><span>Cancel</span></button>
-          <button className='button button--base' type='submit' onClick={this.onSubmit}><span>Save</span></button>
+          <button className='mfa-xmark' type='button' onClick={this.onClose}><span>Cancel</span></button>
+          <button className='mfa-tick' type='submit' onClick={this.onSubmit}><span>Save</span></button>
         </ModalFooter>
       </Modal>
     );

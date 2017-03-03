@@ -9,7 +9,7 @@
 
 .modal {
   text-align: center;
-  background: radial-gradient(ellipse at center, tint($base-color, 96%) 0%, rgba(tint($base-color, 96%), 0.88) 100%);
+  background: #fff;
   position: fixed;
   top: 0;
   bottom: 0;
@@ -20,7 +20,7 @@
 
   // The ghost, nudged to maintain perfect centering
   // Only medium-up queries
-  &:before {
+  &::before {
     content: '';
     display: inline-block;
     height: 100%;
@@ -114,36 +114,24 @@
   &__footer {
     position: relative;
     text-align: center;
-
-    &:after {
-      position: absolute;
-      left: 50%;
-      transform: translate(-50%, 0);
-      content: '';
-      height: 2px;
-      width: 4rem;
-      background: $base-alpha-color;
-    }
   }
 
   &__header {
-    padding-bottom: $global-spacing * 1.5;
-    margin-bottom: ($global-spacing * 2);
-    *:last-child {
+    margin-bottom: ($global-spacing * 3);
+
+    > *:last-child {
       margin-bottom: 0;
     }
+  }
 
-    &:after {
-      top: calc(100% - 1px);
-    }
-
-    @include media(medium-up) {
-      margin-bottom: ($global-spacing * 3);
+  &__headline {
+    > *:last-child {
+      margin-bottom: 0;
     }
   }
 
   &__title {
-    @extend .heading, .heading--medium;
+    @include heading(1.5rem);
   }
 
   &__subtitle {
@@ -156,25 +144,35 @@
     width: 100%;
   }
 
-  &__body {
-    margin-bottom: ($global-spacing * 2);
+  &__description {
+    color: rgba($base-font-color, 0.64);
+
     > *:last-child {
       margin-bottom: 0;
     }
-    @include media(medium-up) {
-      margin-bottom: ($global-spacing * 3);
+  }
+
+  &__body {
+    margin-bottom: ($global-spacing * 3);
+
+    > *:last-child {
+      margin-bottom: 0;
     }
   }
 
   &__footer {
-    padding-top: $global-spacing * 2;
+    font-size: 0;
 
     .button {
       margin: 0 ($global-spacing / 4);
-    }
 
-    &:after {
-      top: 0;
+      &:first-child {
+        margin-left: 0;
+      }
+
+      &:last-child {
+        margin-right: 0;
+      }
     }
   }
 }
@@ -184,14 +182,15 @@
    ========================================================================== */
 
 .modal__button-dismiss {
-  @extend .button, .button--medium, .button--primary-plain, .button--text-hidden;
+  @extend .button, .button--large, .button--primary-plain, .button--text-hidden;
   position: absolute;
   top: $global-spacing / 4;
   right: $global-spacing / 4;
   z-index: 10;
 
-  &:before {
-    @extend %collecticon-xmark;
+  &::before {
+    @extend %collecticon-sm-xmark;
+    font-size: 2rem;
   }
 
   @include media(medium-up) {
@@ -202,24 +201,5 @@
   @include media(large-up) {
     top: $global-spacing * 2;
     right: $global-spacing * 2;
-  }
-}
-
-
-/* Modal theme modifiers
-   ========================================================================== */
-
-.modal--dark {
-  @extend .antialiased;
-  background: radial-gradient(ellipse at center, $base-color 0%, rgba($base-color, 0.92) 100%);
-  color: #fff;
-
-  .modal__header:after,
-  .modal__footer:after {
-    background: rgba(#fff, 0.12);
-  }
-
-  .modal__subtitle {
-    color: rgba(#fff, 0.48);
   }
 }
