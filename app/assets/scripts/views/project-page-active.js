@@ -118,7 +118,7 @@ var ProjectPageActive = React.createClass({
               <ol className='card-list scenarios-card-list'>
                 <li>
                   <article className='scenario scenario--card card' id={`scenario-1234`}>
-                    <div className='card__contents' title='View scenario'>
+                    <div className='card__contents'>
                       <header className='card__header'>
                         <div className='card__headline'>
                           <Link to='' title='View scenario' className='link-wrapper'>

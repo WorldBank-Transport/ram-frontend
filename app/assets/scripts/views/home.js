@@ -54,7 +54,7 @@ var Home = React.createClass({
     return (
       <li key={project.id}>
         <article className='project project--card card' id={`project-${project.id}`}>
-          <div className='card__contents' title='View project'>
+          <div className='card__contents'>
             <figure className='card__media'>
               <Link to={projectUrl} title='View project' className='link-wrapper'>
                 <div className='card__thumbnail'>
