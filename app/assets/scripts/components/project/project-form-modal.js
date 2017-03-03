@@ -4,7 +4,7 @@ import c from 'classnames';
 import _ from 'lodash';
 import { hashHistory } from 'react-router';
 
-import { getLanguage } from '../../utils/i18n';
+import { t, getLanguage } from '../../utils/i18n';
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '../modal';
 
@@ -122,9 +122,9 @@ const ProjectFormModal = React.createClass({
 
         <ModalHeader>
           <div className='modal__headline'>
-            <h1 className='modal__title'>{this.props.editing ? 'Edit project metadata' : 'Create new project'}</h1>
+            <h1 className='modal__title'>{this.props.editing ? t('Edit project metadata') : t('Create new project')}</h1>
             <div className='modal__description'>
-              <p>{this.props.editing ? 'Edit the attributes of your project.' : 'Name and describe your new project.'}</p>
+              <p>{this.props.editing ? t('Edit the attributes of your project.') : t('Name and describe your new project.')}</p>
             </div>
           </div>
         </ModalHeader>
@@ -136,23 +136,23 @@ const ProjectFormModal = React.createClass({
 
           <form className={c({'disable': processing})}>
             <div className='form__group'>
-              <label className='form__label' htmlFor='project-name'>Project name *</label>
-              <input type='text' className='form__control form__control--medium' id='project-name' name='project-name' placeholder='Untitled project' value={this.state.data.name} onChange={this.onFieldChange.bind(null, 'name')} />
+              <label className='form__label' htmlFor='project-name'>{t('Project name')} <small>({t('required')}</small></label>
+              <input type='text' className='form__control form__control--medium' id='project-name' name='project-name' placeholder={t('Untitled project')} value={this.state.data.name} onChange={this.onFieldChange.bind(null, 'name')} />
 
-                {this.state.errors.name ? <p className='form__error'>A name is required.</p> : null }
+                {this.state.errors.name ? <p className='form__error'>{t('A project name is required.')}</p> : null }
 
                 <p className='form__help'>Keep it short and sweet.</p>
             </div>
 
             <div className='form__group'>
-              <label className='form__label' htmlFor='project-desc'>Description</label>
-              <textarea ref='description' className='form__control' id='project-desc' rows='2' placeholder='Say something about this project' value={this.state.data.description} onChange={this.onFieldChange.bind(null, 'description')}></textarea>
+              <label className='form__label' htmlFor='project-desc'>{t('Description')}</label>
+              <textarea ref='description' className='form__control' id='project-desc' rows='2' placeholder={t('Say something about this project')} value={this.state.data.description} onChange={this.onFieldChange.bind(null, 'description')}></textarea>
             </div>
           </form>
         </ModalBody>
         <ModalFooter>
-          <button className='mfa-xmark' type='button' onClick={this.onClose}><span>Cancel</span></button>
-          <button className='mfa-tick' type='submit' onClick={this.onSubmit}><span>Save</span></button>
+          <button className='mfa-xmark' type='button' onClick={this.onClose}><span>{t('Cancel')}</span></button>
+          <button className='mfa-tick' type='submit' onClick={this.onSubmit}><span>{this.props.editing ? t('Save') : t('Create')}</span></button>
         </ModalFooter>
       </Modal>
     );
