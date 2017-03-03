@@ -103,8 +103,8 @@ const ProjectFormModal = React.createClass({
 
     return (
       <Modal
-        id='modal-showcase'
-        className='modal--large'
+        id='modal-project-metadata'
+        className='modal--small'
         onCloseClick={this.onClose}
         revealed={this.props.revealed} >
 
@@ -124,8 +124,8 @@ const ProjectFormModal = React.createClass({
 
           <form className={c({'disable': processing})}>
             <div className='form__group'>
-              <label className='form__label' htmlFor='project-name'>Project name*</label>
-              <input type='text' className='form__control form__control--medium' id='project-name' name='project-name' placeholder='Project name' value={this.state.data.name} onChange={this.onFieldChange.bind(null, 'name')} />
+              <label className='form__label' htmlFor='project-name'>Project name *</label>
+              <input type='text' className='form__control form__control--medium' id='project-name' name='project-name' placeholder='Untitled project' value={this.state.data.name} onChange={this.onFieldChange.bind(null, 'name')} />
 
                 {this.state.errors.name ? <p className='form__error'>A name is required.</p> : null }
 
@@ -134,7 +134,7 @@ const ProjectFormModal = React.createClass({
 
             <div className='form__group'>
               <label className='form__label' htmlFor='project-desc'>Description</label>
-              <textarea ref='description' className='form__control' id='project-desc' rows='4' placeholder='Say something about this project' value={this.state.data.description} onChange={this.onFieldChange.bind(null, 'description')}></textarea>
+              <textarea ref='description' className='form__control' id='project-desc' rows='2' placeholder='Say something about this project' value={this.state.data.description} onChange={this.onFieldChange.bind(null, 'description')}></textarea>
             </div>
           </form>
         </ModalBody>

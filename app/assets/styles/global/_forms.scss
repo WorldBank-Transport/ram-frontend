@@ -13,15 +13,14 @@
 .form__control {
   display: block;
   width: 100%;
-  padding: 0.25rem 0.5rem;
+  padding: 0.25rem 0;
   font-size: 1rem;
   line-height: 1.5rem;
   color: $base-font-color;
   background: #fff;
   border: 0;
-  border-radius: $base-border-radius;
   font-family: inherit;
-  box-shadow: inset 0 0 0 2px rgba($base-color, 0.16);
+  box-shadow: inset 0 -1px 0 0 rgba($base-color, 0.16);
 
   /* Placeholder */
   &::placeholder {
@@ -40,7 +39,7 @@
 
   &:focus {
     outline: 0;
-    box-shadow: inset 0 0 0 2px rgba($base-color, 0.32);
+    box-shadow: inset 0 -2px 0 0 $link-color;
   }
 
   /* Animation */
@@ -51,7 +50,7 @@
 /* Select */
 
 select.form__control {
-  box-shadow: inset 0 -3px 0 0 rgba($base-color, 0.08), inset 0 0 0 2px rgba($base-color, 0.16);
+  box-shadow: inset 0 -1px 0 0 rgba($base-color, 0.16);
   cursor: pointer;
 }
 
@@ -59,7 +58,7 @@ select.form__control {
 
 textarea.form__control {
   height: auto;
-  resize: vertical;
+  resize: none;
 }
 
 
@@ -69,7 +68,7 @@ textarea.form__control {
 /* Small (24px) */
 
 .form__control--small {
-  padding: 0.125rem 0.5rem;
+  padding: 0.125rem 0;
   font-size: 0.875rem;
   line-height: 1.25rem;
   height: 1.5rem;
@@ -80,7 +79,7 @@ textarea.form__control {
 */
 
 .form__control--medium {
-  padding: 0.25rem 0.5rem;
+  padding: 0.25rem 0;
   font-size: 1rem;
   line-height: 1.5rem;
   height: 2rem;
@@ -89,7 +88,7 @@ textarea.form__control {
 /* Large (40px) */
 
 .form__control--large {
-  padding: 0.5rem 0.75rem;
+  padding: 0.5rem 0;
   font-size: 1rem;
   line-height: 1.5rem;
   height: 2.5rem;
@@ -98,7 +97,7 @@ textarea.form__control {
 /* XLarge (48px) */
 
 .form__control--xlarge {
-  padding: 0.5rem 0.75rem;
+  padding: 0.5rem 0;
   font-size: 1.25rem;
   line-height: 2rem;
   height: 3rem;
@@ -453,9 +452,10 @@ label[for] {
    ========================================================================== */
 
 .form__help {
+  text-align: right;
   font-size: 0.875rem;
   line-height: 1.25rem;
-  color: rgba($base-font-color, 0.64);
+  color: rgba($base-font-color, 0.48);
   margin-top: $global-spacing / 2;
 
   > *:last-child {
