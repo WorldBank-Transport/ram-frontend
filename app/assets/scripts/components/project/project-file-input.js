@@ -6,6 +6,8 @@ import { fetchJSON } from '../../actions';
 import config from '../../config';
 import { t } from '../../utils/i18n';
 
+import ProjectSetupBlock from './project-setup-block';
+
 const ProjectFileInput = React.createClass({
 
   propTypes: {
@@ -95,32 +97,25 @@ const ProjectFileInput = React.createClass({
 
   render: function () {
     return (
-      <section className='psb'>
-        <div className='inner'>
-          <header className='psb__header'>
-            <h1 className='psb__title'>{this.props.name}</h1>
-            <div className='psb__description'>
-              <p>{this.props.description}</p>
-            </div>
-          </header>
-          <div className='psb__body'>
-            <form>
-              <div className='form__group'>
-                <label className='form__label' htmlFor='project-name'>{t('File')}</label>
-                <input type='file' className='form__control--upload' ref='file' onChange={this.onFileSelected} />
-                {this.state.file !== null
-                  ? <p className='form__help'>{Math.round(this.state.uploaded / (1024 * 1024))}MB / {Math.round(this.state.size / (1024 * 1024))}MB</p>
-                  : null
-                 }
-              </div>
-              <div className='form__actions'>
-                <button type='button' className={c('psba-tick', {'disabled': this.state.loading || !this.state.file})} onClick={this.onSumbit}><span>Save</span></button>
-              </div>
+      <ProjectSetupBlock
+        name={this.props.name}
+        description={this.props.description}
+        complete={false} >
 
-            </form>
+        <form>
+          <div className='form__group'>
+            <label className='form__label' htmlFor='project-name'>{t('File')}</label>
+            <input type='file' className='form__control--upload' ref='file' onChange={this.onFileSelected} />
+            {this.state.file !== null
+              ? <p className='form__help'>{Math.round(this.state.uploaded / (1024 * 1024))}MB / {Math.round(this.state.size / (1024 * 1024))}MB</p>
+              : null
+             }
           </div>
-        </div>
-      </section>
+          <div className='form__actions'>
+            <button type='button' className={c('psba-tick', {'disabled': this.state.loading || !this.state.file})} onClick={this.onSumbit}><span>Save</span></button>
+          </div>
+        </form>
+      </ProjectSetupBlock>
     );
   }
 });

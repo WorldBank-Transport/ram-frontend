@@ -102,3 +102,19 @@
 .psba-tick::before {
   @extend %collecticon-sm-tick;
 }
+
+.psba-trash, {
+  @extend .button--danger-raised-light;
+}
+
+.psba-trash::before {
+  @extend %collecticon-trash-bin;
+}
+
+.psba-download, {
+  @extend .button--primary-raised-light;
+}
+
+.psba-download::before {
+  @extend %collecticon-download-3;
+}

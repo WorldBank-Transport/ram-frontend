@@ -3,7 +3,7 @@
    ========================================================================== */
 
 
-/* Project setup blocks
+/* Project setup block
    ========================================================================== */
 
 .psb {
@@ -33,7 +33,14 @@
       line-height: 1.5rem;
       text-align: center;
       opacity: 0.32;
+
+      /* Animation */
+      transition: all 0.32s ease 0s;
     }
+  }
+
+  &--complete > .inner::before {
+    opacity: 1;
   }
 
   &__header {
@@ -60,6 +67,22 @@
 
     > *:last-child {
       margin-bottom: 0;
+    }
+  }
+
+  &__actions {
+    font-size: 0;
+
+    .button {
+      margin: 0 ($global-spacing / 4);
+
+      &:first-child {
+        margin-left: 0;
+      }
+
+      &:last-child {
+        margin-right: 0;
+      }
     }
   }
 
