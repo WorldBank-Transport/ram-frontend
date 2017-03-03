@@ -103,7 +103,7 @@
       $bg-color: tint($color, 100%);
       $bg-color-hover: tint($color, 92%);
       $bg-color-active: tint($color, 84%);
-      $shadow-color: rgba($base-color, 0.16);
+      $shadow-color: rgba($base-color, 0.12);
     }
 
     @else if $brightness == "dark" {
@@ -111,7 +111,7 @@
       $bg-color: $color;
       $bg-color-hover: shade($color, 4%);
       $bg-color-active: shade($color, 8%);
-      $shadow-color: rgba($base-color, 0.16);
+      $shadow-color: rgba($base-color, 0.12);
     }
 
     @else {
@@ -134,7 +134,7 @@
   background-color: $bg-color;
 
   @if $shadow-color {
-    box-shadow: 0 1px 2px 1px $shadow-color;
+    box-shadow: 0 -1px 2px 0 rgba($base-color, 0.08), 0 2px 2px 0 $shadow-color;
   }
 
   &:hover {

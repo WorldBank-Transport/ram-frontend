@@ -183,24 +183,14 @@
    ========================================================================== */
 
 .modal__button-dismiss {
-  @extend .button, .button--large, .button--primary-plain, .button--text-hidden;
+  @extend .button, .button--medium, .button--primary-plain, .button--text-hidden;
   position: absolute;
-  top: $global-spacing / 4;
-  right: $global-spacing / 4;
+  top: $global-spacing * 2;
+    right: $global-spacing * 2;
   z-index: 10;
 
   &::before {
-    @extend %collecticon-sm-xmark;
-    font-size: 2rem;
-  }
-
-  @include media(medium-up) {
-    top: $global-spacing;
-    right: $global-spacing;
-  }
-
-  @include media(large-up) {
-    top: $global-spacing * 2;
-    right: $global-spacing * 2;
+    @extend %collecticon-xmark;
+    font-size: 1.25rem;
   }
 }
