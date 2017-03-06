@@ -15,7 +15,7 @@ const PorjectHeaderActions = React.createClass({
     e.preventDefault();
 
     showConfirm({
-      title: 'Delete Project',
+      title: 'Delete project',
       body: (
         <div>
           <p>Are you sure you want to delete <strong>{this.props.project.name}</strong>?</p>

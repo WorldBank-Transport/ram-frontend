@@ -29,7 +29,7 @@ const ProjectFileCard = React.createClass({
 
   onRemove: function () {
     showConfirm({
-      title: 'Delete File',
+      title: 'Delete file',
       body: (
         <p>Are you sure you want to delete <strong>{this.props.name}</strong> file?</p>
       )
