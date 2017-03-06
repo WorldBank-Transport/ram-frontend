@@ -142,6 +142,8 @@ var Home = React.createClass({
           </div>
         </div>
         <ProjectFormModal
+          _showGlobalLoading={this.props._showGlobalLoading}
+          _hideGlobalLoading={this.props._hideGlobalLoading}
           revealed={this.state.projectFormModal}
           onCloseClick={this.closeModal}
           projectForm={this.props.projectForm}

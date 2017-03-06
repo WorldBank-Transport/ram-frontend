@@ -49,24 +49,24 @@
 /* Loading pane react animation
    ========================================================================== */
 
-.loading-pane--enter {
+.loading-pane-enter {
   transform: translate3d(0, 0, 0);
   transition: opacity 0.32s ease 0s, visibility 0.32s linear 0s;
   opacity: 0;
   visibility: hidden;
 
-  &.loading-pane--active {
+  &.loading-pane-enter-active {
     opacity: 1;
     visibility: visible;
   }
 }
 
-.loading-pane--leave {
+.loading-pane-leave {
   transition: opacity 0.32s ease 0s, visibility 0.32s linear 0s;
   opacity: 1;
   visibility: visible;
 
-  &.loading-pane---active {
+  &.loading-pane-leave-active {
     opacity: 0;
     visibility: hidden;
   }

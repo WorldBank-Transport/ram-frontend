@@ -16,6 +16,8 @@ const ProjectFormModal = React.createClass({
 
     projectForm: T.object,
     saveProject: T.func,
+    _showGlobalLoading: T.func,
+    _hideGlobalLoading: T.func,
 
     // Only available when editing.
     editing: T.bool,
@@ -35,6 +37,10 @@ const ProjectFormModal = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
+    if (this.props.projectForm.processing && !nextProps.projectForm.processing) {
+      this.props._hideGlobalLoading();
+    }
+
     if (this.props.projectForm.action === 'edit' &&
         this.props.projectForm.processing &&
         !nextProps.projectForm.processing &&
@@ -80,6 +86,8 @@ const ProjectFormModal = React.createClass({
         name: this.state.data.name,
         description: this.state.data.description || null
       };
+
+      this.props._showGlobalLoading();
 
       if (this.props.editing) {
         this.props.saveProject(this.props.projectData.id, payload);
