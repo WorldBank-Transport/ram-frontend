@@ -24,6 +24,7 @@ import ProjectFileInput from '../components/project/project-file-input';
 import ProjectFileCard from '../components/project/project-file-card';
 import ProjectFormModal from '../components/project/project-form-modal';
 import ProjectHeaderActions from '../components/project/project-header-actions';
+import ScenarioEditModal from '../components/scenario/scenario-edit-modal';
 
 var ProjectPagePending = React.createClass({
   displayName: 'ProjectPagePending',
@@ -43,19 +44,25 @@ var ProjectPagePending = React.createClass({
     params: T.object,
     scenario: T.object,
     project: T.object,
-    projectForm: T.object
+    projectForm: T.object,
+    scenarioForm: T.object
   },
 
   forceLoading: false,
 
   getInitialState: function () {
     return {
-      projectFormModal: false
+      projectFormModal: false,
+      scenarioFormModal: false
     };
   },
 
-  closeModal: function () {
+  closeProjectModal: function () {
     this.setState({projectFormModal: false});
+  },
+
+  closeScenarioModal: function () {
+    this.setState({scenarioFormModal: false});
   },
 
   onFileUploadComplete: function () {
@@ -87,6 +94,9 @@ var ProjectPagePending = React.createClass({
       case 'delete':
         this.props._showGlobalLoading();
         this.props._deleteProject(this.props.params.projectId);
+        break;
+      case 'finish':
+        this.setState({scenarioFormModal: true});
         break;
       default:
         throw new Error(`Project action not implemented: ${what}`);
@@ -256,10 +266,21 @@ var ProjectPagePending = React.createClass({
           _showGlobalLoading={this.props._showGlobalLoading}
           _hideGlobalLoading={this.props._hideGlobalLoading}
           revealed={this.state.projectFormModal}
-          onCloseClick={this.closeModal}
+          onCloseClick={this.closeProjectModal}
           projectForm={this.props.projectForm}
           projectData={data}
           saveProject={this.props._patchProject}
+        />
+
+        <ScenarioEditModal
+          ghostScenario
+          _showGlobalLoading={this.props._showGlobalLoading}
+          _hideGlobalLoading={this.props._hideGlobalLoading}
+          revealed={this.state.scenarioFormModal}
+          onCloseClick={this.closeScenarioModal}
+          scenarioData={this.props.scenario.data}
+          scenarioForm={this.props.scenarioForm}
+          saveScenario={() => {}}
         />
 
       </section>
@@ -274,7 +295,8 @@ function selector (state) {
   return {
     project: state.projectItem,
     scenario: state.scenarioItem,
-    projectForm: state.projectForm
+    projectForm: state.projectForm,
+    scenarioForm: state.projectForm
   };
 }
 

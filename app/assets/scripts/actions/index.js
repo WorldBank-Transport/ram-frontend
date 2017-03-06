@@ -29,6 +29,12 @@ export const REQUEST_PROJECT_SCENARIOS = 'REQUEST_PROJECT_SCENARIOS';
 export const RECEIVE_PROJECT_SCENARIOS = 'RECEIVE_PROJECT_SCENARIOS';
 export const INVALIDATE_PROJECT_SCENARIOS = 'INVALIDATE_PROJECT_SCENARIOS';
 
+export const RESET_SCENARIO_FORM = 'RESET_SCENARIO_FORM';
+export const START_SUBMIT_SCENARIO = 'START_SUBMIT_SCENARIO';
+export const FINISH_SUBMIT_SCENARIO = 'FINISH_SUBMIT_SCENARIO';
+export const START_DELETE_SCENARIO = 'START_DELETE_SCENARIO';
+export const FINISH_DELETE_SCENARIO = 'FINISH_DELETE_PROJECT';
+
 // App related. Global stuff
 
 export function showGlobalLoading () {
@@ -171,6 +177,24 @@ export function receiveProjectScenarios (scenarios, error = null) {
 
 export function fetchProjectScenarios (projectId) {
   return getAndDispatch(`${config.api}/projects/${projectId}/scenarios`, requestProjectScenarios, receiveProjectScenarios);
+}
+
+// Scenario Form
+
+export function resetScenarioFrom () {
+  return { type: RESET_SCENARIO_FORM };
+}
+
+export function startSubmitScenario () {
+  return { type: START_SUBMIT_SCENARIO };
+}
+
+export function finishSubmitScenario (project, error = null) {
+  return { type: FINISH_SUBMIT_SCENARIO, data: project, error, receivedAt: Date.now() };
+}
+
+export function patchScenario (projectId, data) {
+  return patchAndDispatch(`${config.api}/projects/${projectId}`, data, startSubmitScenario, finishSubmitScenario);
 }
 
 // Fetcher function
