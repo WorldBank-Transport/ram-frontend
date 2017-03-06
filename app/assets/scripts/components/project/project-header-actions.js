@@ -2,6 +2,7 @@
 import React, { PropTypes as T } from 'react';
 
 import Dropdown from '../dropdown';
+import { showConfirm } from '../confirmation-prompt';
 
 const PorjectHeaderActions = React.createClass({
 
@@ -13,14 +14,17 @@ const PorjectHeaderActions = React.createClass({
   onDelete: function (e) {
     e.preventDefault();
 
-    let msg = `
-Are you sure you want to delete ${this.props.project.name}?
-
-All project related files and scenarios will be deleted as well.`;
-
-    if (confirm(msg)) {
+    showConfirm({
+      title: 'Delete project',
+      body: (
+        <div>
+          <p>Are you sure you want to delete <strong>{this.props.project.name}</strong>?</p>
+          <p>All project related files and scenarios will be deleted as well.</p>
+        </div>
+      )
+    }, () => {
       this.props.onAction('delete', e);
-    }
+    });
   },
 
   render: function () {

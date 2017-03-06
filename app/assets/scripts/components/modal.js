@@ -46,6 +46,14 @@ var Modal = React.createClass({
     }
   },
 
+  keyListener: function (e) {
+    // ESC.
+    if (this.props.revealed && e.keyCode === 27) {
+      e.preventDefault();
+      this.props.onCloseClick();
+    }
+  },
+
   // closeModal: function () {
   //   this.setState({ revealed: false });
   // },
@@ -74,10 +82,12 @@ var Modal = React.createClass({
   },
 
   componentDidMount: function () {
+    document.addEventListener('keyup', this.keyListener);
     this.toggleBodyClass(this.props.revealed);
   },
 
   componentWillUnmount: function () {
+    document.removeEventListener('keyup', this.keyListener);
     this.toggleBodyClass(false);
   },
 

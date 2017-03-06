@@ -26,8 +26,8 @@ var ProjectPageActive = React.createClass({
     _fetchProjectItem: T.func,
     _patchProject: T.func,
     _deleteProject: T.func,
-   _showGlobalLoading: T.func,
-   _hideGlobalLoading: T.func,
+    _showGlobalLoading: T.func,
+    _hideGlobalLoading: T.func,
 
     params: T.object,
     project: T.object,

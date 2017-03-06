@@ -47,6 +47,10 @@
   > *:last-child {
     margin-bottom: 0;
   }
+
+  .modal--prompt & {
+    text-align: center;
+  }
 }
 
 
