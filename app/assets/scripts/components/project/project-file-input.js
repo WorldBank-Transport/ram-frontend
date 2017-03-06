@@ -57,17 +57,17 @@ const ProjectFileInput = React.createClass({
       case 'profile':
       case 'admin-bounds':
       case 'villages':
-        url = `${config.api}/projects/${projectId}/upload?type=${type}`;
+        url = `${config.api}/projects/${projectId}/files`;
         break;
       case 'poi':
       case 'road-network':
-        url = `${config.api}/projects/${projectId}/scenarios/${scenarioId}/upload?type=${type}`;
+        url = `${config.api}/projects/${projectId}/scenarios/${scenarioId}/files`;
         break;
     }
 
     this.setState({loading: true});
 
-    fetchJSON(url)
+    fetchJSON(url, {method: 'POST', body: JSON.stringify({type})})
       .then(res => {
         const { presignedUrl } = res;
         this.xhr = new window.XMLHttpRequest();
