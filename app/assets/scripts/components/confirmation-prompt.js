@@ -56,7 +56,7 @@ const ConfirmationPrompt = React.createClass({
     return (
       <Modal
         id='confirmation-prompt'
-        className='modal--small'
+        className='modal--small modal--prompt'
         onCloseClick={this.onCancel}
         revealed={this.state.revealed} >
 
