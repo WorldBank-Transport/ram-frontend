@@ -61,11 +61,11 @@ const ProjectFileCard = React.createClass({
       case 'profile':
       case 'admin-bounds':
       case 'villages':
-        downloadLink = `${config.api}/projects/${projectId}/files/${fileId}/download`;
+        downloadLink = `${config.api}/projects/${projectId}/files/${fileId}?download=true`;
         break;
       case 'poi':
       case 'road-network':
-        downloadLink = `${config.api}/projects/${projectId}/scenarios/${scenarioId}/files/${fileId}/download`;
+        downloadLink = `${config.api}/projects/${projectId}/scenarios/${scenarioId}/files/${fileId}?download=true`;
         break;
     }
 
