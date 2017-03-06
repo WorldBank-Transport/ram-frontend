@@ -7,7 +7,9 @@ import {
   invalidateProjectItem,
   fetchProjectItem,
   patchProject,
-  deleteProject
+  deleteProject,
+  showGlobalLoading,
+  hideGlobalLoading
 } from '../actions';
 import { prettyPrint } from '../utils/utils';
 import { getLanguage } from '../utils/i18n';
@@ -24,6 +26,8 @@ var ProjectPageActive = React.createClass({
     _fetchProjectItem: T.func,
     _patchProject: T.func,
     _deleteProject: T.func,
+   _showGlobalLoading: T.func,
+   _hideGlobalLoading: T.func,
 
     params: T.object,
     project: T.object,
@@ -48,6 +52,7 @@ var ProjectPageActive = React.createClass({
         this.setState({projectFormModal: true});
         break;
       case 'delete':
+        this.props._showGlobalLoading();
         this.props._deleteProject(this.props.params.projectId);
         break;
       default:
@@ -56,6 +61,7 @@ var ProjectPageActive = React.createClass({
   },
 
   componentDidMount: function () {
+    this.props._showGlobalLoading();
     this.props._fetchProjectItem(this.props.params.projectId);
   },
 
@@ -64,6 +70,15 @@ var ProjectPageActive = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
+    if (this.props.project.fetching && !nextProps.project.fetching) {
+      this.props._hideGlobalLoading();
+    }
+
+    var error = nextProps.project.error;
+    if (error && (error.statusCode === 404 || error.statusCode === 400)) {
+      return hashHistory.push(`/${getLanguage()}/404`);
+    }
+
     if (!this.props.project.fetched && nextProps.project.fetched) {
       // Project just fetched. Validate status;
       if (nextProps.project.data.status === 'pending') {
@@ -75,16 +90,13 @@ var ProjectPageActive = React.createClass({
       this.props._fetchProjectItem(nextProps.params.projectId);
     }
 
-    var error = nextProps.project.error;
-    if (error && (error.statusCode === 404 || error.statusCode === 400)) {
-      return hashHistory.push(`/${getLanguage()}/404`);
-    }
-
     if (this.props.projectForm.action === 'delete' &&
         this.props.projectForm.processing &&
-        !nextProps.projectForm.processing &&
-        !nextProps.projectForm.error) {
-      return hashHistory.push(`/${getLanguage()}/projects`);
+        !nextProps.projectForm.processing) {
+      this.props._hideGlobalLoading();
+      if (nextProps.projectForm.error) {
+        return hashHistory.push(`/${getLanguage()}/projects`);
+      }
     }
   },
 
@@ -97,7 +109,7 @@ var ProjectPageActive = React.createClass({
 
     // Show if it's the first loading time.
     if (!receivedAt && fetching) {
-      return <p className='loading-indicator'>Loading...</p>;
+      return null;
     }
 
     if (error) {
@@ -173,6 +185,8 @@ var ProjectPageActive = React.createClass({
 
         <ProjectFormModal
           editing
+          _showGlobalLoading={this.props._showGlobalLoading}
+          _hideGlobalLoading={this.props._hideGlobalLoading}
           revealed={this.state.projectFormModal}
           onCloseClick={this.closeModal}
           projectForm={this.props.projectForm}
@@ -201,7 +215,9 @@ function dispatcher (dispatch) {
     _invalidateProjectItem: (...args) => dispatch(invalidateProjectItem(...args)),
     _fetchProjectItem: (...args) => dispatch(fetchProjectItem(...args)),
     _patchProject: (...args) => dispatch(patchProject(...args)),
-    _deleteProject: (...args) => dispatch(deleteProject(...args))
+    _deleteProject: (...args) => dispatch(deleteProject(...args)),
+    _showGlobalLoading: (...args) => dispatch(showGlobalLoading(...args)),
+    _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args))
   };
 }
 

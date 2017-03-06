@@ -11,7 +11,9 @@ import {
   fetchScenarioItem,
   removeScenarioItemFile,
   patchProject,
-  deleteProject
+  deleteProject,
+  showGlobalLoading,
+  hideGlobalLoading
 } from '../actions';
 import { prettyPrint } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
@@ -57,6 +59,8 @@ var ProjectPagePending = React.createClass({
     _removeScenarioItemFile: T.func,
     _patchProject: T.func,
     _deleteProject: T.func,
+    _showGlobalLoading: T.func,
+    _hideGlobalLoading: T.func,
 
     params: T.object,
     scenario: T.object,
@@ -103,6 +107,7 @@ var ProjectPagePending = React.createClass({
         this.setState({projectFormModal: true});
         break;
       case 'delete':
+        this.props._showGlobalLoading();
         this.props._deleteProject(this.props.params.projectId);
         break;
       default:
@@ -111,6 +116,7 @@ var ProjectPagePending = React.createClass({
   },
 
   componentDidMount: function () {
+    this.props._showGlobalLoading();
     this.props._fetchProjectItem(this.props.params.projectId);
     this.props._fetchScenarioItem(this.props.params.projectId, 0);
   },
@@ -120,6 +126,15 @@ var ProjectPagePending = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
+    if (this.props.project.fetching && !nextProps.project.fetching) {
+      this.props._hideGlobalLoading();
+    }
+
+    var error = nextProps.project.error;
+    if (error && (error.statusCode === 404 || error.statusCode === 400)) {
+      return hashHistory.push(`/${getLanguage()}/404`);
+    }
+
     if (!this.props.project.fetched && nextProps.project.fetched) {
       // Project just fetched. Validate status;
       if (nextProps.project.data.status !== 'pending') {
@@ -128,22 +143,20 @@ var ProjectPagePending = React.createClass({
     }
 
     if (this.props.params.projectId !== nextProps.params.projectId) {
+      this.props._showGlobalLoading();
       // We're changing project. Invalidate.
       this.props._invalidateProjectItem();
       this.props._fetchProjectItem(nextProps.params.projectId);
       this.props._fetchScenarioItem(nextProps.params.projectId, 0);
     }
 
-    var error = nextProps.project.error;
-    if (error && (error.statusCode === 404 || error.statusCode === 400)) {
-      return hashHistory.push(`/${getLanguage()}/404`);
-    }
-
     if (this.props.projectForm.action === 'delete' &&
         this.props.projectForm.processing &&
-        !nextProps.projectForm.processing &&
-        !nextProps.projectForm.error) {
-      return hashHistory.push(`/${getLanguage()}/projects`);
+        !nextProps.projectForm.processing) {
+      this.props._hideGlobalLoading();
+      if (!nextProps.projectForm.error) {
+        return hashHistory.push(`/${getLanguage()}/projects`);
+      }
     }
   },
 
@@ -223,7 +236,7 @@ var ProjectPagePending = React.createClass({
 
     // Show if it's the first loading time.
     if (!receivedAt && fetching) {
-      return <p className='loading-indicator'>Loading...</p>;
+      return null;
     }
 
     if (error) {
@@ -261,6 +274,8 @@ var ProjectPagePending = React.createClass({
 
         <ProjectFormModal
           editing
+          _showGlobalLoading={this.props._showGlobalLoading}
+          _hideGlobalLoading={this.props._hideGlobalLoading}
           revealed={this.state.projectFormModal}
           onCloseClick={this.closeModal}
           projectForm={this.props.projectForm}
@@ -293,7 +308,9 @@ function dispatcher (dispatch) {
     _fetchScenarioItem: (...args) => dispatch(fetchScenarioItem(...args)),
     _removeScenarioItemFile: (...args) => dispatch(removeScenarioItemFile(...args)),
     _patchProject: (...args) => dispatch(patchProject(...args)),
-    _deleteProject: (...args) => dispatch(deleteProject(...args))
+    _deleteProject: (...args) => dispatch(deleteProject(...args)),
+    _showGlobalLoading: (...args) => dispatch(showGlobalLoading(...args)),
+    _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args))
   };
 }
 
