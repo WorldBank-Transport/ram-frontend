@@ -45,11 +45,11 @@ const ConfirmationPrompt = React.createClass({
       throw new Error('<ConfirmationPrompt /> component was already mounted. Only 1 is allowed.');
     }
     theConfirmationModal = this;
-    document.addEventListener('keypress', this.keyListener);
+    document.addEventListener('keyup', this.keyListener);
   },
 
   componentWillUnmount: function () {
-    document.removeEventListener('keypress', this.keyListener);
+    document.removeEventListener('keyup', this.keyListener);
   },
 
   render: function () {

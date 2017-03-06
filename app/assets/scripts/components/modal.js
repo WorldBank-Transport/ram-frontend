@@ -82,12 +82,12 @@ var Modal = React.createClass({
   },
 
   componentDidMount: function () {
-    document.addEventListener('keypress', this.keyListener);
+    document.addEventListener('keyup', this.keyListener);
     this.toggleBodyClass(this.props.revealed);
   },
 
   componentWillUnmount: function () {
-    document.removeEventListener('keypress', this.keyListener);
+    document.removeEventListener('keyup', this.keyListener);
     this.toggleBodyClass(false);
   },
 
