@@ -7,6 +7,7 @@ import c from 'classnames';
 import Header from '../components/header';
 import Footer from '../components/footer';
 import LoadingGlobal from '../components/loading-global';
+import ConfirmationPrompt from '../components/confirmation-prompt';
 
 var App = React.createClass({
   displayName: 'App',
@@ -28,7 +29,8 @@ var App = React.createClass({
           {this.props.children}
         </main>
         <Footer />
-        <LoadingGlobal revealed={this.props.globalLoading}/>
+        <LoadingGlobal revealed={this.props.globalLoading} />
+        <ConfirmationPrompt />
       </div>
     );
   }

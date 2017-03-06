@@ -7,6 +7,7 @@ import config from '../../config';
 import { t } from '../../utils/i18n';
 
 import ProjectSetupBlock from './project-setup-block';
+import { showConfirm } from '../confirmation-prompt';
 
 const ProjectFileCard = React.createClass({
 
@@ -27,30 +28,37 @@ const ProjectFileCard = React.createClass({
   },
 
   onRemove: function () {
-    const { type, projectId, scenarioId, fileId } = this.props;
+    showConfirm({
+      title: 'Delete File',
+      body: (
+        <p>Are you sure you want to delete <strong>{this.props.name}</strong> file?</p>
+      )
+    }, () => {
+      const { type, projectId, scenarioId, fileId } = this.props;
 
-    let url;
-    switch (type) {
-      case 'profile':
-      case 'admin-bounds':
-      case 'villages':
-        url = `${config.api}/projects/${projectId}/files/${fileId}`;
-        break;
-      case 'poi':
-      case 'road-network':
-        url = `${config.api}/projects/${projectId}/scenarios/${scenarioId}/files/${fileId}`;
-        break;
-    }
+      let url;
+      switch (type) {
+        case 'profile':
+        case 'admin-bounds':
+        case 'villages':
+          url = `${config.api}/projects/${projectId}/files/${fileId}`;
+          break;
+        case 'poi':
+        case 'road-network':
+          url = `${config.api}/projects/${projectId}/scenarios/${scenarioId}/files/${fileId}`;
+          break;
+      }
 
-    fetchJSON(url, {method: 'DELETE'})
-      .then(res => {
-        this.setState(this.getInitialState());
-        this.props.onFileDeleteComplete();
-      })
-      .catch(err => {
-        console.log('err', err);
-        throw new Error(err.error);
-      });
+      fetchJSON(url, {method: 'DELETE'})
+        .then(res => {
+          this.setState(this.getInitialState());
+          this.props.onFileDeleteComplete();
+        })
+        .catch(err => {
+          console.log('err', err);
+          throw new Error(err.error);
+        });
+    });
   },
 
   render: function () {
