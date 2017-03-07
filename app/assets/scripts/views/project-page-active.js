@@ -9,17 +9,19 @@ import {
   patchProject,
   deleteProject,
   showGlobalLoading,
-  hideGlobalLoading
+  hideGlobalLoading,
+  fetchProjectScenarios
 } from '../actions';
 import { prettyPrint } from '../utils/utils';
-import { getLanguage } from '../utils/i18n';
+import { t, getLanguage } from '../utils/i18n';
+import { fileTypesMatrix } from '../utils/constants';
+import config from '../config';
 
 import Breadcrumb from '../components/breadcrumb';
 import ProjectFormModal from '../components/project/project-form-modal';
 import ProjectHeaderActions from '../components/project/project-header-actions';
 
 var ProjectPageActive = React.createClass({
-  displayName: 'ProjectPageActive',
 
   propTypes: {
     _invalidateProjectItem: T.func,
@@ -28,9 +30,11 @@ var ProjectPageActive = React.createClass({
     _deleteProject: T.func,
     _showGlobalLoading: T.func,
     _hideGlobalLoading: T.func,
+    _fetchProjectScenarios: T.func,
 
     params: T.object,
     project: T.object,
+    scenarios: T.object,
     projectForm: T.object
   },
 
@@ -38,6 +42,21 @@ var ProjectPageActive = React.createClass({
     return {
       projectFormModal: false
     };
+  },
+
+  // Flag variables to wait for the project and scenario to load.
+  projectLoaded: false,
+  scenarioLoaded: false,
+  loadingVisible: false,
+
+  showLoading: function () {
+    this.loadingVisible = true;
+    this.props._showGlobalLoading();
+  },
+
+  hideLoading: function () {
+    this.loadingVisible = false;
+    this.props._hideGlobalLoading();
   },
 
   closeModal: function () {
@@ -52,7 +71,7 @@ var ProjectPageActive = React.createClass({
         this.setState({projectFormModal: true});
         break;
       case 'delete':
-        this.props._showGlobalLoading();
+        this.showLoading();
         this.props._deleteProject(this.props.params.projectId);
         break;
       default:
@@ -61,8 +80,11 @@ var ProjectPageActive = React.createClass({
   },
 
   componentDidMount: function () {
-    this.props._showGlobalLoading();
+    this.projectLoaded = false;
+    this.scenarioLoaded = false;
+    this.showLoading();
     this.props._fetchProjectItem(this.props.params.projectId);
+    this.props._fetchProjectScenarios(this.props.params.projectId);
   },
 
   componentWillUnmount: function () {
@@ -71,7 +93,14 @@ var ProjectPageActive = React.createClass({
 
   componentWillReceiveProps: function (nextProps) {
     if (this.props.project.fetching && !nextProps.project.fetching) {
-      this.props._hideGlobalLoading();
+      this.projectLoaded = true;
+    }
+    if (this.props.scenarios.fetching && !nextProps.scenarios.fetching) {
+      this.scenarioLoaded = true;
+    }
+
+    if (this.projectLoaded && this.scenarioLoaded) {
+      this.hideLoading();
     }
 
     var error = nextProps.project.error;
@@ -87,28 +116,86 @@ var ProjectPageActive = React.createClass({
     }
 
     if (this.props.params.projectId !== nextProps.params.projectId) {
+      this.projectLoaded = false;
+      this.scenarioLoaded = false;
+      this.showLoading();
       this.props._fetchProjectItem(nextProps.params.projectId);
+      this.props._fetchProjectScenarios(this.props.params.projectId);
     }
 
     if (this.props.projectForm.action === 'delete' &&
         this.props.projectForm.processing &&
         !nextProps.projectForm.processing) {
-      this.props._hideGlobalLoading();
+      this.hideLoading();
       if (nextProps.projectForm.error) {
         return hashHistory.push(`/${getLanguage()}/projects`);
       }
     }
   },
 
+  renderFiles: function () {
+    let projectFiles = this.props.project.data.files;
+    let projectId = this.props.project.data.id;
+
+    return (
+      <dl>
+        {projectFiles.map(file => ([
+          <dt key={`${file.name}-label`}>{fileTypesMatrix[file.type].display}</dt>,
+          <dd key={`${file.name}-desc`}>{fileTypesMatrix[file.type].description}</dd>,
+          <dd key={`${file.name}-down`}><a href={`${config.api}/projects/${projectId}/files/${file.id}`} title={t('Download file')} className='psba-download'><span>{t('Download')}</span></a></dd>
+        ]))}
+      </dl>
+    );
+  },
+
+  renderScenarioCard: function (scenario) {
+    let {id, project_id: projectId, name, description} = scenario;
+
+    return (
+      <li key={`scenario-${id}`}>
+        <article className='scenario scenario--card card' id={`scenario-${id}`}>
+          <div className='card__contents'>
+            <header className='card__header'>
+              <div className='card__headline'>
+                <Link to={`/projects/${projectId}/scenarios/${id}`} title={t('View scenario')} className='link-wrapper'>
+                  <h1 className='card__title'>{name}</h1>
+                </Link>
+                <p className='card__subtitle'>Scenario subtitle</p>
+              </div>
+            </header>
+            <div className='card__body'>
+              {description ? (
+                <div className='card__summary'>
+                  <p>{description}</p>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </article>
+      </li>
+    );
+  },
+
+  renderScenariosList: function () {
+    let data = this.props.scenarios.data.results;
+    return (
+      <ol className='card-list scenarios-card-list'>
+        {data.map(scenario => this.renderScenarioCard(scenario))}
+        <li>
+          <button className='card__button card__button--add'><span>New scenario</span></button>
+        </li>
+      </ol>
+    );
+  },
   render: function () {
-    let { fetched, fetching, error, data, receivedAt } = this.props.project;
+    let { fetched: fetchedProject, fetching: fetchingProject, error: errorProject, data: dataProject } = this.props.project;
+    let { fetched: fetchedScenario, fetching: fetchingScenario, error: errorScenario } = this.props.scenarios;
 
-    if (!fetched && !fetching) {
-      return null;
-    }
+    let fetched = fetchedProject && fetchedScenario;
+    let fetching = fetchingProject && fetchingScenario;
+    let error = errorProject || errorScenario;
 
-    // Show if it's the first loading time.
-    if (!receivedAt && fetching) {
+    if (!fetched && !fetching || !fetched && fetching) {
       return null;
     }
 
@@ -122,10 +209,10 @@ var ProjectPageActive = React.createClass({
           <div className='inner'>
             <div className='inpage__headline'>
               <Breadcrumb />
-              <h1 className='inpage__title'>{data.name}</h1>
+              <h1 className='inpage__title'>{dataProject.name}</h1>
             </div>
             <ProjectHeaderActions
-              project={data}
+              project={dataProject}
               onAction={this.onProjectAction} />
           </div>
         </header>
@@ -133,51 +220,21 @@ var ProjectPageActive = React.createClass({
           <div className='inner'>
 
             <section className='diptych diptych--info'>
-              <h2 className='diptych__title'>Description</h2>
-              <div className='prose'>
-                <p>Lorem ipsum dolor sit amet description.</p>
-              </div>
+              {dataProject.description ? <h2 className='diptych__title'>Description</h2> : null}
+              {dataProject.description ? (
+                <div className='prose'>
+                  <p>{dataProject.description}</p>
+                </div>
+              ) : null}
 
               <h2 className='diptych__title'>Data</h2>
-              <dl>
-                <dt>Description</dt>
-                <dd>Lorem ipsum dolor sit amet description.</dd>
-                <dt>Description</dt>
-                <dd>Lorem ipsum dolor sit amet description.</dd>
-                <dt>Description</dt>
-                <dd>Lorem ipsum dolor sit amet description.</dd>
-              </dl>
+              {this.renderFiles()}
 
-              {prettyPrint(data)}
             </section>
 
             <section className='diptych diptych--scenarios'>
               <h2 className='diptych__title'>Scenarios</h2>
-
-              <ol className='card-list scenarios-card-list'>
-                <li>
-                  <article className='scenario scenario--card card' id={`scenario-1234`}>
-                    <div className='card__contents'>
-                      <header className='card__header'>
-                        <div className='card__headline'>
-                          <Link to='' title='View scenario' className='link-wrapper'>
-                            <h1 className='card__title'>Scenario title</h1>
-                          </Link>
-                          <p className='card__subtitle'>Scenario subtitle</p>
-                        </div>
-                      </header>
-                      <div className='card__body'>
-                        <div className='card__summary'>
-                          <p>Lorem ipsum dolor sit amet description.</p>
-                        </div>
-                      </div>
-                    </div>
-                  </article>
-                </li>
-                <li>
-                  <button className='card__button card__button--add'><span>New scenario</span></button>
-                </li>
-              </ol>
+              {this.renderScenariosList()}
             </section>
 
           </div>
@@ -190,7 +247,7 @@ var ProjectPageActive = React.createClass({
           revealed={this.state.projectFormModal}
           onCloseClick={this.closeModal}
           projectForm={this.props.projectForm}
-          projectData={data}
+          projectData={dataProject}
           saveProject={this.props._patchProject}
         />
 
@@ -205,7 +262,7 @@ var ProjectPageActive = React.createClass({
 function selector (state) {
   return {
     project: state.projectItem,
-    scenario: state.scenarioItem,
+    scenarios: state.scenarios,
     projectForm: state.projectForm
   };
 }
@@ -217,7 +274,8 @@ function dispatcher (dispatch) {
     _patchProject: (...args) => dispatch(patchProject(...args)),
     _deleteProject: (...args) => dispatch(deleteProject(...args)),
     _showGlobalLoading: (...args) => dispatch(showGlobalLoading(...args)),
-    _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args))
+    _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args)),
+    _fetchProjectScenarios: (...args) => dispatch(fetchProjectScenarios(...args))
   };
 }
 
