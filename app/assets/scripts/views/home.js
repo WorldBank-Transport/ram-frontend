@@ -60,6 +60,15 @@ var Home = React.createClass({
       ? `/${getLanguage()}/projects/${project.id}/setup`
       : `/${getLanguage()}/projects/${project.id}`;
 
+    let cardSubtitle;
+    if (project.status === 'pending') {
+      cardSubtitle = t('Pending scenarios');
+    } else {
+      cardSubtitle = project.scenarioCount === 1
+        ? t('1 scenario')
+        : t('{count} scenarios', {count: project.scenarioCount});
+    }
+
     return (
       <li key={project.id}>
         <article className='project project--card card' id={`project-${project.id}`}>
@@ -76,7 +85,7 @@ var Home = React.createClass({
                 <Link to={projectUrl} title='View project' className='link-wrapper'>
                   <h1 className='card__title'>{project.name}</h1>
                 </Link>
-                <p className='card__subtitle'>{project.status === 'pending' ? 'Pending scenarios' : 'X scenarios'}</p>
+                <p className='card__subtitle'>{cardSubtitle}</p>
               </div>
             </header>
             <div className='card__body'>
