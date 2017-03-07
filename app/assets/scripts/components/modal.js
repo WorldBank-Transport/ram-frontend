@@ -1,6 +1,8 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import { t } from '../utils/i18n';
+
 
 var Modal = React.createClass({
   displayName: 'Modal',
@@ -153,7 +155,7 @@ var Modal = React.createClass({
               {this.getChild('ModalBody')}
               {this.getChild('ModalFooter')}
             </div>
-            <button className='modal__button-dismiss' title='Close' onClick={this.onCloseClick}><span>Dismiss</span></button>
+            <button className='modal__button-dismiss' title={t('Close')} onClick={this.onCloseClick}><span>Dismiss</span></button>
           </section>
         ) : null}
 

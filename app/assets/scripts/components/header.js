@@ -17,7 +17,7 @@ const Header = React.createClass({
       <header className='page__header' role='banner'>
         <div className='inner'>
           <div className='page__headline'>
-            <Link to={`/${getLanguage()}/`} title='Visit page'><h1 className='page__title'>Rural Road Accessibility</h1></Link>
+            <Link to={`/${getLanguage()}/`} title={t('Visit page')}><h1 className='page__title'>{t('Rural Road Accessibility')}</h1></Link>
           </div>
           <nav className='page__prime-nav' role='navigation'>
 

@@ -182,7 +182,7 @@ var ProjectPageActive = React.createClass({
       <ol className='card-list scenarios-card-list'>
         {data.map(scenario => this.renderScenarioCard(scenario))}
         <li>
-          <button className='card__button card__button--add'><span>New scenario</span></button>
+          <button className='card__button card__button--add'><span>{t('New scenario')}</span></button>
         </li>
       </ol>
     );
@@ -220,20 +220,20 @@ var ProjectPageActive = React.createClass({
           <div className='inner'>
 
             <section className='diptych diptych--info'>
-              {dataProject.description ? <h2 className='diptych__title'>Description</h2> : null}
+              {dataProject.description ? <h2 className='diptych__title'>{t('Description')}</h2> : null}
               {dataProject.description ? (
                 <div className='prose'>
                   <p>{dataProject.description}</p>
                 </div>
               ) : null}
 
-              <h2 className='diptych__title'>Data</h2>
+              <h2 className='diptych__title'>{t('Data')}</h2>
               {this.renderFiles()}
 
             </section>
 
             <section className='diptych diptych--scenarios'>
-              <h2 className='diptych__title'>Scenarios</h2>
+              <h2 className='diptych__title'>{t('Scenarios')}</h2>
               {this.renderScenariosList()}
             </section>
 
