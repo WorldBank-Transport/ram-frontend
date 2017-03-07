@@ -123,6 +123,7 @@
   margin: 0;
   padding: 0;
   display: flex;
+  flex-wrap: wrap;
 
   > li {
     @include column(6/12, $cycle: 2);
