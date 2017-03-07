@@ -5,7 +5,14 @@ import { Link } from 'react-router';
 import c from 'classnames';
 import TimeAgo from 'timeago-react';
 
-import { invalidateProjects, fetchProjects, postProject, showGlobalLoading, hideGlobalLoading } from '../actions';
+import {
+  invalidateProjects,
+  fetchProjects,
+  postProject,
+  showGlobalLoading,
+  hideGlobalLoading,
+  resetProjectFrom
+} from '../actions';
 import { prettyPrint } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
 
@@ -25,6 +32,7 @@ var Home = React.createClass({
     _postProject: T.func,
     _showGlobalLoading: T.func,
     _hideGlobalLoading: T.func,
+    _resetProjectFrom: T.func,
 
     projects: T.object,
     projectForm: T.object
@@ -157,6 +165,7 @@ var Home = React.createClass({
           onCloseClick={this.closeModal}
           projectForm={this.props.projectForm}
           saveProject={this.props._postProject}
+          resetForm={this.props._resetProjectFrom}
         />
       </section>
     );
@@ -179,7 +188,8 @@ function dispatcher (dispatch) {
     _fetchProjects: (...args) => dispatch(fetchProjects(...args)),
     _postProject: (...args) => dispatch(postProject(...args)),
     _showGlobalLoading: (...args) => dispatch(showGlobalLoading(...args)),
-    _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args))
+    _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args)),
+    _resetProjectFrom: (...args) => dispatch(resetProjectFrom(...args))
   };
 }
 

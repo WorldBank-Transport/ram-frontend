@@ -197,6 +197,12 @@ export function patchScenario (projectId, data) {
   return patchAndDispatch(`${config.api}/projects/${projectId}`, data, startSubmitScenario, finishSubmitScenario);
 }
 
+// The information needed to finish the project setup is basically related
+// to a scenario, therefore we can use the same actions.
+export function finishProjectSetup (projectId, data) {
+  return postAndDispatch(`${config.api}/projects/${projectId}/finish-setup`, data, startSubmitScenario, finishSubmitScenario);
+}
+
 // Fetcher function
 
 function getAndDispatch (url, requestFn, receiveFn) {
@@ -255,6 +261,11 @@ export function fetchJSON (url, options) {
         return response.status >= 400
           ? Promise.reject(json)
           : Promise.resolve(json);
+      });
+    }, err => {
+      console.log('fetchJSON error', err);
+      return Promise.reject({
+        error: err.message
       });
     });
 }

@@ -16,6 +16,7 @@ const ProjectFormModal = React.createClass({
 
     projectForm: T.object,
     saveProject: T.func,
+    resetForm: T.func,
     _showGlobalLoading: T.func,
     _hideGlobalLoading: T.func,
 
@@ -62,7 +63,12 @@ const ProjectFormModal = React.createClass({
     }
   },
 
+  componentWillUnmount: function () {
+    this.props.resetForm();
+  },
+
   onClose: function () {
+    this.props.resetForm();
     this.setState(this.getInitialState());
     this.props.onCloseClick();
   },
@@ -80,7 +86,9 @@ const ProjectFormModal = React.createClass({
     return control;
   },
 
-  onSubmit: function () {
+  onSubmit: function (e) {
+    e.preventDefault && e.preventDefault();
+
     if (this.checkErrors()) {
       var payload = {
         name: this.state.data.name,
@@ -142,7 +150,7 @@ const ProjectFormModal = React.createClass({
 
           {this.renderError()}
 
-          <form className={c({'disable': processing})}>
+          <form className={c({'disable': processing})} onSubmit={this.onSubmit}>
             <div className='form__group'>
               <label className='form__label' htmlFor='project-name'>{t('Project name')}</label>
               <input type='text' className='form__control form__control--medium' id='project-name' name='project-name' placeholder={t('Untitled project')} value={this.state.data.name} onChange={this.onFieldChange.bind(null, 'name')} />

@@ -15,10 +15,11 @@ const ScenarioEditModal = React.createClass({
     onCloseClick: T.func,
 
     scenarioForm: T.object,
-    ghostScenario: T.bool,
+    finishingSetup: T.bool,
     scenarioData: T.object,
 
     saveScenario: T.func,
+    resetForm: T.func,
     _showGlobalLoading: T.func,
     _hideGlobalLoading: T.func
   },
@@ -36,32 +37,38 @@ const ScenarioEditModal = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
+    console.log('nextProps.scenarioForm', nextProps.scenarioForm);
     if (this.props.scenarioForm.processing && !nextProps.scenarioForm.processing) {
       this.props._hideGlobalLoading();
     }
 
-    // if (this.props.scenarioForm.action === 'edit' &&
-    //     this.props.scenarioForm.processing &&
-    //     !nextProps.scenarioForm.processing &&
-    //     !nextProps.scenarioForm.error) {
-    //   if (this.props.ghostScenario) {
-    //     hashHistory.push(`${getLanguage()}/projects/${nextProps.scenarioData.project_id}/scenarios/${nextProps.scenarioData.id}`);
-    //   } else {
-    //     this.onClose();
-    //   }
-    //   return;
-    // }
+    if (this.props.scenarioForm.action === 'edit' &&
+        this.props.scenarioForm.processing &&
+        !nextProps.scenarioForm.processing &&
+        !nextProps.scenarioForm.error) {
+      if (this.props.finishingSetup) {
+        hashHistory.push(`${getLanguage()}/projects/${nextProps.scenarioData.project_id}`);
+      } else {
+        this.onClose();
+      }
+      return;
+    }
 
-    // if (!this.props.revealed && nextProps.revealed && !this.props.ghostScenario) {
-    //   // Modal was revealed. Be sure the data is correct.
-    //   this.setState({data: {
-    //     name: _.get(nextProps.scenarioData, 'name', ''),
-    //     description: _.get(nextProps.scenarioData, 'description', '') || ''
-    //   }});
-    // }
+    if (!this.props.revealed && nextProps.revealed && !this.props.finishingSetup) {
+      // Modal was revealed. Be sure the data is correct.
+      this.setState({data: {
+        name: _.get(nextProps.scenarioData, 'name', ''),
+        description: _.get(nextProps.scenarioData, 'description', '') || ''
+      }});
+    }
+  },
+
+  componentWillUnmount: function () {
+    this.props.resetForm();
   },
 
   onClose: function () {
+    this.props.resetForm();
     this.setState(this.getInitialState());
     this.props.onCloseClick();
   },
@@ -79,16 +86,24 @@ const ScenarioEditModal = React.createClass({
     return control;
   },
 
-  onSubmit: function () {
+  onSubmit: function (e) {
+    e.preventDefault && e.preventDefault();
+
     if (this.checkErrors()) {
-      var payload = {
-        name: this.state.data.name,
-        description: this.state.data.description || null
-      };
+      var payload = {};
 
       this.props._showGlobalLoading();
 
-      // this.props.saveScenario(this.props.projectData.id, payload);
+      if (this.props.finishingSetup) {
+        payload = {
+          scenarioName: this.state.data.name
+        };
+        if (this.state.data.description) {
+          payload.scenarioDescription = this.state.data.description;
+        }
+      }
+
+      this.props.saveScenario(this.props.scenarioData.project_id, payload);
     }
   },
 
@@ -123,19 +138,17 @@ const ScenarioEditModal = React.createClass({
 
         <ModalHeader>
           <div className='modal__headline'>
-            <h1 className='modal__title'>{this.props.ghostScenario ? t('Create new scenario') : t('Edit scenario metadata')}</h1>
+            <h1 className='modal__title'>{this.props.finishingSetup ? t('Finish project setup') : t('Edit scenario metadata')}</h1>
             <div className='modal__description'>
-              <p>{this.props.ghostScenario ? t('Name and describe your new scenario.') : t('Edit the attributes of your scenario.')}</p>
+              <p>{this.props.finishingSetup ? t('Finish the project setup by creating the first scenario') : t('Edit the attributes of your scenario.')}</p>
             </div>
           </div>
         </ModalHeader>
         <ModalBody>
 
-          {processing ? <p>Processing...</p> : null}
-
           {this.renderError()}
 
-          <form className={c({'disable': processing})}>
+          <form className={c({'disable': processing})} onSubmit={this.onSubmit}>
             <div className='form__group'>
               <label className='form__label' htmlFor='scenario-name'>{t('Scenario name')}</label>
               <input type='text' className='form__control form__control--medium' id='scenario-name' name='scenario-name' placeholder={t('Untitled scenario')} value={this.state.data.name} onChange={this.onFieldChange.bind(null, 'name')} />
@@ -153,7 +166,7 @@ const ScenarioEditModal = React.createClass({
         </ModalBody>
         <ModalFooter>
           <button className='mfa-xmark' type='button' onClick={this.onClose}><span>{t('Cancel')}</span></button>
-          <button className='mfa-tick' type='submit' onClick={this.onSubmit}><span>{this.props.ghostScenario ? t('Create') : t('Save')}</span></button>
+          <button className='mfa-tick' type='submit' onClick={this.onSubmit}><span>{this.props.finishingSetup ? t('Create scenario') : t('Save')}</span></button>
         </ModalFooter>
       </Modal>
     );

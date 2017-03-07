@@ -13,7 +13,10 @@ import {
   patchProject,
   deleteProject,
   showGlobalLoading,
-  hideGlobalLoading
+  hideGlobalLoading,
+  finishProjectSetup,
+  resetProjectFrom,
+  resetScenarioFrom
 } from '../actions';
 import { prettyPrint } from '../utils/utils';
 import { getLanguage } from '../utils/i18n';
@@ -40,6 +43,9 @@ var ProjectPagePending = React.createClass({
     _deleteProject: T.func,
     _showGlobalLoading: T.func,
     _hideGlobalLoading: T.func,
+    _finishProjectSetup: T.func,
+    _resetProjectFrom: T.func,
+    _resetScenarioFrom: T.func,
 
     params: T.object,
     scenario: T.object,
@@ -270,17 +276,19 @@ var ProjectPagePending = React.createClass({
           projectForm={this.props.projectForm}
           projectData={data}
           saveProject={this.props._patchProject}
+          resetForm={this.props._resetProjectFrom}
         />
 
         <ScenarioEditModal
-          ghostScenario
+          finishingSetup
           _showGlobalLoading={this.props._showGlobalLoading}
           _hideGlobalLoading={this.props._hideGlobalLoading}
           revealed={this.state.scenarioFormModal}
           onCloseClick={this.closeScenarioModal}
           scenarioData={this.props.scenario.data}
           scenarioForm={this.props.scenarioForm}
-          saveScenario={() => {}}
+          saveScenario={this.props._finishProjectSetup}
+          resetForm={this.props._resetScenarioFrom}
         />
 
       </section>
@@ -296,7 +304,7 @@ function selector (state) {
     project: state.projectItem,
     scenario: state.scenarioItem,
     projectForm: state.projectForm,
-    scenarioForm: state.projectForm
+    scenarioForm: state.scenarioForm
   };
 }
 
@@ -311,7 +319,10 @@ function dispatcher (dispatch) {
     _patchProject: (...args) => dispatch(patchProject(...args)),
     _deleteProject: (...args) => dispatch(deleteProject(...args)),
     _showGlobalLoading: (...args) => dispatch(showGlobalLoading(...args)),
-    _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args))
+    _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args)),
+    _finishProjectSetup: (...args) => dispatch(finishProjectSetup(...args)),
+    _resetProjectFrom: (...args) => dispatch(resetProjectFrom(...args)),
+    _resetScenarioFrom: (...args) => dispatch(resetScenarioFrom(...args))
   };
 }
 
