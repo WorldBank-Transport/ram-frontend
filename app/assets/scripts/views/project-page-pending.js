@@ -16,36 +16,14 @@ import {
   hideGlobalLoading
 } from '../actions';
 import { prettyPrint } from '../utils/utils';
-import { t, getLanguage } from '../utils/i18n';
+import { getLanguage } from '../utils/i18n';
+import { fileTypesMatrix } from '../utils/constants';
 
 import Breadcrumb from '../components/breadcrumb';
 import ProjectFileInput from '../components/project/project-file-input';
 import ProjectFileCard from '../components/project/project-file-card';
 import ProjectFormModal from '../components/project/project-form-modal';
 import ProjectHeaderActions from '../components/project/project-header-actions';
-
-const fileTypesMatrix = {
-  profile: {
-    display: t('Profile'),
-    description: t('The profile is used to convert osm to osrm')
-  },
-  'admin-bounds': {
-    display: t('Administrative Boundaries'),
-    description: t('GeoJSON file containing the administrative boundaries')
-  },
-  villages: {
-    display: t('Village and population data'),
-    description: t('Villages GeoJSON with population data')
-  },
-  poi: {
-    display: t('Points of interest'),
-    description: t('GeoJSON for the points of interest (banks, hospitals...)')
-  },
-  'road-network': {
-    display: t('Road Network'),
-    description: t('Road network to use')
-  }
-};
 
 var ProjectPagePending = React.createClass({
   displayName: 'ProjectPagePending',
