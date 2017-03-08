@@ -189,7 +189,7 @@ const ScenarioCreateModal = React.createClass({
 
           {this.renderError()}
 
-          <form className={c({'disable': processing})} onSubmit={this.onSubmit}>
+          <form className={c('form', {'disable': processing})} onSubmit={this.onSubmit}>
             <div className='form__group'>
               <label className='form__label' htmlFor='scenario-name'>{t('Scenario name')}</label>
               <input type='text' className='form__control form__control--medium' id='scenario-name' name='scenario-name' placeholder={t('Untitled scenario')} value={this.state.data.name} onChange={this.onFieldChange.bind(null, 'name')} />
@@ -219,30 +219,22 @@ const ScenarioCreateModal = React.createClass({
               </label>
             </div>
 
-            <ReactCSSTransitionGroup
-              component='div'
-              transitionName='form__group'
-              transitionEnterTimeout={300}
-              transitionLeaveTimeout={300} >
+            {this.state.data.roadNetworkSource === 'clone' ? (
+            <div className='form__group form__group--attached'>
+              <label className='form__label visually-hidden' htmlFor='road-network-clone-options'>{t('Clone from scenario')}</label>
+              <select name='road-network-clone-options' id='road-network-clone-options' className='form__control' value={this.state.data.roadNetworkSourceScenario} onChange={this.onFieldChange.bind(null, 'roadNetworkSourceScenario')}>
+                {this.props.scenarioList.map(scenario => <option key={scenario.id} value={scenario.id}>{scenario.name}</option>)}
+              </select>
+            </div>
+            ) : null}
 
-              {this.state.data.roadNetworkSource === 'clone' ? (
-              <div className='form__group'>
-                <label className='form__label visually-hidden' htmlFor='road-network-clone-options'>{t('Clone from scenario')}</label>
-                <select name='road-network-clone-options' id='road-network-clone-options' className='form__control' value={this.state.data.roadNetworkSourceScenario} onChange={this.onFieldChange.bind(null, 'roadNetworkSourceScenario')}>
-                  {this.props.scenarioList.map(scenario => <option key={scenario.id} value={scenario.id}>{scenario.name}</option>)}
-                </select>
-              </div>
-              ) : null}
-
-              {this.state.data.roadNetworkSource === 'new' ? (
-              <div className='form__group'>
-                <label className='form__label visually-hidden' htmlFor='road-network-new-file'>{t('New road network')}</label>
-                <input type='file' name='road-network-new-file' id='road-network-new-file' className='form__control--upload' ref='file' onChange={this.onFileSelected} />
-                {this.state.errors.roadNetworkSource ? <p className='form__error'>{t('A file is required.')}</p> : null }
-              </div>
-              ) : null}
-
-          </ReactCSSTransitionGroup>
+            {this.state.data.roadNetworkSource === 'new' ? (
+            <div className='form__group form__group--attached'>
+              <label className='form__label visually-hidden' htmlFor='road-network-new-file'>{t('New road network')}</label>
+              <input type='file' name='road-network-new-file' id='road-network-new-file' className='form__control--upload' ref='file' onChange={this.onFileSelected} />
+              {this.state.errors.roadNetworkSource ? <p className='form__error'>{t('A file is required.')}</p> : null }
+            </div>
+            ) : null}
 
           </form>
         </ModalBody>

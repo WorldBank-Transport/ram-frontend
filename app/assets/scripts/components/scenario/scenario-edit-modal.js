@@ -147,7 +147,7 @@ const ScenarioEditModal = React.createClass({
 
           {this.renderError()}
 
-          <form className={c({'disable': processing})} onSubmit={this.onSubmit}>
+          <form className={c('form', {'disable': processing})} onSubmit={this.onSubmit}>
             <div className='form__group'>
               <label className='form__label' htmlFor='scenario-name'>{t('Scenario name')}</label>
               <input type='text' className='form__control form__control--medium' id='scenario-name' name='scenario-name' placeholder={t('Untitled scenario')} value={this.state.data.name} onChange={this.onFieldChange.bind(null, 'name')} />

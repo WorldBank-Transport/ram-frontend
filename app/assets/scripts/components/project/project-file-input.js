@@ -102,7 +102,7 @@ const ProjectFileInput = React.createClass({
         description={this.props.description}
         complete={false} >
 
-        <form>
+        <form className='form'>
           <div className='form__group'>
             <label className='form__label' htmlFor='project-name'>{t('File')}</label>
             <input type='file' className='form__control--upload' ref='file' onChange={this.onFileSelected} />
