@@ -21,6 +21,7 @@ import config from '../config';
 import Breadcrumb from '../components/breadcrumb';
 import ProjectFormModal from '../components/project/project-form-modal';
 import ProjectHeaderActions from '../components/project/project-header-actions';
+import ScenarioCreateModal from '../components/scenario/scenario-create-modal';
 
 var ProjectPageActive = React.createClass({
 
@@ -42,7 +43,8 @@ var ProjectPageActive = React.createClass({
 
   getInitialState: function () {
     return {
-      projectFormModal: false
+      projectFormModal: false,
+      scenarioCreateModal: true
     };
   },
 
@@ -61,8 +63,15 @@ var ProjectPageActive = React.createClass({
     this.props._hideGlobalLoading();
   },
 
-  closeModal: function () {
-    this.setState({projectFormModal: false});
+  closeModal: function (what) {
+    switch (what) {
+      case 'project-form':
+        this.setState({projectFormModal: false});
+        break;
+      case 'new-scenario':
+        this.setState({scenarioCreateModal: false});
+        break;
+    }
   },
 
   onProjectAction: function (what, event) {
@@ -75,6 +84,9 @@ var ProjectPageActive = React.createClass({
       case 'delete':
         this.showLoading();
         this.props._deleteProject(this.props.params.projectId);
+        break;
+      case 'new-scenario':
+        this.setState({scenarioCreateModal: true});
         break;
       default:
         throw new Error(`Project action not implemented: ${what}`);
@@ -186,7 +198,7 @@ var ProjectPageActive = React.createClass({
       <ol className='card-list scenarios-card-list'>
         {data.map(scenario => this.renderScenarioCard(scenario))}
         <li>
-          <button className='card__button card__button--add'><span>{t('New scenario')}</span></button>
+          <button className='card__button card__button--add' onClick={() => this.setState({scenarioCreateModal: true})}><span>{t('New scenario')}</span></button>
         </li>
       </ol>
     );
@@ -249,9 +261,20 @@ var ProjectPageActive = React.createClass({
           _showGlobalLoading={this.props._showGlobalLoading}
           _hideGlobalLoading={this.props._hideGlobalLoading}
           revealed={this.state.projectFormModal}
-          onCloseClick={this.closeModal}
+          onCloseClick={this.closeModal.bind(null, 'project-form')}
           projectForm={this.props.projectForm}
           projectData={dataProject}
+          saveProject={this.props._patchProject}
+          resetForm={this.props._resetProjectFrom}
+        />
+
+        <ScenarioCreateModal
+          _showGlobalLoading={this.props._showGlobalLoading}
+          _hideGlobalLoading={this.props._hideGlobalLoading}
+          revealed={this.state.scenarioCreateModal}
+          onCloseClick={this.closeModal.bind(null, 'new-scenario')}
+          scenarioForm={this.props.projectForm}
+          scenarioList={this.props.scenarios.data.results}
           saveProject={this.props._patchProject}
           resetForm={this.props._resetProjectFrom}
         />
