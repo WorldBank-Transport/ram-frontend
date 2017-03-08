@@ -110,7 +110,14 @@
   overflow: hidden; // Temporary
 
   .prose {
-    margin-bottom: $global-spacing * 3;
+    margin-bottom: $global-spacing * 2;
+  }
+
+  dl {
+
+    dt:not(:first-child) {
+      margin-top: $global-spacing * 2;
+    }
   }
 }
 
@@ -123,10 +130,11 @@
   margin: 0;
   padding: 0;
   display: flex;
+  flex-wrap: wrap;
 
   > li {
     @include column(6/12, $cycle: 2);
-    margin-top: $global-spacing * 2;
+    margin-top: $global-spacing;
     display: flex;
 
     &:nth-child(1),

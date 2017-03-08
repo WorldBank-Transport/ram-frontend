@@ -60,6 +60,15 @@ var Home = React.createClass({
       ? `/${getLanguage()}/projects/${project.id}/setup`
       : `/${getLanguage()}/projects/${project.id}`;
 
+    let cardSubtitle;
+    if (project.status === 'pending') {
+      cardSubtitle = t('Pending scenarios');
+    } else {
+      cardSubtitle = project.scenarioCount === 1
+        ? t('1 scenario')
+        : t('{count} scenarios', {count: project.scenarioCount});
+    }
+
     return (
       <li key={project.id}>
         <article className='project project--card card' id={`project-${project.id}`}>
@@ -67,16 +76,16 @@ var Home = React.createClass({
             <figure className='card__media'>
               <Link to={projectUrl} title='View project' className='link-wrapper'>
                 <div className='card__thumbnail'>
-                  <img alt='Project thumbnail' width='640' height='320' src='/assets/graphics/layout/projects-thumbnail-placeholder.png' />
+                  <img alt={t('Project thumbnail')} width='640' height='320' src='/assets/graphics/layout/projects-thumbnail-placeholder.png' />
                 </div>
               </Link>
             </figure>
             <header className='card__header'>
               <div className='card__headline'>
-                <Link to={projectUrl} title='View project' className='link-wrapper'>
+                <Link to={projectUrl} title={t('View project')} className='link-wrapper'>
                   <h1 className='card__title'>{project.name}</h1>
                 </Link>
-                <p className='card__subtitle'>{project.status === 'pending' ? 'Pending scenarios' : 'X scenarios'}</p>
+                <p className='card__subtitle'>{cardSubtitle}</p>
               </div>
             </header>
             <div className='card__body'>
@@ -117,7 +126,7 @@ var Home = React.createClass({
       <ol className='card-list projects-card-list'>
         {data.results.map(o => this.renderProjectListItem(o))}
         <li>
-          <button title='Create new project' className='card__button card__button--add' type='button' onClick={this.openModal}><span>New project</span></button>
+          <button title={t('Create new project')} className='card__button card__button--add' type='button' onClick={this.openModal}><span>{t('New project')}</span></button>
         </li>
       </ol>
     );
@@ -132,7 +141,7 @@ var Home = React.createClass({
               <h1 className='inpage__title'>{t('Projects')}</h1>
             </div>
             <div className='inpage__actions'>
-              <button title='Create new project' className='ipa-plus' type='button' onClick={this.openModal}><span>New project</span></button>
+              <button title={t('Create new project')} className='ipa-plus' type='button' onClick={this.openModal}><span>{t('New project')}</span></button>
             </div>
           </div>
         </header>

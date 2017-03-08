@@ -11,7 +11,7 @@ const Breadcrumb = React.createClass({
   render: function () {
     return (
       <ol className='inpage__breadcrumb'>
-        <li><Link to={`/${getLanguage()}/projects`} title='Visit projects page'>{t('Projects')}</Link></li>
+        <li><Link to={`/${getLanguage()}/projects`} title={t('Visit projects page')}>{t('Projects')}</Link></li>
       </ol>
     );
   }

@@ -25,6 +25,10 @@ export const FINISH_SUBMIT_PROJECT = 'FINISH_SUBMIT_PROJECT';
 export const START_DELETE_PROJECT = 'START_DELETE_PROJECT';
 export const FINISH_DELETE_PROJECT = 'FINISH_DELETE_PROJECT';
 
+export const REQUEST_PROJECT_SCENARIOS = 'REQUEST_PROJECT_SCENARIOS';
+export const RECEIVE_PROJECT_SCENARIOS = 'RECEIVE_PROJECT_SCENARIOS';
+export const INVALIDATE_PROJECT_SCENARIOS = 'INVALIDATE_PROJECT_SCENARIOS';
+
 // App related. Global stuff
 
 export function showGlobalLoading () {
@@ -149,6 +153,24 @@ export function finishDeleteProject (project, error = null) {
 
 export function deleteProject (projectId) {
   return deleteAndDispatch(`${config.api}/projects/${projectId}`, startDeleteProject, finishDeleteProject);
+}
+
+// Projects
+
+export function invalidateProjectScenarios () {
+  return { type: INVALIDATE_PROJECT_SCENARIOS };
+}
+
+export function requestProjectScenarios () {
+  return { type: REQUEST_PROJECT_SCENARIOS };
+}
+
+export function receiveProjectScenarios (scenarios, error = null) {
+  return { type: RECEIVE_PROJECT_SCENARIOS, data: scenarios, error, receivedAt: Date.now() };
+}
+
+export function fetchProjectScenarios (projectId) {
+  return getAndDispatch(`${config.api}/projects/${projectId}/scenarios`, requestProjectScenarios, receiveProjectScenarios);
 }
 
 // Fetcher function

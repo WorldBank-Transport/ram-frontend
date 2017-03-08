@@ -37,7 +37,9 @@ export function t (string, replace = {}) {
       'About': 'About',
       'Help': 'Help',
       'Page not found': 'Page not found',
-      'The requested page does not exist or may have been removed.': 'The requested page does not exist or may have been removed.'
+      'The requested page does not exist or may have been removed.': 'The requested page does not exist or may have been removed.',
+      '1 scenarios': '1 scenarios',
+      '{count} scenarios': '{count} scenarios'
     },
     eo: {
       'Projects': 'Projektoj',
@@ -46,7 +48,9 @@ export function t (string, replace = {}) {
       'About': 'Pri',
       'Help': 'Helpi',
       'Page not found': 'Paĝo ne trovita',
-      'The requested page does not exist or may have been removed.': 'La petita paĝo ne ekzistas aŭ povas esti forigitaj.'
+      'The requested page does not exist or may have been removed.': 'La petita paĝo ne ekzistas aŭ povas esti forigitaj.',
+      '1 scenarios': '1 scenaro',
+      '{count} scenarios': '{count} scenaroj'
     }
   };
 
