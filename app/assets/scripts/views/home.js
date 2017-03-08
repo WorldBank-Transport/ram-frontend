@@ -98,7 +98,11 @@ var Home = React.createClass({
             </header>
             <div className='card__body'>
               <div className='card__summary'>
+                {project.description ? (
                 <p>{project.description}</p>
+                ) : (
+                <p>{t('No description.')}</p>
+                )}
               </div>
             </div>
             <footer className='card__footer'>

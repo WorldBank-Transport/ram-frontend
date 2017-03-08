@@ -166,11 +166,13 @@ var ProjectPageActive = React.createClass({
               </div>
             </header>
             <div className='card__body'>
-              {description ? (
-                <div className='card__summary'>
-                  <p>{description}</p>
-                </div>
-              ) : null}
+              <div className='card__summary'>
+                {description ? (
+                <p>{description}</p>
+                ) : (
+                <p>{t('No description.')}</p>
+                )}
+              </div>
             </div>
           </div>
         </article>
