@@ -470,3 +470,29 @@ label[for] {
     margin-bottom: 0;
   }
 }
+
+/* Form group animation
+   ========================================================================== */
+
+.form__group-enter {
+  transform: translate3d(0, 0, 0);
+  transition: opacity 0.32s ease 0s, visibility 0.32s linear 0s;
+  opacity: 0;
+  visibility: hidden;
+
+  &.form__group-enter-active {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.form__group-leave {
+  transition: opacity 0.32s ease 0s, visibility 0.32s linear 0s;
+  opacity: 1;
+  visibility: visible;
+
+  &.form__group-leave-active {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
