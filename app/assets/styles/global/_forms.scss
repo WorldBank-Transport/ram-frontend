@@ -17,8 +17,9 @@
   font-size: 1rem;
   line-height: 1.5rem;
   color: $base-font-color;
-  background: #fff;
+  background: none;
   border: 0;
+  border-radius: 0;
   font-family: inherit;
   box-shadow: inset 0 -1px 0 0 rgba($base-color, 0.16);
 
@@ -48,17 +49,43 @@
 
   /* Animation */
   transition: all 0.24s ease 0s;
-  transform: translateZ(0);
 }
 
-/* Select */
+
+/* Select form control
+   ========================================================================== */
 
 select.form__control {
-  box-shadow: inset 0 -1px 0 0 rgba($base-color, 0.16);
+  @include appearance(none);
+  padding-right: 1rem;
   cursor: pointer;
+
+  background: transparent url('data:image/svg+xml;utf8,' + urlencode('<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="10px" height="5px" viewBox="0 0 10 5" enable-background="new 0 0 10 5" xml:space="preserve"><g><polygon fill="#{$link-color}" points="5,5 0,0 10,0  "/></g></svg>')) center right no-repeat;
 }
 
-/* Textarea */
+/* IE specific */
+
+select.form__control::-ms-expand {
+  display: none;
+}
+
+/* Firefox specific */
+
+@-moz-document url-prefix() {
+  select.form__control {
+    text-overflow: '';
+    text-indent: -2px;
+  }
+}
+
+select.form__control:-moz-focusring {
+  color: transparent;
+  text-shadow: 0 0 0 $base-font-color;
+}
+
+
+/* Textarea form control
+   ========================================================================== */
 
 textarea.form__control {
   height: auto;

@@ -228,7 +228,7 @@ const ScenarioCreateModal = React.createClass({
               {this.state.data.roadNetworkSource === 'clone' ? (
               <div className='form__group'>
                 <label className='form__label visually-hidden' htmlFor='road-network-clone-options'>{t('Clone from scenario')}</label>
-                <select name='road-network-clone-options' id='road-network-clone-options' className='form__select' value={this.state.data.roadNetworkSourceScenario} onChange={this.onFieldChange.bind(null, 'roadNetworkSourceScenario')}>
+                <select name='road-network-clone-options' id='road-network-clone-options' className='form__control' value={this.state.data.roadNetworkSourceScenario} onChange={this.onFieldChange.bind(null, 'roadNetworkSourceScenario')}>
                   {this.props.scenarioList.map(scenario => <option key={scenario.id} value={scenario.id}>{scenario.name}</option>)}
                 </select>
               </div>
