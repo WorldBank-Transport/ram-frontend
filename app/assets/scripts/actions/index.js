@@ -29,6 +29,12 @@ export const REQUEST_PROJECT_SCENARIOS = 'REQUEST_PROJECT_SCENARIOS';
 export const RECEIVE_PROJECT_SCENARIOS = 'RECEIVE_PROJECT_SCENARIOS';
 export const INVALIDATE_PROJECT_SCENARIOS = 'INVALIDATE_PROJECT_SCENARIOS';
 
+export const RESET_SCENARIO_FORM = 'RESET_SCENARIO_FORM';
+export const START_SUBMIT_SCENARIO = 'START_SUBMIT_SCENARIO';
+export const FINISH_SUBMIT_SCENARIO = 'FINISH_SUBMIT_SCENARIO';
+export const START_DELETE_SCENARIO = 'START_DELETE_SCENARIO';
+export const FINISH_DELETE_SCENARIO = 'FINISH_DELETE_PROJECT';
+
 // App related. Global stuff
 
 export function showGlobalLoading () {
@@ -173,6 +179,30 @@ export function fetchProjectScenarios (projectId) {
   return getAndDispatch(`${config.api}/projects/${projectId}/scenarios`, requestProjectScenarios, receiveProjectScenarios);
 }
 
+// Scenario Form
+
+export function resetScenarioFrom () {
+  return { type: RESET_SCENARIO_FORM };
+}
+
+export function startSubmitScenario () {
+  return { type: START_SUBMIT_SCENARIO };
+}
+
+export function finishSubmitScenario (project, error = null) {
+  return { type: FINISH_SUBMIT_SCENARIO, data: project, error, receivedAt: Date.now() };
+}
+
+export function patchScenario (projectId, data) {
+  return patchAndDispatch(`${config.api}/projects/${projectId}`, data, startSubmitScenario, finishSubmitScenario);
+}
+
+// The information needed to finish the project setup is basically related
+// to a scenario, therefore we can use the same actions.
+export function finishProjectSetup (projectId, data) {
+  return postAndDispatch(`${config.api}/projects/${projectId}/finish-setup`, data, startSubmitScenario, finishSubmitScenario);
+}
+
 // Fetcher function
 
 function getAndDispatch (url, requestFn, receiveFn) {
@@ -231,6 +261,11 @@ export function fetchJSON (url, options) {
         return response.status >= 400
           ? Promise.reject(json)
           : Promise.resolve(json);
+      });
+    }, err => {
+      console.log('fetchJSON error', err);
+      return Promise.reject({
+        error: err.message
       });
     });
 }

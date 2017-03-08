@@ -10,7 +10,8 @@ import {
   deleteProject,
   showGlobalLoading,
   hideGlobalLoading,
-  fetchProjectScenarios
+  fetchProjectScenarios,
+  resetProjectFrom
 } from '../actions';
 import { prettyPrint } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
@@ -28,6 +29,7 @@ var ProjectPageActive = React.createClass({
     _fetchProjectItem: T.func,
     _patchProject: T.func,
     _deleteProject: T.func,
+    _resetProjectFrom: T.func,
     _showGlobalLoading: T.func,
     _hideGlobalLoading: T.func,
     _fetchProjectScenarios: T.func,
@@ -164,11 +166,13 @@ var ProjectPageActive = React.createClass({
               </div>
             </header>
             <div className='card__body'>
-              {description ? (
-                <div className='card__summary'>
-                  <p>{description}</p>
-                </div>
-              ) : null}
+              <div className='card__summary'>
+                {description ? (
+                <p>{description}</p>
+                ) : (
+                <p>{t('No description.')}</p>
+                )}
+              </div>
             </div>
           </div>
         </article>
@@ -249,6 +253,7 @@ var ProjectPageActive = React.createClass({
           projectForm={this.props.projectForm}
           projectData={dataProject}
           saveProject={this.props._patchProject}
+          resetForm={this.props._resetProjectFrom}
         />
 
       </section>
@@ -275,7 +280,8 @@ function dispatcher (dispatch) {
     _deleteProject: (...args) => dispatch(deleteProject(...args)),
     _showGlobalLoading: (...args) => dispatch(showGlobalLoading(...args)),
     _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args)),
-    _fetchProjectScenarios: (...args) => dispatch(fetchProjectScenarios(...args))
+    _fetchProjectScenarios: (...args) => dispatch(fetchProjectScenarios(...args)),
+    _resetProjectFrom: (...args) => dispatch(resetProjectFrom(...args))
   };
 }
 

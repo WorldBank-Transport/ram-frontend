@@ -13,7 +13,10 @@ import {
   patchProject,
   deleteProject,
   showGlobalLoading,
-  hideGlobalLoading
+  hideGlobalLoading,
+  finishProjectSetup,
+  resetProjectFrom,
+  resetScenarioFrom
 } from '../actions';
 import { prettyPrint } from '../utils/utils';
 import { getLanguage } from '../utils/i18n';
@@ -24,6 +27,7 @@ import ProjectFileInput from '../components/project/project-file-input';
 import ProjectFileCard from '../components/project/project-file-card';
 import ProjectFormModal from '../components/project/project-form-modal';
 import ProjectHeaderActions from '../components/project/project-header-actions';
+import ScenarioEditModal from '../components/scenario/scenario-edit-modal';
 
 var ProjectPagePending = React.createClass({
   displayName: 'ProjectPagePending',
@@ -39,23 +43,32 @@ var ProjectPagePending = React.createClass({
     _deleteProject: T.func,
     _showGlobalLoading: T.func,
     _hideGlobalLoading: T.func,
+    _finishProjectSetup: T.func,
+    _resetProjectFrom: T.func,
+    _resetScenarioFrom: T.func,
 
     params: T.object,
     scenario: T.object,
     project: T.object,
-    projectForm: T.object
+    projectForm: T.object,
+    scenarioForm: T.object
   },
 
   forceLoading: false,
 
   getInitialState: function () {
     return {
-      projectFormModal: false
+      projectFormModal: false,
+      scenarioFormModal: false
     };
   },
 
-  closeModal: function () {
+  closeProjectModal: function () {
     this.setState({projectFormModal: false});
+  },
+
+  closeScenarioModal: function () {
+    this.setState({scenarioFormModal: false});
   },
 
   onFileUploadComplete: function () {
@@ -87,6 +100,9 @@ var ProjectPagePending = React.createClass({
       case 'delete':
         this.props._showGlobalLoading();
         this.props._deleteProject(this.props.params.projectId);
+        break;
+      case 'finish':
+        this.setState({scenarioFormModal: true});
         break;
       default:
         throw new Error(`Project action not implemented: ${what}`);
@@ -256,10 +272,23 @@ var ProjectPagePending = React.createClass({
           _showGlobalLoading={this.props._showGlobalLoading}
           _hideGlobalLoading={this.props._hideGlobalLoading}
           revealed={this.state.projectFormModal}
-          onCloseClick={this.closeModal}
+          onCloseClick={this.closeProjectModal}
           projectForm={this.props.projectForm}
           projectData={data}
           saveProject={this.props._patchProject}
+          resetForm={this.props._resetProjectFrom}
+        />
+
+        <ScenarioEditModal
+          finishingSetup
+          _showGlobalLoading={this.props._showGlobalLoading}
+          _hideGlobalLoading={this.props._hideGlobalLoading}
+          revealed={this.state.scenarioFormModal}
+          onCloseClick={this.closeScenarioModal}
+          scenarioData={this.props.scenario.data}
+          scenarioForm={this.props.scenarioForm}
+          saveScenario={this.props._finishProjectSetup}
+          resetForm={this.props._resetScenarioFrom}
         />
 
       </section>
@@ -274,7 +303,8 @@ function selector (state) {
   return {
     project: state.projectItem,
     scenario: state.scenarioItem,
-    projectForm: state.projectForm
+    projectForm: state.projectForm,
+    scenarioForm: state.scenarioForm
   };
 }
 
@@ -289,7 +319,10 @@ function dispatcher (dispatch) {
     _patchProject: (...args) => dispatch(patchProject(...args)),
     _deleteProject: (...args) => dispatch(deleteProject(...args)),
     _showGlobalLoading: (...args) => dispatch(showGlobalLoading(...args)),
-    _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args))
+    _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args)),
+    _finishProjectSetup: (...args) => dispatch(finishProjectSetup(...args)),
+    _resetProjectFrom: (...args) => dispatch(resetProjectFrom(...args)),
+    _resetScenarioFrom: (...args) => dispatch(resetScenarioFrom(...args))
   };
 }
 

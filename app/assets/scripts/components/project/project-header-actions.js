@@ -1,5 +1,6 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
+import c from 'classnames';
 
 import Dropdown from '../dropdown';
 import { showConfirm } from '../confirmation-prompt';
@@ -31,6 +32,7 @@ const PorjectHeaderActions = React.createClass({
 
   render: function () {
     var projectWasSetup = this.props.project.status !== 'pending';
+    var readyToEndSetup = this.props.project.readyToEndSetup;
 
     return (
       <div className='inpage__actions'>
@@ -51,7 +53,7 @@ const PorjectHeaderActions = React.createClass({
 
         {projectWasSetup
           ? <button title={t('Create new scenario')} className='ipa-plus' type='button' onClick={this.props.onAction.bind(null, 'new-scenario')}><span>{t('New scenario')}</span></button>
-          : <button title={t('Finish setup')} className='ipa-tick disabled' type='button' onClick={this.props.onAction.bind(null, 'finish')}><span>{t('Finish setup')}</span></button>
+          : <button title={t('Finish setup')} className={c('ipa-tick', {disabled: !readyToEndSetup})} type='button' onClick={this.props.onAction.bind(null, 'finish')}><span>{t('Finish setup')}</span></button>
         }
 
       </div>
