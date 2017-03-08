@@ -37,7 +37,6 @@ const ScenarioEditModal = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
-    console.log('nextProps.scenarioForm', nextProps.scenarioForm);
     if (this.props.scenarioForm.processing && !nextProps.scenarioForm.processing) {
       this.props._hideGlobalLoading();
     }
