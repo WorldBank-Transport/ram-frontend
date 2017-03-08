@@ -150,7 +150,7 @@ const ProjectFormModal = React.createClass({
 
           {this.renderError()}
 
-          <form className={c({'disable': processing})} onSubmit={this.onSubmit}>
+          <form className={c('form', {'disable': processing})} onSubmit={this.onSubmit}>
             <div className='form__group'>
               <label className='form__label' htmlFor='project-name'>{t('Project name')}</label>
               <input type='text' className='form__control form__control--medium' id='project-name' name='project-name' placeholder={t('Untitled project')} value={this.state.data.name} onChange={this.onFieldChange.bind(null, 'name')} />
