@@ -15,6 +15,7 @@ import Home from './views/home';
 import UhOh from './views/uhoh';
 import ProjectPageActive from './views/project-page-active';
 import ProjectPagePending from './views/project-page-pending';
+import ScenarioPage from './views/scenario-page';
 
 const history = syncHistoryWithStore(hashHistory, store);
 
@@ -38,7 +39,9 @@ render((
         <Route path="404" component={UhOh}/>
         <Route path="projects/:projectId/setup" component={ProjectPagePending}/>
         <Route path="projects/:projectId" component={ProjectPageActive}/>
+        <Route path="projects/:projectId/scenarios/1" component={ScenarioPage}/>
         <IndexRoute component={Home} pageClass='page--homepage' />
+        <Redirect from='/:lang/projects/:projectId/scenarios' to='/:lang/projects/:projectId' />
         <Redirect from='/:lang/projects' to='/:lang' />
         <Route path="*" component={UhOh}/>
       </Route>
