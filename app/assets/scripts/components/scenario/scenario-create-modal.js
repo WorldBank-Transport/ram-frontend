@@ -39,14 +39,14 @@ const ScenarioCreateModal = React.createClass({
           size: 0,
           uploaded: 0
         }
-      }
+      },
+      loading: false
     };
   },
 
   xhr: null,
 
   componentWillReceiveProps: function (nextProps) {
-    console.log('nextProps.scenarioForm', nextProps.scenarioForm);
     if (this.props.scenarioForm.processing && !nextProps.scenarioForm.processing) {
       this.props._hideGlobalLoading();
     }
@@ -55,7 +55,13 @@ const ScenarioCreateModal = React.createClass({
         this.props.scenarioForm.processing &&
         !nextProps.scenarioForm.processing &&
         !nextProps.scenarioForm.error) {
-      hashHistory.push(`${getLanguage()}/projects`);
+      //
+      if (this.state.data.roadNetworkSource === 'new') {
+        // Upload file
+        this.uploadScenarioFile(nextProps.scenarioForm.data.roadNetworkUpload.presignedUrl);
+      } else {
+        hashHistory.push(`${getLanguage()}/projects`);
+      }
       return;
     }
   },
@@ -68,6 +74,9 @@ const ScenarioCreateModal = React.createClass({
   },
 
   onClose: function () {
+    if (this.xhr) {
+      this.xhr.abort();
+    }
     this.props.resetForm();
     this.setState(this.getInitialState());
     this.props.onCloseClick();
@@ -84,6 +93,36 @@ const ScenarioCreateModal = React.createClass({
 
     let data = Object.assign({}, this.state.data, {roadNetworkSourceFile});
     this.setState({data});
+  },
+
+  onFileUploadComplete: function () {
+    this.setState({loading: false});
+    hashHistory.push(`${getLanguage()}/projects`);
+  },
+
+  uploadScenarioFile: function (presignedUrl) {
+    this.xhr = new window.XMLHttpRequest();
+    let file = this.state.data.roadNetworkSourceFile.file;
+
+    this.xhr.upload.addEventListener('progress', (evt) => {
+      if (evt.lengthComputable) {
+        // I know what I'm doing here.
+        let data = this.state.data;
+        data.roadNetworkSourceFile.uploaded = evt.loaded;
+        this.setState({data});
+      }
+    }, false);
+
+    this.xhr.onreadystatechange = e => {
+      if (this.xhr.readyState === XMLHttpRequest.DONE) {
+        this.setState(this.getInitialState());
+        this.onFileUploadComplete();
+      }
+    };
+
+    // start upload
+    this.xhr.open('PUT', presignedUrl, true);
+    this.xhr.send(file);
   },
 
   checkErrors: function () {
@@ -108,8 +147,6 @@ const ScenarioCreateModal = React.createClass({
     e.preventDefault && e.preventDefault();
 
     if (this.checkErrors()) {
-      this.props._showGlobalLoading();
-
       var payload = {
         name: this.state.data.name,
         description: this.state.data.description || null
@@ -118,17 +155,14 @@ const ScenarioCreateModal = React.createClass({
       payload = _.pickBy(payload, v => v !== null);
 
       if (this.state.data.roadNetworkSource === 'clone') {
+        this.props._showGlobalLoading();
         payload.roadNetworkSource = 'clone';
         payload.roadNetworkSourceScenario = this.state.data.roadNetworkSourceScenario;
-
-        this.props.saveScenario(this.props.projectId, payload);
       } else if (this.state.data.roadNetworkSource === 'new') {
-        // TODO: Create scenario and upload new file.
-        // Get presigned url
-        // Upload file
-        // Submit
-
+        payload.roadNetworkSource = 'new';
+        this.setState({loading: true});
       }
+      this.props.saveScenario(this.props.projectId, payload);
     }
   },
 
@@ -152,7 +186,7 @@ const ScenarioCreateModal = React.createClass({
   },
 
   render: function () {
-    let processing = this.props.scenarioForm.processing;
+    let processing = this.props.scenarioForm.processing || this.state.loading;
 
     return (
       <Modal
@@ -173,7 +207,7 @@ const ScenarioCreateModal = React.createClass({
 
           {this.renderError()}
 
-          <form className={c('form', {'disable': processing})} onSubmit={this.onSubmit}>
+          <form className={c('form', {'disabled': processing})} onSubmit={this.onSubmit}>
             <div className='form__group'>
               <label className='form__label' htmlFor='scenario-name'>{t('Scenario name')}</label>
               <input type='text' className='form__control form__control--medium' id='scenario-name' name='scenario-name' placeholder={t('Untitled scenario')} value={this.state.data.name} onChange={this.onFieldChange.bind(null, 'name')} />
@@ -196,7 +230,7 @@ const ScenarioCreateModal = React.createClass({
                 <span className='form__option__text'>{t('Clone from scenario')}</span>
                 <span className='form__option__ui'></span>
               </label>
-              <label className='form__option form__option--inline form__option--custom-radio disabled'>
+              <label className='form__option form__option--inline form__option--custom-radio'>
                 <input type='radio' name='road-network' id='road-network-new' value='new' onChange={this.onFieldChange.bind(null, 'roadNetworkSource')} checked={this.state.data.roadNetworkSource === 'new'}/>
                 <span className='form__option__text'>{t('Upload new')}</span>
                 <span className='form__option__ui'></span>
@@ -217,6 +251,10 @@ const ScenarioCreateModal = React.createClass({
               <label className='form__label visually-hidden' htmlFor='road-network-new-file'>{t('New road network')}</label>
               <input type='file' name='road-network-new-file' id='road-network-new-file' className='form__control--upload' ref='file' onChange={this.onFileSelected} />
               {this.state.errors.roadNetworkSource ? <p className='form__error'>{t('A file is required.')}</p> : null }
+              {this.state.data.roadNetworkSourceFile.file !== null
+              ? <p className='form__help'>{Math.round(this.state.data.roadNetworkSourceFile.uploaded / (1024 * 1024))}MB / {Math.round(this.state.data.roadNetworkSourceFile.size / (1024 * 1024))}MB</p>
+              : null
+             }
             </div>
             ) : null}
 
@@ -224,7 +262,7 @@ const ScenarioCreateModal = React.createClass({
         </ModalBody>
         <ModalFooter>
           <button className='mfa-xmark' type='button' onClick={this.onClose}><span>{t('Cancel')}</span></button>
-          <button className='mfa-tick' type='submit' onClick={this.onSubmit}><span>{t('Create')}</span></button>
+          <button className={c('mfa-tick', {'disabled': processing})} type='submit' onClick={this.onSubmit}><span>{t('Create')}</span></button>
         </ModalFooter>
       </Modal>
     );
