@@ -60,7 +60,7 @@ export function t (string, replace = {}) {
     }
     if (process.env.DS_ENV !== 'production') {
       markMissing(string);
-      console.warn(`Missing (${currentLang}) translation for (${string})`);
+      // console.warn(`Missing (${currentLang}) translation for (${string})`);
       return string;
     }
   }
