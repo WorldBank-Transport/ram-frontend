@@ -11,7 +11,8 @@ import {
   showGlobalLoading,
   hideGlobalLoading,
   fetchProjectScenarios,
-  resetProjectFrom
+  resetProjectFrom,
+  postScenario
 } from '../actions';
 import { prettyPrint } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
@@ -34,17 +35,19 @@ var ProjectPageActive = React.createClass({
     _showGlobalLoading: T.func,
     _hideGlobalLoading: T.func,
     _fetchProjectScenarios: T.func,
+    _postScenario: T.func,
 
     params: T.object,
     project: T.object,
     scenarios: T.object,
-    projectForm: T.object
+    projectForm: T.object,
+    scenarioForm: T.object
   },
 
   getInitialState: function () {
     return {
       projectFormModal: false,
-      scenarioCreateModal: true
+      scenarioCreateModal: false
     };
   },
 
@@ -288,9 +291,10 @@ var ProjectPageActive = React.createClass({
           _hideGlobalLoading={this.props._hideGlobalLoading}
           revealed={this.state.scenarioCreateModal}
           onCloseClick={this.closeModal.bind(null, 'new-scenario')}
-          scenarioForm={this.props.projectForm}
+          scenarioForm={this.props.scenarioForm}
           scenarioList={this.props.scenarios.data.results}
-          saveProject={this.props._patchProject}
+          projectId={this.props.params.projectId}
+          saveScenario={this.props._postScenario}
           resetForm={this.props._resetProjectFrom}
         />
 
@@ -306,7 +310,8 @@ function selector (state) {
   return {
     project: state.projectItem,
     scenarios: state.scenarios,
-    projectForm: state.projectForm
+    projectForm: state.projectForm,
+    scenarioForm: state.scenarioForm,
   };
 }
 
@@ -319,7 +324,8 @@ function dispatcher (dispatch) {
     _showGlobalLoading: (...args) => dispatch(showGlobalLoading(...args)),
     _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args)),
     _fetchProjectScenarios: (...args) => dispatch(fetchProjectScenarios(...args)),
-    _resetProjectFrom: (...args) => dispatch(resetProjectFrom(...args))
+    _resetProjectFrom: (...args) => dispatch(resetProjectFrom(...args)),
+    _postScenario: (...args) => dispatch(postScenario(...args))
   };
 }
 
