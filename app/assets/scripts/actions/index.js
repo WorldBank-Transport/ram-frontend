@@ -197,6 +197,10 @@ export function patchScenario (projectId, data) {
   return patchAndDispatch(`${config.api}/projects/${projectId}`, data, startSubmitScenario, finishSubmitScenario);
 }
 
+export function postScenario (projectId, data) {
+  return postAndDispatch(`${config.api}/projects/${projectId}/scenarios`, data, startSubmitScenario, finishSubmitScenario);
+}
+
 // The information needed to finish the project setup is basically related
 // to a scenario, therefore we can use the same actions.
 export function finishProjectSetup (projectId, data) {

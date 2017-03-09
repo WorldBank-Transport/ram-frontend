@@ -1,7 +1,6 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
 import c from 'classnames';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import _ from 'lodash';
 import { hashHistory } from 'react-router';
 
@@ -16,6 +15,7 @@ const ScenarioCreateModal = React.createClass({
 
     scenarioForm: T.object,
     scenarioList: T.array,
+    projectId: T.string,
 
     saveScenario: T.func,
     resetForm: T.func,
@@ -46,22 +46,18 @@ const ScenarioCreateModal = React.createClass({
   xhr: null,
 
   componentWillReceiveProps: function (nextProps) {
-    // console.log('nextProps.scenarioForm', nextProps.scenarioForm);
-    // if (this.props.scenarioForm.processing && !nextProps.scenarioForm.processing) {
-    //   this.props._hideGlobalLoading();
-    // }
+    console.log('nextProps.scenarioForm', nextProps.scenarioForm);
+    if (this.props.scenarioForm.processing && !nextProps.scenarioForm.processing) {
+      this.props._hideGlobalLoading();
+    }
 
-    // if (this.props.scenarioForm.action === 'edit' &&
-    //     this.props.scenarioForm.processing &&
-    //     !nextProps.scenarioForm.processing &&
-    //     !nextProps.scenarioForm.error) {
-    //   if (this.props.finishingSetup) {
-    //     hashHistory.push(`${getLanguage()}/projects/${nextProps.scenarioData.project_id}`);
-    //   } else {
-    //     this.onClose();
-    //   }
-    //   return;
-    // }
+    if (this.props.scenarioForm.action === 'edit' &&
+        this.props.scenarioForm.processing &&
+        !nextProps.scenarioForm.processing &&
+        !nextProps.scenarioForm.error) {
+      hashHistory.push(`${getLanguage()}/projects`);
+      return;
+    }
   },
 
   componentWillUnmount: function () {
@@ -112,6 +108,8 @@ const ScenarioCreateModal = React.createClass({
     e.preventDefault && e.preventDefault();
 
     if (this.checkErrors()) {
+      this.props._showGlobalLoading();
+
       var payload = {
         name: this.state.data.name,
         description: this.state.data.description || null
@@ -120,31 +118,17 @@ const ScenarioCreateModal = React.createClass({
       payload = _.pickBy(payload, v => v !== null);
 
       if (this.state.data.roadNetworkSource === 'clone') {
-        payload = {
-          roadNetworkSourceScenario: this.state.data.roadNetworkSourceScenario
-        };
+        payload.roadNetworkSource = 'clone';
+        payload.roadNetworkSourceScenario = this.state.data.roadNetworkSourceScenario;
 
-        // Submit
-
+        this.props.saveScenario(this.props.projectId, payload);
       } else if (this.state.data.roadNetworkSource === 'new') {
+        // TODO: Create scenario and upload new file.
         // Get presigned url
         // Upload file
         // Submit
 
       }
-
-      // this.props._showGlobalLoading();
-
-      // if (this.props.finishingSetup) {
-      //   payload = {
-      //     scenarioName: this.state.data.name
-      //   };
-      //   if (this.state.data.description) {
-      //     payload.scenarioDescription = this.state.data.description;
-      //   }
-      // }
-
-      // this.props.saveScenario(this.props.scenarioData.project_id, payload);
     }
   },
 
@@ -212,7 +196,7 @@ const ScenarioCreateModal = React.createClass({
                 <span className='form__option__text'>{t('Clone from scenario')}</span>
                 <span className='form__option__ui'></span>
               </label>
-              <label className='form__option form__option--inline form__option--custom-radio'>
+              <label className='form__option form__option--inline form__option--custom-radio disabled'>
                 <input type='radio' name='road-network' id='road-network-new' value='new' onChange={this.onFieldChange.bind(null, 'roadNetworkSource')} checked={this.state.data.roadNetworkSource === 'new'}/>
                 <span className='form__option__text'>{t('Upload new')}</span>
                 <span className='form__option__ui'></span>
