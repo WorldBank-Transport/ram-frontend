@@ -6,7 +6,7 @@ import Dropdown from '../dropdown';
 import { showConfirm } from '../confirmation-prompt';
 import { t } from '../../utils/i18n';
 
-const PorjectHeaderActions = React.createClass({
+const ProjectHeaderActions = React.createClass({
 
   propTypes: {
     onAction: T.func,
@@ -61,4 +61,4 @@ const PorjectHeaderActions = React.createClass({
   }
 });
 
-export default PorjectHeaderActions;
+export default ProjectHeaderActions;
