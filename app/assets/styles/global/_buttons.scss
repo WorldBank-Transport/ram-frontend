@@ -213,6 +213,7 @@
   position: relative;
   display: inline-block;
   vertical-align: middle;
+
   > .button {
     display: block;
     position: relative;
@@ -226,17 +227,21 @@
   > .button {
     float: left;
   }
+
   > .button:first-child:not(:last-child) {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
   }
+
   > .button:last-child:not(:first-child) {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
   }
+
   > .button:not(:first-child):not(:last-child) {
     border-radius: 0;
   }
+
   > .button + .button {
     margin-left: -2px;
   }
@@ -253,17 +258,21 @@
       z-index: 2;
     }
   }
+
   > .button:first-child:not(:last-child) {
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
   }
+
   > .button:last-child:not(:first-child) {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
   }
+
   > .button:not(:first-child):not(:last-child) {
     border-radius: 0;
   }
+  
   > .button + .button {
     margin-top: -2px;
   }

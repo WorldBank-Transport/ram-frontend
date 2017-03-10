@@ -21,7 +21,7 @@
   }
 
   &__headline {
-    @include column(8/12);
+    @include column(6/12);
 
     > *:last-child {
       margin-bottom: 0;
@@ -58,7 +58,7 @@
   }
 
   .inpage__actions {
-    @include column(4/12);
+    @include column(6/12);
     text-align: right;
     font-size: 0;
 
