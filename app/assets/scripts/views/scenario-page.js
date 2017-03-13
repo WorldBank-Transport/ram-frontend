@@ -29,6 +29,11 @@ var ScenarioPage = React.createClass({
 
             <p>Scenario Content goes here.</p>
 
+            <div className='alert alert--success' role='alert'>
+              <button className='alert__button-dismiss' title='Dismiss alert'><span>Dismiss</span></button>
+              <p><strong>Success:</strong> This is a success alert message.</p>
+            </div>
+
             <table className='table'>
               <tr>
                 <th>Title 1</th>
