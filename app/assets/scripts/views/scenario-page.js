@@ -27,7 +27,34 @@ var ScenarioPage = React.createClass({
         <div className='inpage__body'>
           <div className='inner'>
 
-            Scenario data
+            <p>Scenario Content goes here.</p>
+
+            <table className='table'>
+              <tr>
+                <th>Title 1</th>
+                <th>Title 2</th>
+                <th>Title 3</th>
+                <th>Title 4</th>
+              </tr>
+              <tr>
+                <td className='tg-yw4l'>Col 1 Cnt 1</td>
+                <td className='tg-yw4l'>Col 2 Cnt 1</td>
+                <td className='tg-yw4l'>Col 3 Cnt 1</td>
+                <td className='tg-yw4l'>Col 4 Cnt 1</td>
+              </tr>
+              <tr>
+                <td className='tg-yw4l'>Col 1 Cnt 2</td>
+                <td className='tg-yw4l'>Col 2 Cnt 2</td>
+                <td className='tg-yw4l'>Col 3 Cnt 2</td>
+                <td className='tg-yw4l'>Col 4 Cnt 2</td>
+              </tr>
+              <tr>
+                <td className='tg-yw4l'>Col 1 Cnt 3</td>
+                <td className='tg-yw4l'>Col 2 Cnt 3</td>
+                <td className='tg-yw4l'>Col 3 Cnt 3</td>
+                <td className='tg-yw4l'>Col 4 Cnt 3</td>
+              </tr>
+            </table>
 
           </div>
         </div>
