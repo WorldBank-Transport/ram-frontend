@@ -3,11 +3,11 @@
    ========================================================================== */
 
 .alert {
-  position: relative;
   @extend .antialiased;
+  position: relative;
   border-radius: $base-border-radius;
   background: rgba($base-color, 0.8);
-  padding: 0.5rem 2.5rem 0.5rem 4rem;
+  padding: ($global-spacing / 2) ($global-spacing * 2.5) ($global-spacing / 2) ($global-spacing * 4);
   color: #fff;
   overflow: hidden;
   font-size: 1rem;
@@ -79,7 +79,7 @@
   z-index: 9996;
   bottom: $global-spacing;
   right: $global-spacing;
-  padding: 1.5rem 2.5rem 1.5rem 4rem;
+  padding: ($global-spacing * 1.5) ($global-spacing * 2.5) ($global-spacing * 1.5) ($global-spacing * 4);
   margin: 0;
   max-width: 24rem;
 }
