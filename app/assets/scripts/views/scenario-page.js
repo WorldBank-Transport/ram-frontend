@@ -35,30 +35,42 @@ var ScenarioPage = React.createClass({
             </div>
 
             <table className='table'>
-              <tr>
-                <th>Title 1</th>
-                <th>Title 2</th>
-                <th>Title 3</th>
-                <th>Title 4</th>
-              </tr>
-              <tr>
-                <td className='tg-yw4l'>Col 1 Cnt 1</td>
-                <td className='tg-yw4l'>Col 2 Cnt 1</td>
-                <td className='tg-yw4l'>Col 3 Cnt 1</td>
-                <td className='tg-yw4l'>Col 4 Cnt 1</td>
-              </tr>
-              <tr>
-                <td className='tg-yw4l'>Col 1 Cnt 2</td>
-                <td className='tg-yw4l'>Col 2 Cnt 2</td>
-                <td className='tg-yw4l'>Col 3 Cnt 2</td>
-                <td className='tg-yw4l'>Col 4 Cnt 2</td>
-              </tr>
-              <tr>
-                <td className='tg-yw4l'>Col 1 Cnt 3</td>
-                <td className='tg-yw4l'>Col 2 Cnt 3</td>
-                <td className='tg-yw4l'>Col 3 Cnt 3</td>
-                <td className='tg-yw4l'>Col 4 Cnt 3</td>
-              </tr>
+              <thead>
+                <tr>
+                  <th>Title 1</th>
+                  <th>Title 2</th>
+                  <th>Title 3</th>
+                  <th>Title 4</th>
+                </tr>
+              </thead>
+              <tfoot>
+                <tr>
+                  <td>Foot Content</td>
+                  <td>Foot Content</td>
+                  <td>Foot Content</td>
+                  <td>Foot Content</td>
+                </tr>
+              </tfoot>
+              <tbody>
+                <tr>
+                  <td>Content</td>
+                  <td>Content</td>
+                  <td>Content</td>
+                  <td>Content</td>
+                </tr>
+                <tr>
+                  <td>Content</td>
+                  <td>Content</td>
+                  <td>Content</td>
+                  <td>Content</td>
+                </tr>
+                <tr>
+                  <td>Content</td>
+                  <td>Content</td>
+                  <td>Content</td>
+                  <td>Content</td>
+                </tr>
+              </tbody>
             </table>
 
           </div>
