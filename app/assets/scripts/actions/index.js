@@ -161,7 +161,7 @@ export function deleteProject (projectId) {
   return deleteAndDispatch(`${config.api}/projects/${projectId}`, startDeleteProject, finishDeleteProject);
 }
 
-// Projects
+// Project Scenarios
 
 export function invalidateProjectScenarios () {
   return { type: INVALIDATE_PROJECT_SCENARIOS };

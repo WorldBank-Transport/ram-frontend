@@ -39,7 +39,7 @@ render((
         <Route path="404" component={UhOh}/>
         <Route path="projects/:projectId/setup" component={ProjectPagePending}/>
         <Route path="projects/:projectId" component={ProjectPageActive}/>
-        <Route path="projects/:projectId/scenarios/1" component={ScenarioPage}/>
+        <Route path="projects/:projectId/scenarios/:scenarioId" component={ScenarioPage}/>
         <IndexRoute component={Home} pageClass='page--homepage' />
         <Redirect from='/:lang/projects/:projectId/scenarios' to='/:lang/projects/:projectId' />
         <Redirect from='/:lang/projects' to='/:lang' />

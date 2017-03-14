@@ -1,78 +1,142 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
-import { Link } from 'react-router';
+import { hashHistory, Link } from 'react-router';
 import { connect } from 'react-redux';
+
+import {
+  showGlobalLoading,
+  hideGlobalLoading,
+  invalidateProjectItem,
+  fetchProjectItem,
+  invalidateScenarioItem,
+  fetchScenarioItem
+} from '../actions';
+import { prettyPrint } from '../utils/utils';
+import { t, getLanguage } from '../utils/i18n';
 
 import Breadcrumb from '../components/breadcrumb';
 import ScenarioHeaderActions from '../components/scenario/scenario-header-actions';
 
-
 var ScenarioPage = React.createClass({
   propTypes: {
-    params: T.object
+    params: T.object,
+    _showGlobalLoading: T.func,
+    _hideGlobalLoading: T.func,
+    _invalidateProjectItem: T.func,
+    _fetchProjectItem: T.func,
+    _invalidateScenarioItem: T.func,
+    _fetchScenarioItem: T.func,
+
+    scenario: T.object,
+    project: T.object
+  },
+
+  // Flag variables to wait for the project and scenario to load.
+  projectLoaded: false,
+  scenarioLoaded: false,
+  loadingVisible: false,
+
+  showLoading: function () {
+    this.props._showGlobalLoading();
+  },
+
+  hideLoading: function () {
+    this.props._hideGlobalLoading();
+  },
+
+  componentDidMount: function () {
+    this.projectLoaded = false;
+    this.scenarioLoaded = false;
+    this.showLoading();
+    this.props._fetchProjectItem(this.props.params.projectId);
+    this.props._fetchScenarioItem(this.props.params.projectId, this.props.params.scenarioId);
+  },
+
+  componentWillUnmount: function () {
+    this.props._invalidateScenarioItem();
+    this.props._invalidateProjectItem();
+  },
+
+  componentWillReceiveProps: function (nextProps) {
+    if (this.props.project.fetching && !nextProps.project.fetching) {
+      this.projectLoaded = true;
+    }
+    if (this.props.scenario.fetching && !nextProps.scenario.fetching) {
+      this.scenarioLoaded = true;
+    }
+
+    if (this.projectLoaded && this.scenarioLoaded) {
+      this.hideLoading();
+    }
+
+    var error = nextProps.scenario.error;
+    if (error && (error.statusCode === 404 || error.statusCode === 400)) {
+      return hashHistory.push(`/${getLanguage()}/404`);
+    }
+
+    // if (!this.props.project.fetched && nextProps.project.fetched) {
+    //   // Project just fetched. Validate status;
+    //   if (nextProps.project.data.status === 'pending') {
+    //     return hashHistory.push(`/${getLanguage()}/projects/${this.props.params.projectId}/setup`);
+    //   }
+    // }
+
+    if (this.props.params.projectId !== nextProps.params.projectId ||
+      this.props.params.scenarioId !== nextProps.params.scenarioId) {
+      this.showLoading();
+      this.props._fetchScenarioItem(nextProps.params.projectId, nextProps.params.scenarioId);
+    }
+  },
+
+  renderBreadcrumb: function () {
+    const project = this.props.project.data;
+    const items = [
+      {
+        path: '/projects',
+        title: t('Visit projects page'),
+        value: t('Projects')
+      },
+      {
+        path: `/projects/${project.id}`,
+        title: t('Visit project {name}', {name: project.name}),
+        value: project.name
+      }
+    ];
+    return (
+      <Breadcrumb items={items}/>
+    );
   },
 
   render: function () {
+    let { fetched: fetchedProject, fetching: fetchingProject, error: errorProject } = this.props.project;
+    let { fetched: fetchedScenario, fetching: fetchingScenario, error: errorScenario, data: dataScenario } = this.props.scenario;
+
+    let fetched = fetchedProject && fetchedScenario;
+    let fetching = fetchingProject && fetchingScenario;
+    let error = errorProject || errorScenario;
+
+    if (!fetched && !fetching || !fetched && fetching) {
+      return null;
+    }
+
+    if (error) {
+      return <div>Error: {prettyPrint(error)}</div>;
+    }
+
     return (
       <section className='inpage inpage--hub'>
         <header className='inpage__header'>
           <div className='inner'>
             <div className='inpage__headline'>
-              <Breadcrumb />
-              <h1 className='inpage__title'>Scenario name</h1>
+              {this.renderBreadcrumb()}
+              <h1 className='inpage__title'>{dataScenario.name}</h1>
             </div>
             <ScenarioHeaderActions />
           </div>
         </header>
         <div className='inpage__body'>
           <div className='inner'>
-
-            <p>Scenario Content goes here.</p>
-
-            <div className='alert alert--success' role='alert'>
-              <button className='alert__button-dismiss' title='Dismiss alert'><span>Dismiss</span></button>
-              <p><strong>Success:</strong> This is a success alert message.</p>
-            </div>
-
-            <table className='table'>
-              <thead>
-                <tr>
-                  <th>Title 1</th>
-                  <th>Title 2</th>
-                  <th>Title 3</th>
-                  <th>Title 4</th>
-                </tr>
-              </thead>
-              <tfoot>
-                <tr>
-                  <td>Foot Content</td>
-                  <td>Foot Content</td>
-                  <td>Foot Content</td>
-                  <td>Foot Content</td>
-                </tr>
-              </tfoot>
-              <tbody>
-                <tr>
-                  <td>Content</td>
-                  <td>Content</td>
-                  <td>Content</td>
-                  <td>Content</td>
-                </tr>
-                <tr>
-                  <td>Content</td>
-                  <td>Content</td>
-                  <td>Content</td>
-                  <td>Content</td>
-                </tr>
-                <tr>
-                  <td>Content</td>
-                  <td>Content</td>
-                  <td>Content</td>
-                  <td>Content</td>
-                </tr>
-              </tbody>
-            </table>
-
+            <pre>{prettyPrint(dataScenario)}</pre>
           </div>
         </div>
 
@@ -86,11 +150,19 @@ var ScenarioPage = React.createClass({
 
 function selector (state) {
   return {
+    scenario: state.scenarioItem,
+    project: state.projectItem
   };
 }
 
 function dispatcher (dispatch) {
   return {
+    _invalidateScenarioItem: (...args) => dispatch(invalidateScenarioItem(...args)),
+    _fetchScenarioItem: (...args) => dispatch(fetchScenarioItem(...args)),
+    _invalidateProjectItem: (...args) => dispatch(invalidateProjectItem(...args)),
+    _fetchProjectItem: (...args) => dispatch(fetchProjectItem(...args)),
+    _showGlobalLoading: (...args) => dispatch(showGlobalLoading(...args)),
+    _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args))
   };
 }
 
