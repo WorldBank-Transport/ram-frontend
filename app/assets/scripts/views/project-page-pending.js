@@ -126,6 +126,7 @@ var ProjectPagePending = React.createClass({
 
     var error = nextProps.project.error;
     if (error && (error.statusCode === 404 || error.statusCode === 400)) {
+      this.hideLoading();
       return hashHistory.push(`/${getLanguage()}/404`);
     }
 
