@@ -1,5 +1,4 @@
 language: node_js
-
 node_js:
 - '6'
 
@@ -8,14 +7,6 @@ env:
   - CXX=g++-4.8
   - DEPLOY_BRANCH=master
   - STAGING_BRANCH=develop
-  - AWS_REGION=us-east-1
-  - AWS_ECS_CLUSTER=ruralroads
-  - AWS_ACCESS_KEY_ID=AKIAILREAKXPJOWAXTBQ
-  - DOCKER_SRC_IMAGE=rra-dashboard
-  - DOCKER_REPOSITORY=wbtransport/rra-dashboard
-  - DOCKER_USERNAME=olafveerman
-  - secure: "du36xAOLOY3aqa0v4vj5iOgBM+sZPJVvFdHxSJS+YZ601T4EUscbNFk9lgitO0Q4L66ZgqqlGPSqn5kC5VSSEBYkf8y84K/YXBRLiJtdfqrAdMOh1pbyA6kOQxQ7R7spTH2EIPsa7oHyKL+oiWO6mHDe6f8EpC1yCNNR/Ymq5VWvQjzIUpP+iY1yUrETwTrQhXtuDD61A6WFLzYKug5+Vw72C2HP+B1bcJZfT45GcxiZ44IcpWF69R+RzMBTobrGd5td6ttmu+vRpnm5IHCy2i/ifSiSYLrOcJRoidgUg/v5mL5o4u1Na8v6Z7iLrUgxzwbMVCcC9VYgGo1qzFTiZxD8mDD9bcCXPyO9HnnCqEcddYKH84h2wwuUuWUogVkCPIfEwVauLbCvEIJhkTqlw19cTq+z2X+kSCyVOuVsw4/niIh3DJXjCRx5foYTpDJl8eo6hWj6VYRSEAlJEZjqqQJRlpvC+KwHiH0cag4NKxkwRXY2c8V9LFltgs11e59rlzlRF1Bv7dIxVPrbr9HEO3+trwsyhYrp/k8X66CFvOklgfurJ2h54xvT1EClYtxv/ycqYfAgJfa5PDBaM5rrQv/yJTPPeofYcKFtSt21ce+ZSiCn54RVAy5ydrbnCZqWMQOruSBW3nXjlUIahumyrCfrK0vzzjej8C6zfdn60sI="
-  - secure: "eZtj4qBtUY2c+s9IsRE/eZIs90ZBvmNvjraHWwFcWNOBuCwCdNkViNmw42qw/fi943f11KM6zYPWCH/WxuHbBeHukJ5XJOMQVKdfxjlNFT0oXu9EgeraDQi7eP5Rbmq/U3/jbbpsKPnap0wZ2eI15837b1yKypNd4qB0M8gtXDO8TDO9eSX8GhHV9x6N9fhx6ZMooyIBcXoxPkU1lc01ooh8pn78gh6nXoKMNLMDkZ/4fvQzzOTan35Q/5aY0zaFPv+vhGuhdJYwjDQJFhbFKQmgV/xX5J5353u3gub0x7NDMg33Pvrou6Rs4uIH4hdpxevPbMuxPfjGJCmyKewp9hftfu7TERWbzw4oYPPLJPAZOY4MJlrNvP05CIWJ2o42vKySbZ240DgL/yrhsUVaOeLrWorDWKRt6FzY0/mKZW58lWLd73xnvIzCzTjiT0PsXwXgP7yDKB1nPIh504P7ZSRsq0d53NPpF/JW5umH1wb23oelXiLGdYlBKK7r+CWUjGx79TaTts2b5Zws/qiRp1J/aJWemSaSQFnW5DE8lFlaCVKYynshX9zIqUqLAhP5Tm6xb43JWufvVjek0+XNC3KKZjQjbFRoDLJjvkvBh/+KKTODzQnKE0V0hmEadtNN5axn3mVDK0CjN9HkDaUZgSIBSM5YroPPDBn7BtK7RmU="
 
 addons:
   apt:
@@ -29,22 +20,22 @@ cache:
   directories:
   - node_modules
 
-services:
-- docker
-
-before_install:
-- chmod +x ./.build_scripts/deploy.sh
-
 before_script:
-# - npm run lint
 - npm test
 
 script:
 - npm run build
 
 deploy:
-  provider: script
-  skip_cleanup: true
-  script: ".build_scripts/deploy.sh"
-  on:
-    branch: "${STAGING_BRANCH}"
+  - provider: s3
+    access_key_id: AKIAILREAKXPJOWAXTBQ
+    secret_access_key:
+      secure: tIcdJM91mqbv7zQCUSRNkT8OEViNBLltR6StE3QyOkUrnmMLZZ0uliSwxztuaM/BxnM5g3M4mO+MOL674HEGSyJueKlaPfFBdJAU7f3amphWdCI8KnN/SToOF9UMI3aKUFTDuYAefkD5mXCiyDehbboLCTj/USOMBGkz7McVCeNHQUy3EwtgJ2cRE6s6b22nQ+NkeTmzwXJKjYgyYh4mf+wuIJ3mVuXeUpl+pzNObNaWd4ncvgYlHGabVard6zVvqp/rGbmf/JiMZeziuxJSlFn6Hd9QM/fc2KsWy/SUYlHue4AODu33EjUwS6Hhgiw92Lf3aAq73qM2CE8WDxQBgajIiCoP2PYToMRvVneLyQ0oq3briLbRbBXdIzpB7oihxvablqUoIoNymhap96xoU+YXsW6FE1mGb6o8inGSvfR/qGykRbhB4KwRschzH+SoWp6AGucKt2i7coEDIhOcnaiq3Lphuak8uoeT4bfceMU2W/GwaM6fUk3IGyG0XsJmamXgotKcyzY4n4FPqC4riuNwOSw/OuURL17va5MWAHumQ5HCJ+EZjI3470CRcTI7+Z1AZDg7SZuqqffsRQ8Zdoyjl6Ek+/cYS3jRDl8NHETFe7p/prD1I4vcvUcB34mB0IVCrO98codSNzr+Q1gNi2xBI1FcuPaJRMMI2d/ztS0=
+    bucket: rra-staging
+    acl: public_read
+    local-dir: "./dist/"
+    skip-cleanup: true
+    region: us-east-1
+    on:
+      repo: WorldBank-Transport/rra-frontend
+      branch: "${STAGING_BRANCH}"

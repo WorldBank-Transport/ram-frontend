@@ -2,8 +2,8 @@ import {
   RESET_SCENARIO_FORM,
   START_SUBMIT_SCENARIO,
   FINISH_SUBMIT_SCENARIO,
-  // START_DELETE_SCENARIO,
-  // FINISH_DELETE_SCENARIO
+  START_DELETE_SCENARIO,
+  FINISH_DELETE_SCENARIO
 } from '../actions';
 
 const initialState = {
@@ -27,16 +27,16 @@ export default function reducer (state = initialState, action) {
         state.data = action.data.results || action.data;
       }
       break;
-    // case START_DELETE_SCENARIO:
-    //   return Object.assign({}, state, initialState, {processing: true, action: 'delete'});
-    // case FINISH_DELETE_SCENARIO:
-    //   state = Object.assign({}, state, { processing: false });
-    //   if (action.error) {
-    //     state.error = action.error;
-    //   } else {
-    //     state.data = action.data.results || action.data;
-    //   }
-    //   break;
+    case START_DELETE_SCENARIO:
+      return Object.assign({}, state, initialState, {processing: true, action: 'delete'});
+    case FINISH_DELETE_SCENARIO:
+      state = Object.assign({}, state, { processing: false });
+      if (action.error) {
+        state.error = action.error;
+      } else {
+        state.data = action.data.results || action.data;
+      }
+      break;
   }
   return state;
 }

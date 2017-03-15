@@ -19,7 +19,7 @@ import {
   resetScenarioFrom
 } from '../actions';
 import { prettyPrint } from '../utils/utils';
-import { getLanguage } from '../utils/i18n';
+import { t, getLanguage } from '../utils/i18n';
 import { fileTypesMatrix } from '../utils/constants';
 
 import Breadcrumb from '../components/breadcrumb';
@@ -126,6 +126,7 @@ var ProjectPagePending = React.createClass({
 
     var error = nextProps.project.error;
     if (error && (error.statusCode === 404 || error.statusCode === 400)) {
+      this.hideLoading();
       return hashHistory.push(`/${getLanguage()}/404`);
     }
 
@@ -222,6 +223,19 @@ var ProjectPagePending = React.createClass({
     );
   },
 
+  renderBreadcrumb: function () {
+    const items = [
+      {
+        path: '/projects',
+        title: t('Visit projects page'),
+        value: t('Projects')
+      }
+    ];
+    return (
+      <Breadcrumb items={items}/>
+    );
+  },
+
   render: function () {
     let { fetched, fetching, error, data, receivedAt } = this.props.project;
 
@@ -243,7 +257,7 @@ var ProjectPagePending = React.createClass({
         <header className='inpage__header'>
           <div className='inner'>
             <div className='inpage__headline'>
-              <Breadcrumb />
+              {this.renderBreadcrumb()}
               <h1 className='inpage__title'>{data.name}</h1>
             </div>
             <ProjectHeaderActions
