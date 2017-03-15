@@ -116,7 +116,7 @@ var ProjectPageActive = React.createClass({
       this.scenarioLoaded = true;
     }
 
-    if (this.projectLoaded && this.scenarioLoaded) {
+    if (this.projectLoaded && this.scenarioLoaded && this.loadingVisible) {
       this.hideLoading();
     }
 
