@@ -14,7 +14,7 @@ import {
   resetProjectFrom,
   postScenario
 } from '../actions';
-import { prettyPrint } from '../utils/utils';
+import { prettyPrint, fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
 import { fileTypesMatrix } from '../utils/constants';
 import config from '../config';
@@ -96,6 +96,19 @@ var ProjectPageActive = React.createClass({
     }
   },
 
+  checkAllLoaded: function (nextProps) {
+    if (this.props.project.fetching && !nextProps.project.fetching) {
+      this.projectLoaded = true;
+    }
+    if (this.props.scenarios.fetching && !nextProps.scenarios.fetching) {
+      this.scenarioLoaded = true;
+    }
+
+    if (this.projectLoaded && this.scenarioLoaded && this.loadingVisible) {
+      this.hideLoading();
+    }
+  },
+
   componentDidMount: function () {
     this.projectLoaded = false;
     this.scenarioLoaded = false;
@@ -109,17 +122,9 @@ var ProjectPageActive = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
-    if (this.props.project.fetching && !nextProps.project.fetching) {
-      this.projectLoaded = true;
-    }
-    if (this.props.scenarios.fetching && !nextProps.scenarios.fetching) {
-      this.scenarioLoaded = true;
-    }
+    this.checkAllLoaded(nextProps);
 
-    if (this.projectLoaded && this.scenarioLoaded && this.loadingVisible) {
-      this.hideLoading();
-    }
-
+    // Not found.
     var error = nextProps.project.error;
     if (error && (error.statusCode === 404 || error.statusCode === 400)) {
       this.hideLoading();
@@ -133,14 +138,17 @@ var ProjectPageActive = React.createClass({
       }
     }
 
+    // Url has changed.
     if (this.props.params.projectId !== nextProps.params.projectId) {
       this.projectLoaded = false;
       this.scenarioLoaded = false;
       this.showLoading();
       this.props._fetchProjectItem(nextProps.params.projectId);
       this.props._fetchProjectScenarios(this.props.params.projectId);
+      return;
     }
 
+    // Delete action has finished.
     if (this.props.projectForm.action === 'delete' &&
         this.props.projectForm.processing &&
         !nextProps.projectForm.processing) {
@@ -222,12 +230,8 @@ var ProjectPageActive = React.createClass({
   },
 
   render: function () {
-    let { fetched: fetchedProject, fetching: fetchingProject, error: errorProject, data: dataProject } = this.props.project;
-    let { fetched: fetchedScenario, fetching: fetchingScenario, error: errorScenario } = this.props.scenarios;
-
-    let fetched = fetchedProject && fetchedScenario;
-    let fetching = fetchingProject && fetchingScenario;
-    let error = errorProject || errorScenario;
+    const { fetched, fetching, error } = fetchStatus(this.props.project, this.props.scenarios);
+    const dataProject = this.props.project.data;
 
     if (!fetched && !fetching || !fetched && fetching) {
       return null;
@@ -311,7 +315,7 @@ function selector (state) {
     project: state.projectItem,
     scenarios: state.scenarios,
     projectForm: state.projectForm,
-    scenarioForm: state.scenarioForm,
+    scenarioForm: state.scenarioForm
   };
 }
 
