@@ -56,11 +56,12 @@ const ScenarioCreateModal = React.createClass({
         !nextProps.scenarioForm.processing &&
         !nextProps.scenarioForm.error) {
       //
+      let scenarioData = nextProps.scenarioForm.data;
       if (this.state.data.roadNetworkSource === 'new') {
         // Upload file
-        this.uploadScenarioFile(nextProps.scenarioForm.data.roadNetworkUpload.presignedUrl);
+        this.uploadScenarioFile(scenarioData.roadNetworkUpload.presignedUrl);
       } else {
-        hashHistory.push(`${getLanguage()}/projects`);
+        hashHistory.push(`${getLanguage()}/projects/${scenarioData.project_id}/scenarios/${scenarioData.id}`);
       }
       return;
     }
@@ -97,7 +98,8 @@ const ScenarioCreateModal = React.createClass({
 
   onFileUploadComplete: function () {
     this.setState({loading: false});
-    hashHistory.push(`${getLanguage()}/projects`);
+    let scenarioData = this.props.scenarioForm.data;
+    hashHistory.push(`${getLanguage()}/projects/${scenarioData.project_id}/scenarios/${scenarioData.id}`);
   },
 
   uploadScenarioFile: function (presignedUrl) {
