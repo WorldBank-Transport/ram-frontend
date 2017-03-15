@@ -14,7 +14,7 @@ import {
   invalidateScenarioItem,
   fetchScenarioItem
 } from '../actions';
-import { prettyPrint } from '../utils/utils';
+import { prettyPrint, fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
 
 import Breadcrumb from '../components/breadcrumb';
@@ -68,6 +68,19 @@ var ScenarioPage = React.createClass({
     }
   },
 
+  checkAllLoaded: function (nextProps) {
+    if (this.props.project.fetching && !nextProps.project.fetching) {
+      this.projectLoaded = true;
+    }
+    if (this.props.scenario.fetching && !nextProps.scenario.fetching) {
+      this.scenarioLoaded = true;
+    }
+
+    if (this.projectLoaded && this.scenarioLoaded && this.loadingVisible) {
+      this.hideLoading();
+    }
+  },
+
   componentDidMount: function () {
     this.projectLoaded = false;
     this.scenarioLoaded = false;
@@ -82,36 +95,26 @@ var ScenarioPage = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
-    if (this.props.project.fetching && !nextProps.project.fetching) {
-      this.projectLoaded = true;
-    }
-    if (this.props.scenario.fetching && !nextProps.scenario.fetching) {
-      this.scenarioLoaded = true;
-    }
+    this.checkAllLoaded(nextProps);
 
-    if (this.projectLoaded && this.scenarioLoaded && this.loadingVisible) {
-      this.hideLoading();
-    }
-
+    // Not found.
     var error = nextProps.scenario.error;
     if (error && (error.statusCode === 404 || error.statusCode === 400)) {
       this.hideLoading();
       return hashHistory.push(`/${getLanguage()}/404`);
     }
 
-    // if (!this.props.project.fetched && nextProps.project.fetched) {
-    //   // Project just fetched. Validate status;
-    //   if (nextProps.project.data.status === 'pending') {
-    //     return hashHistory.push(`/${getLanguage()}/projects/${this.props.params.projectId}/setup`);
-    //   }
-    // }
-
+    // Url has changed.
     if (this.props.params.projectId !== nextProps.params.projectId ||
       this.props.params.scenarioId !== nextProps.params.scenarioId) {
+      this.projectLoaded = false;
+      this.scenarioLoaded = false;
       this.showLoading();
       this.props._fetchScenarioItem(nextProps.params.projectId, nextProps.params.scenarioId);
+      return;
     }
 
+    // Delete action has finished.
     if (this.props.scenarioForm.action === 'delete' &&
         this.props.scenarioForm.processing &&
         !nextProps.scenarioForm.processing) {
@@ -158,13 +161,9 @@ var ScenarioPage = React.createClass({
   },
 
   render: function () {
-    let { fetched: fetchedProject, fetching: fetchingProject, error: errorProject } = this.props.project;
-    let { fetched: fetchedScenario, fetching: fetchingScenario, error: errorScenario, data: dataScenario } = this.props.scenario;
-    let formError = this.props.scenarioForm.error;
-
-    let fetched = fetchedProject && fetchedScenario;
-    let fetching = fetchingProject && fetchingScenario;
-    let error = errorProject || errorScenario;
+    const { fetched, fetching, error } = fetchStatus(this.props.project, this.props.scenario);
+    const dataScenario = this.props.scenario.data;
+    const formError = this.props.scenarioForm.error;
 
     if (!fetched && !fetching || !fetched && fetching) {
       return null;
