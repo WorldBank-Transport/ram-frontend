@@ -18,10 +18,9 @@ const ScenarioHeaderActions = React.createClass({
 
     showConfirm({
       title: t('Delete scenario'),
-      // TODO: https://github.com/WorldBank-Transport/rra-frontend/issues/46
       body: (
         <div>
-          <p>Are you sure you want to delete <strong>{this.props.scenario.name}</strong>?</p>
+          <p>{t('Are you sure you want to delete {name}?', {name: <strong>{this.props.scenario.name}</strong>})}</p>
         </div>
       )
     }, () => {
