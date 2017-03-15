@@ -3,7 +3,6 @@ import React, { PropTypes as T } from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { t } from '../utils/i18n';
 
-
 var Modal = React.createClass({
   displayName: 'Modal',
 

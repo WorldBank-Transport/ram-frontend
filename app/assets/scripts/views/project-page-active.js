@@ -107,6 +107,7 @@ var ProjectPageActive = React.createClass({
 
     var error = nextProps.project.error;
     if (error && (error.statusCode === 404 || error.statusCode === 400)) {
+      this.hideLoading();
       return hashHistory.push(`/${getLanguage()}/404`);
     }
 
@@ -129,7 +130,7 @@ var ProjectPageActive = React.createClass({
         this.props.projectForm.processing &&
         !nextProps.projectForm.processing) {
       this.hideLoading();
-      if (nextProps.projectForm.error) {
+      if (!nextProps.projectForm.error) {
         return hashHistory.push(`/${getLanguage()}/projects`);
       }
     }
@@ -159,7 +160,7 @@ var ProjectPageActive = React.createClass({
           <div className='card__contents'>
             <header className='card__header'>
               <div className='card__headline'>
-                <Link to={`/projects/${projectId}/scenarios/${id}`} title={t('View scenario')} className='link-wrapper'>
+                <Link to={`/${getLanguage()}/projects/${projectId}/scenarios/${id}`} title={t('View scenario')} className='link-wrapper'>
                   <h1 className='card__title'>{name}</h1>
                 </Link>
                 <p className='card__subtitle'>Scenario subtitle</p>
@@ -191,6 +192,20 @@ var ProjectPageActive = React.createClass({
       </ol>
     );
   },
+
+  renderBreadcrumb: function () {
+    const items = [
+      {
+        path: '/projects',
+        title: t('Visit projects page'),
+        value: t('Projects')
+      }
+    ];
+    return (
+      <Breadcrumb items={items}/>
+    );
+  },
+
   render: function () {
     let { fetched: fetchedProject, fetching: fetchingProject, error: errorProject, data: dataProject } = this.props.project;
     let { fetched: fetchedScenario, fetching: fetchingScenario, error: errorScenario } = this.props.scenarios;
@@ -212,7 +227,7 @@ var ProjectPageActive = React.createClass({
         <header className='inpage__header'>
           <div className='inner'>
             <div className='inpage__headline'>
-              <Breadcrumb />
+              {this.renderBreadcrumb()}
               <h1 className='inpage__title'>{dataProject.name}</h1>
             </div>
             <ProjectHeaderActions

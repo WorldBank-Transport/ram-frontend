@@ -161,7 +161,7 @@ export function deleteProject (projectId) {
   return deleteAndDispatch(`${config.api}/projects/${projectId}`, startDeleteProject, finishDeleteProject);
 }
 
-// Projects
+// Project Scenarios
 
 export function invalidateProjectScenarios () {
   return { type: INVALIDATE_PROJECT_SCENARIOS };
@@ -201,6 +201,18 @@ export function patchScenario (projectId, data) {
 // to a scenario, therefore we can use the same actions.
 export function finishProjectSetup (projectId, data) {
   return postAndDispatch(`${config.api}/projects/${projectId}/finish-setup`, data, startSubmitScenario, finishSubmitScenario);
+}
+
+export function startDeleteScenario () {
+  return { type: START_DELETE_SCENARIO };
+}
+
+export function finishDeleteScenario (scenario, error = null) {
+  return { type: FINISH_DELETE_SCENARIO, data: scenario, error, receivedAt: Date.now() };
+}
+
+export function deleteScenario (projId, scId) {
+  return deleteAndDispatch(`${config.api}/projects/${projId}/scenarios/${scId}`, startDeleteScenario, finishDeleteScenario);
 }
 
 // Fetcher function
