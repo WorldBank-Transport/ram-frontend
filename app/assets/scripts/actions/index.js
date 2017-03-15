@@ -203,6 +203,18 @@ export function finishProjectSetup (projectId, data) {
   return postAndDispatch(`${config.api}/projects/${projectId}/finish-setup`, data, startSubmitScenario, finishSubmitScenario);
 }
 
+export function startDeleteScenario () {
+  return { type: START_DELETE_SCENARIO };
+}
+
+export function finishDeleteScenario (scenario, error = null) {
+  return { type: FINISH_DELETE_SCENARIO, data: scenario, error, receivedAt: Date.now() };
+}
+
+export function deleteScenario (projId, scId) {
+  return deleteAndDispatch(`${config.api}/projects/${projId}/scenarios/${scId}`, startDeleteScenario, finishDeleteScenario);
+}
+
 // Fetcher function
 
 function getAndDispatch (url, requestFn, receiveFn) {

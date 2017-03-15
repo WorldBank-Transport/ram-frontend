@@ -1,12 +1,13 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
-import { hashHistory, Link } from 'react-router';
+import { hashHistory } from 'react-router';
 import { connect } from 'react-redux';
 
 import {
   showGlobalLoading,
   hideGlobalLoading,
   invalidateProjectItem,
+  deleteScenario,
   fetchProjectItem,
   invalidateScenarioItem,
   fetchScenarioItem
@@ -26,9 +27,11 @@ var ScenarioPage = React.createClass({
     _fetchProjectItem: T.func,
     _invalidateScenarioItem: T.func,
     _fetchScenarioItem: T.func,
+    _deleteScenario: T.func,
 
     scenario: T.object,
-    project: T.object
+    project: T.object,
+    scenarioForm: T.object
   },
 
   // Flag variables to wait for the project and scenario to load.
@@ -71,6 +74,7 @@ var ScenarioPage = React.createClass({
 
     var error = nextProps.scenario.error;
     if (error && (error.statusCode === 404 || error.statusCode === 400)) {
+      this.hideLoading();
       return hashHistory.push(`/${getLanguage()}/404`);
     }
 
@@ -85,6 +89,31 @@ var ScenarioPage = React.createClass({
       this.props.params.scenarioId !== nextProps.params.scenarioId) {
       this.showLoading();
       this.props._fetchScenarioItem(nextProps.params.projectId, nextProps.params.scenarioId);
+    }
+
+    if (this.props.scenarioForm.action === 'delete' &&
+        this.props.scenarioForm.processing &&
+        !nextProps.scenarioForm.processing) {
+      this.hideLoading();
+      if (!nextProps.scenarioForm.error) {
+        return hashHistory.push(`/${getLanguage()}/projects/${this.props.params.projectId}`);
+      }
+    }
+  },
+
+  onScenarioAction: function (what, event) {
+    event.preventDefault();
+
+    switch (what) {
+      // case 'edit':
+      //   this.setState({scenarioFormModal: true});
+      //   break;
+      case 'delete':
+        this.showLoading();
+        this.props._deleteScenario(this.props.params.projectId, this.props.params.scenarioId);
+        break;
+      default:
+        throw new Error(`Project action not implemented: ${what}`);
     }
   },
 
@@ -110,6 +139,7 @@ var ScenarioPage = React.createClass({
   render: function () {
     let { fetched: fetchedProject, fetching: fetchingProject, error: errorProject } = this.props.project;
     let { fetched: fetchedScenario, fetching: fetchingScenario, error: errorScenario, data: dataScenario } = this.props.scenario;
+    let formError = this.props.scenarioForm.error;
 
     let fetched = fetchedProject && fetchedScenario;
     let fetching = fetchingProject && fetchingScenario;
@@ -131,11 +161,14 @@ var ScenarioPage = React.createClass({
               {this.renderBreadcrumb()}
               <h1 className='inpage__title'>{dataScenario.name}</h1>
             </div>
-            <ScenarioHeaderActions />
+            <ScenarioHeaderActions
+              scenario={dataScenario}
+              onAction={this.onScenarioAction} />
           </div>
         </header>
         <div className='inpage__body'>
           <div className='inner'>
+            {formError ? <pre>{prettyPrint(formError)}</pre> : null}
             <pre>{prettyPrint(dataScenario)}</pre>
           </div>
         </div>
@@ -151,7 +184,8 @@ var ScenarioPage = React.createClass({
 function selector (state) {
   return {
     scenario: state.scenarioItem,
-    project: state.projectItem
+    project: state.projectItem,
+    scenarioForm: state.scenarioForm
   };
 }
 
@@ -162,7 +196,8 @@ function dispatcher (dispatch) {
     _invalidateProjectItem: (...args) => dispatch(invalidateProjectItem(...args)),
     _fetchProjectItem: (...args) => dispatch(fetchProjectItem(...args)),
     _showGlobalLoading: (...args) => dispatch(showGlobalLoading(...args)),
-    _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args))
+    _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args)),
+    _deleteScenario: (...args) => dispatch(deleteScenario(...args))
   };
 }
 
