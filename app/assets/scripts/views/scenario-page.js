@@ -8,6 +8,8 @@ import {
   hideGlobalLoading,
   invalidateProjectItem,
   deleteScenario,
+  patchScenario,
+  resetScenarioFrom,
   fetchProjectItem,
   invalidateScenarioItem,
   fetchScenarioItem
@@ -17,6 +19,7 @@ import { t, getLanguage } from '../utils/i18n';
 
 import Breadcrumb from '../components/breadcrumb';
 import ScenarioHeaderActions from '../components/scenario/scenario-header-actions';
+import ScenarioEditModal from '../components/scenario/scenario-edit-modal';
 
 var ScenarioPage = React.createClass({
   propTypes: {
@@ -28,10 +31,18 @@ var ScenarioPage = React.createClass({
     _invalidateScenarioItem: T.func,
     _fetchScenarioItem: T.func,
     _deleteScenario: T.func,
+    _patchScenario: T.func,
+    _resetScenarioFrom: T.func,
 
     scenario: T.object,
     project: T.object,
     scenarioForm: T.object
+  },
+
+  getInitialState: function () {
+    return {
+      scenarioEditMetadataModal: false
+    };
   },
 
   // Flag variables to wait for the project and scenario to load.
@@ -40,11 +51,21 @@ var ScenarioPage = React.createClass({
   loadingVisible: false,
 
   showLoading: function () {
+    this.loadingVisible = true;
     this.props._showGlobalLoading();
   },
 
   hideLoading: function () {
+    this.loadingVisible = false;
     this.props._hideGlobalLoading();
+  },
+
+  closeModal: function (what) {
+    switch (what) {
+      case 'edit-scenario':
+        this.setState({scenarioEditMetadataModal: false});
+        break;
+    }
   },
 
   componentDidMount: function () {
@@ -68,7 +89,7 @@ var ScenarioPage = React.createClass({
       this.scenarioLoaded = true;
     }
 
-    if (this.projectLoaded && this.scenarioLoaded) {
+    if (this.projectLoaded && this.scenarioLoaded && this.loadingVisible) {
       this.hideLoading();
     }
 
@@ -105,9 +126,9 @@ var ScenarioPage = React.createClass({
     event.preventDefault();
 
     switch (what) {
-      // case 'edit':
-      //   this.setState({scenarioFormModal: true});
-      //   break;
+      case 'edit-metadata':
+        this.setState({scenarioEditMetadataModal: true});
+        break;
       case 'delete':
         this.showLoading();
         this.props._deleteScenario(this.props.params.projectId, this.props.params.scenarioId);
@@ -173,6 +194,17 @@ var ScenarioPage = React.createClass({
           </div>
         </div>
 
+        <ScenarioEditModal
+          _showGlobalLoading={this.props._showGlobalLoading}
+          _hideGlobalLoading={this.props._hideGlobalLoading}
+          revealed={this.state.scenarioEditMetadataModal}
+          onCloseClick={this.closeModal.bind(null, 'edit-scenario')}
+          scenarioForm={this.props.scenarioForm}
+          scenarioData={dataScenario}
+          saveScenario={this.props._patchScenario}
+          resetForm={this.props._resetScenarioFrom}
+        />
+
       </section>
     );
   }
@@ -197,7 +229,9 @@ function dispatcher (dispatch) {
     _fetchProjectItem: (...args) => dispatch(fetchProjectItem(...args)),
     _showGlobalLoading: (...args) => dispatch(showGlobalLoading(...args)),
     _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args)),
-    _deleteScenario: (...args) => dispatch(deleteScenario(...args))
+    _deleteScenario: (...args) => dispatch(deleteScenario(...args)),
+    _patchScenario: (...args) => dispatch(patchScenario(...args)),
+    _resetScenarioFrom: (...args) => dispatch(resetScenarioFrom(...args))
   };
 }
 

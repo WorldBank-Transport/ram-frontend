@@ -100,9 +100,16 @@ const ScenarioEditModal = React.createClass({
         if (this.state.data.description) {
           payload.scenarioDescription = this.state.data.description;
         }
-      }
 
-      this.props.saveScenario(this.props.scenarioData.project_id, payload);
+        return this.props.saveScenario(this.props.scenarioData.project_id, payload);
+      } else {
+        payload = {
+          name: this.state.data.name,
+          description: this.state.data.description || null
+        };
+
+        return this.props.saveScenario(this.props.scenarioData.project_id, this.props.scenarioData.id, payload);
+      }
     }
   },
 
