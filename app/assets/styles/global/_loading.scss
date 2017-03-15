@@ -10,26 +10,8 @@
   right: 0;
   bottom: 0;
   z-index: 9997;
-  padding: $global-spacing * 2;
-  text-align: center;
-  color: #fff;
-  font-size: 1.5rem;
-  font-weight: $base-font-bold;
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
-    background: $accent-color;
-    width: 100%;
-    height: 100%;
-    animation: 2s ease-in-out 0s infinite loading-pane-pulse;
-    opacity: 0.92;
-  }
-
-  p {
+  .spinner {
     position: absolute;
     z-index: 2;
     top: 50%;
@@ -38,11 +20,53 @@
   }
 }
 
-@include keyframes(loading-pane-pulse) {
-  0% { background: $accent-color; }
-  32% { background: $primary-color; }
-  64% { background: shade($accent-color, 16%); }
-  100% { background: $accent-color; }
+
+/* Spinner
+   ========================================================================== */
+
+.spinner {
+  font-size: 0;
+  border-radius: $full-border-radius;
+  background: rgba($base-color, 0.8);
+  padding: $global-spacing / 2;
+}
+
+.spinner__bounce {
+  width: 1rem;
+  height: 1rem;
+  background: #fff;
+  border-radius: $full-border-radius;
+  display: inline-block;
+  margin: 0 ($global-spacing / 4);
+  animation: spinner-bouncedelay 1.4s infinite ease-in-out both;
+
+  &:first-child {
+    margin-left: 0;
+  }
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.spinner__bounce:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.spinner__bounce:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes spinner-bouncedelay {
+  0%,
+  80%,
+  100% { 
+    transform: scale(0);
+  }
+
+  40% { 
+    transform: scale(1.0);
+  }
 }
 
 

@@ -13,8 +13,10 @@ const LoadingGlobal = React.createClass({
   renderLoading: function () {
     return (
       <div className='loading-pane'>
-        <div className='inner'>
-          <p>{t('Loading')}</p>
+        <div className='spinner'>
+          <div className='spinner__bounce'></div>
+          <div className='spinner__bounce'></div>
+          <div className='spinner__bounce'></div>
         </div>
       </div>
     );
