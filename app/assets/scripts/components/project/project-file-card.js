@@ -30,9 +30,8 @@ const ProjectFileCard = React.createClass({
   onRemove: function () {
     showConfirm({
       title: t('Delete file'),
-      // TODO: https://github.com/WorldBank-Transport/rra-frontend/issues/46
       body: (
-        <p>Are you sure you want to delete <strong>{this.props.name}</strong> file?</p>
+        <p>{t('Are you sure you want to delete {name} file?', {name: <strong>{this.props.name}</strong>})}</p>
       )
     }, () => {
       const { type, projectId, scenarioId, fileId } = this.props;

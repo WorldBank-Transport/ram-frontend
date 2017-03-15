@@ -21,8 +21,10 @@ var UhOh = React.createClass({
           <div className='inner'>
             <div className='prose prose--responsive'>
               <p>{t('The requested page does not exist or may have been removed.')}</p>
-              { /* TODO: https://github.com/WorldBank-Transport/rra-frontend/issues/46 */ }
-              <p>Visit the <IndexLink to='/' title='Visit projects page'>Projects page</IndexLink> or <a href='mailto:email@domain.com' title='Get in touch'>contact us</a> about the problem.</p>
+              <p>{t('Visit the {link} or {mail} about the problem.', {
+                link: <IndexLink to='/' title={t('Visit projects page')}>{t('Projects page')}</IndexLink>,
+                mail: <a href='mailto:email@domain.com' title={t('Get in touch')}>{t('contact us')}</a>
+              })}</p>
             </div>
           </div>
         </div>
