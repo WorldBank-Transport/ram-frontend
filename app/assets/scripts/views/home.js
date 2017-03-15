@@ -59,7 +59,7 @@ var Home = React.createClass({
 
   componentWillReceiveProps: function (nextProps) {
     if (this.props.projects.fetching && !nextProps.projects.fetching) {
-      // this.props._hideGlobalLoading();
+      this.props._hideGlobalLoading();
     }
   },
 

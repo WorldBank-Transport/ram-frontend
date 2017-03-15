@@ -2,12 +2,36 @@
 import React, { PropTypes as T } from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
-import { t } from '../utils/i18n';
-
 const LoadingGlobal = React.createClass({
 
   propTypes: {
     revealed: T.bool
+  },
+
+  componentAddedBodyClass: false,
+
+  toggleBodyClass: function (revealed) {
+    let bd = document.getElementsByTagName('body')[0];
+    if (revealed) {
+      this.componentAddedBodyClass = true;
+      bd.classList.add('unscrollable-y');
+    } else if (this.componentAddedBodyClass) {
+      // Only act if the class was added by this component.
+      this.componentAddedBodyClass = false;
+      bd.classList.remove('unscrollable-y');
+    }
+  },
+
+  componentDidMount: function () {
+    this.toggleBodyClass(this.props.revealed);
+  },
+
+  componentDidUpdate: function () {
+    this.toggleBodyClass(this.props.revealed);
+  },
+
+  componentWillUnmount: function () {
+    this.toggleBodyClass(false);
   },
 
   renderLoading: function () {

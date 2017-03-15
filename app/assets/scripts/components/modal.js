@@ -4,7 +4,6 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { t } from '../utils/i18n';
 
 var Modal = React.createClass({
-  displayName: 'Modal',
 
   propTypes: {
     id: T.string.isRequired,
@@ -47,6 +46,8 @@ var Modal = React.createClass({
     }
   },
 
+  componentAddedBodyClass: false,
+
   keyListener: function (e) {
     // ESC.
     if (this.props.revealed && e.keyCode === 27) {
@@ -72,8 +73,11 @@ var Modal = React.createClass({
   toggleBodyClass: function (revealed) {
     let bd = document.getElementsByTagName('body')[0];
     if (revealed) {
+      this.componentAddedBodyClass = true;
       bd.classList.add('unscrollable-y');
-    } else {
+    } else if (this.componentAddedBodyClass) {
+      // Only act if the class was added by this component.
+      this.componentAddedBodyClass = false;
       bd.classList.remove('unscrollable-y');
     }
   },
