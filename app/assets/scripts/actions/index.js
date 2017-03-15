@@ -193,8 +193,8 @@ export function finishSubmitScenario (project, error = null) {
   return { type: FINISH_SUBMIT_SCENARIO, data: project, error, receivedAt: Date.now() };
 }
 
-export function patchScenario (projectId, data) {
-  return patchAndDispatch(`${config.api}/projects/${projectId}`, data, startSubmitScenario, finishSubmitScenario);
+export function patchScenario (projId, scId, data) {
+  return patchAndDispatch(`${config.api}/projects/${projId}/scenarios/${scId}`, data, startSubmitScenario, finishSubmitScenario);
 }
 
 export function postScenario (projectId, data) {
