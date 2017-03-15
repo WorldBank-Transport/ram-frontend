@@ -188,6 +188,9 @@ var ProjectPageActive = React.createClass({
                 </Link>
                 <p className='card__subtitle'>Scenario subtitle</p>
               </div>
+              <div className='card__actions'>
+                <button className='ca-ellipsis' type='button' title='Action'><span>Options</span></button>
+              </div>
             </header>
             <div className='card__body'>
               <div className='card__summary'>
