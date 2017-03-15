@@ -124,6 +124,7 @@ var ProjectPagePending = React.createClass({
       this.props._hideGlobalLoading();
     }
 
+    // Not found.
     var error = nextProps.project.error;
     if (error && (error.statusCode === 404 || error.statusCode === 400)) {
       this.hideLoading();
@@ -137,14 +138,17 @@ var ProjectPagePending = React.createClass({
       }
     }
 
+    // Url has changed.
     if (this.props.params.projectId !== nextProps.params.projectId) {
       this.props._showGlobalLoading();
       // We're changing project. Invalidate.
       this.props._invalidateProjectItem();
       this.props._fetchProjectItem(nextProps.params.projectId);
       this.props._fetchScenarioItem(nextProps.params.projectId, 0);
+      return;
     }
 
+    // Delete action has finished.
     if (this.props.projectForm.action === 'delete' &&
         this.props.projectForm.processing &&
         !nextProps.projectForm.processing) {

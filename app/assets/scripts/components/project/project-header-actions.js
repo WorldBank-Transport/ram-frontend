@@ -18,11 +18,10 @@ const ProjectHeaderActions = React.createClass({
 
     showConfirm({
       title: t('Delete project'),
-      // TODO: https://github.com/WorldBank-Transport/rra-frontend/issues/46
       body: (
         <div>
-          <p>Are you sure you want to delete <strong>{this.props.project.name}</strong>?</p>
-          <p>All project related files and scenarios will be deleted as well.</p>
+          <p>{t('Are you sure you want to delete {name}?', {name: <strong>{this.props.project.name}</strong>})}</p>
+          <p>{t('All project related files and scenarios will be deleted as well.')}</p>
         </div>
       )
     }, () => {

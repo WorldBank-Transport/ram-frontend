@@ -100,9 +100,16 @@ const ScenarioEditModal = React.createClass({
         if (this.state.data.description) {
           payload.scenarioDescription = this.state.data.description;
         }
-      }
 
-      this.props.saveScenario(this.props.scenarioData.project_id, payload);
+        return this.props.saveScenario(this.props.scenarioData.project_id, payload);
+      } else {
+        payload = {
+          name: this.state.data.name,
+          description: this.state.data.description || null
+        };
+
+        return this.props.saveScenario(this.props.scenarioData.project_id, this.props.scenarioData.id, payload);
+      }
     }
   },
 
@@ -147,7 +154,7 @@ const ScenarioEditModal = React.createClass({
 
           {this.renderError()}
 
-          <form className={c({'disable': processing})} onSubmit={this.onSubmit}>
+          <form className={c('form', {'disable': processing})} onSubmit={this.onSubmit}>
             <div className='form__group'>
               <label className='form__label' htmlFor='scenario-name'>{t('Scenario name')}</label>
               <input type='text' className='form__control form__control--medium' id='scenario-name' name='scenario-name' placeholder={t('Untitled scenario')} value={this.state.data.name} onChange={this.onFieldChange.bind(null, 'name')} />

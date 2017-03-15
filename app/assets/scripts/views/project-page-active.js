@@ -11,9 +11,10 @@ import {
   showGlobalLoading,
   hideGlobalLoading,
   fetchProjectScenarios,
-  resetProjectFrom
+  resetProjectFrom,
+  postScenario
 } from '../actions';
-import { prettyPrint } from '../utils/utils';
+import { prettyPrint, fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
 import { fileTypesMatrix } from '../utils/constants';
 import config from '../config';
@@ -21,6 +22,7 @@ import config from '../config';
 import Breadcrumb from '../components/breadcrumb';
 import ProjectFormModal from '../components/project/project-form-modal';
 import ProjectHeaderActions from '../components/project/project-header-actions';
+import ScenarioCreateModal from '../components/scenario/scenario-create-modal';
 
 var ProjectPageActive = React.createClass({
 
@@ -33,16 +35,19 @@ var ProjectPageActive = React.createClass({
     _showGlobalLoading: T.func,
     _hideGlobalLoading: T.func,
     _fetchProjectScenarios: T.func,
+    _postScenario: T.func,
 
     params: T.object,
     project: T.object,
     scenarios: T.object,
-    projectForm: T.object
+    projectForm: T.object,
+    scenarioForm: T.object
   },
 
   getInitialState: function () {
     return {
-      projectFormModal: false
+      projectFormModal: false,
+      scenarioCreateModal: false
     };
   },
 
@@ -61,8 +66,15 @@ var ProjectPageActive = React.createClass({
     this.props._hideGlobalLoading();
   },
 
-  closeModal: function () {
-    this.setState({projectFormModal: false});
+  closeModal: function (what) {
+    switch (what) {
+      case 'project-form':
+        this.setState({projectFormModal: false});
+        break;
+      case 'new-scenario':
+        this.setState({scenarioCreateModal: false});
+        break;
+    }
   },
 
   onProjectAction: function (what, event) {
@@ -76,8 +88,24 @@ var ProjectPageActive = React.createClass({
         this.showLoading();
         this.props._deleteProject(this.props.params.projectId);
         break;
+      case 'new-scenario':
+        this.setState({scenarioCreateModal: true});
+        break;
       default:
         throw new Error(`Project action not implemented: ${what}`);
+    }
+  },
+
+  checkAllLoaded: function (nextProps) {
+    if (this.props.project.fetching && !nextProps.project.fetching) {
+      this.projectLoaded = true;
+    }
+    if (this.props.scenarios.fetching && !nextProps.scenarios.fetching) {
+      this.scenarioLoaded = true;
+    }
+
+    if (this.projectLoaded && this.scenarioLoaded && this.loadingVisible) {
+      this.hideLoading();
     }
   },
 
@@ -94,17 +122,9 @@ var ProjectPageActive = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
-    if (this.props.project.fetching && !nextProps.project.fetching) {
-      this.projectLoaded = true;
-    }
-    if (this.props.scenarios.fetching && !nextProps.scenarios.fetching) {
-      this.scenarioLoaded = true;
-    }
+    this.checkAllLoaded(nextProps);
 
-    if (this.projectLoaded && this.scenarioLoaded) {
-      this.hideLoading();
-    }
-
+    // Not found.
     var error = nextProps.project.error;
     if (error && (error.statusCode === 404 || error.statusCode === 400)) {
       this.hideLoading();
@@ -118,14 +138,17 @@ var ProjectPageActive = React.createClass({
       }
     }
 
+    // Url has changed.
     if (this.props.params.projectId !== nextProps.params.projectId) {
       this.projectLoaded = false;
       this.scenarioLoaded = false;
       this.showLoading();
       this.props._fetchProjectItem(nextProps.params.projectId);
       this.props._fetchProjectScenarios(this.props.params.projectId);
+      return;
     }
 
+    // Delete action has finished.
     if (this.props.projectForm.action === 'delete' &&
         this.props.projectForm.processing &&
         !nextProps.projectForm.processing) {
@@ -187,7 +210,7 @@ var ProjectPageActive = React.createClass({
       <ol className='card-list scenarios-card-list'>
         {data.map(scenario => this.renderScenarioCard(scenario))}
         <li>
-          <button className='card__button card__button--add'><span>{t('New scenario')}</span></button>
+          <button className='card__button card__button--add' onClick={() => this.setState({scenarioCreateModal: true})}><span>{t('New scenario')}</span></button>
         </li>
       </ol>
     );
@@ -207,12 +230,8 @@ var ProjectPageActive = React.createClass({
   },
 
   render: function () {
-    let { fetched: fetchedProject, fetching: fetchingProject, error: errorProject, data: dataProject } = this.props.project;
-    let { fetched: fetchedScenario, fetching: fetchingScenario, error: errorScenario } = this.props.scenarios;
-
-    let fetched = fetchedProject && fetchedScenario;
-    let fetching = fetchingProject && fetchingScenario;
-    let error = errorProject || errorScenario;
+    const { fetched, fetching, error } = fetchStatus(this.props.project, this.props.scenarios);
+    const dataProject = this.props.project.data;
 
     if (!fetched && !fetching || !fetched && fetching) {
       return null;
@@ -264,10 +283,22 @@ var ProjectPageActive = React.createClass({
           _showGlobalLoading={this.props._showGlobalLoading}
           _hideGlobalLoading={this.props._hideGlobalLoading}
           revealed={this.state.projectFormModal}
-          onCloseClick={this.closeModal}
+          onCloseClick={this.closeModal.bind(null, 'project-form')}
           projectForm={this.props.projectForm}
           projectData={dataProject}
           saveProject={this.props._patchProject}
+          resetForm={this.props._resetProjectFrom}
+        />
+
+        <ScenarioCreateModal
+          _showGlobalLoading={this.props._showGlobalLoading}
+          _hideGlobalLoading={this.props._hideGlobalLoading}
+          revealed={this.state.scenarioCreateModal}
+          onCloseClick={this.closeModal.bind(null, 'new-scenario')}
+          scenarioForm={this.props.scenarioForm}
+          scenarioList={this.props.scenarios.data.results}
+          projectId={this.props.params.projectId}
+          saveScenario={this.props._postScenario}
           resetForm={this.props._resetProjectFrom}
         />
 
@@ -283,7 +314,8 @@ function selector (state) {
   return {
     project: state.projectItem,
     scenarios: state.scenarios,
-    projectForm: state.projectForm
+    projectForm: state.projectForm,
+    scenarioForm: state.scenarioForm
   };
 }
 
@@ -296,7 +328,8 @@ function dispatcher (dispatch) {
     _showGlobalLoading: (...args) => dispatch(showGlobalLoading(...args)),
     _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args)),
     _fetchProjectScenarios: (...args) => dispatch(fetchProjectScenarios(...args)),
-    _resetProjectFrom: (...args) => dispatch(resetProjectFrom(...args))
+    _resetProjectFrom: (...args) => dispatch(resetProjectFrom(...args)),
+    _postScenario: (...args) => dispatch(postScenario(...args))
   };
 }
 

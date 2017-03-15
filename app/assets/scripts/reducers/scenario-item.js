@@ -1,4 +1,10 @@
-import { REQUEST_SCENARIO_ITEM, RECEIVE_SCENARIO_ITEM, INVALIDATE_SCENARIO_ITEM, REMOVE_SCENARIO_ITEM_FILE } from '../actions';
+import {
+  REQUEST_SCENARIO_ITEM,
+  RECEIVE_SCENARIO_ITEM,
+  INVALIDATE_SCENARIO_ITEM,
+  REMOVE_SCENARIO_ITEM_FILE,
+  FINISH_SUBMIT_SCENARIO
+} from '../actions';
 import _ from 'lodash';
 
 const initialState = {
@@ -27,6 +33,12 @@ export default function reducer (state = initialState, action) {
       state = _.cloneDeep(state);
       state.data.files = state.data.files.filter(o => o.id !== action.fileId);
       return state;
+    case FINISH_SUBMIT_SCENARIO:
+      state = Object.assign({}, state);
+      if (!action.error) {
+        state.data = Object.assign({}, state.data, action.data);
+      }
+      break;
   }
   return state;
 }
