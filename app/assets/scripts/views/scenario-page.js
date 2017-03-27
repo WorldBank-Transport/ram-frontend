@@ -12,10 +12,13 @@ import {
   resetScenarioFrom,
   fetchProjectItem,
   invalidateScenarioItem,
-  fetchScenarioItem
+  fetchScenarioItem,
+
+  fetchScenarioItemSilent
 } from '../actions';
 import { prettyPrint, fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
+import config from '../config';
 
 import Breadcrumb from '../components/breadcrumb';
 import ScenarioHeaderActions from '../components/scenario/scenario-header-actions';
@@ -160,6 +163,23 @@ var ScenarioPage = React.createClass({
     );
   },
 
+  renderFiles: function () {
+    let data = this.props.scenario.data;
+    if (data.gen_analysis && !data.gen_analysis.error) {
+      return (
+        <ul>
+          {data.files.filter(f => f.type === 'results').map(o => {
+            return (
+              <li key={o.id}>
+                <a href={`${config.api}/projects/${data.project_id}/scenarios/${data.id}/files/${o.id}?download=true`}>{o.name}</a>
+              </li>
+            );
+          })}
+        </ul>
+      );
+    }
+  },
+
   render: function () {
     const { fetched, fetching, error } = fetchStatus(this.props.project, this.props.scenario);
     const dataScenario = this.props.scenario.data;
@@ -189,7 +209,12 @@ var ScenarioPage = React.createClass({
         <div className='inpage__body'>
           <div className='inner'>
             {formError ? <pre>{prettyPrint(formError)}</pre> : null}
-            <pre>{prettyPrint(dataScenario)}</pre>
+            <Log
+              data={dataScenario.gen_analysis}
+              receivedAt={this.props.scenario.receivedAt}
+              update={this.props._fetchScenarioItemSilent.bind(null, this.props.params.projectId, this.props.params.scenarioId)}
+            />
+            {this.renderFiles()}
           </div>
         </div>
 
@@ -230,8 +255,68 @@ function dispatcher (dispatch) {
     _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args)),
     _deleteScenario: (...args) => dispatch(deleteScenario(...args)),
     _patchScenario: (...args) => dispatch(patchScenario(...args)),
-    _resetScenarioFrom: (...args) => dispatch(resetScenarioFrom(...args))
+    _resetScenarioFrom: (...args) => dispatch(resetScenarioFrom(...args)),
+
+    _fetchScenarioItemSilent: (...args) => dispatch(fetchScenarioItemSilent(...args))
   };
 }
 
 module.exports = connect(selector, dispatcher)(ScenarioPage);
+
+var Log = React.createClass({
+
+  propTypes: {
+    data: T.object,
+    receivedAt: T.number,
+    update: T.func
+  },
+
+  componentDidMount: function () {
+    if (this.props.data == null || this.props.data.status === 'running') {
+      console.log('setting timeout');
+      setTimeout(() => {
+        this.props.update();
+      }, 1000);
+    }
+  },
+
+  componentWillReceiveProps: function (nextProps) {
+    console.log('nextProps', nextProps);
+    if (nextProps.data == null || (nextProps.data && nextProps.data.status === 'running' &&
+    this.props.receivedAt !== nextProps.receivedAt)) {
+      console.log('setting timeout up');
+      setTimeout(() => {
+        this.props.update();
+      }, 1000);
+    }
+  },
+
+  render: function () {
+    const genAnalysisLog = this.props.data;
+    if (!genAnalysisLog) return <p>Process starting</p>;
+
+    if (genAnalysisLog.status === 'complete' && !genAnalysisLog.errored) return null;
+
+    return (
+      <ul>
+      {genAnalysisLog.logs.map(l => {
+        switch (l.code) {
+          case 'routing':
+            if (l.data.message.match(/started/)) {
+              return <li key={l.id}>[{l.created_at}] Processing {l.data.count} admin areas</li>;
+            } else {
+              return <li key={l.id}>[{l.created_at}] Processing areas complete</li>;
+            }
+          case 'routing:area':
+            return <li key={l.id}>[{l.created_at}] Processing areas {l.data.adminArea}</li>;
+          case 'error':
+            let e = typeof l.data.error === 'string' ? l.data.error : 'unknown';
+            return <li key={l.id}>[{l.created_at}] <strong>ERROR:</strong> {e}</li>;
+          default:
+            return <li key={l.id}>[{l.created_at}] {l.data.message}</li>;
+        }
+      })}
+      </ul>
+    );
+  }
+});

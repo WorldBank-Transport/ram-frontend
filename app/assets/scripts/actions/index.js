@@ -121,6 +121,10 @@ export function fetchScenarioItem (pid, scid) {
   return getAndDispatch(`${config.api}/projects/${pid}/scenarios/${scid}`, requestScenarioItem, receiveScenarioItem);
 }
 
+export function fetchScenarioItemSilent (pid, scid) {
+  return getAndDispatch(`${config.api}/projects/${pid}/scenarios/${scid}`, () => ({type: 'noop'}), receiveScenarioItem);
+}
+
 // Removes the given file id from the scenario file array, avoiding a
 // new request.
 export function removeScenarioItemFile (fileId) {
