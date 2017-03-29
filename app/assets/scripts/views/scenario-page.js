@@ -2,6 +2,7 @@
 import React, { PropTypes as T } from 'react';
 import { hashHistory } from 'react-router';
 import { connect } from 'react-redux';
+import TimeAgo from 'timeago-react';
 
 import {
   showGlobalLoading,
@@ -195,6 +196,8 @@ var ScenarioPage = React.createClass({
     if (data.gen_analysis && !data.gen_analysis.error) {
       let resultFiles = data.files.filter(f => f.type === 'results');
 
+      if (!resultFiles.length) return null;
+
       return (
         <div>
           <h3>Result files</h3>
@@ -352,26 +355,43 @@ const Log = React.createClass({
 
     if (genAnalysisLog.status === 'complete' && !genAnalysisLog.errored) return null;
 
-    return (
-      <ul>
-      {genAnalysisLog.logs.map(l => {
-        switch (l.code) {
-          case 'routing':
-            if (l.data.message.match(/started/)) {
-              return <li key={l.id}>[{l.created_at}] Processing {l.data.count} admin areas</li>;
-            } else {
-              return <li key={l.id}>[{l.created_at}] Processing areas complete</li>;
-            }
-          case 'routing:area':
-            return <li key={l.id}>[{l.created_at}] Processing areas {l.data.adminArea}</li>;
-          case 'error':
-            let e = typeof l.data.error === 'string' ? l.data.error : 'unknown';
-            return <li key={l.id}>[{l.created_at}] <strong>ERROR:</strong> {e}</li>;
-          default:
-            return <li key={l.id}>[{l.created_at}] {l.data.message}</li>;
+    let lastLog = genAnalysisLog.logs[genAnalysisLog.logs.length - 1];
+
+    switch (lastLog.code) {
+      case 'routing':
+        if (lastLog.data.message.match(/started/)) {
+          return (
+            <div className='alert alert--info' role='alert'>
+              <p><strong><TimeAgo datetime={lastLog.created_at} /></strong> Processing {lastLog.data.count} admin areas</p>
+            </div>
+          );
+        } else {
+          return (
+            <div className='alert alert--success' role='alert'>
+              <p><strong><TimeAgo datetime={lastLog.created_at} /></strong> {lastLog.data.message}</p>
+            </div>
+          );
         }
-      })}
-      </ul>
-    );
+      case 'error':
+        let e = typeof lastLog.data.error === 'string' ? lastLog.data.error : 'Unknown error';
+        return (
+          <div className='alert alert--danger' role='alert'>
+            <p><strong><TimeAgo datetime={lastLog.created_at} /></strong> {e}</p>
+          </div>
+        );
+      case 'results:bucket':
+      case 'results:files':
+        return (
+          <div className='alert alert--success' role='alert'>
+            <p><strong><TimeAgo datetime={lastLog.created_at} /></strong> Finishing up...</p>
+          </div>
+        );
+      default:
+        return (
+          <div className='alert alert--info' role='alert'>
+            <p><strong><TimeAgo datetime={lastLog.created_at} /></strong> {lastLog.data.message}</p>
+          </div>
+        );
+    }
   }
 });
