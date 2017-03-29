@@ -193,17 +193,24 @@ var ScenarioPage = React.createClass({
   renderFiles: function () {
     let data = this.props.scenario.data;
     if (data.gen_analysis && !data.gen_analysis.error) {
+      let resultFiles = data.files.filter(f => f.type === 'results');
+
       return (
-        <ul>
-          {data.files.filter(f => f.type === 'results').map(o => {
-            return (
-              <li key={o.id}>
-                <a href={`${config.api}/projects/${data.project_id}/scenarios/${data.id}/files/${o.id}?download=true`}>{o.name}</a>
-              </li>
-            );
-          })}
-        </ul>
+        <div>
+          <h3>Result files</h3>
+          <ul>
+            {resultFiles.map(o => {
+              return (
+                <li key={o.id}>
+                  <a href={`${config.api}/projects/${data.project_id}/scenarios/${data.id}/files/${o.id}?download=true`}>{o.name}</a>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       );
+    } else {
+      return <p>No results were generated for this scenario yet.</p>;
     }
   },
 
@@ -324,7 +331,7 @@ const Log = React.createClass({
   },
 
   componentDidMount: function () {
-    if (this.props.data == null || this.props.data.status === 'running') {
+    if (this.props.data && this.props.data.status === 'running') {
       // console.log('componentDidMount timeout');
       this.startPolling();
     }
@@ -332,8 +339,8 @@ const Log = React.createClass({
 
   componentWillReceiveProps: function (nextProps) {
     // Continue polling while the status is 'running';
-    if (nextProps.data == null || (nextProps.data && nextProps.data.status === 'running' &&
-    this.props.receivedAt !== nextProps.receivedAt)) {
+    if (nextProps.data && nextProps.data.status === 'running' &&
+    this.props.receivedAt !== nextProps.receivedAt) {
       // console.log('componentWillReceiveProps timeout');
       this.startPolling();
     }
@@ -341,6 +348,8 @@ const Log = React.createClass({
 
   render: function () {
     const genAnalysisLog = this.props.data;
+    if (!genAnalysisLog) return null;
+
     if (genAnalysisLog.status === 'complete' && !genAnalysisLog.errored) return null;
 
     return (
