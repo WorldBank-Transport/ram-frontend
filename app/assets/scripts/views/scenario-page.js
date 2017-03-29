@@ -13,6 +13,7 @@ import {
   fetchProjectItem,
   invalidateScenarioItem,
   fetchScenarioItem,
+  startGenerateResults,
 
   fetchScenarioItemSilent
 } from '../actions';
@@ -23,6 +24,7 @@ import config from '../config';
 import Breadcrumb from '../components/breadcrumb';
 import ScenarioHeaderActions from '../components/scenario/scenario-header-actions';
 import ScenarioEditModal from '../components/scenario/scenario-edit-modal';
+import ScenarioGenSettingsModal from '../components/scenario/scenario-generation-settings-modal';
 
 var ScenarioPage = React.createClass({
   propTypes: {
@@ -36,6 +38,7 @@ var ScenarioPage = React.createClass({
     _deleteScenario: T.func,
     _patchScenario: T.func,
     _resetScenarioFrom: T.func,
+    _startGenerateResults: T.func,
 
     scenario: T.object,
     project: T.object,
@@ -44,13 +47,13 @@ var ScenarioPage = React.createClass({
 
   getInitialState: function () {
     return {
-      scenarioEditMetadataModal: false
+      scenarioEditMetadataModal: false,
+      scenarioGenSettingsModal: false
     };
   },
 
   // Flag variables to wait for the project and scenario to load.
-  projectLoaded: false,
-  scenarioLoaded: false,
+  elementsLoaded: 0,
   loadingVisible: false,
 
   showLoading: function () {
@@ -68,18 +71,23 @@ var ScenarioPage = React.createClass({
       case 'edit-scenario':
         this.setState({scenarioEditMetadataModal: false});
         break;
+      case 'generate-settings':
+        this.setState({scenarioGenSettingsModal: false});
+        break;
     }
   },
 
   checkAllLoaded: function (nextProps) {
     if (this.props.project.fetching && !nextProps.project.fetching) {
-      this.projectLoaded = true;
+      this.elementsLoaded++;
     }
     if (this.props.scenario.fetching && !nextProps.scenario.fetching) {
-      this.scenarioLoaded = true;
+      this.elementsLoaded++;
     }
 
-    if (this.projectLoaded && this.scenarioLoaded && this.loadingVisible) {
+    if (this.elementsLoaded === 2 && this.loadingVisible) {
+      // Done.
+      this.elementsLoaded = 0;
       this.hideLoading();
     }
   },
@@ -93,6 +101,7 @@ var ScenarioPage = React.createClass({
   },
 
   componentWillUnmount: function () {
+    this.hideLoading();
     this.props._invalidateScenarioItem();
     this.props._invalidateProjectItem();
   },
@@ -126,6 +135,15 @@ var ScenarioPage = React.createClass({
         return hashHistory.push(`/${getLanguage()}/projects/${this.props.params.projectId}`);
       }
     }
+
+    let genResults = this.props.scenario.genResults;
+    let nextGenResults = nextProps.scenario.genResults;
+    if (genResults.processing && !nextGenResults.processing) {
+      this.hideLoading();
+      if (nextGenResults.error) {
+        alert(nextGenResults.error.message);
+      }
+    }
   },
 
   onScenarioAction: function (what, event) {
@@ -135,9 +153,16 @@ var ScenarioPage = React.createClass({
       case 'edit-metadata':
         this.setState({scenarioEditMetadataModal: true});
         break;
+      case 'generate-settings':
+        this.setState({scenarioGenSettingsModal: true});
+        break;
       case 'delete':
         this.showLoading();
         this.props._deleteScenario(this.props.params.projectId, this.props.params.scenarioId);
+        break;
+      case 'generate':
+        this.showLoading();
+        this.props._startGenerateResults(this.props.params.projectId, this.props.params.scenarioId);
         break;
       default:
         throw new Error(`Project action not implemented: ${what}`);
@@ -209,11 +234,12 @@ var ScenarioPage = React.createClass({
         <div className='inpage__body'>
           <div className='inner'>
             {formError ? <pre>{prettyPrint(formError)}</pre> : null}
-            <Log
+
+            { /* <Log
               data={dataScenario.gen_analysis}
               receivedAt={this.props.scenario.receivedAt}
               update={this.props._fetchScenarioItemSilent.bind(null, this.props.params.projectId, this.props.params.scenarioId)}
-            />
+            /> */ }
             {this.renderFiles()}
           </div>
         </div>
@@ -223,6 +249,17 @@ var ScenarioPage = React.createClass({
           _hideGlobalLoading={this.props._hideGlobalLoading}
           revealed={this.state.scenarioEditMetadataModal}
           onCloseClick={this.closeModal.bind(null, 'edit-scenario')}
+          scenarioForm={this.props.scenarioForm}
+          scenarioData={dataScenario}
+          saveScenario={this.props._patchScenario}
+          resetForm={this.props._resetScenarioFrom}
+        />
+
+        <ScenarioGenSettingsModal
+          _showGlobalLoading={this.props._showGlobalLoading}
+          _hideGlobalLoading={this.props._hideGlobalLoading}
+          revealed={this.state.scenarioGenSettingsModal}
+          onCloseClick={this.closeModal.bind(null, 'generate-settings')}
           scenarioForm={this.props.scenarioForm}
           scenarioData={dataScenario}
           saveScenario={this.props._patchScenario}
@@ -256,6 +293,7 @@ function dispatcher (dispatch) {
     _deleteScenario: (...args) => dispatch(deleteScenario(...args)),
     _patchScenario: (...args) => dispatch(patchScenario(...args)),
     _resetScenarioFrom: (...args) => dispatch(resetScenarioFrom(...args)),
+    _startGenerateResults: (...args) => dispatch(startGenerateResults(...args)),
 
     _fetchScenarioItemSilent: (...args) => dispatch(fetchScenarioItemSilent(...args))
   };

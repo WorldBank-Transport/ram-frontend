@@ -35,6 +35,9 @@ export const FINISH_SUBMIT_SCENARIO = 'FINISH_SUBMIT_SCENARIO';
 export const START_DELETE_SCENARIO = 'START_DELETE_SCENARIO';
 export const FINISH_DELETE_SCENARIO = 'FINISH_DELETE_PROJECT';
 
+export const REQUEST_GENERATE_RESULTS = 'REQUEST_GENERATE_RESULTS';
+export const RECEIVE_GENERATE_RESULTS = 'RECEIVE_GENERATE_RESULTS';
+
 // App related. Global stuff
 
 export function showGlobalLoading () {
@@ -221,6 +224,20 @@ export function finishDeleteScenario (scenario, error = null) {
 
 export function deleteScenario (projId, scId) {
   return deleteAndDispatch(`${config.api}/projects/${projId}/scenarios/${scId}`, startDeleteScenario, finishDeleteScenario);
+}
+
+// Generate results
+
+export function requestGenerateResults () {
+  return { type: REQUEST_GENERATE_RESULTS };
+}
+
+export function receiveGenerateResults (data, error = null) {
+  return { type: RECEIVE_GENERATE_RESULTS, data: data, error, receivedAt: Date.now() };
+}
+
+export function startGenerateResults (projectId, scenarioId) {
+  return postAndDispatch(`${config.api}/projects/${projectId}/scenarios/${scenarioId}/generate`, null, requestGenerateResults, receiveGenerateResults);
 }
 
 // Fetcher function

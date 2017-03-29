@@ -60,7 +60,6 @@
 @import "core/typography";
 @import "core/tables";
 @import "core/media";
-@import "core/utilities";
 
 
 /* Global
@@ -95,3 +94,9 @@
    ========================================================================== */
 
 @import "uhoh/global";
+
+
+/* Core (...cont)
+   ========================================================================== */
+
+@import "core/utilities";
