@@ -14,7 +14,7 @@ import {
   invalidateScenarioItem,
   fetchScenarioItem,
   startGenerateResults,
-
+  // Fetch scenario without indication of loading.
   fetchScenarioItemSilent
 } from '../actions';
 import { prettyPrint, fetchStatus } from '../utils/utils';
@@ -39,6 +39,7 @@ var ScenarioPage = React.createClass({
     _patchScenario: T.func,
     _resetScenarioFrom: T.func,
     _startGenerateResults: T.func,
+    _fetchScenarioItemSilent: T.func,
 
     scenario: T.object,
     project: T.object,
@@ -140,6 +141,7 @@ var ScenarioPage = React.createClass({
     let nextGenResults = nextProps.scenario.genResults;
     if (genResults.processing && !nextGenResults.processing) {
       this.hideLoading();
+      this.props._fetchScenarioItemSilent(this.props.params.projectId, this.props.params.scenarioId);
       if (nextGenResults.error) {
         alert(nextGenResults.error.message);
       }
@@ -235,11 +237,11 @@ var ScenarioPage = React.createClass({
           <div className='inner'>
             {formError ? <pre>{prettyPrint(formError)}</pre> : null}
 
-            { /* <Log
+            <Log
               data={dataScenario.gen_analysis}
               receivedAt={this.props.scenario.receivedAt}
               update={this.props._fetchScenarioItemSilent.bind(null, this.props.params.projectId, this.props.params.scenarioId)}
-            /> */ }
+            />
             {this.renderFiles()}
           </div>
         </div>
@@ -301,38 +303,44 @@ function dispatcher (dispatch) {
 
 module.exports = connect(selector, dispatcher)(ScenarioPage);
 
-var Log = React.createClass({
-
+// Processing log component.
+const Log = React.createClass({
   propTypes: {
     data: T.object,
     receivedAt: T.number,
     update: T.func
   },
 
+  timeout: null,
+
+  startPolling: function () {
+    this.timeout = setTimeout(() => this.props.update(), 2000);
+  },
+
+  componentWillUnmount: function () {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+  },
+
   componentDidMount: function () {
     if (this.props.data == null || this.props.data.status === 'running') {
-      console.log('setting timeout');
-      setTimeout(() => {
-        this.props.update();
-      }, 1000);
+      // console.log('componentDidMount timeout');
+      this.startPolling();
     }
   },
 
   componentWillReceiveProps: function (nextProps) {
-    console.log('nextProps', nextProps);
+    // Continue polling while the status is 'running';
     if (nextProps.data == null || (nextProps.data && nextProps.data.status === 'running' &&
     this.props.receivedAt !== nextProps.receivedAt)) {
-      console.log('setting timeout up');
-      setTimeout(() => {
-        this.props.update();
-      }, 1000);
+      // console.log('componentWillReceiveProps timeout');
+      this.startPolling();
     }
   },
 
   render: function () {
     const genAnalysisLog = this.props.data;
-    if (!genAnalysisLog) return <p>Process starting</p>;
-
     if (genAnalysisLog.status === 'complete' && !genAnalysisLog.errored) return null;
 
     return (
