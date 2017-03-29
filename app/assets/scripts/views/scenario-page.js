@@ -357,18 +357,41 @@ const Log = React.createClass({
 
     let lastLog = genAnalysisLog.logs[genAnalysisLog.logs.length - 1];
 
+    // There are 4 main steps:
+    // Staring.
+    // Generating osrm.
+    // Routing.
+    // Finishing.
+
     switch (lastLog.code) {
+      case 'generate-analysis':
+        return (
+          <div className='alert alert--info' role='alert'>
+            <h6>Generating results 1/4 <TimeAgo datetime={lastLog.created_at} /></h6>
+            <p>{lastLog.data.message}</p>
+          </div>
+        );
+      case 'osrm':
+        return (
+          <div className='alert alert--info' role='alert'>
+            <h6>Generating results 2/4 <TimeAgo datetime={lastLog.created_at} /></h6>
+            <p>{lastLog.data.message}</p>
+          </div>
+        );
       case 'routing':
+      case '<routing:area></routing:area>':
         if (lastLog.data.message.match(/started/)) {
           return (
             <div className='alert alert--info' role='alert'>
-              <p><strong><TimeAgo datetime={lastLog.created_at} /></strong> Processing {lastLog.data.count} admin areas</p>
+              <h6>Generating results 3/4 <TimeAgo datetime={lastLog.created_at} /></h6>
+              <p>Processing {lastLog.data.count} admin areas</p>
             </div>
           );
         } else {
           return (
-            <div className='alert alert--success' role='alert'>
-              <p><strong><TimeAgo datetime={lastLog.created_at} /></strong> {lastLog.data.message}</p>
+            <div className='alert alert--info' role='alert'>
+              <h6>Generating results 3/4 <TimeAgo datetime={lastLog.created_at} /></h6>
+              <p>{lastLog.data.message}</p>
             </div>
           );
         }
@@ -376,20 +399,16 @@ const Log = React.createClass({
         let e = typeof lastLog.data.error === 'string' ? lastLog.data.error : 'Unknown error';
         return (
           <div className='alert alert--danger' role='alert'>
-            <p><strong><TimeAgo datetime={lastLog.created_at} /></strong> {e}</p>
+            <h6>An error occurred <TimeAgo datetime={lastLog.created_at} /></h6>
+            <p>{e}</p>
           </div>
         );
       case 'results:bucket':
       case 'results:files':
         return (
-          <div className='alert alert--success' role='alert'>
-            <p><strong><TimeAgo datetime={lastLog.created_at} /></strong> Finishing up...</p>
-          </div>
-        );
-      default:
-        return (
           <div className='alert alert--info' role='alert'>
-            <p><strong><TimeAgo datetime={lastLog.created_at} /></strong> {lastLog.data.message}</p>
+            <h6>Generating results 4/4 <TimeAgo datetime={lastLog.created_at} /></h6>
+            <p>Finishing up...</p>
           </div>
         );
     }
