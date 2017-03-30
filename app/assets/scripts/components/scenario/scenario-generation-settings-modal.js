@@ -155,6 +155,11 @@ const ScenarioGenSettingsModal = React.createClass({
           <form className={c('form', {'disable': processing})} onSubmit={this.onSubmit}>
             <div className='form__group form-group-areas'>
               <label className='form__label'>Admin areas</label>
+              <dl className='form__options-menu'>
+                <dt>Select</dt>
+                <dd><button type='button' className='foma-select-all' title='Select all'><span>All</span></button></dd>
+                <dd><button type='button' className='foma-select-none' title='Select none'><span>None</span></button></dd>
+              </dl>
 
               {this.props.scenarioData.admin_areas.map(this.renderCheckbox)}
 
