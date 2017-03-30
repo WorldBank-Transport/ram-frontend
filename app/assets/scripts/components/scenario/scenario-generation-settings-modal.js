@@ -120,7 +120,7 @@ const ScenarioGenSettingsModal = React.createClass({
 
   renderCheckbox: function (val, idx) {
     return (
-      <label key={idx} className='form__option form__option--inline form__option--custom-checkbox'>
+      <label key={idx} className='form__option form__option--inline form__option--custom-checkbox' title={val.name}>
         <input type='checkbox' name={`checkbox-${idx}`} value={val.name} onChange={this.onFieldChange.bind(null, 'selectedAreas')} checked={this.state.data.selectedAreas.indexOf(val.name) !== -1}/>
         <span className='form__option__text'>{val.name}</span>
         <span className='form__option__ui'></span>
@@ -134,13 +134,13 @@ const ScenarioGenSettingsModal = React.createClass({
     return (
       <Modal
         id='modal-project-metadata'
-        className='modal--small'
+        className='modal--medium'
         onCloseClick={this.onClose}
         revealed={this.props.revealed} >
 
         <ModalHeader>
           <div className='modal__headline'>
-            <h1 className='modal__title'>{t('Admin areas')}</h1>
+            <h1 className='modal__title'>{t('Generation settings')}</h1>
             <div className='modal__description'>
               <p>{t('Select the areas for which you want to generate data')}</p>
             </div>
@@ -153,8 +153,8 @@ const ScenarioGenSettingsModal = React.createClass({
           {this.renderError()}
 
           <form className={c('form', {'disable': processing})} onSubmit={this.onSubmit}>
-            <div className='form__group'>
-              <label className='form__label'>Road network</label>
+            <div className='form__group form-group-areas'>
+              <label className='form__label'>Admin areas</label>
 
               {this.props.scenarioData.admin_areas.map(this.renderCheckbox)}
 
