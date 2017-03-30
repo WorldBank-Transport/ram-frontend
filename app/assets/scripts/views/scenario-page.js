@@ -2,6 +2,7 @@
 import React, { PropTypes as T } from 'react';
 import { hashHistory } from 'react-router';
 import { connect } from 'react-redux';
+import TimeAgo from 'timeago-react';
 
 import {
   showGlobalLoading,
@@ -14,7 +15,7 @@ import {
   invalidateScenarioItem,
   fetchScenarioItem,
   startGenerateResults,
-
+  // Fetch scenario without indication of loading.
   fetchScenarioItemSilent
 } from '../actions';
 import { prettyPrint, fetchStatus } from '../utils/utils';
@@ -39,6 +40,7 @@ var ScenarioPage = React.createClass({
     _patchScenario: T.func,
     _resetScenarioFrom: T.func,
     _startGenerateResults: T.func,
+    _fetchScenarioItemSilent: T.func,
 
     scenario: T.object,
     project: T.object,
@@ -140,6 +142,7 @@ var ScenarioPage = React.createClass({
     let nextGenResults = nextProps.scenario.genResults;
     if (genResults.processing && !nextGenResults.processing) {
       this.hideLoading();
+      this.props._fetchScenarioItemSilent(this.props.params.projectId, this.props.params.scenarioId);
       if (nextGenResults.error) {
         alert(nextGenResults.error.message);
       }
@@ -191,17 +194,26 @@ var ScenarioPage = React.createClass({
   renderFiles: function () {
     let data = this.props.scenario.data;
     if (data.gen_analysis && !data.gen_analysis.error) {
+      let resultFiles = data.files.filter(f => f.type === 'results');
+
+      if (!resultFiles.length) return null;
+
       return (
-        <ul>
-          {data.files.filter(f => f.type === 'results').map(o => {
-            return (
-              <li key={o.id}>
-                <a href={`${config.api}/projects/${data.project_id}/scenarios/${data.id}/files/${o.id}?download=true`}>{o.name}</a>
-              </li>
-            );
-          })}
-        </ul>
+        <div>
+          <h3>Result files</h3>
+          <ul>
+            {resultFiles.map(o => {
+              return (
+                <li key={o.id}>
+                  <a href={`${config.api}/projects/${data.project_id}/scenarios/${data.id}/files/${o.id}?download=true`}>{o.name}</a>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       );
+    } else {
+      return <p>No results were generated for this scenario yet.</p>;
     }
   },
 
@@ -235,11 +247,11 @@ var ScenarioPage = React.createClass({
           <div className='inner'>
             {formError ? <pre>{prettyPrint(formError)}</pre> : null}
 
-            { /* <Log
+            <Log
               data={dataScenario.gen_analysis}
               receivedAt={this.props.scenario.receivedAt}
               update={this.props._fetchScenarioItemSilent.bind(null, this.props.params.projectId, this.props.params.scenarioId)}
-            /> */ }
+            />
             {this.renderFiles()}
           </div>
         </div>
@@ -301,60 +313,104 @@ function dispatcher (dispatch) {
 
 module.exports = connect(selector, dispatcher)(ScenarioPage);
 
-var Log = React.createClass({
-
+// Processing log component.
+const Log = React.createClass({
   propTypes: {
     data: T.object,
     receivedAt: T.number,
     update: T.func
   },
 
+  timeout: null,
+
+  startPolling: function () {
+    this.timeout = setTimeout(() => this.props.update(), 2000);
+  },
+
+  componentWillUnmount: function () {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+  },
+
   componentDidMount: function () {
-    if (this.props.data == null || this.props.data.status === 'running') {
-      console.log('setting timeout');
-      setTimeout(() => {
-        this.props.update();
-      }, 1000);
+    if (this.props.data && this.props.data.status === 'running') {
+      // console.log('componentDidMount timeout');
+      this.startPolling();
     }
   },
 
   componentWillReceiveProps: function (nextProps) {
-    console.log('nextProps', nextProps);
-    if (nextProps.data == null || (nextProps.data && nextProps.data.status === 'running' &&
-    this.props.receivedAt !== nextProps.receivedAt)) {
-      console.log('setting timeout up');
-      setTimeout(() => {
-        this.props.update();
-      }, 1000);
+    // Continue polling while the status is 'running';
+    if (nextProps.data && nextProps.data.status === 'running' &&
+    this.props.receivedAt !== nextProps.receivedAt) {
+      // console.log('componentWillReceiveProps timeout');
+      this.startPolling();
     }
   },
 
   render: function () {
     const genAnalysisLog = this.props.data;
-    if (!genAnalysisLog) return <p>Process starting</p>;
+    if (!genAnalysisLog) return null;
 
     if (genAnalysisLog.status === 'complete' && !genAnalysisLog.errored) return null;
 
-    return (
-      <ul>
-      {genAnalysisLog.logs.map(l => {
-        switch (l.code) {
-          case 'routing':
-            if (l.data.message.match(/started/)) {
-              return <li key={l.id}>[{l.created_at}] Processing {l.data.count} admin areas</li>;
-            } else {
-              return <li key={l.id}>[{l.created_at}] Processing areas complete</li>;
-            }
-          case 'routing:area':
-            return <li key={l.id}>[{l.created_at}] Processing areas {l.data.adminArea}</li>;
-          case 'error':
-            let e = typeof l.data.error === 'string' ? l.data.error : 'unknown';
-            return <li key={l.id}>[{l.created_at}] <strong>ERROR:</strong> {e}</li>;
-          default:
-            return <li key={l.id}>[{l.created_at}] {l.data.message}</li>;
+    let lastLog = genAnalysisLog.logs[genAnalysisLog.logs.length - 1];
+
+    // There are 4 main steps:
+    // Staring.
+    // Generating osrm.
+    // Routing.
+    // Finishing.
+
+    switch (lastLog.code) {
+      case 'generate-analysis':
+        return (
+          <div className='alert alert--info' role='alert'>
+            <h6>Generating results 1/4 <TimeAgo datetime={lastLog.created_at} /></h6>
+            <p>{lastLog.data.message}</p>
+          </div>
+        );
+      case 'osrm':
+        return (
+          <div className='alert alert--info' role='alert'>
+            <h6>Generating results 2/4 <TimeAgo datetime={lastLog.created_at} /></h6>
+            <p>{lastLog.data.message}</p>
+          </div>
+        );
+      case 'routing':
+      case '<routing:area></routing:area>':
+        if (lastLog.data.message.match(/started/)) {
+          return (
+            <div className='alert alert--info' role='alert'>
+              <h6>Generating results 3/4 <TimeAgo datetime={lastLog.created_at} /></h6>
+              <p>Processing {lastLog.data.count} admin areas</p>
+            </div>
+          );
+        } else {
+          return (
+            <div className='alert alert--info' role='alert'>
+              <h6>Generating results 3/4 <TimeAgo datetime={lastLog.created_at} /></h6>
+              <p>{lastLog.data.message}</p>
+            </div>
+          );
         }
-      })}
-      </ul>
-    );
+      case 'error':
+        let e = typeof lastLog.data.error === 'string' ? lastLog.data.error : 'Unknown error';
+        return (
+          <div className='alert alert--danger' role='alert'>
+            <h6>An error occurred <TimeAgo datetime={lastLog.created_at} /></h6>
+            <p>{e}</p>
+          </div>
+        );
+      case 'results:bucket':
+      case 'results:files':
+        return (
+          <div className='alert alert--info' role='alert'>
+            <h6>Generating results 4/4 <TimeAgo datetime={lastLog.created_at} /></h6>
+            <p>Finishing up...</p>
+          </div>
+        );
+    }
   }
 });

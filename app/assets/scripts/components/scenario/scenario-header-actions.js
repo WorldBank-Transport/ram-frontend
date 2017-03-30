@@ -36,7 +36,8 @@ const ScenarioHeaderActions = React.createClass({
   },
 
   render: function () {
-    let activeGenerate = this.props.scenario.admin_areas.some(o => o.selected);
+    let isSomeAASelected = this.props.scenario.admin_areas.some(o => o.selected);
+    let isGenerating = this.props.scenario.gen_analysis && this.props.scenario.gen_analysis.status === 'running';
 
     return (
       <div className='inpage__actions'>
@@ -60,12 +61,12 @@ const ScenarioHeaderActions = React.createClass({
         <button data-tip data-for='tip-soon' title={t('Download results')} className='ipa-download visually-disabled' type='button' onClick={this.props.onAction.bind(null, 'download-results')}><span>{t('Download')}</span></button>
 
         <div className='button-group button-group--horizontal'>
-          <button data-tip data-for='tip-generate' title={t('Generate results')} className={c('ipa-arrow-loop', {'visually-disabled': !activeGenerate})} type='button' onClick={this.onGenerateClick.bind(null, activeGenerate)}><span>{t('Generate')}</span></button>
+          <button data-tip data-for='tip-generate' title={t('Generate results')} className={c('ipa-arrow-loop', {'visually-disabled': !isSomeAASelected || isGenerating})} type='button' onClick={this.onGenerateClick.bind(null, isSomeAASelected && !isGenerating)}><span>{t('Generate')}</span></button>
           <button title={t('Settings')} className='ipa-cog' type='button' onClick={this.props.onAction.bind(null, 'generate-settings')}><span>{t('Settings')}</span></button>
         </div>
 
-        <ReactTooltip id='tip-generate' effect='solid' disable={activeGenerate}>
-          {t('No admin area selected. Check the settings.')}
+        <ReactTooltip id='tip-generate' effect='solid' disable={isSomeAASelected && !isGenerating}>
+          {isGenerating ? t('Generation already in progress.') : t('No admin area selected. Check the settings.')}
         </ReactTooltip>
 
         <ReactTooltip id='tip-soon' effect='solid'>
