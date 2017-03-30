@@ -1,0 +1,20 @@
+/* ==========================================================================
+   Scenario: Single
+   ========================================================================== */
+
+.form-group-areas {
+
+  .form__option--inline {
+    width: 33.3333%;
+    margin: 0 0 ($global-spacing / 2) 0;
+    vertical-align: top;
+    padding-right: $global-spacing;
+  }
+
+  .form__option__text {
+    @extend .truncated;
+    max-width: 100%;
+    display: inline-block;
+    vertical-align: top;
+  }
+}
