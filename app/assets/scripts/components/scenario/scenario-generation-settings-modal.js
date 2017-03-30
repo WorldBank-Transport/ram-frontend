@@ -81,6 +81,16 @@ const ScenarioGenSettingsModal = React.createClass({
     return control;
   },
 
+  selectAA: function (what) {
+    if (what === 'none') {
+      this.setState({data: {selectedAreas: []}});
+    } else if (what === 'all') {
+      this.setState({data: {
+        selectedAreas: this.props.scenarioData.admin_areas.map(o => o.name)
+      }});
+    }
+  },
+
   onSubmit: function (e) {
     e.preventDefault && e.preventDefault();
 
@@ -157,8 +167,8 @@ const ScenarioGenSettingsModal = React.createClass({
               <label className='form__label'>Admin areas</label>
               <dl className='form__options-menu'>
                 <dt>Select</dt>
-                <dd><button type='button' className='foma-select-all' title='Select all'><span>All</span></button></dd>
-                <dd><button type='button' className='foma-select-none' title='Select none'><span>None</span></button></dd>
+                <dd><button type='button' className='foma-select-all' title={t('Select all')} onClick={this.selectAA.bind(null, 'all')}><span>{t('All')}</span></button></dd>
+                <dd><button type='button' className='foma-select-none' title={t('Deselect none')} onClick={this.selectAA.bind(null, 'none')}><span>{t('None')}</span></button></dd>
               </dl>
 
               {this.props.scenarioData.admin_areas.map(this.renderCheckbox)}
