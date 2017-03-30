@@ -322,6 +322,10 @@ label[for] {
   line-height: 1.5;
   margin: 0 0 ($global-spacing / 2) 0;
 
+  &:only-of-type {
+    display: inline-block;
+  }
+
   small {
     opacity: 0.48;
   }
@@ -371,7 +375,7 @@ label[for] {
 
 .form__option--custom-radio,
 .form__option--custom-checkbox {
-  padding-left: $global-spacing * 1.5;
+  padding-left: $global-spacing * 1.75;
 
   input {
     @extend .visually-hidden;

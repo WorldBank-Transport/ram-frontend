@@ -36,7 +36,6 @@ const ScenarioHeaderActions = React.createClass({
   },
 
   render: function () {
-    let isSomeAASelected = this.props.scenario.admin_areas.some(o => o.selected);
     let isGenerating = this.props.scenario.gen_analysis && this.props.scenario.gen_analysis.status === 'running';
 
     return (
@@ -60,13 +59,10 @@ const ScenarioHeaderActions = React.createClass({
         <button data-tip data-for='tip-soon' title={t('Edit network')} className='ipa-pencil visually-disabled' type='button' onClick={this.props.onAction.bind(null, 'edit-network')}><span>{t('Edit')}</span></button>
         <button data-tip data-for='tip-soon' title={t('Download results')} className='ipa-download visually-disabled' type='button' onClick={this.props.onAction.bind(null, 'download-results')}><span>{t('Download')}</span></button>
 
-        <div className='button-group button-group--horizontal'>
-          <button data-tip data-for='tip-generate' title={t('Generate results')} className={c('ipa-arrow-loop', {'visually-disabled': !isSomeAASelected || isGenerating})} type='button' onClick={this.onGenerateClick.bind(null, isSomeAASelected && !isGenerating)}><span>{t('Generate')}</span></button>
-          <button title={t('Settings')} className='ipa-cog' type='button' onClick={this.props.onAction.bind(null, 'generate-settings')}><span>{t('Settings')}</span></button>
-        </div>
+        <button data-tip data-for='tip-generate' title={t('Generate results')} className={c('ipa-arrow-loop', {'visually-disabled': isGenerating})} type='button' onClick={this.onGenerateClick.bind(null, !isGenerating)}><span>{t('Generate')}</span></button>
 
-        <ReactTooltip id='tip-generate' effect='solid' disable={isSomeAASelected && !isGenerating}>
-          {isGenerating ? t('Generation already in progress.') : t('No admin area selected. Check the settings.')}
+        <ReactTooltip id='tip-generate' effect='solid' disable={!isGenerating}>
+          {t('Generation already in progress.')}
         </ReactTooltip>
 
         <ReactTooltip id='tip-soon' effect='solid'>

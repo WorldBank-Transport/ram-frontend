@@ -1,0 +1,59 @@
+/* ==========================================================================
+   Scenario: Single
+   ========================================================================== */
+
+.form-group-areas {
+  position: relative;
+
+  .form__label {
+    margin-bottom: $global-spacing;
+  }
+
+  .form__option--inline {
+    width: 33.3333%;
+    margin: 0 0 ($global-spacing / 2) 0;
+    vertical-align: top;
+    padding-right: $global-spacing;
+  }
+
+  .form__option__text {
+    @extend .truncated;
+    max-width: 100%;
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  .form__options-menu {
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    > * {
+      float: left;
+      margin: 0;
+    }
+
+    dt {
+      @extend .heading-alt;
+      font-size: 0.75rem;
+      line-height: 1.5rem;
+      margin: 0 ($global-spacing / 2) 0 0;
+    }
+  }
+}
+
+
+/* Form options menu actions
+   ========================================================================== */
+
+
+/**
+ * "foma-" prefix stands for "form options menu action"
+ */
+
+[class^="foma-"],
+[class*=" foma-"] {
+  @extend .button, .button--small, .button--primary-plain;
+  margin: 0;
+  vertical-align: top;
+}

@@ -26,6 +26,7 @@ import Breadcrumb from '../components/breadcrumb';
 import ScenarioHeaderActions from '../components/scenario/scenario-header-actions';
 import ScenarioEditModal from '../components/scenario/scenario-edit-modal';
 import ScenarioGenSettingsModal from '../components/scenario/scenario-generation-settings-modal';
+import Alert from '../components/alert';
 
 var ScenarioPage = React.createClass({
   propTypes: {
@@ -156,16 +157,12 @@ var ScenarioPage = React.createClass({
       case 'edit-metadata':
         this.setState({scenarioEditMetadataModal: true});
         break;
-      case 'generate-settings':
+      case 'generate':
         this.setState({scenarioGenSettingsModal: true});
         break;
       case 'delete':
         this.showLoading();
         this.props._deleteScenario(this.props.params.projectId, this.props.params.scenarioId);
-        break;
-      case 'generate':
-        this.showLoading();
-        this.props._startGenerateResults(this.props.params.projectId, this.props.params.scenarioId);
         break;
       default:
         throw new Error(`Project action not implemented: ${what}`);
@@ -276,6 +273,7 @@ var ScenarioPage = React.createClass({
           scenarioData={dataScenario}
           saveScenario={this.props._patchScenario}
           resetForm={this.props._resetScenarioFrom}
+          genResults={this.props._startGenerateResults.bind(null, this.props.params.projectId, this.props.params.scenarioId)}
         />
 
       </section>
@@ -323,6 +321,12 @@ const Log = React.createClass({
 
   timeout: null,
 
+  getInitialState: function () {
+    return {
+      stickSuccess: false
+    };
+  },
+
   startPolling: function () {
     this.timeout = setTimeout(() => this.props.update(), 2000);
   },
@@ -347,13 +351,17 @@ const Log = React.createClass({
       // console.log('componentWillReceiveProps timeout');
       this.startPolling();
     }
+
+    if (nextProps.data && nextProps.data.logs[nextProps.data.logs.length - 1].code !== 'results:files') {
+      this.setState({stickSuccess: true});
+    }
   },
 
   render: function () {
     const genAnalysisLog = this.props.data;
     if (!genAnalysisLog) return null;
 
-    if (genAnalysisLog.status === 'complete' && !genAnalysisLog.errored) return null;
+    if (!this.state.stickSuccess && genAnalysisLog.status === 'complete' && !genAnalysisLog.errored) return null;
 
     let lastLog = genAnalysisLog.logs[genAnalysisLog.logs.length - 1];
 
@@ -366,50 +374,56 @@ const Log = React.createClass({
     switch (lastLog.code) {
       case 'generate-analysis':
         return (
-          <div className='alert alert--info' role='alert'>
+          <Alert type='info'>
             <h6>Generating results 1/4 <TimeAgo datetime={lastLog.created_at} /></h6>
             <p>{lastLog.data.message}</p>
-          </div>
+          </Alert>
         );
       case 'osrm':
         return (
-          <div className='alert alert--info' role='alert'>
+          <Alert type='info'>
             <h6>Generating results 2/4 <TimeAgo datetime={lastLog.created_at} /></h6>
             <p>{lastLog.data.message}</p>
-          </div>
+          </Alert>
         );
       case 'routing':
-      case '<routing:area></routing:area>':
+      case 'routing:area':
         if (lastLog.data.message.match(/started/)) {
           return (
-            <div className='alert alert--info' role='alert'>
+            <Alert type='info'>
               <h6>Generating results 3/4 <TimeAgo datetime={lastLog.created_at} /></h6>
               <p>Processing {lastLog.data.count} admin areas</p>
-            </div>
+            </Alert>
           );
         } else {
           return (
-            <div className='alert alert--info' role='alert'>
+            <Alert type='info'>
               <h6>Generating results 3/4 <TimeAgo datetime={lastLog.created_at} /></h6>
               <p>{lastLog.data.message}</p>
-            </div>
+            </Alert>
           );
         }
       case 'error':
         let e = typeof lastLog.data.error === 'string' ? lastLog.data.error : 'Unknown error';
         return (
-          <div className='alert alert--danger' role='alert'>
+          <Alert type='danger'>
             <h6>An error occurred <TimeAgo datetime={lastLog.created_at} /></h6>
             <p>{e}</p>
-          </div>
+          </Alert>
         );
       case 'results:bucket':
-      case 'results:files':
         return (
-          <div className='alert alert--info' role='alert'>
+          <Alert type='info'>
             <h6>Generating results 4/4 <TimeAgo datetime={lastLog.created_at} /></h6>
             <p>Finishing up...</p>
-          </div>
+          </Alert>
+        );
+      case 'results:files':
+        return (
+          <Alert type='success' dismissable onDismiss={() => this.setState({stickSuccess: false})}>
+            <h6>Generating results<TimeAgo datetime={lastLog.created_at} /></h6>
+            <p>Result generation complete!</p>
+          </Alert>
         );
     }
   }
