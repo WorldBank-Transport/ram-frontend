@@ -156,16 +156,12 @@ var ScenarioPage = React.createClass({
       case 'edit-metadata':
         this.setState({scenarioEditMetadataModal: true});
         break;
-      case 'generate-settings':
+      case 'generate':
         this.setState({scenarioGenSettingsModal: true});
         break;
       case 'delete':
         this.showLoading();
         this.props._deleteScenario(this.props.params.projectId, this.props.params.scenarioId);
-        break;
-      case 'generate':
-        this.showLoading();
-        this.props._startGenerateResults(this.props.params.projectId, this.props.params.scenarioId);
         break;
       default:
         throw new Error(`Project action not implemented: ${what}`);
@@ -276,6 +272,7 @@ var ScenarioPage = React.createClass({
           scenarioData={dataScenario}
           saveScenario={this.props._patchScenario}
           resetForm={this.props._resetScenarioFrom}
+          genResults={this.props._startGenerateResults.bind(null, this.props.params.projectId, this.props.params.scenarioId)}
         />
 
       </section>
@@ -379,7 +376,7 @@ const Log = React.createClass({
           </div>
         );
       case 'routing':
-      case '<routing:area></routing:area>':
+      case 'routing:area':
         if (lastLog.data.message.match(/started/)) {
           return (
             <div className='alert alert--info' role='alert'>

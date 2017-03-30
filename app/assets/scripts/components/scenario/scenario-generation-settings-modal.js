@@ -23,6 +23,7 @@ const ScenarioGenSettingsModal = React.createClass({
 
     saveScenario: T.func,
     resetForm: T.func,
+    genResults: T.func,
     _showGlobalLoading: T.func,
     _hideGlobalLoading: T.func
   },
@@ -49,6 +50,8 @@ const ScenarioGenSettingsModal = React.createClass({
         this.props.scenarioForm.processing &&
         !nextProps.scenarioForm.processing &&
         !nextProps.scenarioForm.error) {
+      this.props._showGlobalLoading();
+      this.props.genResults();
       this.onClose();
       return;
     }
@@ -111,11 +114,7 @@ const ScenarioGenSettingsModal = React.createClass({
       return;
     }
 
-    if (error.statusCode === 409) {
-      return <p>The name is already in use.</p>;
-    } else {
-      return <p>{error.message || error.error}</p>;
-    }
+    return <p>{error.message || error.error}</p>;
   },
 
   renderCheckbox: function (val, idx) {
@@ -130,6 +129,7 @@ const ScenarioGenSettingsModal = React.createClass({
 
   render: function () {
     let processing = this.props.scenarioForm.processing;
+    let isAAselected = !!this.state.data.selectedAreas.length;
 
     return (
       <Modal
@@ -140,9 +140,9 @@ const ScenarioGenSettingsModal = React.createClass({
 
         <ModalHeader>
           <div className='modal__headline'>
-            <h1 className='modal__title'>{t('Generation settings')}</h1>
+            <h1 className='modal__title'>{t('Generate results')}</h1>
             <div className='modal__description'>
-              <p>{t('Select the areas for which you want to generate data')}</p>
+              <p>{t('Select the areas for which you want to generate data. Note that generating new results will replace current ones.')}</p>
             </div>
           </div>
         </ModalHeader>
@@ -163,7 +163,7 @@ const ScenarioGenSettingsModal = React.createClass({
         </ModalBody>
         <ModalFooter>
           <button className='mfa-xmark' type='button' onClick={this.onClose}><span>{t('Cancel')}</span></button>
-          <button className='mfa-tick' type='submit' onClick={this.onSubmit}><span>{t('Save')}</span></button>
+          <button className={c('mfa-tick', {disabled: !isAAselected})} type='submit' onClick={this.onSubmit}><span>{t('Generate')}</span></button>
         </ModalFooter>
       </Modal>
     );
