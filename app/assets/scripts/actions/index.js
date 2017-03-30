@@ -35,6 +35,9 @@ export const FINISH_SUBMIT_SCENARIO = 'FINISH_SUBMIT_SCENARIO';
 export const START_DELETE_SCENARIO = 'START_DELETE_SCENARIO';
 export const FINISH_DELETE_SCENARIO = 'FINISH_DELETE_PROJECT';
 
+export const REQUEST_GENERATE_RESULTS = 'REQUEST_GENERATE_RESULTS';
+export const RECEIVE_GENERATE_RESULTS = 'RECEIVE_GENERATE_RESULTS';
+
 // App related. Global stuff
 
 export function showGlobalLoading () {
@@ -119,6 +122,10 @@ export function receiveScenarioItem (scenario, error = null) {
 
 export function fetchScenarioItem (pid, scid) {
   return getAndDispatch(`${config.api}/projects/${pid}/scenarios/${scid}`, requestScenarioItem, receiveScenarioItem);
+}
+
+export function fetchScenarioItemSilent (pid, scid) {
+  return getAndDispatch(`${config.api}/projects/${pid}/scenarios/${scid}`, () => ({type: 'noop'}), receiveScenarioItem);
 }
 
 // Removes the given file id from the scenario file array, avoiding a
@@ -217,6 +224,20 @@ export function finishDeleteScenario (scenario, error = null) {
 
 export function deleteScenario (projId, scId) {
   return deleteAndDispatch(`${config.api}/projects/${projId}/scenarios/${scId}`, startDeleteScenario, finishDeleteScenario);
+}
+
+// Generate results
+
+export function requestGenerateResults () {
+  return { type: REQUEST_GENERATE_RESULTS };
+}
+
+export function receiveGenerateResults (data, error = null) {
+  return { type: RECEIVE_GENERATE_RESULTS, data: data, error, receivedAt: Date.now() };
+}
+
+export function startGenerateResults (projectId, scenarioId) {
+  return postAndDispatch(`${config.api}/projects/${projectId}/scenarios/${scenarioId}/generate`, null, requestGenerateResults, receiveGenerateResults);
 }
 
 // Fetcher function

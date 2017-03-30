@@ -2,6 +2,7 @@
 import React, { PropTypes as T } from 'react';
 import { hashHistory } from 'react-router';
 import { connect } from 'react-redux';
+import TimeAgo from 'timeago-react';
 
 import {
   showGlobalLoading,
@@ -12,14 +13,19 @@ import {
   resetScenarioFrom,
   fetchProjectItem,
   invalidateScenarioItem,
-  fetchScenarioItem
+  fetchScenarioItem,
+  startGenerateResults,
+  // Fetch scenario without indication of loading.
+  fetchScenarioItemSilent
 } from '../actions';
 import { prettyPrint, fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
+import config from '../config';
 
 import Breadcrumb from '../components/breadcrumb';
 import ScenarioHeaderActions from '../components/scenario/scenario-header-actions';
 import ScenarioEditModal from '../components/scenario/scenario-edit-modal';
+import ScenarioGenSettingsModal from '../components/scenario/scenario-generation-settings-modal';
 
 var ScenarioPage = React.createClass({
   propTypes: {
@@ -33,6 +39,8 @@ var ScenarioPage = React.createClass({
     _deleteScenario: T.func,
     _patchScenario: T.func,
     _resetScenarioFrom: T.func,
+    _startGenerateResults: T.func,
+    _fetchScenarioItemSilent: T.func,
 
     scenario: T.object,
     project: T.object,
@@ -41,13 +49,13 @@ var ScenarioPage = React.createClass({
 
   getInitialState: function () {
     return {
-      scenarioEditMetadataModal: false
+      scenarioEditMetadataModal: false,
+      scenarioGenSettingsModal: false
     };
   },
 
   // Flag variables to wait for the project and scenario to load.
-  projectLoaded: false,
-  scenarioLoaded: false,
+  elementsLoaded: 0,
   loadingVisible: false,
 
   showLoading: function () {
@@ -65,18 +73,23 @@ var ScenarioPage = React.createClass({
       case 'edit-scenario':
         this.setState({scenarioEditMetadataModal: false});
         break;
+      case 'generate-settings':
+        this.setState({scenarioGenSettingsModal: false});
+        break;
     }
   },
 
   checkAllLoaded: function (nextProps) {
     if (this.props.project.fetching && !nextProps.project.fetching) {
-      this.projectLoaded = true;
+      this.elementsLoaded++;
     }
     if (this.props.scenario.fetching && !nextProps.scenario.fetching) {
-      this.scenarioLoaded = true;
+      this.elementsLoaded++;
     }
 
-    if (this.projectLoaded && this.scenarioLoaded && this.loadingVisible) {
+    if (this.elementsLoaded === 2 && this.loadingVisible) {
+      // Done.
+      this.elementsLoaded = 0;
       this.hideLoading();
     }
   },
@@ -90,6 +103,7 @@ var ScenarioPage = React.createClass({
   },
 
   componentWillUnmount: function () {
+    this.hideLoading();
     this.props._invalidateScenarioItem();
     this.props._invalidateProjectItem();
   },
@@ -123,6 +137,16 @@ var ScenarioPage = React.createClass({
         return hashHistory.push(`/${getLanguage()}/projects/${this.props.params.projectId}`);
       }
     }
+
+    let genResults = this.props.scenario.genResults;
+    let nextGenResults = nextProps.scenario.genResults;
+    if (genResults.processing && !nextGenResults.processing) {
+      this.hideLoading();
+      this.props._fetchScenarioItemSilent(this.props.params.projectId, this.props.params.scenarioId);
+      if (nextGenResults.error) {
+        alert(nextGenResults.error.message);
+      }
+    }
   },
 
   onScenarioAction: function (what, event) {
@@ -132,9 +156,16 @@ var ScenarioPage = React.createClass({
       case 'edit-metadata':
         this.setState({scenarioEditMetadataModal: true});
         break;
+      case 'generate-settings':
+        this.setState({scenarioGenSettingsModal: true});
+        break;
       case 'delete':
         this.showLoading();
         this.props._deleteScenario(this.props.params.projectId, this.props.params.scenarioId);
+        break;
+      case 'generate':
+        this.showLoading();
+        this.props._startGenerateResults(this.props.params.projectId, this.props.params.scenarioId);
         break;
       default:
         throw new Error(`Project action not implemented: ${what}`);
@@ -158,6 +189,32 @@ var ScenarioPage = React.createClass({
     return (
       <Breadcrumb items={items}/>
     );
+  },
+
+  renderFiles: function () {
+    let data = this.props.scenario.data;
+    if (data.gen_analysis && !data.gen_analysis.error) {
+      let resultFiles = data.files.filter(f => f.type === 'results');
+
+      if (!resultFiles.length) return null;
+
+      return (
+        <div>
+          <h3>Result files</h3>
+          <ul>
+            {resultFiles.map(o => {
+              return (
+                <li key={o.id}>
+                  <a href={`${config.api}/projects/${data.project_id}/scenarios/${data.id}/files/${o.id}?download=true`}>{o.name}</a>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      );
+    } else {
+      return <p>No results were generated for this scenario yet.</p>;
+    }
   },
 
   render: function () {
@@ -189,7 +246,13 @@ var ScenarioPage = React.createClass({
         <div className='inpage__body'>
           <div className='inner'>
             {formError ? <pre>{prettyPrint(formError)}</pre> : null}
-            <pre>{prettyPrint(dataScenario)}</pre>
+
+            <Log
+              data={dataScenario.gen_analysis}
+              receivedAt={this.props.scenario.receivedAt}
+              update={this.props._fetchScenarioItemSilent.bind(null, this.props.params.projectId, this.props.params.scenarioId)}
+            />
+            {this.renderFiles()}
           </div>
         </div>
 
@@ -198,6 +261,17 @@ var ScenarioPage = React.createClass({
           _hideGlobalLoading={this.props._hideGlobalLoading}
           revealed={this.state.scenarioEditMetadataModal}
           onCloseClick={this.closeModal.bind(null, 'edit-scenario')}
+          scenarioForm={this.props.scenarioForm}
+          scenarioData={dataScenario}
+          saveScenario={this.props._patchScenario}
+          resetForm={this.props._resetScenarioFrom}
+        />
+
+        <ScenarioGenSettingsModal
+          _showGlobalLoading={this.props._showGlobalLoading}
+          _hideGlobalLoading={this.props._hideGlobalLoading}
+          revealed={this.state.scenarioGenSettingsModal}
+          onCloseClick={this.closeModal.bind(null, 'generate-settings')}
           scenarioForm={this.props.scenarioForm}
           scenarioData={dataScenario}
           saveScenario={this.props._patchScenario}
@@ -230,8 +304,113 @@ function dispatcher (dispatch) {
     _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args)),
     _deleteScenario: (...args) => dispatch(deleteScenario(...args)),
     _patchScenario: (...args) => dispatch(patchScenario(...args)),
-    _resetScenarioFrom: (...args) => dispatch(resetScenarioFrom(...args))
+    _resetScenarioFrom: (...args) => dispatch(resetScenarioFrom(...args)),
+    _startGenerateResults: (...args) => dispatch(startGenerateResults(...args)),
+
+    _fetchScenarioItemSilent: (...args) => dispatch(fetchScenarioItemSilent(...args))
   };
 }
 
 module.exports = connect(selector, dispatcher)(ScenarioPage);
+
+// Processing log component.
+const Log = React.createClass({
+  propTypes: {
+    data: T.object,
+    receivedAt: T.number,
+    update: T.func
+  },
+
+  timeout: null,
+
+  startPolling: function () {
+    this.timeout = setTimeout(() => this.props.update(), 2000);
+  },
+
+  componentWillUnmount: function () {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+  },
+
+  componentDidMount: function () {
+    if (this.props.data && this.props.data.status === 'running') {
+      // console.log('componentDidMount timeout');
+      this.startPolling();
+    }
+  },
+
+  componentWillReceiveProps: function (nextProps) {
+    // Continue polling while the status is 'running';
+    if (nextProps.data && nextProps.data.status === 'running' &&
+    this.props.receivedAt !== nextProps.receivedAt) {
+      // console.log('componentWillReceiveProps timeout');
+      this.startPolling();
+    }
+  },
+
+  render: function () {
+    const genAnalysisLog = this.props.data;
+    if (!genAnalysisLog) return null;
+
+    if (genAnalysisLog.status === 'complete' && !genAnalysisLog.errored) return null;
+
+    let lastLog = genAnalysisLog.logs[genAnalysisLog.logs.length - 1];
+
+    // There are 4 main steps:
+    // Staring.
+    // Generating osrm.
+    // Routing.
+    // Finishing.
+
+    switch (lastLog.code) {
+      case 'generate-analysis':
+        return (
+          <div className='alert alert--info' role='alert'>
+            <h6>Generating results 1/4 <TimeAgo datetime={lastLog.created_at} /></h6>
+            <p>{lastLog.data.message}</p>
+          </div>
+        );
+      case 'osrm':
+        return (
+          <div className='alert alert--info' role='alert'>
+            <h6>Generating results 2/4 <TimeAgo datetime={lastLog.created_at} /></h6>
+            <p>{lastLog.data.message}</p>
+          </div>
+        );
+      case 'routing':
+      case '<routing:area></routing:area>':
+        if (lastLog.data.message.match(/started/)) {
+          return (
+            <div className='alert alert--info' role='alert'>
+              <h6>Generating results 3/4 <TimeAgo datetime={lastLog.created_at} /></h6>
+              <p>Processing {lastLog.data.count} admin areas</p>
+            </div>
+          );
+        } else {
+          return (
+            <div className='alert alert--info' role='alert'>
+              <h6>Generating results 3/4 <TimeAgo datetime={lastLog.created_at} /></h6>
+              <p>{lastLog.data.message}</p>
+            </div>
+          );
+        }
+      case 'error':
+        let e = typeof lastLog.data.error === 'string' ? lastLog.data.error : 'Unknown error';
+        return (
+          <div className='alert alert--danger' role='alert'>
+            <h6>An error occurred <TimeAgo datetime={lastLog.created_at} /></h6>
+            <p>{e}</p>
+          </div>
+        );
+      case 'results:bucket':
+      case 'results:files':
+        return (
+          <div className='alert alert--info' role='alert'>
+            <h6>Generating results 4/4 <TimeAgo datetime={lastLog.created_at} /></h6>
+            <p>Finishing up...</p>
+          </div>
+        );
+    }
+  }
+});
