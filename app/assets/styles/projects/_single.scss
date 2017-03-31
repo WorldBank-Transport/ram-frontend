@@ -2,7 +2,6 @@
    Projects: Single
    ========================================================================== */
 
-
 /* Project setup block
    ========================================================================== */
 
@@ -91,7 +90,6 @@
   }
 }
 
-
 .diptych {
   @include column(6/12, $cycle: 2);
   margin-top: $global-spacing * 2;
@@ -106,16 +104,45 @@
   }
 }
 
-.diptych--info {
-  .prose {
-    margin-bottom: $global-spacing * 2;
+
+/* Details list
+   ========================================================================== */
+
+.project-details-list {
+  margin-right: -$global-spacing;
+  padding: ($global-spacing * 1.5) 0 ($global-spacing * 1.5) ($global-spacing * 6);
+
+  > * {
+    position: relative;
+    padding-right: $global-spacing * 4;
   }
 
-  dl {
-
-    dt:not(:first-child) {
-      margin-top: $global-spacing * 2;
+  dt {
+    &::before {
+      position: absolute;
+      top: 0;
+      left: - $global-spacing * 5;
+      @extend %collecticon-road;
+      font-size: 2rem;
     }
+  }
+
+  dd:not(:last-child) {
+    
+    box-shadow: inset 0 -1px 0 0 $base-alpha-color;
+    padding-bottom: $global-spacing;
+    margin: 0 0 $global-spacing 0;
+  }
+}
+
+.detail-download {
+  @extend .button, .button--primary-plain, .button--text-hidden;
+  position: absolute;
+  right: $global-spacing;
+  transform: translate(0, -50%);
+
+  &::before {
+    @extend %collecticon-download-3;
   }
 }
 
