@@ -163,7 +163,7 @@
   }
 
   &.villages::before {
-    @extend %collecticon-user;
+    @extend %collecticon-houses;
   }
 
   &.admin-bounds::before {
