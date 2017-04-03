@@ -164,8 +164,13 @@ var ProjectPageActive = React.createClass({
     let projectId = this.props.project.data.id;
 
     return projectFiles.map(file => ([
-      <dt key={`${file.name}-label`} className={file.type}>{fileTypesMatrix[file.type].display}</dt>,
-      <dd key={`${file.name}-desc`}>{fileTypesMatrix[file.type].description} <a href={`${config.api}/projects/${projectId}/files/${file.id}`} title={t('Download file')} className='detail-download'><span>{t('Download')}</span></a></dd>
+      <li>
+        <div className={`project-detail ${file.type}`}>
+          <h3 className='project-detail__title' key={`${file.name}-label`}>{fileTypesMatrix[file.type].display}</h3>
+          <p className='action-wrapper'><a href={`${config.api}/projects/${projectId}/files/${file.id}`} title={t('Download file')} className='detail-download'><span>{t('Download')}</span></a></p>
+          <p key={`${file.name}-desc`}>{fileTypesMatrix[file.type].description}</p>
+        </div>
+      </li>
     ]));
   },
 
@@ -257,13 +262,17 @@ var ProjectPageActive = React.createClass({
               <h2 className='diptych__title'>{t('Details')}</h2>
               <div className='card'>
                 <div className='card__contents'>
-                  <dl className='project-details-list'>
-                    {dataProject.description ? <dt className='description'>{t('Description')}</dt> : null}
-                    {dataProject.description ? (
-                      <dd>{dataProject.description}</dd>
-                    ) : null}
+                  <ul className='project-details-list'>
+                    <li>
+                      <div className='project-detail description'>
+                        {dataProject.description ? <h3 className='project-detail__title'>{t('Description')}</h3> : null}
+                        {dataProject.description ? (
+                          <p>{dataProject.description}</p>
+                        ) : null}
+                      </div>
+                    </li>
                     {this.renderFiles()}
-                  </dl>
+                  </ul>
                 </div>
               </div>
             </section>

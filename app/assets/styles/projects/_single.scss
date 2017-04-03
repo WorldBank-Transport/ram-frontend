@@ -109,26 +109,11 @@
    ========================================================================== */
 
 .project-details-list {
-  margin-right: -$global-spacing;
-  padding: ($global-spacing * 1.5) 0 ($global-spacing * 1.5) ($global-spacing * 6);
+  list-style: none;
+  margin: 0 (-$global-spacing) 0 0;
+  padding: ($global-spacing * 1.5) 0 ($global-spacing * 1.5) ($global-spacing * 4);
 
-  > * {
-    position: relative;
-    padding-right: $global-spacing * 4;
-  }
-
-  dt {
-    &::before {
-      position: absolute;
-      top: 0;
-      left: - $global-spacing * 5;
-      @extend %collecticon-road;
-      font-size: 2rem;
-    }
-  }
-
-  dd:not(:last-child) {
-    
+  li:not(:last-child) {
     box-shadow: inset 0 -1px 0 0 $base-alpha-color;
     padding-bottom: $global-spacing;
     margin: 0 0 $global-spacing 0;
@@ -137,13 +122,58 @@
 
 .detail-download {
   @extend .button, .button--primary-plain, .button--text-hidden;
-  position: absolute;
-  right: $global-spacing;
-  transform: translate(0, -50%);
 
   &::before {
     @extend %collecticon-download-3;
   }
+}
+
+.project-detail {
+  position: relative;
+  padding-right: $global-spacing * 4;
+
+  > *:last-child {
+    margin: 0;
+  }
+
+  &::before,
+  .action-wrapper {
+    position: absolute;
+    top: 50%;
+    transform: translate(0, -50%);
+    margin: 0;
+  }
+
+  &::before {
+    left: - $global-spacing * 3.5;
+    font-size: 2rem;
+    opacity: 0.32;
+  }
+
+  .action-wrapper {
+    right: $global-spacing;
+  }
+
+  &.description::before {
+    @extend %collecticon-text-block;
+  }
+
+  &.profile::before {
+    @extend %collecticon-page-cog;
+  }
+
+  &.villages::before {
+    @extend %collecticon-user;
+  }
+
+  &.admin-bounds::before {
+    @extend %collecticon-fence;
+  }
+}
+
+.project-detail__title {
+  @include heading(1rem);
+  margin: 0;
 }
 
 
