@@ -1,10 +1,13 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
 import c from 'classnames';
+import ReactTooltip from 'react-tooltip'
 
 import Dropdown from '../dropdown';
 import { showConfirm } from '../confirmation-prompt';
 import { t } from '../../utils/i18n';
+
+window.ReactTooltip = ReactTooltip;
 
 const ScenarioHeaderActions = React.createClass({
 
@@ -28,7 +31,13 @@ const ScenarioHeaderActions = React.createClass({
     });
   },
 
+  onGenerateClick: function (isActive, e) {
+    isActive && this.props.onAction('generate', e);
+  },
+
   render: function () {
+    let isGenerating = this.props.scenario.gen_analysis && this.props.scenario.gen_analysis.status === 'running';
+
     return (
       <div className='inpage__actions'>
         <Dropdown
@@ -47,12 +56,18 @@ const ScenarioHeaderActions = React.createClass({
               <li><a href='#' title={t('Delete scenario')} className={c('drop__menu-item drop__menu-item--danger dmi-trash', {disabled: this.props.scenario.master})} data-hook='dropdown:close' onClick={this.onDelete}>{t('Delete scenario')}</a></li>
             </ul>
         </Dropdown>
-        <button title={t('Edit network')} className='ipa-pencil' type='button' onClick={this.props.onAction.bind(null, 'edit-network')}><span>{t('Edit')}</span></button>
-        <button title={t('Download results')} className='ipa-download' type='button' onClick={this.props.onAction.bind(null, 'download-results')}><span>{t('Download')}</span></button>
-        <div className='button-group button-group--horizontal'>
-          <button title={t('Generate results')} className='ipa-arrow-loop' type='button' onClick={this.props.onAction.bind(null, 'generate')}><span>{t('Generate')}</span></button>
-          <button title={t('Settings')} className='ipa-cog' type='button' onClick={this.props.onAction.bind(null, 'generate-settings')}><span>{t('Settings')}</span></button>
-        </div>
+        <button data-tip data-for='tip-soon' title={t('Edit network')} className='ipa-pencil visually-disabled' type='button' onClick={this.props.onAction.bind(null, 'edit-network')}><span>{t('Edit')}</span></button>
+        <button data-tip data-for='tip-soon' title={t('Download results')} className='ipa-download visually-disabled' type='button' onClick={this.props.onAction.bind(null, 'download-results')}><span>{t('Download')}</span></button>
+
+        <button data-tip data-for='tip-generate' title={t('Generate results')} className={c('ipa-arrow-loop', {'visually-disabled': isGenerating})} type='button' onClick={this.onGenerateClick.bind(null, !isGenerating)}><span>{t('Generate')}</span></button>
+
+        <ReactTooltip id='tip-generate' effect='solid' disable={!isGenerating}>
+          {t('Generation already in progress.')}
+        </ReactTooltip>
+
+        <ReactTooltip id='tip-soon' effect='solid'>
+          {t('Coming soon...')}
+        </ReactTooltip>
       </div>
     );
   }

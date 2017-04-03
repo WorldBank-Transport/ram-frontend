@@ -115,3 +115,10 @@
   pointer-events: none;
   cursor: not-allowed;
 }
+
+.visually-disabled {
+  &, &:hover, &:active, &:focus {
+    opacity: 0.48;
+    cursor: not-allowed;
+  }
+}
