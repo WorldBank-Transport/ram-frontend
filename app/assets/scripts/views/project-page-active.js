@@ -24,6 +24,8 @@ import ProjectFormModal from '../components/project/project-form-modal';
 import ProjectHeaderActions from '../components/project/project-header-actions';
 import ScenarioCreateModal from '../components/scenario/scenario-create-modal';
 
+import Dropdown from '../components/dropdown';
+
 var ProjectPageActive = React.createClass({
 
   propTypes: {
@@ -189,7 +191,21 @@ var ProjectPageActive = React.createClass({
                 <p className='card__subtitle'>Scenario subtitle</p>
               </div>
               <div className='card__actions'>
-                <button className='ca-ellipsis' type='button' title='Action'><span>Options</span></button>
+                <Dropdown
+                  className='scenario-meta-menu'
+                  triggerClassName='ca-ellipsis'
+                  triggerActiveClassName='button--active'
+                  triggerText='Options'
+                  triggerTitle='Scenario options'
+                  direction='down'
+                  alignment='right' >
+                    <ul className='drop__menu drop__menu--iconified' role='menu'>
+                      <li><a href='#' title={t('Duplicate scenario')} className='drop__menu-item dmi-copy' data-hook='dropdown:close'>{t('Duplicate scenario')}</a></li>
+                    </ul>
+                    <ul className='drop__menu drop__menu--iconified' role='menu'>
+                      <li><a href='#' title={t('Delete scenario')} className={'drop__menu-item drop__menu-item--danger dmi-trash'} data-hook='dropdown:close'>{t('Delete scenario')}</a></li>
+                    </ul>
+                </Dropdown>
               </div>
             </header>
             <div className='card__body'>
