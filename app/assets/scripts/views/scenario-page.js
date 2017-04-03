@@ -26,6 +26,7 @@ import Breadcrumb from '../components/breadcrumb';
 import ScenarioHeaderActions from '../components/scenario/scenario-header-actions';
 import ScenarioEditModal from '../components/scenario/scenario-edit-modal';
 import ScenarioGenSettingsModal from '../components/scenario/scenario-generation-settings-modal';
+import ScenarioIDModal from '../components/scenario/scenario-id-modal';
 import Alert from '../components/alert';
 
 var ScenarioPage = React.createClass({
@@ -51,7 +52,8 @@ var ScenarioPage = React.createClass({
   getInitialState: function () {
     return {
       scenarioEditMetadataModal: false,
-      scenarioGenSettingsModal: false
+      scenarioGenSettingsModal: false,
+      scenarioIDModal: false
     };
   },
 
@@ -76,6 +78,9 @@ var ScenarioPage = React.createClass({
         break;
       case 'generate-settings':
         this.setState({scenarioGenSettingsModal: false});
+        break;
+      case 'edit-network':
+        this.setState({scenarioIDModal: false});
         break;
     }
   },
@@ -159,6 +164,9 @@ var ScenarioPage = React.createClass({
         break;
       case 'generate':
         this.setState({scenarioGenSettingsModal: true});
+        break;
+      case 'edit-network':
+        this.setState({scenarioIDModal: true});
         break;
       case 'delete':
         this.showLoading();
@@ -274,6 +282,14 @@ var ScenarioPage = React.createClass({
           saveScenario={this.props._patchScenario}
           resetForm={this.props._resetScenarioFrom}
           genResults={this.props._startGenerateResults.bind(null, this.props.params.projectId, this.props.params.scenarioId)}
+        />
+
+        <ScenarioIDModal
+          _showGlobalLoading={this.props._showGlobalLoading}
+          _hideGlobalLoading={this.props._hideGlobalLoading}
+          revealed={this.state.scenarioIDModal}
+          onCloseClick={this.closeModal.bind(null, 'edit-network')}
+          scenarioData={dataScenario}
         />
 
       </section>
