@@ -100,8 +100,11 @@ var ProjectPagePending = React.createClass({
   closeScenarioModal: function (data) {
     this.setState({scenarioFormModal: false});
     if (data && data.scenarioSubmitted) {
-      this.props._fetchProjectItem(this.props.params.projectId);
       this.showLoading();
+      // Since we're loading the project, only one element is loaded now, which
+      // is the scenario. This will ensure that the loading is properly hidden.
+      this.elementsLoaded = 1;
+      this.props._fetchProjectItem(this.props.params.projectId);
     }
   },
 
@@ -165,7 +168,6 @@ var ProjectPagePending = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
-    console.log('nextProps', nextProps);
     this.checkAllLoaded(nextProps);
 
     // Not found.
