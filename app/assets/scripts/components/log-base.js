@@ -32,7 +32,7 @@ export default class LogBase extends React.Component {
 
   componentDidMount () {
     if (this.props.data && this.props.data.status === 'running') {
-      console.log('componentDidMount timeout');
+      // console.log('componentDidMount timeout');
       this.startPolling();
     }
   }
@@ -41,15 +41,18 @@ export default class LogBase extends React.Component {
     // Continue polling while the status is 'running';
     if (nextProps.data && nextProps.data.status === 'running' &&
     this.props.receivedAt !== nextProps.receivedAt) {
-      console.log('componentWillReceiveProps timeout');
+      // console.log('componentWillReceiveProps timeout');
       this.startPolling();
     }
 
     // If when the final messages comes through the user is on the page we
     // want the message to be sticky. For that check that the user received
     // at least one message that's not the last one.
-    if (nextProps.data && nextProps.data.logs[nextProps.data.logs.length - 1].code !== this.props.lastMessageCode) {
-      this.setState({stickSuccess: true});
+    if (nextProps.data) {
+      let l = nextProps.data.logs.length;
+      if (l === 0 || nextProps.data.logs[l - 1].code !== this.props.lastMessageCode) {
+        this.setState({stickSuccess: true});
+      }
     }
   }
 
