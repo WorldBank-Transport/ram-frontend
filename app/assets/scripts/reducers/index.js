@@ -2,7 +2,6 @@
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
 
-import app from './app';
 import projects from './projects';
 import projectItem from './project-item';
 import scenarioItem from './scenario-item';
@@ -11,7 +10,6 @@ import scenarios from './scenarios';
 import scenarioForm from './scenario-form';
 
 export const reducers = {
-  app,
   projects,
   projectItem,
   scenarioItem,

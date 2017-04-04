@@ -13,8 +13,6 @@ import {
   removeScenarioItemFile,
   patchProject,
   deleteProject,
-  showGlobalLoading,
-  hideGlobalLoading,
   finishProjectSetup,
   resetProjectFrom,
   resetScenarioFrom,
@@ -24,6 +22,7 @@ import {
 import { prettyPrint } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
 import { fileTypesMatrix } from '../utils/constants';
+import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
 
 import Breadcrumb from '../components/breadcrumb';
 import ProjectFileInput from '../components/project/project-file-input';
@@ -46,8 +45,6 @@ var ProjectPagePending = React.createClass({
     _removeScenarioItemFile: T.func,
     _patchProject: T.func,
     _deleteProject: T.func,
-    _showGlobalLoading: T.func,
-    _hideGlobalLoading: T.func,
     _finishProjectSetup: T.func,
     _resetProjectFrom: T.func,
     _resetScenarioFrom: T.func,
@@ -81,12 +78,12 @@ var ProjectPagePending = React.createClass({
 
   showLoading: function () {
     this.loadingVisible = true;
-    this.props._showGlobalLoading();
+    showGlobalLoading();
   },
 
   hideLoading: function () {
     this.loadingVisible = false;
-    this.props._hideGlobalLoading();
+    hideGlobalLoading();
   },
 
   getInitialState: function () {
@@ -394,8 +391,6 @@ function dispatcher (dispatch) {
     _removeScenarioItemFile: (...args) => dispatch(removeScenarioItemFile(...args)),
     _patchProject: (...args) => dispatch(patchProject(...args)),
     _deleteProject: (...args) => dispatch(deleteProject(...args)),
-    _showGlobalLoading: (...args) => dispatch(showGlobalLoading(...args)),
-    _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args)),
     _finishProjectSetup: (...args) => dispatch(finishProjectSetup(...args)),
     _resetProjectFrom: (...args) => dispatch(resetProjectFrom(...args)),
     _resetScenarioFrom: (...args) => dispatch(resetScenarioFrom(...args)),

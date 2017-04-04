@@ -5,8 +5,6 @@ import { connect } from 'react-redux';
 import TimeAgo from 'timeago-react';
 
 import {
-  showGlobalLoading,
-  hideGlobalLoading,
   invalidateProjectItem,
   deleteScenario,
   patchScenario,
@@ -21,6 +19,7 @@ import {
 import { prettyPrint, fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
 import config from '../config';
+import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
 
 import Breadcrumb from '../components/breadcrumb';
 import ScenarioHeaderActions from '../components/scenario/scenario-header-actions';
@@ -33,8 +32,6 @@ import LogBase from '../components/log-base';
 var ScenarioPage = React.createClass({
   propTypes: {
     params: T.object,
-    _showGlobalLoading: T.func,
-    _hideGlobalLoading: T.func,
     _invalidateProjectItem: T.func,
     _fetchProjectItem: T.func,
     _invalidateScenarioItem: T.func,
@@ -64,12 +61,12 @@ var ScenarioPage = React.createClass({
 
   showLoading: function () {
     this.loadingVisible = true;
-    this.props._showGlobalLoading();
+    showGlobalLoading();
   },
 
   hideLoading: function () {
     this.loadingVisible = false;
-    this.props._hideGlobalLoading();
+    hideGlobalLoading();
   },
 
   closeModal: function (what) {
@@ -264,8 +261,8 @@ var ScenarioPage = React.createClass({
         </div>
 
         <ScenarioEditModal
-          _showGlobalLoading={this.props._showGlobalLoading}
-          _hideGlobalLoading={this.props._hideGlobalLoading}
+          _showGlobalLoading={showGlobalLoading}
+          _hideGlobalLoading={hideGlobalLoading}
           revealed={this.state.scenarioEditMetadataModal}
           onCloseClick={this.closeModal.bind(null, 'edit-scenario')}
           scenarioForm={this.props.scenarioForm}
@@ -275,8 +272,8 @@ var ScenarioPage = React.createClass({
         />
 
         <ScenarioGenSettingsModal
-          _showGlobalLoading={this.props._showGlobalLoading}
-          _hideGlobalLoading={this.props._hideGlobalLoading}
+          _showGlobalLoading={showGlobalLoading}
+          _hideGlobalLoading={hideGlobalLoading}
           revealed={this.state.scenarioGenSettingsModal}
           onCloseClick={this.closeModal.bind(null, 'generate-settings')}
           scenarioForm={this.props.scenarioForm}
@@ -287,8 +284,8 @@ var ScenarioPage = React.createClass({
         />
 
         <ScenarioIDModal
-          _showGlobalLoading={this.props._showGlobalLoading}
-          _hideGlobalLoading={this.props._hideGlobalLoading}
+          _showGlobalLoading={showGlobalLoading}
+          _hideGlobalLoading={hideGlobalLoading}
           revealed={this.state.scenarioIDModal}
           onCloseClick={this.closeModal.bind(null, 'edit-network')}
           scenarioData={dataScenario}

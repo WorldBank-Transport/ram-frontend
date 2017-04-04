@@ -2,9 +2,6 @@ import fetch from 'isomorphic-fetch';
 
 import config from '../config';
 
-export const SHOW_GLOBAL_LOADING = 'SHOW_GLOBAL_LOADING';
-export const HIDE_GLOBAL_LOADING = 'HIDE_GLOBAL_LOADING';
-
 export const REQUEST_PROJECTS = 'REQUEST_PROJECTS';
 export const RECEIVE_PROJECTS = 'RECEIVE_PROJECTS';
 export const INVALIDATE_PROJECTS = 'INVALIDATE_PROJECTS';
@@ -37,32 +34,6 @@ export const FINISH_DELETE_SCENARIO = 'FINISH_DELETE_PROJECT';
 
 export const REQUEST_GENERATE_RESULTS = 'REQUEST_GENERATE_RESULTS';
 export const RECEIVE_GENERATE_RESULTS = 'RECEIVE_GENERATE_RESULTS';
-
-// App related. Global stuff
-
-export function showGlobalLoading () {
-  return { type: SHOW_GLOBAL_LOADING, time: Date.now() };
-}
-
-export function hideImmediatGlobalLoading () {
-  return { type: HIDE_GLOBAL_LOADING };
-}
-
-export function hideGlobalLoading () {
-  const MIN_TIME = 512;
-  return (dispatch, getState) => {
-    let time = getState().app.globalLoadingTime;
-    if (!time) {
-      return dispatch(hideImmediatGlobalLoading());
-    }
-    let diff = Date.now() - time;
-    if (diff >= MIN_TIME) {
-      return dispatch(hideImmediatGlobalLoading());
-    } else {
-      setTimeout(() => dispatch(hideImmediatGlobalLoading()), MIN_TIME - diff);
-    }
-  };
-}
 
 // Projects
 
