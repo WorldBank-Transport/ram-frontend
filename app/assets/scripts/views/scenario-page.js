@@ -28,6 +28,7 @@ import ScenarioEditModal from '../components/scenario/scenario-edit-modal';
 import ScenarioGenSettingsModal from '../components/scenario/scenario-generation-settings-modal';
 import ScenarioIDModal from '../components/scenario/scenario-id-modal';
 import Alert from '../components/alert';
+import LogBase from '../components/log-base';
 
 var ScenarioPage = React.createClass({
   propTypes: {
@@ -254,6 +255,7 @@ var ScenarioPage = React.createClass({
 
             <Log
               data={dataScenario.gen_analysis}
+              lastMessageCode='results:files'
               receivedAt={this.props.scenario.receivedAt}
               update={this.props._fetchScenarioItemSilent.bind(null, this.props.params.projectId, this.props.params.scenarioId)}
             />
@@ -327,120 +329,63 @@ function dispatcher (dispatch) {
 
 module.exports = connect(selector, dispatcher)(ScenarioPage);
 
-// Processing log component.
-const Log = React.createClass({
-  propTypes: {
-    data: T.object,
-    receivedAt: T.number,
-    update: T.func
-  },
-
-  timeout: null,
-
-  getInitialState: function () {
-    return {
-      stickSuccess: false
-    };
-  },
-
-  startPolling: function () {
-    this.timeout = setTimeout(() => this.props.update(), 2000);
-  },
-
-  componentWillUnmount: function () {
-    if (this.timeout) {
-      clearTimeout(this.timeout);
-    }
-  },
-
-  componentDidMount: function () {
-    if (this.props.data && this.props.data.status === 'running') {
-      // console.log('componentDidMount timeout');
-      this.startPolling();
-    }
-  },
-
-  componentWillReceiveProps: function (nextProps) {
-    // Continue polling while the status is 'running';
-    if (nextProps.data && nextProps.data.status === 'running' &&
-    this.props.receivedAt !== nextProps.receivedAt) {
-      // console.log('componentWillReceiveProps timeout');
-      this.startPolling();
-    }
-
-    if (nextProps.data && nextProps.data.logs[nextProps.data.logs.length - 1].code !== 'results:files') {
-      this.setState({stickSuccess: true});
-    }
-  },
-
-  render: function () {
-    const genAnalysisLog = this.props.data;
-    if (!genAnalysisLog) return null;
-
-    if (!this.state.stickSuccess && genAnalysisLog.status === 'complete' && !genAnalysisLog.errored) return null;
-
-    let lastLog = genAnalysisLog.logs[genAnalysisLog.logs.length - 1];
-
-    // There are 4 main steps:
-    // Staring.
-    // Generating osrm.
-    // Routing.
-    // Finishing.
-
-    switch (lastLog.code) {
+class Log extends LogBase {
+  renderLog (log) {
+    switch (log.code) {
       case 'generate-analysis':
         return (
           <Alert type='info'>
-            <h6>Generating results 1/4 <TimeAgo datetime={lastLog.created_at} /></h6>
-            <p>{lastLog.data.message}</p>
+            <h6>Generating results 1/4 <TimeAgo datetime={log.created_at} /></h6>
+            <p>{log.data.message}</p>
           </Alert>
         );
       case 'osrm':
         return (
           <Alert type='info'>
-            <h6>Generating results 2/4 <TimeAgo datetime={lastLog.created_at} /></h6>
-            <p>{lastLog.data.message}</p>
+            <h6>Generating results 2/4 <TimeAgo datetime={log.created_at} /></h6>
+            <p>{log.data.message}</p>
           </Alert>
         );
       case 'routing':
       case 'routing:area':
-        if (lastLog.data.message.match(/started/)) {
+        if (log.data.message.match(/started/)) {
           return (
             <Alert type='info'>
-              <h6>Generating results 3/4 <TimeAgo datetime={lastLog.created_at} /></h6>
-              <p>Processing {lastLog.data.count} admin areas</p>
+              <h6>Generating results 3/4 <TimeAgo datetime={log.created_at} /></h6>
+              <p>Processing {log.data.count} admin areas</p>
             </Alert>
           );
         } else {
           return (
             <Alert type='info'>
-              <h6>Generating results 3/4 <TimeAgo datetime={lastLog.created_at} /></h6>
-              <p>{lastLog.data.message}</p>
+              <h6>Generating results 3/4 <TimeAgo datetime={log.created_at} /></h6>
+              <p>{log.data.message}</p>
             </Alert>
           );
         }
       case 'error':
-        let e = typeof lastLog.data.error === 'string' ? lastLog.data.error : 'Unknown error';
+        let e = typeof log.data.error === 'string' ? log.data.error : 'Unknown error';
         return (
           <Alert type='danger'>
-            <h6>An error occurred <TimeAgo datetime={lastLog.created_at} /></h6>
+            <h6>An error occurred <TimeAgo datetime={log.created_at} /></h6>
             <p>{e}</p>
           </Alert>
         );
       case 'results:bucket':
         return (
           <Alert type='info'>
-            <h6>Generating results 4/4 <TimeAgo datetime={lastLog.created_at} /></h6>
+            <h6>Generating results 4/4 <TimeAgo datetime={log.created_at} /></h6>
             <p>Finishing up...</p>
           </Alert>
         );
       case 'results:files':
         return (
           <Alert type='success' dismissable onDismiss={() => this.setState({stickSuccess: false})}>
-            <h6>Generating results<TimeAgo datetime={lastLog.created_at} /></h6>
+            <h6>Generating results<TimeAgo datetime={log.created_at} /></h6>
             <p>Result generation complete!</p>
           </Alert>
         );
     }
   }
-});
+}
+
