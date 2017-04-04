@@ -4,6 +4,10 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 // Minimum time the loading is visible.
 const MIN_TIME = 512;
+// Since we have a minimum display time we use a timeout to hide it if
+// when the hide method is called the time isn't over yet. However, if in
+// the mean time the loading is shown again we need to clear the timeout.
+var hideTimeout = null;
 
 // Once the component is mounted we store it to be able to access it from
 // the outside.
@@ -80,6 +84,9 @@ export function showGlobalLoading () {
   if (theGlobalLoading === null) {
     throw new Error('<GlobalLoading /> component not mounted');
   }
+  if (hideTimeout) {
+    clearTimeout(hideTimeout);
+  }
 
   theGlobalLoading.setState(Object.assign({}, {
     showTimestamp: Date.now(),
@@ -105,7 +112,7 @@ export function hideGlobalLoading (force = false) {
       revealed: false
     }));
   } else {
-    setTimeout(() => {
+    hideTimeout = setTimeout(() => {
       theGlobalLoading.setState(Object.assign({}, {
         revealed: false
       }));
