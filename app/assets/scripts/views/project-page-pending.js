@@ -2,6 +2,7 @@
 import React, { PropTypes as T } from 'react';
 import { hashHistory } from 'react-router';
 import { connect } from 'react-redux';
+import TimeAgo from 'timeago-react';
 
 import {
   invalidateProjectItem,
@@ -16,7 +17,9 @@ import {
   hideGlobalLoading,
   finishProjectSetup,
   resetProjectFrom,
-  resetScenarioFrom
+  resetScenarioFrom,
+  // Fetch project without indication of loading.
+  fetchProjectItemSilent
 } from '../actions';
 import { prettyPrint } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
@@ -28,6 +31,8 @@ import ProjectFileCard from '../components/project/project-file-card';
 import ProjectFormModal from '../components/project/project-form-modal';
 import ProjectHeaderActions from '../components/project/project-header-actions';
 import ScenarioEditModal from '../components/scenario/scenario-edit-modal';
+import Alert from '../components/alert';
+import LogBase from '../components/log-base';
 
 var ProjectPagePending = React.createClass({
   displayName: 'ProjectPagePending',
@@ -46,6 +51,7 @@ var ProjectPagePending = React.createClass({
     _finishProjectSetup: T.func,
     _resetProjectFrom: T.func,
     _resetScenarioFrom: T.func,
+    _fetchProjectItemSilent: T.func,
 
     params: T.object,
     scenario: T.object,
@@ -54,7 +60,34 @@ var ProjectPagePending = React.createClass({
     scenarioForm: T.object
   },
 
-  forceLoading: false,
+  // Flag variables to wait for the project and scenario to load.
+  elementsLoaded: 0,
+  loadingVisible: false,
+
+  checkAllLoaded: function (nextProps) {
+    if (this.props.project.fetching && !nextProps.project.fetching) {
+      this.elementsLoaded++;
+    }
+    if (this.props.scenario.fetching && !nextProps.scenario.fetching) {
+      this.elementsLoaded++;
+    }
+
+    if (this.elementsLoaded === 2 && this.loadingVisible) {
+      // Done.
+      this.elementsLoaded = 0;
+      this.hideLoading();
+    }
+  },
+
+  showLoading: function () {
+    this.loadingVisible = true;
+    this.props._showGlobalLoading();
+  },
+
+  hideLoading: function () {
+    this.loadingVisible = false;
+    this.props._hideGlobalLoading();
+  },
 
   getInitialState: function () {
     return {
@@ -67,8 +100,12 @@ var ProjectPagePending = React.createClass({
     this.setState({projectFormModal: false});
   },
 
-  closeScenarioModal: function () {
+  closeScenarioModal: function (data) {
     this.setState({scenarioFormModal: false});
+    if (data && data.scenarioSubmitted) {
+      this.props._fetchProjectItem(this.props.params.projectId);
+      this.showLoading();
+    }
   },
 
   onFileUploadComplete: function () {
@@ -98,7 +135,7 @@ var ProjectPagePending = React.createClass({
         this.setState({projectFormModal: true});
         break;
       case 'delete':
-        this.props._showGlobalLoading();
+        this.showLoading();
         this.props._deleteProject(this.props.params.projectId);
         break;
       case 'finish':
@@ -109,8 +146,19 @@ var ProjectPagePending = React.createClass({
     }
   },
 
+  isFinishingSetup: function () {
+    let finishSetupLog = this.props.project.data.finish_setup;
+    if (finishSetupLog) {
+      let l = finishSetupLog.logs.length;
+      if (l === 0 || finishSetupLog.logs[l - 1].code !== 'error') {
+        return true;
+      }
+    }
+    return false;
+  },
+
   componentDidMount: function () {
-    this.props._showGlobalLoading();
+    this.showLoading();
     this.props._fetchProjectItem(this.props.params.projectId);
     this.props._fetchScenarioItem(this.props.params.projectId, 0);
   },
@@ -120,9 +168,8 @@ var ProjectPagePending = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
-    if (this.props.project.fetching && !nextProps.project.fetching) {
-      this.props._hideGlobalLoading();
-    }
+    console.log('nextProps', nextProps);
+    this.checkAllLoaded(nextProps);
 
     // Not found.
     var error = nextProps.project.error;
@@ -140,7 +187,7 @@ var ProjectPagePending = React.createClass({
 
     // Url has changed.
     if (this.props.params.projectId !== nextProps.params.projectId) {
-      this.props._showGlobalLoading();
+      this.showLoading();
       // We're changing project. Invalidate.
       this.props._invalidateProjectItem();
       this.props._fetchProjectItem(nextProps.params.projectId);
@@ -152,7 +199,7 @@ var ProjectPagePending = React.createClass({
     if (this.props.projectForm.action === 'delete' &&
         this.props.projectForm.processing &&
         !nextProps.projectForm.processing) {
-      this.props._hideGlobalLoading();
+      this.hideLoading();
       if (!nextProps.projectForm.error) {
         return hashHistory.push(`/${getLanguage()}/projects`);
       }
@@ -161,6 +208,11 @@ var ProjectPagePending = React.createClass({
 
   renderFileUploadSection: function () {
     let { fetched, fetching, error, data, receivedAt } = this.props.scenario;
+
+    // Do not render files if the project is finishing setup.
+    if (this.isFinishingSetup()) {
+      return null;
+    }
 
     let filesBLock = [
       this.renderFile('profile', this.props.project.data.files),
@@ -281,14 +333,20 @@ var ProjectPagePending = React.createClass({
               : null
             }
 
+            <Log
+              data={data.finish_setup}
+              receivedAt={this.props.project.receivedAt}
+              update={this.props._fetchProjectItemSilent.bind(null, this.props.params.projectId)}
+            />
+
             {this.renderFileUploadSection()}
           </div>
         </div>
 
         <ProjectFormModal
           editing
-          _showGlobalLoading={this.props._showGlobalLoading}
-          _hideGlobalLoading={this.props._hideGlobalLoading}
+          _showGlobalLoading={this.showLoading}
+          _hideGlobalLoading={this.hideLoading}
           revealed={this.state.projectFormModal}
           onCloseClick={this.closeProjectModal}
           projectForm={this.props.projectForm}
@@ -299,8 +357,8 @@ var ProjectPagePending = React.createClass({
 
         <ScenarioEditModal
           finishingSetup
-          _showGlobalLoading={this.props._showGlobalLoading}
-          _hideGlobalLoading={this.props._hideGlobalLoading}
+          _showGlobalLoading={this.showLoading}
+          _hideGlobalLoading={this.hideLoading}
           revealed={this.state.scenarioFormModal}
           onCloseClick={this.closeScenarioModal}
           scenarioData={this.props.scenario.data}
@@ -340,8 +398,39 @@ function dispatcher (dispatch) {
     _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args)),
     _finishProjectSetup: (...args) => dispatch(finishProjectSetup(...args)),
     _resetProjectFrom: (...args) => dispatch(resetProjectFrom(...args)),
-    _resetScenarioFrom: (...args) => dispatch(resetScenarioFrom(...args))
+    _resetScenarioFrom: (...args) => dispatch(resetScenarioFrom(...args)),
+
+    _fetchProjectItemSilent: (...args) => dispatch(fetchProjectItemSilent(...args))
   };
 }
 
 module.exports = connect(selector, dispatcher)(ProjectPagePending);
+
+class Log extends LogBase {
+  renderLog (log) {
+    switch (log.code) {
+      case 'error':
+        let e = typeof log.data.error === 'string' ? log.data.error : 'Unknown error';
+        return (
+          <Alert type='danger'>
+            <h6>An error occurred <TimeAgo datetime={log.created_at} /></h6>
+            <p>{e}</p>
+          </Alert>
+        );
+      case 'success':
+        return (
+          <Alert type='success' dismissable onDismiss={this.onDismiss.bind(this)}>
+            <h6>Success!<TimeAgo datetime={log.created_at} /></h6>
+            <p>{log.data.message}</p>
+          </Alert>
+        );
+      default:
+        return (
+          <Alert type='info'>
+            <h6>Finishing setup <TimeAgo datetime={log.created_at} /></h6>
+            <p>{log.data.message}</p>
+          </Alert>
+        );
+    }
+  }
+}

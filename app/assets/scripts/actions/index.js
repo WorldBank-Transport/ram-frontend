@@ -100,6 +100,10 @@ export function fetchProjectItem (id) {
   return getAndDispatch(`${config.api}/projects/${id}`, requestProjectItem, receiveProjectItem);
 }
 
+export function fetchProjectItemSilent (pid) {
+  return getAndDispatch(`${config.api}/projects/${pid}`, () => ({type: 'noop'}), receiveProjectItem);
+}
+
 // Removes the given file id from the projects file array, avoiding a
 // new request.
 export function removeProjectItemFile (fileId) {

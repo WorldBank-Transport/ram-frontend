@@ -46,7 +46,8 @@ const ScenarioEditModal = React.createClass({
         !nextProps.scenarioForm.processing &&
         !nextProps.scenarioForm.error) {
       if (this.props.finishingSetup) {
-        hashHistory.push(`${getLanguage()}/projects/${nextProps.scenarioData.project_id}`);
+        // hashHistory.push(`${getLanguage()}/projects/${nextProps.scenarioData.project_id}`);
+        this.onClose({scenarioSubmitted: true});
       } else {
         this.onClose();
       }
@@ -66,10 +67,10 @@ const ScenarioEditModal = React.createClass({
     this.props.resetForm();
   },
 
-  onClose: function () {
+  onClose: function (data) {
     this.props.resetForm();
     this.setState(this.getInitialState());
-    this.props.onCloseClick();
+    this.props.onCloseClick(data);
   },
 
   checkErrors: function () {
