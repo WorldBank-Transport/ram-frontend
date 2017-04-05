@@ -90,6 +90,8 @@ export default class LogBase extends React.Component {
 
     if (!this.state.stickSuccess && logData.status === 'complete' && !logData.errored) return null;
 
+    if (!logData.logs.length) return null;
+
     let lastLog = logData.logs[logData.logs.length - 1];
 
     return this.renderLog(lastLog);
