@@ -1,6 +1,6 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
-import { hashHistory } from 'react-router';
+import { Link, hashHistory } from 'react-router';
 import { connect } from 'react-redux';
 import TimeAgo from 'timeago-react';
 
@@ -317,6 +317,7 @@ var ProjectPagePending = React.createClass({
             </div>
             <ProjectHeaderActions
               project={data}
+              projectStatus='pending'
               onAction={this.onProjectAction} />
           </div>
         </header>
@@ -335,6 +336,7 @@ var ProjectPagePending = React.createClass({
             <Log
               data={data.finish_setup}
               receivedAt={this.props.project.receivedAt}
+              projectId={this.props.params.projectId}
               update={this.props._fetchProjectItemSilent.bind(null, this.props.params.projectId)}
             />
 
@@ -418,7 +420,7 @@ class Log extends LogBase {
         return (
           <Alert type='success' dismissable onDismiss={this.onDismiss.bind(this)}>
             <h6>Success!<TimeAgo datetime={log.created_at} /></h6>
-            <p>{log.data.message}</p>
+            <p>{log.data.message} <Link to={`/${getLanguage()}/projects/${this.props.projectId}`}>Go to Project</Link></p>
           </Alert>
         );
       default:

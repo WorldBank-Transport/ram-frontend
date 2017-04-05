@@ -10,6 +10,7 @@ const ProjectHeaderActions = React.createClass({
 
   propTypes: {
     onAction: T.func,
+    projectStatus: T.string,
     project: T.object
   },
 
@@ -29,10 +30,25 @@ const ProjectHeaderActions = React.createClass({
     });
   },
 
-  render: function () {
-    var projectWasSetup = this.props.project.status !== 'pending';
+  renderFinishSetupButton: function () {
     var readyToEndSetup = this.props.project.readyToEndSetup;
+    var isFinishingSetup = false;
 
+    let finishSetupLog = this.props.project.finish_setup;
+    if (finishSetupLog) {
+      isFinishingSetup = finishSetupLog.status === 'complete';
+      let l = finishSetupLog.logs.length;
+      if (l === 0 || finishSetupLog.logs[l - 1].code !== 'error') {
+        isFinishingSetup = true;
+      }
+    }
+
+    return (
+      <button title={t('Finish setup')} className={c('ipa-tick', {disabled: !readyToEndSetup || isFinishingSetup})} type='button' onClick={this.props.onAction.bind(null, 'finish')}><span>{t('Finish setup')}</span></button>
+    );
+  },
+
+  render: function () {
     return (
       <div className='inpage__actions'>
         <Dropdown
@@ -50,9 +66,9 @@ const ProjectHeaderActions = React.createClass({
             </ul>
         </Dropdown>
 
-        {projectWasSetup
+        {this.props.projectStatus === 'active'
           ? <button title={t('Create new scenario')} className='ipa-plus' type='button' onClick={this.props.onAction.bind(null, 'new-scenario')}><span>{t('New scenario')}</span></button>
-          : <button title={t('Finish setup')} className={c('ipa-tick', {disabled: !readyToEndSetup})} type='button' onClick={this.props.onAction.bind(null, 'finish')}><span>{t('Finish setup')}</span></button>
+          : this.renderFinishSetupButton()
         }
 
       </div>

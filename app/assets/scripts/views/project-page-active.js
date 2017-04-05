@@ -248,6 +248,7 @@ var ProjectPageActive = React.createClass({
             </div>
             <ProjectHeaderActions
               project={dataProject}
+              projectStatus='active'
               onAction={this.onProjectAction} />
           </div>
         </header>
