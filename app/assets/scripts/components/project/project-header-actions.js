@@ -36,7 +36,7 @@ const ProjectHeaderActions = React.createClass({
 
     let finishSetupLog = this.props.project.finish_setup;
     if (finishSetupLog) {
-      isFinishingSetup = finishSetupLog.status === 'complete';
+      isFinishingSetup = finishSetupLog.status === 'running';
       let l = finishSetupLog.logs.length;
       if (l === 0 || finishSetupLog.logs[l - 1].code !== 'error') {
         isFinishingSetup = true;

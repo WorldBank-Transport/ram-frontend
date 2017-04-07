@@ -329,17 +329,32 @@ module.exports = connect(selector, dispatcher)(ScenarioPage);
 class Log extends LogBase {
   renderLog (log) {
     switch (log.code) {
-      case 'generate-analysis':
+      case 'error':
+        let e = typeof log.data.error === 'string' ? log.data.error : 'Unknown error';
+        return (
+          <Alert type='danger'>
+            <h6>An error occurred while generating results<TimeAgo datetime={log.created_at} /></h6>
+            <p>{e}</p>
+          </Alert>
+        );
+      case 'start':
         return (
           <Alert type='info'>
-            <h6>Generating results 1/4 <TimeAgo datetime={log.created_at} /></h6>
+            <h6>Generating results 1/5 <TimeAgo datetime={log.created_at} /></h6>
+            <p>{log.data.message}</p>
+          </Alert>
+        );
+      case 'road-network':
+        return (
+          <Alert type='info'>
+            <h6>Generating results 2/5 <TimeAgo datetime={log.created_at} /></h6>
             <p>{log.data.message}</p>
           </Alert>
         );
       case 'osrm':
         return (
           <Alert type='info'>
-            <h6>Generating results 2/4 <TimeAgo datetime={log.created_at} /></h6>
+            <h6>Generating results 3/5 <TimeAgo datetime={log.created_at} /></h6>
             <p>{log.data.message}</p>
           </Alert>
         );
@@ -348,34 +363,27 @@ class Log extends LogBase {
         if (log.data.message.match(/started/)) {
           return (
             <Alert type='info'>
-              <h6>Generating results 3/4 <TimeAgo datetime={log.created_at} /></h6>
+              <h6>Generating results 4/5 <TimeAgo datetime={log.created_at} /></h6>
               <p>Processing {log.data.count} admin areas</p>
             </Alert>
           );
         } else {
           return (
             <Alert type='info'>
-              <h6>Generating results 3/4 <TimeAgo datetime={log.created_at} /></h6>
+              <h6>Generating results 4/5 <TimeAgo datetime={log.created_at} /></h6>
               <p>{log.data.message}</p>
             </Alert>
           );
         }
-      case 'error':
-        let e = typeof log.data.error === 'string' ? log.data.error : 'Unknown error';
-        return (
-          <Alert type='danger'>
-            <h6>An error occurred <TimeAgo datetime={log.created_at} /></h6>
-            <p>{e}</p>
-          </Alert>
-        );
       case 'results:bucket':
+      case 'results:files':
         return (
           <Alert type='info'>
-            <h6>Generating results 4/4 <TimeAgo datetime={log.created_at} /></h6>
+            <h6>Generating results 5/5 <TimeAgo datetime={log.created_at} /></h6>
             <p>Finishing up...</p>
           </Alert>
         );
-      case 'results:files':
+      case 'complete':
         return (
           <Alert type='success' dismissable onDismiss={() => this.setState({stickSuccess: false})}>
             <h6>Generating results<TimeAgo datetime={log.created_at} /></h6>
