@@ -5,6 +5,7 @@ import c from 'classnames';
 
 import { t } from '../../utils/i18n';
 import config from '../../config';
+import { showGlobalLoading, hideGlobalLoading } from '../global-loading';
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '../modal';
 
@@ -14,14 +15,7 @@ const ScenarioIDModal = React.createClass({
     revealed: T.bool,
     onCloseClick: T.func,
 
-    scenarioForm: T.object,
-    finishingSetup: T.bool,
-    scenarioData: T.object,
-
-    saveScenario: T.func,
-    resetForm: T.func,
-    _showGlobalLoading: T.func,
-    _hideGlobalLoading: T.func
+    scenarioData: T.object
   },
 
   setupNotifier: function () {
@@ -35,6 +29,7 @@ const ScenarioIDModal = React.createClass({
     });
 
     n.on('ready', () => {
+      hideGlobalLoading();
       this.setState({editorLoaded: true});
     });
   },
@@ -50,6 +45,7 @@ const ScenarioIDModal = React.createClass({
 
   componentDidUpdate: function (prevProps) {
     if (!prevProps.revealed && this.props.revealed) {
+      showGlobalLoading();
       this.setupNotifier();
     }
   },
@@ -87,7 +83,6 @@ const ScenarioIDModal = React.createClass({
 
         <section className='ideditor-wrapper'>
           <h1 className='visually-hidden'>iD editor</h1>
-          {!this.state.editorLoaded ? <p>Editor loading...</p> : null}
           <iframe src={config.iDEditor} className={c({'visually-hidden': !this.state.editorLoaded})} frameBorder='0' ref='editor'></iframe>
         </section>
 
