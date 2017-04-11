@@ -8,6 +8,7 @@ import scenarioItem from './scenario-item';
 import projectForm from './project-form';
 import scenarios from './scenarios';
 import scenarioForm from './scenario-form';
+import scenarioResults from './scenario-results';
 
 export const reducers = {
   projects,
@@ -15,7 +16,8 @@ export const reducers = {
   scenarioItem,
   projectForm,
   scenarios,
-  scenarioForm
+  scenarioForm,
+  scenarioResults
 };
 
 export default combineReducers(Object.assign({}, reducers, {

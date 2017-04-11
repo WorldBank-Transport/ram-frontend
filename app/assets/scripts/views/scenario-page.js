@@ -14,7 +14,8 @@ import {
   fetchScenarioItem,
   startGenerateResults,
   // Fetch scenario without indication of loading.
-  fetchScenarioItemSilent
+  fetchScenarioItemSilent,
+  fetchScenarioResults
 } from '../actions';
 import { prettyPrint, fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
@@ -28,6 +29,7 @@ import ScenarioGenSettingsModal from '../components/scenario/scenario-generation
 import ScenarioIDModal from '../components/scenario/scenario-id-modal';
 import Alert from '../components/alert';
 import LogBase from '../components/log-base';
+import ScenarioResults from '../components/scenario-results';
 
 var ScenarioPage = React.createClass({
   propTypes: {
@@ -41,6 +43,7 @@ var ScenarioPage = React.createClass({
     _resetScenarioFrom: T.func,
     _startGenerateResults: T.func,
     _fetchScenarioItemSilent: T.func,
+    _fetchScenarioResults: T.func,
 
     scenario: T.object,
     project: T.object,
@@ -233,6 +236,8 @@ var ScenarioPage = React.createClass({
       return <div>Error: {prettyPrint(error)}</div>;
     }
 
+    let resultsFile = dataScenario.files.find(f => f.type === 'results-all');
+
     return (
       <section className='inpage inpage--hub'>
         <header className='inpage__header'>
@@ -257,6 +262,15 @@ var ScenarioPage = React.createClass({
               update={this.props._fetchScenarioItemSilent.bind(null, this.props.params.projectId, this.props.params.scenarioId)}
             />
             {this.renderFiles()}
+
+            {resultsFile ? (
+              <ScenarioResults
+                projectId={dataScenario.project_id}
+                scenarioId={dataScenario.id}
+                resultFileId={resultsFile.id}
+              />
+            ) : null}
+
           </div>
         </div>
 
@@ -320,7 +334,8 @@ function dispatcher (dispatch) {
     _resetScenarioFrom: (...args) => dispatch(resetScenarioFrom(...args)),
     _startGenerateResults: (...args) => dispatch(startGenerateResults(...args)),
 
-    _fetchScenarioItemSilent: (...args) => dispatch(fetchScenarioItemSilent(...args))
+    _fetchScenarioItemSilent: (...args) => dispatch(fetchScenarioItemSilent(...args)),
+    _fetchScenarioResults: (...args) => dispatch(fetchScenarioResults(...args))
   };
 }
 
@@ -393,4 +408,3 @@ class Log extends LogBase {
     }
   }
 }
-

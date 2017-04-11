@@ -35,6 +35,10 @@ export const FINISH_DELETE_SCENARIO = 'FINISH_DELETE_PROJECT';
 export const REQUEST_GENERATE_RESULTS = 'REQUEST_GENERATE_RESULTS';
 export const RECEIVE_GENERATE_RESULTS = 'RECEIVE_GENERATE_RESULTS';
 
+export const REQUEST_SCENARIO_RESULTS = 'REQUEST_SCENARIO_RESULTS';
+export const RECEIVE_SCENARIO_RESULTS = 'RECEIVE_SCENARIO_RESULTS';
+export const INVALIDATE_SCENARIO_RESULTS = 'INVALIDATE_SCENARIO_RESULTS';
+
 // Projects
 
 export function invalidateProjects () {
@@ -213,6 +217,24 @@ export function receiveGenerateResults (data, error = null) {
 
 export function startGenerateResults (projectId, scenarioId) {
   return postAndDispatch(`${config.api}/projects/${projectId}/scenarios/${scenarioId}/generate`, null, requestGenerateResults, receiveGenerateResults);
+}
+
+// Project Scenarios
+
+export function invalidateScenarioResults () {
+  return { type: INVALIDATE_SCENARIO_RESULTS };
+}
+
+export function requestScenarioResults () {
+  return { type: REQUEST_SCENARIO_RESULTS };
+}
+
+export function receiveScenarioResults (scenarios, error = null) {
+  return { type: RECEIVE_SCENARIO_RESULTS, data: scenarios, error, receivedAt: Date.now() };
+}
+
+export function fetchScenarioResults (projectId, scenarioId, fileId) {
+  return getAndDispatch(`${config.api}/projects/${projectId}/scenarios/${scenarioId}/files/${fileId}?download=true`, requestScenarioResults, receiveScenarioResults);
 }
 
 // Fetcher function
