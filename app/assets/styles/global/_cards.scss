@@ -96,6 +96,7 @@ a.card__contents {
    ========================================================================== */
 
 .card__header {
+  display: flex;
   flex: 1;
   width: 100%;
   margin-bottom: $global-spacing;
@@ -108,6 +109,25 @@ a.card__contents {
 .card__headline {
   > *:last-child {
     margin-bottom: 0;
+  }
+}
+
+.card__actions {
+  flex: 1 1 auto;
+  text-align: right;
+  font-size: 0;
+
+  > * {
+    vertical-align: top;
+    margin-left: $global-spacing / 2;
+  }
+}
+
+.ca-ellipsis {
+  @extend .button, .button--small, .button--primary-plain, .button--text-hidden;
+
+  &::before {
+    @extend %collecticon-ellipsis-vertical;
   }
 }
 
