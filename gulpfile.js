@@ -59,6 +59,7 @@ gulp.task('default', ['clean'], function () {
 gulp.task('serve', ['vendorScripts', 'javascript', 'styles', 'fonts'], function () {
   browserSync({
     port: 3000,
+    ghostMode: false,
     server: {
       baseDir: ['.tmp', 'app'],
       routes: {
@@ -78,7 +79,7 @@ gulp.task('serve', ['vendorScripts', 'javascript', 'styles', 'fonts'], function 
   gulp.watch('app/assets/styles/**/*.scss', ['styles']);
   gulp.watch('app/assets/fonts/**/*', ['fonts']);
   gulp.watch('package.json', ['vendorScripts']);
-  gulp.watch('app/assets/graphics/collecticons/**', ['collecticons'])
+  gulp.watch('app/assets/graphics/collecticons/**', ['collecticons']);
 });
 
 gulp.task('clean', function () {
@@ -177,11 +178,11 @@ gulp.task('collecticons', function (done) {
     '--author-name', 'Development Seed',
     '--author-url', 'https://developmentseed.org/',
     '--no-preview'
-  ]
+  ];
 
   return cp.spawn('node', args, {stdio: 'inherit'})
-    .on('close', done)
-})
+    .on('close', done);
+});
 
 // //////////////////////////////////////////////////////////////////////////////
 // --------------------------- Helper tasks -----------------------------------//

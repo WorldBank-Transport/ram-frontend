@@ -1,7 +1,7 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
 import c from 'classnames';
-import ReactTooltip from 'react-tooltip'
+import ReactTooltip from 'react-tooltip';
 
 import Dropdown from '../dropdown';
 import { showConfirm } from '../confirmation-prompt';
@@ -56,7 +56,8 @@ const ScenarioHeaderActions = React.createClass({
               <li><a href='#' title={t('Delete scenario')} className={c('drop__menu-item drop__menu-item--danger dmi-trash', {disabled: this.props.scenario.master})} data-hook='dropdown:close' onClick={this.onDelete}>{t('Delete scenario')}</a></li>
             </ul>
         </Dropdown>
-        <button data-tip data-for='tip-soon' title={t('Edit network')} className='ipa-pencil visually-disabled' type='button' onClick={this.props.onAction.bind(null, 'edit-network')}><span>{t('Edit')}</span></button>
+        { /* <button title={t('Edit network')} className='ipa-pencil' type='button' onClick={this.props.onAction.bind(null, 'edit-network')}><span>{t('Edit')}</span></button> */ }
+        <button data-tip data-for='tip-soon' title={t('Edit network')} className='ipa-pencil visually-disabled' type='button'><span>{t('Edit')}</span></button>
         <button data-tip data-for='tip-soon' title={t('Download results')} className='ipa-download visually-disabled' type='button' onClick={this.props.onAction.bind(null, 'download-results')}><span>{t('Download')}</span></button>
 
         <button data-tip data-for='tip-generate' title={t('Generate results')} className={c('ipa-arrow-loop', {'visually-disabled': isGenerating})} type='button' onClick={this.onGenerateClick.bind(null, !isGenerating)}><span>{t('Generate')}</span></button>

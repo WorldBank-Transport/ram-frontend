@@ -9,12 +9,11 @@ import {
   invalidateProjects,
   fetchProjects,
   postProject,
-  showGlobalLoading,
-  hideGlobalLoading,
   resetProjectFrom
 } from '../actions';
 import { prettyPrint } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
+import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
 
 import ProjectFormModal from '../components/project/project-form-modal';
 
@@ -30,8 +29,6 @@ var Home = React.createClass({
     _invalidateProjects: T.func,
     _fetchProjects: T.func,
     _postProject: T.func,
-    _showGlobalLoading: T.func,
-    _hideGlobalLoading: T.func,
     _resetProjectFrom: T.func,
 
     projects: T.object,
@@ -54,12 +51,12 @@ var Home = React.createClass({
 
   componentDidMount: function () {
     this.props._fetchProjects();
-    this.props._showGlobalLoading();
+    showGlobalLoading();
   },
 
   componentWillReceiveProps: function (nextProps) {
     if (this.props.projects.fetching && !nextProps.projects.fetching) {
-      this.props._hideGlobalLoading();
+      hideGlobalLoading();
     }
   },
 
@@ -162,9 +159,10 @@ var Home = React.createClass({
             {this.renderProjectList()}
           </div>
         </div>
+
         <ProjectFormModal
-          _showGlobalLoading={this.props._showGlobalLoading}
-          _hideGlobalLoading={this.props._hideGlobalLoading}
+          _showGlobalLoading={showGlobalLoading}
+          _hideGlobalLoading={hideGlobalLoading}
           revealed={this.state.projectFormModal}
           onCloseClick={this.closeModal}
           projectForm={this.props.projectForm}
@@ -191,8 +189,6 @@ function dispatcher (dispatch) {
     _invalidateProjects: (...args) => dispatch(invalidateProjects(...args)),
     _fetchProjects: (...args) => dispatch(fetchProjects(...args)),
     _postProject: (...args) => dispatch(postProject(...args)),
-    _showGlobalLoading: (...args) => dispatch(showGlobalLoading(...args)),
-    _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args)),
     _resetProjectFrom: (...args) => dispatch(resetProjectFrom(...args))
   };
 }

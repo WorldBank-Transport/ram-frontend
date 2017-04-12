@@ -6,7 +6,7 @@ import c from 'classnames';
 
 import Header from '../components/header';
 import Footer from '../components/footer';
-import LoadingGlobal from '../components/loading-global';
+import GlobalLoading from '../components/global-loading';
 import ConfirmationPrompt from '../components/confirmation-prompt';
 
 var App = React.createClass({
@@ -24,12 +24,12 @@ var App = React.createClass({
 
     return (
       <div className={c('page', pageClass)}>
+        <GlobalLoading />
         <Header />
         <main className='page__body' role='main'>
           {this.props.children}
         </main>
         <Footer />
-        <LoadingGlobal revealed={this.props.globalLoading} />
         <ConfirmationPrompt />
       </div>
     );
@@ -41,7 +41,6 @@ var App = React.createClass({
 
 function selector (state) {
   return {
-    globalLoading: state.app.globalLoading
   };
 }
 

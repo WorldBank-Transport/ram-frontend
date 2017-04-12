@@ -5,8 +5,6 @@ import { connect } from 'react-redux';
 import TimeAgo from 'timeago-react';
 
 import {
-  showGlobalLoading,
-  hideGlobalLoading,
   invalidateProjectItem,
   deleteScenario,
   patchScenario,
@@ -16,23 +14,26 @@ import {
   fetchScenarioItem,
   startGenerateResults,
   // Fetch scenario without indication of loading.
-  fetchScenarioItemSilent
+  fetchScenarioItemSilent,
+  fetchScenarioResults
 } from '../actions';
 import { prettyPrint, fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
 import config from '../config';
+import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
 
 import Breadcrumb from '../components/breadcrumb';
 import ScenarioHeaderActions from '../components/scenario/scenario-header-actions';
 import ScenarioEditModal from '../components/scenario/scenario-edit-modal';
 import ScenarioGenSettingsModal from '../components/scenario/scenario-generation-settings-modal';
+import ScenarioIDModal from '../components/scenario/scenario-id-modal';
 import Alert from '../components/alert';
+import LogBase from '../components/log-base';
+import ScenarioResults from '../components/scenario-results';
 
 var ScenarioPage = React.createClass({
   propTypes: {
     params: T.object,
-    _showGlobalLoading: T.func,
-    _hideGlobalLoading: T.func,
     _invalidateProjectItem: T.func,
     _fetchProjectItem: T.func,
     _invalidateScenarioItem: T.func,
@@ -42,6 +43,7 @@ var ScenarioPage = React.createClass({
     _resetScenarioFrom: T.func,
     _startGenerateResults: T.func,
     _fetchScenarioItemSilent: T.func,
+    _fetchScenarioResults: T.func,
 
     scenario: T.object,
     project: T.object,
@@ -51,7 +53,8 @@ var ScenarioPage = React.createClass({
   getInitialState: function () {
     return {
       scenarioEditMetadataModal: false,
-      scenarioGenSettingsModal: false
+      scenarioGenSettingsModal: false,
+      scenarioIDModal: false
     };
   },
 
@@ -61,12 +64,12 @@ var ScenarioPage = React.createClass({
 
   showLoading: function () {
     this.loadingVisible = true;
-    this.props._showGlobalLoading();
+    showGlobalLoading();
   },
 
   hideLoading: function () {
     this.loadingVisible = false;
-    this.props._hideGlobalLoading();
+    hideGlobalLoading();
   },
 
   closeModal: function (what) {
@@ -76,6 +79,9 @@ var ScenarioPage = React.createClass({
         break;
       case 'generate-settings':
         this.setState({scenarioGenSettingsModal: false});
+        break;
+      case 'edit-network':
+        this.setState({scenarioIDModal: false});
         break;
     }
   },
@@ -160,6 +166,9 @@ var ScenarioPage = React.createClass({
       case 'generate':
         this.setState({scenarioGenSettingsModal: true});
         break;
+      case 'edit-network':
+        this.setState({scenarioIDModal: true});
+        break;
       case 'delete':
         this.showLoading();
         this.props._deleteScenario(this.props.params.projectId, this.props.params.scenarioId);
@@ -227,6 +236,8 @@ var ScenarioPage = React.createClass({
       return <div>Error: {prettyPrint(error)}</div>;
     }
 
+    let resultsFile = dataScenario.files.find(f => f.type === 'results-all');
+
     return (
       <section className='inpage inpage--hub'>
         <header className='inpage__header'>
@@ -246,16 +257,26 @@ var ScenarioPage = React.createClass({
 
             <Log
               data={dataScenario.gen_analysis}
+              lastMessageCode='results:files'
               receivedAt={this.props.scenario.receivedAt}
               update={this.props._fetchScenarioItemSilent.bind(null, this.props.params.projectId, this.props.params.scenarioId)}
             />
             {this.renderFiles()}
+
+            {resultsFile ? (
+              <ScenarioResults
+                projectId={dataScenario.project_id}
+                scenarioId={dataScenario.id}
+                resultFileId={resultsFile.id}
+              />
+            ) : null}
+
           </div>
         </div>
 
         <ScenarioEditModal
-          _showGlobalLoading={this.props._showGlobalLoading}
-          _hideGlobalLoading={this.props._hideGlobalLoading}
+          _showGlobalLoading={showGlobalLoading}
+          _hideGlobalLoading={hideGlobalLoading}
           revealed={this.state.scenarioEditMetadataModal}
           onCloseClick={this.closeModal.bind(null, 'edit-scenario')}
           scenarioForm={this.props.scenarioForm}
@@ -265,8 +286,8 @@ var ScenarioPage = React.createClass({
         />
 
         <ScenarioGenSettingsModal
-          _showGlobalLoading={this.props._showGlobalLoading}
-          _hideGlobalLoading={this.props._hideGlobalLoading}
+          _showGlobalLoading={showGlobalLoading}
+          _hideGlobalLoading={hideGlobalLoading}
           revealed={this.state.scenarioGenSettingsModal}
           onCloseClick={this.closeModal.bind(null, 'generate-settings')}
           scenarioForm={this.props.scenarioForm}
@@ -274,6 +295,14 @@ var ScenarioPage = React.createClass({
           saveScenario={this.props._patchScenario}
           resetForm={this.props._resetScenarioFrom}
           genResults={this.props._startGenerateResults.bind(null, this.props.params.projectId, this.props.params.scenarioId)}
+        />
+
+        <ScenarioIDModal
+          _showGlobalLoading={showGlobalLoading}
+          _hideGlobalLoading={hideGlobalLoading}
+          revealed={this.state.scenarioIDModal}
+          onCloseClick={this.closeModal.bind(null, 'edit-network')}
+          scenarioData={dataScenario}
         />
 
       </section>
@@ -305,126 +334,77 @@ function dispatcher (dispatch) {
     _resetScenarioFrom: (...args) => dispatch(resetScenarioFrom(...args)),
     _startGenerateResults: (...args) => dispatch(startGenerateResults(...args)),
 
-    _fetchScenarioItemSilent: (...args) => dispatch(fetchScenarioItemSilent(...args))
+    _fetchScenarioItemSilent: (...args) => dispatch(fetchScenarioItemSilent(...args)),
+    _fetchScenarioResults: (...args) => dispatch(fetchScenarioResults(...args))
   };
 }
 
 module.exports = connect(selector, dispatcher)(ScenarioPage);
 
-// Processing log component.
-const Log = React.createClass({
-  propTypes: {
-    data: T.object,
-    receivedAt: T.number,
-    update: T.func
-  },
-
-  timeout: null,
-
-  getInitialState: function () {
-    return {
-      stickSuccess: false
-    };
-  },
-
-  startPolling: function () {
-    this.timeout = setTimeout(() => this.props.update(), 2000);
-  },
-
-  componentWillUnmount: function () {
-    if (this.timeout) {
-      clearTimeout(this.timeout);
-    }
-  },
-
-  componentDidMount: function () {
-    if (this.props.data && this.props.data.status === 'running') {
-      // console.log('componentDidMount timeout');
-      this.startPolling();
-    }
-  },
-
-  componentWillReceiveProps: function (nextProps) {
-    // Continue polling while the status is 'running';
-    if (nextProps.data && nextProps.data.status === 'running' &&
-    this.props.receivedAt !== nextProps.receivedAt) {
-      // console.log('componentWillReceiveProps timeout');
-      this.startPolling();
-    }
-
-    if (nextProps.data && nextProps.data.logs[nextProps.data.logs.length - 1].code !== 'results:files') {
-      this.setState({stickSuccess: true});
-    }
-  },
-
-  render: function () {
-    const genAnalysisLog = this.props.data;
-    if (!genAnalysisLog) return null;
-
-    if (!this.state.stickSuccess && genAnalysisLog.status === 'complete' && !genAnalysisLog.errored) return null;
-
-    let lastLog = genAnalysisLog.logs[genAnalysisLog.logs.length - 1];
-
-    // There are 4 main steps:
-    // Staring.
-    // Generating osrm.
-    // Routing.
-    // Finishing.
-
-    switch (lastLog.code) {
-      case 'generate-analysis':
+class Log extends LogBase {
+  renderLog (log) {
+    switch (log.code) {
+      case 'error':
+        let e = typeof log.data.error === 'string' ? log.data.error : 'Unknown error';
+        return (
+          <Alert type='danger'>
+            <h6>An error occurred while generating results<TimeAgo datetime={log.created_at} /></h6>
+            <p>{e}</p>
+          </Alert>
+        );
+      case 'start':
         return (
           <Alert type='info'>
-            <h6>Generating results 1/4 <TimeAgo datetime={lastLog.created_at} /></h6>
-            <p>{lastLog.data.message}</p>
+            <h6>Generating results 1/5 <TimeAgo datetime={log.created_at} /></h6>
+            <p>{log.data.message}</p>
+          </Alert>
+        );
+      case 'road-network':
+        return (
+          <Alert type='info'>
+            <h6>Generating results 2/5 <TimeAgo datetime={log.created_at} /></h6>
+            <p>{log.data.message}</p>
           </Alert>
         );
       case 'osrm':
         return (
           <Alert type='info'>
-            <h6>Generating results 2/4 <TimeAgo datetime={lastLog.created_at} /></h6>
-            <p>{lastLog.data.message}</p>
+            <h6>Generating results 3/5 <TimeAgo datetime={log.created_at} /></h6>
+            <p>{log.data.message}</p>
           </Alert>
         );
       case 'routing':
       case 'routing:area':
-        if (lastLog.data.message.match(/started/)) {
+        if (log.data.message.match(/started/)) {
           return (
             <Alert type='info'>
-              <h6>Generating results 3/4 <TimeAgo datetime={lastLog.created_at} /></h6>
-              <p>Processing {lastLog.data.count} admin areas</p>
+              <h6>Generating results 4/5 <TimeAgo datetime={log.created_at} /></h6>
+              <p>Processing {log.data.count} admin areas</p>
             </Alert>
           );
         } else {
           return (
             <Alert type='info'>
-              <h6>Generating results 3/4 <TimeAgo datetime={lastLog.created_at} /></h6>
-              <p>{lastLog.data.message}</p>
+              <h6>Generating results 4/5 <TimeAgo datetime={log.created_at} /></h6>
+              <p>{log.data.message}</p>
             </Alert>
           );
         }
-      case 'error':
-        let e = typeof lastLog.data.error === 'string' ? lastLog.data.error : 'Unknown error';
-        return (
-          <Alert type='danger'>
-            <h6>An error occurred <TimeAgo datetime={lastLog.created_at} /></h6>
-            <p>{e}</p>
-          </Alert>
-        );
       case 'results:bucket':
+      case 'results:files':
         return (
           <Alert type='info'>
-            <h6>Generating results 4/4 <TimeAgo datetime={lastLog.created_at} /></h6>
+            <h6>Generating results 5/5 <TimeAgo datetime={log.created_at} /></h6>
             <p>Finishing up...</p>
           </Alert>
         );
-      case 'results:files':
+      case 'complete':
         return (
           <Alert type='success' dismissable onDismiss={() => this.setState({stickSuccess: false})}>
-            <h6>Generating results<TimeAgo datetime={lastLog.created_at} /></h6>
+            <h6>Generating results<TimeAgo datetime={log.created_at} /></h6>
             <p>Result generation complete!</p>
           </Alert>
         );
     }
   }
-});
+}

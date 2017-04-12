@@ -8,8 +8,6 @@ import {
   fetchProjectItem,
   patchProject,
   deleteProject,
-  showGlobalLoading,
-  hideGlobalLoading,
   fetchProjectScenarios,
   resetProjectFrom,
   postScenario
@@ -18,6 +16,7 @@ import { prettyPrint, fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
 import { fileTypesMatrix } from '../utils/constants';
 import config from '../config';
+import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
 
 import Breadcrumb from '../components/breadcrumb';
 import ProjectFormModal from '../components/project/project-form-modal';
@@ -32,8 +31,6 @@ var ProjectPageActive = React.createClass({
     _patchProject: T.func,
     _deleteProject: T.func,
     _resetProjectFrom: T.func,
-    _showGlobalLoading: T.func,
-    _hideGlobalLoading: T.func,
     _fetchProjectScenarios: T.func,
     _postScenario: T.func,
 
@@ -58,12 +55,12 @@ var ProjectPageActive = React.createClass({
 
   showLoading: function () {
     this.loadingVisible = true;
-    this.props._showGlobalLoading();
+    showGlobalLoading();
   },
 
   hideLoading: function () {
     this.loadingVisible = false;
-    this.props._hideGlobalLoading();
+    hideGlobalLoading();
   },
 
   closeModal: function (what) {
@@ -251,6 +248,7 @@ var ProjectPageActive = React.createClass({
             </div>
             <ProjectHeaderActions
               project={dataProject}
+              projectStatus='active'
               onAction={this.onProjectAction} />
           </div>
         </header>
@@ -287,8 +285,8 @@ var ProjectPageActive = React.createClass({
 
         <ProjectFormModal
           editing
-          _showGlobalLoading={this.props._showGlobalLoading}
-          _hideGlobalLoading={this.props._hideGlobalLoading}
+          _showGlobalLoading={showGlobalLoading}
+          _hideGlobalLoading={hideGlobalLoading}
           revealed={this.state.projectFormModal}
           onCloseClick={this.closeModal.bind(null, 'project-form')}
           projectForm={this.props.projectForm}
@@ -298,8 +296,8 @@ var ProjectPageActive = React.createClass({
         />
 
         <ScenarioCreateModal
-          _showGlobalLoading={this.props._showGlobalLoading}
-          _hideGlobalLoading={this.props._hideGlobalLoading}
+          _showGlobalLoading={showGlobalLoading}
+          _hideGlobalLoading={hideGlobalLoading}
           revealed={this.state.scenarioCreateModal}
           onCloseClick={this.closeModal.bind(null, 'new-scenario')}
           scenarioForm={this.props.scenarioForm}
@@ -332,8 +330,6 @@ function dispatcher (dispatch) {
     _fetchProjectItem: (...args) => dispatch(fetchProjectItem(...args)),
     _patchProject: (...args) => dispatch(patchProject(...args)),
     _deleteProject: (...args) => dispatch(deleteProject(...args)),
-    _showGlobalLoading: (...args) => dispatch(showGlobalLoading(...args)),
-    _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args)),
     _fetchProjectScenarios: (...args) => dispatch(fetchProjectScenarios(...args)),
     _resetProjectFrom: (...args) => dispatch(resetProjectFrom(...args)),
     _postScenario: (...args) => dispatch(postScenario(...args))

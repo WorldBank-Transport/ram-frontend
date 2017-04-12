@@ -56,3 +56,43 @@
   margin: 0;
   vertical-align: top;
 }
+
+
+/* iD Editor
+   ========================================================================== */
+
+.ideditor-wrapper {
+  @extend .clearfix;
+  position: relative;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  height: 32rem;
+
+  > * {
+    z-index: 190;
+  }
+
+  &::before, &::after {
+    content: '';
+    position: absolute;
+    z-index: 200;
+    left: 0;
+    height: 1px;
+    width: 100%;
+    pointer-events: none;
+    background: $base-alpha-color;
+  }
+
+  &::before {
+    top: 0;
+  }
+
+  &::after {
+    bottom: 0;
+  }
+
+  iframe {
+    width: 100%;
+    height: 100%;
+  }
+}
