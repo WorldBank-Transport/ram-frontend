@@ -257,7 +257,6 @@ var ScenarioPage = React.createClass({
 
             <Log
               data={dataScenario.gen_analysis}
-              lastMessageCode='results:files'
               receivedAt={this.props.scenario.receivedAt}
               update={this.props._fetchScenarioItemSilent.bind(null, this.props.params.projectId, this.props.params.scenarioId)}
             />
@@ -398,7 +397,7 @@ class Log extends LogBase {
             <p>Finishing up...</p>
           </Alert>
         );
-      case 'complete':
+      case 'success':
         return (
           <Alert type='success' dismissable onDismiss={() => this.setState({stickSuccess: false})}>
             <h6>Generating results<TimeAgo datetime={log.created_at} /></h6>
