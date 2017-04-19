@@ -8,6 +8,8 @@ const Dropdown = React.createClass({
 
   propTypes: {
     id: React.PropTypes.string,
+    onChange: React.PropTypes.func,
+
     triggerElement: React.PropTypes.oneOf(['a', 'button']),
     triggerClassName: React.PropTypes.string,
     triggerActiveClassName: React.PropTypes.string,
@@ -81,7 +83,6 @@ const Dropdown = React.createClass({
   },
 
   // Lifecycle method.
-  // Called once as soon as the component has a DOM representation.
   componentWillUnmount: function () {
     window.removeEventListener('click', this._bodyListener);
   },
@@ -96,11 +97,11 @@ const Dropdown = React.createClass({
   },
 
   open: function () {
-    this.setState({ open: true });
+    !this.state.open && this.setState({ open: true });
   },
 
   close: function () {
-    this.setState({ open: false });
+    this.state.open && this.setState({ open: false });
   },
 
   renderTriggerElement: function () {
@@ -177,7 +178,10 @@ const Dropdown = React.createClass({
       transitionEnterTimeout={300}
       transitionLeaveTimeout={300} >
         { this.state.open
-          ? <div {...dropdownContentProps}>{ this.props.children }</div>
+          ? <TransitionItem
+              props={dropdownContentProps}
+              onChange={this.props.onChange}
+            >{ this.props.children }</TransitionItem>
         : null }
     </ReactCSSTransitionGroup>
     );
@@ -231,3 +235,25 @@ const Dropdown = React.createClass({
 });
 
 module.exports = Dropdown;
+
+const TransitionItem = React.createClass({
+  displayName: 'TransitionItem',
+
+  propTypes: {
+    onChange: React.PropTypes.func,
+    props: React.PropTypes.object,
+    children: React.PropTypes.node
+  },
+
+  componentDidMount: function () {
+    this.props.onChange && this.props.onChange(true);
+  },
+
+  componentWillUnmount: function () {
+    this.props.onChange && this.props.onChange(false);
+  },
+
+  render: function () {
+    return <div {...this.props.props}>{ this.props.children }</div>;
+  }
+});
