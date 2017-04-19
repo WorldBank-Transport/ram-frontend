@@ -7,8 +7,6 @@ import Dropdown from '../dropdown';
 import { showConfirm } from '../confirmation-prompt';
 import { t } from '../../utils/i18n';
 
-window.ReactTooltip = ReactTooltip;
-
 const ScenarioHeaderActions = React.createClass({
 
   propTypes: {
@@ -18,6 +16,10 @@ const ScenarioHeaderActions = React.createClass({
 
   onDelete: function (e) {
     e.preventDefault();
+
+    if (this.props.scenario.master) {
+      return;
+    }
 
     showConfirm({
       title: t('Delete scenario'),
@@ -37,10 +39,12 @@ const ScenarioHeaderActions = React.createClass({
 
   render: function () {
     let isGenerating = this.props.scenario.gen_analysis && this.props.scenario.gen_analysis.status === 'running';
+    let isMaster = this.props.scenario.master;
 
     return (
       <div className='inpage__actions'>
         <Dropdown
+          onChange={(open) => open ? ReactTooltip.rebuild() : ReactTooltip.hide()}
           className='scenario-meta-menu'
           triggerClassName='ipa-ellipsis'
           triggerActiveClassName='button--active'
@@ -53,7 +57,11 @@ const ScenarioHeaderActions = React.createClass({
               <li><a href='#' title={t('Duplicate scenario')} className='drop__menu-item dmi-copy' data-hook='dropdown:close' onClick={this.props.onAction.bind(null, 'duplicate')}>{t('Duplicate scenario')}</a></li>
             </ul>
             <ul className='drop__menu drop__menu--iconified' role='menu'>
-              <li><a href='#' title={t('Delete scenario')} className={c('drop__menu-item drop__menu-item--danger dmi-trash', {disabled: this.props.scenario.master})} data-hook='dropdown:close' onClick={this.onDelete}>{t('Delete scenario')}</a></li>
+            {isMaster ? (
+              <li><a href='#' data-tip data-for='tip-no-delete' title={t('Delete scenario')} className={'drop__menu-item drop__menu-item--danger dmi-trash visually-disabled'} onClick={this.onDelete}>{t('Delete scenario')}</a></li>
+            ) : (
+              <li><a href='#' title={t('Delete scenario')} className={'drop__menu-item drop__menu-item--danger dmi-trash'} data-hook='dropdown:close' onClick={this.onDelete}>{t('Delete scenario')}</a></li>
+            )}
             </ul>
         </Dropdown>
         { /* <button title={t('Edit network')} className='ipa-pencil' type='button' onClick={this.props.onAction.bind(null, 'edit-network')}><span>{t('Edit')}</span></button> */ }
@@ -69,6 +77,11 @@ const ScenarioHeaderActions = React.createClass({
         <ReactTooltip id='tip-soon' effect='solid'>
           {t('Coming soon...')}
         </ReactTooltip>
+
+        <ReactTooltip id='tip-no-delete' effect='solid'>
+          {t('The project\'s master scenario can\'t be deleted')}
+        </ReactTooltip>
+
       </div>
     );
   }
