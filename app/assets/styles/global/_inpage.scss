@@ -6,7 +6,7 @@
   &__header {
     @extend .antialiased;
     position: relative;
-    z-index: 2;
+    // z-index: 2;
     background: $accent-color;
     color: #fff;
     padding: ($global-spacing * 1.5) 0;
