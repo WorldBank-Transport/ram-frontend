@@ -21,11 +21,11 @@ import config from '../config';
 import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
 
 import Breadcrumb from '../components/breadcrumb';
+import Dropdown from '../components/dropdown';
 import ProjectFormModal from '../components/project/project-form-modal';
 import ProjectHeaderActions from '../components/project/project-header-actions';
 import ScenarioCreateModal from '../components/scenario/scenario-create-modal';
-import Dropdown from '../components/dropdown';
-import { showConfirm } from '../components/confirmation-prompt';
+import ScenarioDeleteAction from '../components/scenario/scenario-delete-action';
 
 var ProjectPageActive = React.createClass({
 
@@ -98,24 +98,9 @@ var ProjectPageActive = React.createClass({
     }
   },
 
-  onScenarioDelete: function (scenario, e) {
-    e.preventDefault();
-
-    if (scenario.master) {
-      return;
-    }
-
-    showConfirm({
-      title: t('Delete scenario'),
-      body: (
-        <div>
-          <p>{t('Are you sure you want to delete {name}?', {name: <strong>{scenario.name}</strong>})}</p>
-        </div>
-      )
-    }, () => {
-      this.showLoading();
-      this.props._deleteScenario(scenario.project_id, scenario.id);
-    });
+  onScenarioDelete: function (scenario) {
+    this.showLoading();
+    this.props._deleteScenario(scenario.project_id, scenario.id);
   },
 
   checkAllLoaded: function (nextProps) {
@@ -236,11 +221,7 @@ var ProjectPageActive = React.createClass({
                       <li><a href='#' title={t('Duplicate scenario')} className='drop__menu-item dmi-copy' data-hook='dropdown:close'>{t('Duplicate scenario')}</a></li>
                     </ul>
                     <ul className='drop__menu drop__menu--iconified' role='menu'>
-                    {isMaster ? (
-                      <li><a href='#' data-tip data-for='tip-no-delete' title={t('Delete scenario')} className={'drop__menu-item drop__menu-item--danger dmi-trash visually-disabled'} onClick={this.onScenarioDelete.bind(null, scenario)}>{t('Delete scenario')}</a></li>
-                    ) : (
-                      <li><a href='#' title={t('Delete scenario')} className={'drop__menu-item drop__menu-item--danger dmi-trash'} data-hook='dropdown:close' onClick={this.onScenarioDelete.bind(null, scenario)}>{t('Delete scenario')}</a></li>
-                    )}
+                      <li><ScenarioDeleteAction isMaster={isMaster} name={name} onDeleteConfirm={this.onScenarioDelete.bind(null, scenario)}/></li>
                     </ul>
                 </Dropdown>
               </div>
@@ -365,10 +346,6 @@ var ProjectPageActive = React.createClass({
           saveScenario={this.props._postScenario}
           resetForm={this.props._resetProjectFrom}
         />
-
-        <ReactTooltip id='tip-no-delete' effect='solid'>
-          {t('The project\'s master scenario can\'t be deleted')}
-        </ReactTooltip>
 
       </section>
     );

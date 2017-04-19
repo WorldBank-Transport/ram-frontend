@@ -3,6 +3,9 @@ import React, { PropTypes as T } from 'react';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import c from 'classnames';
+import ReactTooltip from 'react-tooltip';
+
+import { t } from '../utils/i18n';
 
 import Header from '../components/header';
 import Footer from '../components/footer';
@@ -31,6 +34,10 @@ var App = React.createClass({
         </main>
         <Footer />
         <ConfirmationPrompt />
+
+        <ReactTooltip id='tip-no-delete' effect='solid'>
+          {t('The project\'s master scenario can\'t be deleted')}
+        </ReactTooltip>
       </div>
     );
   }
