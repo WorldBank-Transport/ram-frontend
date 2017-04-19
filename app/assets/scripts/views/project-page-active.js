@@ -2,6 +2,7 @@
 import React, { PropTypes as T } from 'react';
 import { hashHistory, Link } from 'react-router';
 import { connect } from 'react-redux';
+import ReactTooltip from 'react-tooltip';
 
 import {
   invalidateProjectItem,
@@ -10,7 +11,8 @@ import {
   deleteProject,
   fetchProjectScenarios,
   resetProjectFrom,
-  postScenario
+  postScenario,
+  deleteScenario
 } from '../actions';
 import { prettyPrint, fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
@@ -22,8 +24,8 @@ import Breadcrumb from '../components/breadcrumb';
 import ProjectFormModal from '../components/project/project-form-modal';
 import ProjectHeaderActions from '../components/project/project-header-actions';
 import ScenarioCreateModal from '../components/scenario/scenario-create-modal';
-
 import Dropdown from '../components/dropdown';
+import { showConfirm } from '../components/confirmation-prompt';
 
 var ProjectPageActive = React.createClass({
 
@@ -34,6 +36,7 @@ var ProjectPageActive = React.createClass({
     _deleteProject: T.func,
     _resetProjectFrom: T.func,
     _fetchProjectScenarios: T.func,
+    _deleteScenario: T.func,
     _postScenario: T.func,
 
     params: T.object,
@@ -93,6 +96,26 @@ var ProjectPageActive = React.createClass({
       default:
         throw new Error(`Project action not implemented: ${what}`);
     }
+  },
+
+  onScenarioDelete: function (scenario, e) {
+    e.preventDefault();
+
+    if (scenario.master) {
+      return;
+    }
+
+    showConfirm({
+      title: t('Delete scenario'),
+      body: (
+        <div>
+          <p>{t('Are you sure you want to delete {name}?', {name: <strong>{scenario.name}</strong>})}</p>
+        </div>
+      )
+    }, () => {
+      this.showLoading();
+      this.props._deleteScenario(scenario.project_id, scenario.id);
+    });
   },
 
   checkAllLoaded: function (nextProps) {
@@ -156,6 +179,18 @@ var ProjectPageActive = React.createClass({
         return hashHistory.push(`/${getLanguage()}/projects`);
       }
     }
+
+    // Delete action has finished.
+    if (this.props.scenarioForm.action === 'delete' &&
+        this.props.scenarioForm.processing &&
+        !nextProps.scenarioForm.processing) {
+      if (!nextProps.scenarioForm.error) {
+        console.log('scenario deleted');
+        this.props._fetchProjectScenarios(this.props.params.projectId);
+      } else {
+        this.hideLoading();
+      }
+    }
   },
 
   renderFiles: function () {
@@ -174,7 +209,7 @@ var ProjectPageActive = React.createClass({
   },
 
   renderScenarioCard: function (scenario) {
-    let {id, project_id: projectId, name, description} = scenario;
+    let {id, project_id: projectId, name, description, master: isMaster} = scenario;
 
     return (
       <li key={`scenario-${id}`}>
@@ -189,6 +224,7 @@ var ProjectPageActive = React.createClass({
               </div>
               <div className='card__actions'>
                 <Dropdown
+                  onChange={(open) => open ? ReactTooltip.rebuild() : ReactTooltip.hide()}
                   className='scenario-meta-menu'
                   triggerClassName='ca-ellipsis'
                   triggerActiveClassName='button--active'
@@ -200,7 +236,11 @@ var ProjectPageActive = React.createClass({
                       <li><a href='#' title={t('Duplicate scenario')} className='drop__menu-item dmi-copy' data-hook='dropdown:close'>{t('Duplicate scenario')}</a></li>
                     </ul>
                     <ul className='drop__menu drop__menu--iconified' role='menu'>
-                      <li><a href='#' title={t('Delete scenario')} className={'drop__menu-item drop__menu-item--danger dmi-trash'} data-hook='dropdown:close'>{t('Delete scenario')}</a></li>
+                    {isMaster ? (
+                      <li><a href='#' data-tip data-for='tip-no-delete' title={t('Delete scenario')} className={'drop__menu-item drop__menu-item--danger dmi-trash visually-disabled'} onClick={this.onScenarioDelete.bind(null, scenario)}>{t('Delete scenario')}</a></li>
+                    ) : (
+                      <li><a href='#' title={t('Delete scenario')} className={'drop__menu-item drop__menu-item--danger dmi-trash'} data-hook='dropdown:close' onClick={this.onScenarioDelete.bind(null, scenario)}>{t('Delete scenario')}</a></li>
+                    )}
                     </ul>
                 </Dropdown>
               </div>
@@ -326,6 +366,10 @@ var ProjectPageActive = React.createClass({
           resetForm={this.props._resetProjectFrom}
         />
 
+        <ReactTooltip id='tip-no-delete' effect='solid'>
+          {t('The project\'s master scenario can\'t be deleted')}
+        </ReactTooltip>
+
       </section>
     );
   }
@@ -351,6 +395,7 @@ function dispatcher (dispatch) {
     _deleteProject: (...args) => dispatch(deleteProject(...args)),
     _fetchProjectScenarios: (...args) => dispatch(fetchProjectScenarios(...args)),
     _resetProjectFrom: (...args) => dispatch(resetProjectFrom(...args)),
+    _deleteScenario: (...args) => dispatch(deleteScenario(...args)),
     _postScenario: (...args) => dispatch(postScenario(...args))
   };
 }
