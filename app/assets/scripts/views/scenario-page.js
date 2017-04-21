@@ -267,7 +267,7 @@ var ScenarioPage = React.createClass({
               update={this.props._fetchScenarioItemSilent.bind(null, this.props.params.projectId, this.props.params.scenarioId)}
             />
 
-            {this.renderFiles()}
+            {dataScenario.status === 'active' ? this.renderFiles() : null}
 
             {resultsFile ? (
               <ScenarioResults
