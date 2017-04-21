@@ -12,7 +12,7 @@ export default class LogBase extends React.Component {
 
     // Initial state.
     this.state = {
-      stickSuccess: false
+      stickSuccess: props.data && props.data.status === 'running'
     };
   }
 
