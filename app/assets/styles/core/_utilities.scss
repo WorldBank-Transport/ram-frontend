@@ -118,7 +118,7 @@
 
 .visually-disabled {
   &, &:hover, &:active, &:focus {
-    opacity: 0.48;
+    opacity: 0.48 !important;
     cursor: not-allowed;
   }
 }
