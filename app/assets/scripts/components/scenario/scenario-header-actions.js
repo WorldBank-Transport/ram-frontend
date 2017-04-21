@@ -19,6 +19,10 @@ const ScenarioHeaderActions = React.createClass({
     isActive && this.props.onAction('generate', e);
   },
 
+  onEditClick: function (isActive, e) {
+    isActive && this.props.onAction('edit-network', e);
+  },
+
   render: function () {
     let isGenerating = this.props.scenario.gen_analysis && this.props.scenario.gen_analysis.status === 'running';
     let isMaster = this.props.scenario.master;
@@ -42,14 +46,13 @@ const ScenarioHeaderActions = React.createClass({
               <li><ScenarioDeleteAction isMaster={isMaster} name={this.props.scenario.name} onDeleteConfirm={this.props.onAction.bind(null, 'delete')}/></li>
             </ul>
         </Dropdown>
-        { /* <button title={t('Edit network')} className='ipa-pencil' type='button' onClick={this.props.onAction.bind(null, 'edit-network')}><span>{t('Edit')}</span></button> */ }
-        <button data-tip data-for='tip-soon' title={t('Edit network')} className='ipa-pencil visually-disabled' type='button'><span>{t('Edit')}</span></button>
+        <button data-tip data-for='tip-generate' title={t('Edit network')} className={c('ipa-pencil', {'visually-disabled': isGenerating})} type='button' onClick={this.onEditClick.bind(null, !isGenerating)}><span>{t('Edit')}</span></button>
         <button data-tip data-for='tip-soon' title={t('Download results')} className='ipa-download visually-disabled' type='button' onClick={this.props.onAction.bind(null, 'download-results')}><span>{t('Download')}</span></button>
 
         <button data-tip data-for='tip-generate' title={t('Generate results')} className={c('ipa-arrow-loop', {'visually-disabled': isGenerating})} type='button' onClick={this.onGenerateClick.bind(null, !isGenerating)}><span>{t('Generate')}</span></button>
 
         <ReactTooltip id='tip-generate' effect='solid' disable={!isGenerating}>
-          {t('Generation already in progress.')}
+          {t('Generation is in progress.')}
         </ReactTooltip>
 
         <ReactTooltip id='tip-soon' effect='solid'>
