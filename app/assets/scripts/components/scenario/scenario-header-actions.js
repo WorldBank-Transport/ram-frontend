@@ -23,9 +23,27 @@ const ScenarioHeaderActions = React.createClass({
     isActive && this.props.onAction('edit-network', e);
   },
 
+  renderDisableReatonTip: function (isGenerating, isPending) {
+    let disable = !isGenerating && !isPending;
+    let txt;
+
+    if (isGenerating) {
+      txt = t('Generation is in progress.');
+    } else if (isPending) {
+      txt = t('Scenario still being created.');
+    }
+
+    return (
+      <ReactTooltip id='tip-disable-reason' effect='solid' disable={disable}>
+        {txt}
+      </ReactTooltip>
+    );
+  },
+
   render: function () {
     let isGenerating = this.props.scenario.gen_analysis && this.props.scenario.gen_analysis.status === 'running';
     let isMaster = this.props.scenario.master;
+    let isPending = this.props.scenario.status === 'pending';
 
     return (
       <div className='inpage__actions'>
@@ -46,14 +64,12 @@ const ScenarioHeaderActions = React.createClass({
               <li><ScenarioDeleteAction isMaster={isMaster} name={this.props.scenario.name} onDeleteConfirm={this.props.onAction.bind(null, 'delete')}/></li>
             </ul>
         </Dropdown>
-        <button data-tip data-for='tip-generate' title={t('Edit network')} className={c('ipa-pencil', {'visually-disabled': isGenerating})} type='button' onClick={this.onEditClick.bind(null, !isGenerating)}><span>{t('Edit')}</span></button>
+        <button data-tip data-for='tip-disable-reason' title={t('Edit network')} className={c('ipa-pencil', {'visually-disabled': isGenerating || isPending})} type='button' onClick={this.onEditClick.bind(null, !isGenerating)}><span>{t('Edit')}</span></button>
         <button data-tip data-for='tip-soon' title={t('Download results')} className='ipa-download visually-disabled' type='button' onClick={this.props.onAction.bind(null, 'download-results')}><span>{t('Download')}</span></button>
 
-        <button data-tip data-for='tip-generate' title={t('Generate results')} className={c('ipa-arrow-loop', {'visually-disabled': isGenerating})} type='button' onClick={this.onGenerateClick.bind(null, !isGenerating)}><span>{t('Generate')}</span></button>
+        <button data-tip data-for='tip-disable-reason' title={t('Generate results')} className={c('ipa-arrow-loop', {'visually-disabled': isGenerating || isPending})} type='button' onClick={this.onGenerateClick.bind(null, !isGenerating)}><span>{t('Generate')}</span></button>
 
-        <ReactTooltip id='tip-generate' effect='solid' disable={!isGenerating}>
-          {t('Generation is in progress.')}
-        </ReactTooltip>
+        {this.renderDisableReatonTip(isGenerating, isPending)}
 
         <ReactTooltip id='tip-soon' effect='solid'>
           {t('Coming soon...')}

@@ -255,12 +255,19 @@ var ScenarioPage = React.createClass({
           <div className='inner'>
             {formError ? <pre>{prettyPrint(formError)}</pre> : null}
 
-            <Log
+            <LogGen
               data={dataScenario.gen_analysis}
               receivedAt={this.props.scenario.receivedAt}
               update={this.props._fetchScenarioItemSilent.bind(null, this.props.params.projectId, this.props.params.scenarioId)}
             />
-            {this.renderFiles()}
+
+            <LogCreate
+              data={dataScenario.scen_create}
+              receivedAt={this.props.scenario.receivedAt}
+              update={this.props._fetchScenarioItemSilent.bind(null, this.props.params.projectId, this.props.params.scenarioId)}
+            />
+
+            {dataScenario.status === 'active' ? this.renderFiles() : null}
 
             {resultsFile ? (
               <ScenarioResults
@@ -284,6 +291,7 @@ var ScenarioPage = React.createClass({
           resetForm={this.props._resetScenarioFrom}
         />
 
+        {dataScenario.admin_areas ? (
         <ScenarioGenSettingsModal
           _showGlobalLoading={showGlobalLoading}
           _hideGlobalLoading={hideGlobalLoading}
@@ -295,6 +303,7 @@ var ScenarioPage = React.createClass({
           resetForm={this.props._resetScenarioFrom}
           genResults={this.props._startGenerateResults.bind(null, this.props.params.projectId, this.props.params.scenarioId)}
         />
+        ) : null}
 
         <ScenarioIDModal
           _showGlobalLoading={showGlobalLoading}
@@ -340,7 +349,7 @@ function dispatcher (dispatch) {
 
 module.exports = connect(selector, dispatcher)(ScenarioPage);
 
-class Log extends LogBase {
+class LogGen extends LogBase {
   renderLog (log) {
     switch (log.code) {
       case 'error':
@@ -402,6 +411,35 @@ class Log extends LogBase {
           <Alert type='success' dismissable onDismiss={() => this.setState({stickSuccess: false})}>
             <h6>Generating results<TimeAgo datetime={log.created_at} /></h6>
             <p>Result generation complete!</p>
+          </Alert>
+        );
+    }
+  }
+}
+
+class LogCreate extends LogBase {
+  renderLog (log) {
+    switch (log.code) {
+      case 'error':
+        let e = typeof log.data.error === 'string' ? log.data.error : 'Unknown error';
+        return (
+          <Alert type='danger'>
+            <h6>An error occurred <TimeAgo datetime={log.created_at} /></h6>
+            <p>{e}</p>
+          </Alert>
+        );
+      case 'success':
+        return (
+          <Alert type='success' dismissable onDismiss={this.onDismiss.bind(this)}>
+            <h6>Success!<TimeAgo datetime={log.created_at} /></h6>
+            <p>{log.data.message}</p>
+          </Alert>
+        );
+      default:
+        return (
+          <Alert type='info'>
+            <h6>Creating scenario <TimeAgo datetime={log.created_at} /></h6>
+            <p>{log.data.message}</p>
           </Alert>
         );
     }

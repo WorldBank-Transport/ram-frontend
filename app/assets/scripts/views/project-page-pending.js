@@ -248,7 +248,7 @@ var ProjectPagePending = React.createClass({
   renderFileInput: function (key) {
     let { display, description } = fileTypesMatrix[key];
     let projectId = this.props.project.data.id;
-    let scenarioId = this.props.project.data.id;
+    let scenarioId = this.props.scenario.data.id;
     return (
       <ProjectFileInput
         key={key}
@@ -264,7 +264,7 @@ var ProjectPagePending = React.createClass({
   renderFileCard: function (file) {
     let { display, description } = fileTypesMatrix[file.type];
     let projectId = this.props.project.data.id;
-    let scenarioId = this.props.project.data.id;
+    let scenarioId = this.props.scenario.data.id;
     return (
       <ProjectFileCard
         key={file.type}

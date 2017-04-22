@@ -26,15 +26,13 @@ var ScenarioDeleteAction = React.createClass({
         </div>
       )
     }, () => {
-      this.props.onDeleteConfirm();
+      this.props.onDeleteConfirm(e);
     });
   },
 
   render: function () {
     let props = {
-      className: 'drop__menu-item drop__menu-item--danger dmi-trash',
-      'data-hook': 'dropdown:close',
-      onClick: this.onClick
+      className: 'drop__menu-item drop__menu-item--danger dmi-trash'
     };
 
     if (this.props.isMaster) {
@@ -43,7 +41,7 @@ var ScenarioDeleteAction = React.createClass({
       props['data-for'] = 'tip-no-delete';
     }
 
-    return <a href='#' title={t('Delete scenario')} {...props}>{t('Delete scenario')}</a>;
+    return <a href='#' title={t('Delete scenario')} data-hook='dropdown:close' onClick={this.onClick} {...props}>{t('Delete scenario')}</a>;
   }
 });
 
