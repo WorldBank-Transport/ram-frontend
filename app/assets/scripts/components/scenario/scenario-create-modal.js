@@ -59,11 +59,11 @@ const ScenarioCreateModal = React.createClass({
       let scenarioData = nextProps.scenarioForm.data;
       if (this.state.data.roadNetworkSource === 'new') {
         // Upload file
+        this.setState({loading: true});
         this.uploadScenarioFile(scenarioData.roadNetworkUpload.presignedUrl);
       } else {
         hashHistory.push(`${getLanguage()}/projects/${scenarioData.project_id}/scenarios/${scenarioData.id}`);
       }
-      return;
     }
   },
 
@@ -162,7 +162,6 @@ const ScenarioCreateModal = React.createClass({
         payload.roadNetworkSourceScenario = this.state.data.roadNetworkSourceScenario;
       } else if (this.state.data.roadNetworkSource === 'new') {
         payload.roadNetworkSource = 'new';
-        this.setState({loading: true});
       }
       this.props.saveScenario(this.props.projectId, payload);
     }
