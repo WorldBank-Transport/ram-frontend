@@ -3,6 +3,7 @@ import React, { PropTypes as T } from 'react';
 import c from 'classnames';
 import ReactTooltip from 'react-tooltip';
 
+import config from '../../config';
 import Dropdown from '../dropdown';
 import { t } from '../../utils/i18n';
 
@@ -23,7 +24,7 @@ const ScenarioHeaderActions = React.createClass({
     isActive && this.props.onAction('edit-network', e);
   },
 
-  renderDisableReatonTip: function (isGenerating, isPending) {
+  renderDisableReasonTip: function (isGenerating, isPending) {
     let disable = !isGenerating && !isPending;
     let txt;
 
@@ -45,6 +46,9 @@ const ScenarioHeaderActions = React.createClass({
     let isMaster = this.props.scenario.master;
     let isPending = this.props.scenario.status === 'pending';
 
+    let hasResults = this.props.scenario.files.some(f => f.type === 'results');
+    let resultsUrl = `${config.api}/projects/${this.props.scenario.project_id}/scenarios/${this.props.scenario.id}/results?download=true`;
+
     return (
       <div className='inpage__actions'>
         <Dropdown
@@ -65,14 +69,14 @@ const ScenarioHeaderActions = React.createClass({
             </ul>
         </Dropdown>
         <button data-tip data-for='tip-disable-reason' title={t('Edit network')} className={c('ipa-pencil', {'visually-disabled': isGenerating || isPending})} type='button' onClick={this.onEditClick.bind(null, !isGenerating)}><span>{t('Edit')}</span></button>
-        <button data-tip data-for='tip-soon' title={t('Download results')} className='ipa-download visually-disabled' type='button' onClick={this.props.onAction.bind(null, 'download-results')}><span>{t('Download')}</span></button>
+        <a href={resultsUrl} data-tip data-for='tip-no-results' title={t('Download results')} className={c('ipa-download', {'visually-disabled': !hasResults})} onClick={(e) => !hasResults && e.preventDefault()}><span>{t('Download')}</span></a>
 
         <button data-tip data-for='tip-disable-reason' title={t('Generate results')} className={c('ipa-arrow-loop', {'visually-disabled': isGenerating || isPending})} type='button' onClick={this.onGenerateClick.bind(null, !isGenerating)}><span>{t('Generate')}</span></button>
 
-        {this.renderDisableReatonTip(isGenerating, isPending)}
+        {this.renderDisableReasonTip(isGenerating, isPending)}
 
-        <ReactTooltip id='tip-soon' effect='solid'>
-          {t('Coming soon...')}
+        <ReactTooltip id='tip-no-results' effect='solid' disable={hasResults}>
+          {t('No results were generated yet')}
         </ReactTooltip>
 
       </div>
