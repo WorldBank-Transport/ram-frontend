@@ -11,6 +11,7 @@ import {
   deleteProject,
   fetchProjectScenarios,
   resetProjectFrom,
+  resetScenarioFrom,
   postScenario,
   deleteScenario
 } from '../actions';
@@ -35,6 +36,7 @@ var ProjectPageActive = React.createClass({
     _patchProject: T.func,
     _deleteProject: T.func,
     _resetProjectFrom: T.func,
+    _resetScenarioFrom: T.func,
     _fetchProjectScenarios: T.func,
     _deleteScenario: T.func,
     _postScenario: T.func,
@@ -344,7 +346,7 @@ var ProjectPageActive = React.createClass({
           scenarioList={this.props.scenarios.data.results}
           projectId={this.props.params.projectId}
           saveScenario={this.props._postScenario}
-          resetForm={this.props._resetProjectFrom}
+          resetForm={this.props._resetScenarioFrom}
         />
 
       </section>
@@ -372,6 +374,7 @@ function dispatcher (dispatch) {
     _deleteProject: (...args) => dispatch(deleteProject(...args)),
     _fetchProjectScenarios: (...args) => dispatch(fetchProjectScenarios(...args)),
     _resetProjectFrom: (...args) => dispatch(resetProjectFrom(...args)),
+    _resetScenarioFrom: (...args) => dispatch(resetScenarioFrom(...args)),
     _deleteScenario: (...args) => dispatch(deleteScenario(...args)),
     _postScenario: (...args) => dispatch(postScenario(...args))
   };
