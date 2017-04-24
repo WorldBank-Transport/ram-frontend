@@ -208,7 +208,7 @@ const ProjectThumb = React.createClass({
 
     this.theMap = new mapboxgl.Map({
       container: this.refs.map,
-      style: 'mapbox://styles/mapbox/light-v9',
+      style: 'mapbox://styles/mapbox/streets-v10',
       interactive: false
     });
 
