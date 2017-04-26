@@ -2,6 +2,9 @@ import fetch from 'isomorphic-fetch';
 
 import config from '../config';
 
+// Just to unify where the actions come from.
+export { showAlert, hideAlert } from '../components/system-alerts';
+
 export const REQUEST_PROJECTS = 'REQUEST_PROJECTS';
 export const RECEIVE_PROJECTS = 'RECEIVE_PROJECTS';
 export const INVALIDATE_PROJECTS = 'INVALIDATE_PROJECTS';
