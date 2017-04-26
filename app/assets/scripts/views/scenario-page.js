@@ -29,7 +29,7 @@ import ScenarioGenSettingsModal from '../components/scenario/scenario-generation
 import ScenarioIDModal from '../components/scenario/scenario-id-modal';
 import Alert from '../components/alert';
 import LogBase from '../components/log-base';
-import ScenarioResults from '../components/scenario-results';
+import ScenarioResults from '../components/scenario/scenario-results';
 
 var ScenarioPage = React.createClass({
   propTypes: {
