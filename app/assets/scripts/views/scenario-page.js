@@ -82,6 +82,7 @@ var ScenarioPage = React.createClass({
         break;
       case 'edit-network':
         this.setState({scenarioIDModal: false});
+        this.props._fetchScenarioItemSilent(this.props.params.projectId, this.props.params.scenarioId);
         break;
     }
   },
@@ -223,6 +224,29 @@ var ScenarioPage = React.createClass({
     }
   },
 
+  renderOutdatedResultsMessage: function () {
+    let scenario = this.props.scenario.data;
+    let isGenerating = scenario.gen_analysis && scenario.gen_analysis.status === 'running';
+    // Only show message if the scenario is active and nothing is generating.
+    if (scenario.status !== 'active' || isGenerating) {
+      return null;
+    }
+
+    let genAt = scenario.data.res_gen_at;
+    genAt === 0 ? genAt : (new Date(genAt)).getTime();
+    let rnUpdatedAt = scenario.data.rn_updated_at;
+    rnUpdatedAt === 0 ? rnUpdatedAt : (new Date(rnUpdatedAt)).getTime();
+
+    if (rnUpdatedAt > genAt) {
+      return (
+        <Alert type='warning'>
+          <h6>{t('Outdated results')}</h6>
+          <p>{t('The road network was modified. Generate the results again to ensure they reflect the road network\'s last state.')}</p>
+        </Alert>
+      );
+    }
+  },
+
   render: function () {
     const { fetched, fetching, error } = fetchStatus(this.props.project, this.props.scenario);
     const dataScenario = this.props.scenario.data;
@@ -254,6 +278,8 @@ var ScenarioPage = React.createClass({
         <div className='inpage__body'>
           <div className='inner'>
             {formError ? <pre>{prettyPrint(formError)}</pre> : null}
+
+            {this.renderOutdatedResultsMessage()}
 
             <LogGen
               data={dataScenario.gen_analysis}
