@@ -512,3 +512,9 @@ label[for] {
     margin-bottom: 0;
   }
 }
+
+.form__limit {
+  &--reached {
+    color: $danger-color;
+  }
+}

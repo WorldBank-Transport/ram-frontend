@@ -7,6 +7,7 @@ import { hashHistory } from 'react-router';
 import { t, getLanguage } from '../../utils/i18n';
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '../modal';
+import { Textarea, TextInput } from '../limited-fields';
 
 const ProjectFormModal = React.createClass({
 
@@ -126,6 +127,58 @@ const ProjectFormModal = React.createClass({
     }
   },
 
+  renderNameField: function () {
+    let charLimit = 100;
+    let l = this.state.data.name.length;
+    let cl = c('form__help', {
+      'form__limit--near': l >= charLimit - 20,
+      'form__limit--reached': l >= charLimit
+    });
+
+    return (
+      <div className='form__group'>
+        <label className='form__label' htmlFor='project-name'>{t('Project name')}</label>
+        <TextInput
+          id='project-name'
+          name='project-name'
+          className='form__control form__control--medium'
+          placeholder={t('Untitled project')}
+          value={this.state.data.name}
+          onChange={this.onFieldChange.bind(null, 'name')}
+          limit={charLimit}
+        />
+
+        {this.state.errors.name ? <p className='form__error'>{t('A project name is required.')}</p> : null }
+
+        <p className={cl}>Keep it short and sweet. {l}/{charLimit}</p>
+      </div>
+    );
+  },
+
+  renderDescriptionField: function () {
+    let charLimit = 140;
+    let l = this.state.data.description.length;
+    let cl = c('form__help', {
+      'form__limit--near': l >= charLimit - 20,
+      'form__limit--reached': l >= charLimit
+    });
+
+    return (
+      <div className='form__group'>
+        <label className='form__label' htmlFor='project-desc'>{t('Description')} <small>({t('optional')})</small></label>
+        <Textarea
+          id='project-desc' rows='2'
+          className='form__control'
+          placeholder={t('Say something about this project')}
+          value={this.state.data.description}
+          onChange={this.onFieldChange.bind(null, 'description')}
+          limit={charLimit}
+        />
+        <p className={cl}>{l}/{charLimit}</p>
+      </div>
+    );
+  },
+
   render: function () {
     let processing = this.props.projectForm.processing;
 
@@ -151,19 +204,8 @@ const ProjectFormModal = React.createClass({
           {this.renderError()}
 
           <form className={c('form', {'disable': processing})} onSubmit={this.onSubmit}>
-            <div className='form__group'>
-              <label className='form__label' htmlFor='project-name'>{t('Project name')}</label>
-              <input type='text' className='form__control form__control--medium' id='project-name' name='project-name' placeholder={t('Untitled project')} value={this.state.data.name} onChange={this.onFieldChange.bind(null, 'name')} />
-
-              {this.state.errors.name ? <p className='form__error'>{t('A project name is required.')}</p> : null }
-
-              <p className='form__help'>Keep it short and sweet.</p>
-            </div>
-
-            <div className='form__group'>
-              <label className='form__label' htmlFor='project-desc'>{t('Description')} <small>({t('optional')})</small></label>
-              <textarea ref='description' className='form__control' id='project-desc' rows='2' placeholder={t('Say something about this project')} value={this.state.data.description} onChange={this.onFieldChange.bind(null, 'description')}></textarea>
-            </div>
+            {this.renderNameField()}
+            {this.renderDescriptionField()}
           </form>
         </ModalBody>
         <ModalFooter>

@@ -7,6 +7,7 @@ import { hashHistory } from 'react-router';
 import { t, getLanguage } from '../../utils/i18n';
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '../modal';
+import { Textarea, TextInput } from '../limited-fields';
 
 const ScenarioCreateModal = React.createClass({
   propTypes: {
@@ -186,6 +187,58 @@ const ScenarioCreateModal = React.createClass({
     }
   },
 
+  renderNameField: function () {
+    let charLimit = 100;
+    let l = this.state.data.name.length;
+    let cl = c('form__help', {
+      'form__limit--near': l >= charLimit - 20,
+      'form__limit--reached': l >= charLimit
+    });
+
+    return (
+      <div className='form__group'>
+        <label className='form__label' htmlFor='scenario-name'>{t('Scenario name')}</label>
+        <TextInput
+          id='scenario-name'
+          name='scenario-name'
+          className='form__control form__control--medium'
+          placeholder={t('Untitled scenario')}
+          value={this.state.data.name}
+          onChange={this.onFieldChange.bind(null, 'name')}
+          limit={charLimit}
+        />
+
+        {this.state.errors.name ? <p className='form__error'>{t('A scenario name is required.')}</p> : null }
+
+        <p className={cl}>Keep it short and sweet. {l}/{charLimit}</p>
+      </div>
+    );
+  },
+
+  renderDescriptionField: function () {
+    let charLimit = 140;
+    let l = this.state.data.description.length;
+    let cl = c('form__help', {
+      'form__limit--near': l >= charLimit - 20,
+      'form__limit--reached': l >= charLimit
+    });
+
+    return (
+      <div className='form__group'>
+        <label className='form__label' htmlFor='scenario-desc'>{t('Description')} <small>({t('optional')})</small></label>
+        <Textarea
+          id='scenario-desc' rows='2'
+          className='form__control'
+          placeholder={t('Say something about this scenario')}
+          value={this.state.data.description}
+          onChange={this.onFieldChange.bind(null, 'description')}
+          limit={charLimit}
+        />
+        <p className={cl}>{l}/{charLimit}</p>
+      </div>
+    );
+  },
+
   render: function () {
     let processing = this.props.scenarioForm.processing || this.state.loading;
 
@@ -209,19 +262,8 @@ const ScenarioCreateModal = React.createClass({
           {this.renderError()}
 
           <form className={c('form', {'disabled': processing})} onSubmit={this.onSubmit}>
-            <div className='form__group'>
-              <label className='form__label' htmlFor='scenario-name'>{t('Scenario name')}</label>
-              <input type='text' className='form__control form__control--medium' id='scenario-name' name='scenario-name' placeholder={t('Untitled scenario')} value={this.state.data.name} onChange={this.onFieldChange.bind(null, 'name')} />
-
-              {this.state.errors.name ? <p className='form__error'>{t('A Scenario name is required.')}</p> : null }
-
-              <p className='form__help'>Keep it short and sweet.</p>
-            </div>
-
-            <div className='form__group'>
-              <label className='form__label' htmlFor='scenario-desc'>{t('Description')} <small>({t('optional')})</small></label>
-              <textarea ref='description' className='form__control' id='scenario-desc' rows='2' placeholder={t('Say something about this scenario')} value={this.state.data.description} onChange={this.onFieldChange.bind(null, 'description')}></textarea>
-            </div>
+            {this.renderNameField()}
+            {this.renderDescriptionField()}
 
             <div className='form__group'>
               <label className='form__label'>Road network</label>
