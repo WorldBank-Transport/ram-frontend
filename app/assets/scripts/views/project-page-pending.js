@@ -17,7 +17,8 @@ import {
   resetProjectFrom,
   resetScenarioFrom,
   // Fetch project without indication of loading.
-  fetchProjectItemSilent
+  fetchProjectItemSilent,
+  showAlert
 } from '../actions';
 import { prettyPrint } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
@@ -49,6 +50,7 @@ var ProjectPagePending = React.createClass({
     _resetProjectFrom: T.func,
     _resetScenarioFrom: T.func,
     _fetchProjectItemSilent: T.func,
+    _showAlert: T.func,
 
     params: T.object,
     scenario: T.object,
@@ -200,7 +202,10 @@ var ProjectPagePending = React.createClass({
         !nextProps.projectForm.processing) {
       this.hideLoading();
       if (!nextProps.projectForm.error) {
+        this.props._showAlert('success', <p>{t('Project successfully deleted')}</p>, true, 4500);
         return hashHistory.push(`/${getLanguage()}/projects`);
+      } else {
+        this.props._showAlert('danger', <p>{t('An error occurred while deleting the project')}</p>, true);
       }
     }
   },
@@ -399,7 +404,8 @@ function dispatcher (dispatch) {
     _resetProjectFrom: (...args) => dispatch(resetProjectFrom(...args)),
     _resetScenarioFrom: (...args) => dispatch(resetScenarioFrom(...args)),
 
-    _fetchProjectItemSilent: (...args) => dispatch(fetchProjectItemSilent(...args))
+    _fetchProjectItemSilent: (...args) => dispatch(fetchProjectItemSilent(...args)),
+    _showAlert: (...args) => dispatch(showAlert(...args))
   };
 }
 

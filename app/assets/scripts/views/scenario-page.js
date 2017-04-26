@@ -15,7 +15,8 @@ import {
   startGenerateResults,
   // Fetch scenario without indication of loading.
   fetchScenarioItemSilent,
-  fetchScenarioResults
+  fetchScenarioResults,
+  showAlert
 } from '../actions';
 import { prettyPrint, fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
@@ -44,6 +45,7 @@ var ScenarioPage = React.createClass({
     _startGenerateResults: T.func,
     _fetchScenarioItemSilent: T.func,
     _fetchScenarioResults: T.func,
+    _showAlert: T.func,
 
     scenario: T.object,
     project: T.object,
@@ -142,7 +144,10 @@ var ScenarioPage = React.createClass({
         !nextProps.scenarioForm.processing) {
       this.hideLoading();
       if (!nextProps.scenarioForm.error) {
+        this.props._showAlert('success', <p>{t('Scenario successfully deleted')}</p>, true, 4500);
         return hashHistory.push(`/${getLanguage()}/projects/${this.props.params.projectId}`);
+      } else {
+        this.props._showAlert('danger', <p>{t('An error occurred while deleting the scenario')}</p>, true);
       }
     }
 
@@ -369,7 +374,8 @@ function dispatcher (dispatch) {
     _startGenerateResults: (...args) => dispatch(startGenerateResults(...args)),
 
     _fetchScenarioItemSilent: (...args) => dispatch(fetchScenarioItemSilent(...args)),
-    _fetchScenarioResults: (...args) => dispatch(fetchScenarioResults(...args))
+    _fetchScenarioResults: (...args) => dispatch(fetchScenarioResults(...args)),
+    _showAlert: (...args) => dispatch(showAlert(...args))
   };
 }
 

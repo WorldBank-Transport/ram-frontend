@@ -21,7 +21,8 @@ const ScenarioCreateModal = React.createClass({
     saveScenario: T.func,
     resetForm: T.func,
     _showGlobalLoading: T.func,
-    _hideGlobalLoading: T.func
+    _hideGlobalLoading: T.func,
+    _showAlert: T.func
   },
 
   getInitialState: function () {
@@ -63,6 +64,7 @@ const ScenarioCreateModal = React.createClass({
         this.setState({loading: true});
         this.uploadScenarioFile(scenarioData.roadNetworkUpload.presignedUrl);
       } else {
+        this.props._showAlert('success', <p>{t('Scenario successfully created')}</p>, true, 4500);
         hashHistory.push(`${getLanguage()}/projects/${scenarioData.project_id}/scenarios/${scenarioData.id}`);
       }
     }

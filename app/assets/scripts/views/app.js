@@ -12,12 +12,12 @@ import Footer from '../components/footer';
 import GlobalLoading from '../components/global-loading';
 import ConfirmationPrompt from '../components/confirmation-prompt';
 
+import SysAlerts from '../components/system-alerts';
+
 var App = React.createClass({
   displayName: 'App',
 
   propTypes: {
-    globalLoading: T.bool,
-
     routes: T.array,
     children: T.object
   },
@@ -34,6 +34,8 @@ var App = React.createClass({
         </main>
         <Footer />
         <ConfirmationPrompt />
+
+        <SysAlerts/>
 
         <ReactTooltip id='tip-no-delete' effect='solid'>
           {t('The project\'s master scenario can\'t be deleted')}

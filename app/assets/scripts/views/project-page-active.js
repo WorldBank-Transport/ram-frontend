@@ -13,7 +13,8 @@ import {
   resetProjectFrom,
   resetScenarioFrom,
   postScenario,
-  deleteScenario
+  deleteScenario,
+  showAlert
 } from '../actions';
 import { prettyPrint, fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
@@ -40,6 +41,7 @@ var ProjectPageActive = React.createClass({
     _fetchProjectScenarios: T.func,
     _deleteScenario: T.func,
     _postScenario: T.func,
+    _showAlert: T.func,
 
     params: T.object,
     project: T.object,
@@ -163,7 +165,10 @@ var ProjectPageActive = React.createClass({
         !nextProps.projectForm.processing) {
       this.hideLoading();
       if (!nextProps.projectForm.error) {
+        this.props._showAlert('success', <p>{t('Project successfully deleted')}</p>, true, 4500);
         return hashHistory.push(`/${getLanguage()}/projects`);
+      } else {
+        this.props._showAlert('danger', <p>{t('An error occurred while deleting the project')}</p>, true);
       }
     }
 
@@ -172,9 +177,10 @@ var ProjectPageActive = React.createClass({
         this.props.scenarioForm.processing &&
         !nextProps.scenarioForm.processing) {
       if (!nextProps.scenarioForm.error) {
-        console.log('scenario deleted');
+        this.props._showAlert('success', <p>{t('Scenario successfully deleted')}</p>, true, 4500);
         this.props._fetchProjectScenarios(this.props.params.projectId);
       } else {
+        this.props._showAlert('danger', <p>{t('An error occurred while deleting the scenario')}</p>, true);
         this.hideLoading();
       }
     }
@@ -340,6 +346,7 @@ var ProjectPageActive = React.createClass({
         <ScenarioCreateModal
           _showGlobalLoading={showGlobalLoading}
           _hideGlobalLoading={hideGlobalLoading}
+          _showAlert={this.props._showAlert}
           revealed={this.state.scenarioCreateModal}
           onCloseClick={this.closeModal.bind(null, 'new-scenario')}
           scenarioForm={this.props.scenarioForm}
@@ -376,7 +383,8 @@ function dispatcher (dispatch) {
     _resetProjectFrom: (...args) => dispatch(resetProjectFrom(...args)),
     _resetScenarioFrom: (...args) => dispatch(resetScenarioFrom(...args)),
     _deleteScenario: (...args) => dispatch(deleteScenario(...args)),
-    _postScenario: (...args) => dispatch(postScenario(...args))
+    _postScenario: (...args) => dispatch(postScenario(...args)),
+    _showAlert: (...args) => dispatch(showAlert(...args))
   };
 }
 

@@ -11,7 +11,8 @@ import {
   invalidateProjects,
   fetchProjects,
   postProject,
-  resetProjectFrom
+  resetProjectFrom,
+  showAlert
 } from '../actions';
 import { prettyPrint } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
@@ -162,6 +163,7 @@ var Home = React.createClass({
         <ProjectFormModal
           _showGlobalLoading={showGlobalLoading}
           _hideGlobalLoading={hideGlobalLoading}
+          _showAlert={this.props._showAlert}
           revealed={this.state.projectFormModal}
           onCloseClick={this.closeModal}
           projectForm={this.props.projectForm}
@@ -188,7 +190,8 @@ function dispatcher (dispatch) {
     _invalidateProjects: (...args) => dispatch(invalidateProjects(...args)),
     _fetchProjects: (...args) => dispatch(fetchProjects(...args)),
     _postProject: (...args) => dispatch(postProject(...args)),
-    _resetProjectFrom: (...args) => dispatch(resetProjectFrom(...args))
+    _resetProjectFrom: (...args) => dispatch(resetProjectFrom(...args)),
+    _showAlert: (...args) => dispatch(showAlert(...args))
   };
 }
 

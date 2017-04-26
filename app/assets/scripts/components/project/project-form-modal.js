@@ -20,6 +20,7 @@ const ProjectFormModal = React.createClass({
     resetForm: T.func,
     _showGlobalLoading: T.func,
     _hideGlobalLoading: T.func,
+    _showAlert: T.func,
 
     // Only available when editing.
     editing: T.bool,
@@ -48,6 +49,7 @@ const ProjectFormModal = React.createClass({
         !nextProps.projectForm.processing &&
         !nextProps.projectForm.error) {
       if (!this.props.editing) {
+        this.props._showAlert('success', <p>{t('Project successfully created')}</p>, true, 4500);
         hashHistory.push(`${getLanguage()}/projects/${nextProps.projectForm.data.id}/setup`);
       } else {
         this.onClose();
