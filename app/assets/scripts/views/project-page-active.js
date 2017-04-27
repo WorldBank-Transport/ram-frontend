@@ -13,6 +13,7 @@ import {
   resetProjectFrom,
   resetScenarioFrom,
   postScenario,
+  duplicateScenario,
   deleteScenario,
   showAlert
 } from '../actions';
@@ -41,6 +42,7 @@ var ProjectPageActive = React.createClass({
     _fetchProjectScenarios: T.func,
     _deleteScenario: T.func,
     _postScenario: T.func,
+    _duplicateScenario: T.func,
     _showAlert: T.func,
 
     params: T.object,
@@ -105,6 +107,14 @@ var ProjectPageActive = React.createClass({
   onScenarioDelete: function (scenario) {
     this.showLoading();
     this.props._deleteScenario(scenario.project_id, scenario.id);
+  },
+
+  onScenarioDuplicate: function (scenario, e) {
+    e.preventDefault();
+    this.showLoading();
+    this.props._duplicateScenario(scenario.project_id, scenario.id);
+    // We will need to load the scenarios again.
+    this.scenarioLoaded = false;
   },
 
   checkAllLoaded: function (nextProps) {
@@ -172,6 +182,20 @@ var ProjectPageActive = React.createClass({
       }
     }
 
+    // Scenario duplicate.
+    if (!this.state.scenarioCreateModal &&
+        this.props.scenarioForm.action === 'edit' &&
+        this.props.scenarioForm.processing &&
+        !nextProps.scenarioForm.processing) {
+      this.hideLoading();
+      if (!nextProps.scenarioForm.error) {
+        this.props._showAlert('success', <p>{t('Scenario duplicated successfully')}</p>, true, 4500);
+        return hashHistory.push(`${getLanguage()}/projects/${nextProps.scenarioForm.data.project_id}/scenarios/${nextProps.scenarioForm.data.id}`);
+      } else {
+        this.props._showAlert('danger', <p>{t('An error occurred while duplicating the scenario - {reason}', {reason: nextProps.scenarioForm.error.message})}</p>, true);
+      }
+    }
+
     // Delete action has finished.
     if (this.props.scenarioForm.action === 'delete' &&
         this.props.scenarioForm.processing &&
@@ -226,7 +250,7 @@ var ProjectPageActive = React.createClass({
                   direction='down'
                   alignment='right' >
                     <ul className='drop__menu drop__menu--iconified' role='menu'>
-                      <li><a href='#' title={t('Duplicate scenario')} className='drop__menu-item dmi-copy' data-hook='dropdown:close'>{t('Duplicate scenario')}</a></li>
+                      <li><a href='#' title={t('Duplicate scenario')} className='drop__menu-item dmi-copy' data-hook='dropdown:close' onClick={this.onScenarioDuplicate.bind(null, scenario)}>{t('Duplicate scenario')}</a></li>
                     </ul>
                     <ul className='drop__menu drop__menu--iconified' role='menu'>
                       <li><ScenarioDeleteAction isMaster={isMaster} name={name} onDeleteConfirm={this.onScenarioDelete.bind(null, scenario)}/></li>
@@ -384,6 +408,7 @@ function dispatcher (dispatch) {
     _resetScenarioFrom: (...args) => dispatch(resetScenarioFrom(...args)),
     _deleteScenario: (...args) => dispatch(deleteScenario(...args)),
     _postScenario: (...args) => dispatch(postScenario(...args)),
+    _duplicateScenario: (...args) => dispatch(duplicateScenario(...args)),
     _showAlert: (...args) => dispatch(showAlert(...args))
   };
 }

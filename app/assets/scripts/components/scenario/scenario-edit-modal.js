@@ -46,7 +46,6 @@ const ScenarioEditModal = React.createClass({
         !nextProps.scenarioForm.processing &&
         !nextProps.scenarioForm.error) {
       if (this.props.finishingSetup) {
-        // hashHistory.push(`${getLanguage()}/projects/${nextProps.scenarioData.project_id}`);
         this.onClose({scenarioSubmitted: true});
       } else {
         this.onClose();
@@ -55,6 +54,7 @@ const ScenarioEditModal = React.createClass({
     }
 
     if (!this.props.revealed && nextProps.revealed && !this.props.finishingSetup) {
+      this.props.resetForm();
       // Modal was revealed. Be sure the data is correct.
       this.setState({data: {
         name: _.get(nextProps.scenarioData, 'name', ''),

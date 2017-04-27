@@ -190,6 +190,10 @@ export function postScenario (projectId, data) {
   return postAndDispatch(`${config.api}/projects/${projectId}/scenarios`, data, startSubmitScenario, finishSubmitScenario);
 }
 
+export function duplicateScenario (projectId, scenarioId) {
+  return postAndDispatch(`${config.api}/projects/${projectId}/scenarios/${scenarioId}/duplicate`, {}, startSubmitScenario, finishSubmitScenario);
+}
+
 // The information needed to finish the project setup is basically related
 // to a scenario, therefore we can use the same actions.
 export function finishProjectSetup (projectId, data) {

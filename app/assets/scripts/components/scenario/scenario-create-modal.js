@@ -49,6 +49,11 @@ const ScenarioCreateModal = React.createClass({
   xhr: null,
 
   componentWillReceiveProps: function (nextProps) {
+    if (!this.props.revealed) {
+      // If it's not revealed don't do anything.
+      return;
+    }
+
     if (this.props.scenarioForm.processing && !nextProps.scenarioForm.processing) {
       this.props._hideGlobalLoading();
     }

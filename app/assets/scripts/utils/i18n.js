@@ -96,7 +96,7 @@ export function t (string, replace = {}, isReactEnabled = null) {
     });
   } else {
     // Return as normal string.
-    return pieces.join();
+    return pieces.join('');
   }
 }
 

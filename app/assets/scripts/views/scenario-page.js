@@ -8,6 +8,7 @@ import {
   invalidateProjectItem,
   deleteScenario,
   patchScenario,
+  duplicateScenario,
   resetScenarioFrom,
   fetchProjectItem,
   invalidateScenarioItem,
@@ -41,6 +42,7 @@ var ScenarioPage = React.createClass({
     _fetchScenarioItem: T.func,
     _deleteScenario: T.func,
     _patchScenario: T.func,
+    _duplicateScenario: T.func,
     _resetScenarioFrom: T.func,
     _startGenerateResults: T.func,
     _fetchScenarioItemSilent: T.func,
@@ -151,6 +153,20 @@ var ScenarioPage = React.createClass({
       }
     }
 
+    // Scenario duplicate.
+    if (!this.state.scenarioEditMetadataModal &&
+        this.props.scenarioForm.action === 'edit' &&
+        this.props.scenarioForm.processing &&
+        !nextProps.scenarioForm.processing) {
+      this.hideLoading();
+      if (!nextProps.scenarioForm.error) {
+        this.props._showAlert('success', <p>{t('Scenario duplicated successfully')}</p>, true, 4500);
+        return hashHistory.push(`${getLanguage()}/projects/${nextProps.scenarioForm.data.project_id}/scenarios/${nextProps.scenarioForm.data.id}`);
+      } else {
+        this.props._showAlert('danger', <p>{t('An error occurred while duplicating the scenario - {reason}', {reason: nextProps.scenarioForm.error.message})}</p>, true);
+      }
+    }
+
     let genResults = this.props.scenario.genResults;
     let nextGenResults = nextProps.scenario.genResults;
     if (genResults.processing && !nextGenResults.processing) {
@@ -160,6 +176,11 @@ var ScenarioPage = React.createClass({
         alert(nextGenResults.error.message);
       }
     }
+  },
+
+  onScenarioDuplicate: function () {
+    this.showLoading();
+    this.props._duplicateScenario(this.props.params.projectId, this.props.params.scenarioId);
   },
 
   onScenarioAction: function (what, event) {
@@ -174,6 +195,9 @@ var ScenarioPage = React.createClass({
         break;
       case 'edit-network':
         this.setState({scenarioIDModal: true});
+        break;
+      case 'duplicate':
+        this.onScenarioDuplicate();
         break;
       case 'delete':
         this.showLoading();
@@ -370,6 +394,7 @@ function dispatcher (dispatch) {
     _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args)),
     _deleteScenario: (...args) => dispatch(deleteScenario(...args)),
     _patchScenario: (...args) => dispatch(patchScenario(...args)),
+    _duplicateScenario: (...args) => dispatch(duplicateScenario(...args)),
     _resetScenarioFrom: (...args) => dispatch(resetScenarioFrom(...args)),
     _startGenerateResults: (...args) => dispatch(startGenerateResults(...args)),
 
