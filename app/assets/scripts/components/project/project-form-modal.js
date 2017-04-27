@@ -152,7 +152,7 @@ const ProjectFormModal = React.createClass({
 
         {this.state.errors.name ? <p className='form__error'>{t('A project name is required.')}</p> : null }
 
-        <p className={cl}>Keep it short and sweet. {l}/{charLimit}</p>
+        <p className={cl}>{l}/{charLimit}</p>
       </div>
     );
   },

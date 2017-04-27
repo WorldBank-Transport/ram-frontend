@@ -156,7 +156,7 @@ const ScenarioEditModal = React.createClass({
 
         {this.state.errors.name ? <p className='form__error'>{t('A scenario name is required.')}</p> : null }
 
-        <p className={cl}>Keep it short and sweet. {l}/{charLimit}</p>
+        <p className={cl}>{l}/{charLimit}</p>
       </div>
     );
   },
