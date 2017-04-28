@@ -10,6 +10,7 @@ The steps below will walk you through setting up your own instance of the Rural 
 To set up the development environment for this website, you'll need to install the following on your system:
 
 - [Node](http://nodejs.org/) v6 (To manage multiple node versions we recommend [nvm](https://github.com/creationix/nvm))
+- [Yarn](https://yarnpkg.com/) Package manager
 
 ### Install Application Dependencies
 
@@ -22,7 +23,7 @@ nvm install
 Install Node modules:
 
 ```
-npm install
+yarn install
 ```
 
 ### Usage
@@ -51,7 +52,7 @@ module.exports = {
 #### Starting the app
 
 ```
-npm run serve
+yarn run serve
 ```
 Compiles the sass files, javascript, and launches the server making the site available at `http://localhost:3000/`
 The system will watch files and execute tasks whenever one of them changes.
@@ -61,7 +62,7 @@ The site will automatically refresh since it is bundled with livereload.
 To prepare the app for deployment run:
 
 ```
-npm run build
+yarn run build
 ```
 This will package the app and place all the contents in the `dist` directory.
 The app can then be run by any web server.
