@@ -309,7 +309,12 @@ var ProjectPagePending = React.createClass({
     }
 
     if (error) {
-      return <div>Error: {prettyPrint(error)}</div>;
+      return (
+        <Alert type='danger'>
+          <h6>An error occurred</h6>
+          <p>{error.message}</p>
+        </Alert>
+      );
     }
 
     return (
@@ -328,16 +333,6 @@ var ProjectPagePending = React.createClass({
         </header>
         <div className='inpage__body'>
           <div className='inner'>
-
-            {this.props.projectForm.action === 'delete' && this.props.projectForm.processing
-              ? <p>Project is being deleted. Please wait</p>
-              : null
-            }
-            {this.props.projectForm.action === 'delete' && this.props.projectForm.error
-              ? prettyPrint(this.props.projectForm.error)
-              : null
-            }
-
             <Log
               data={data.finish_setup}
               receivedAt={this.props.project.receivedAt}

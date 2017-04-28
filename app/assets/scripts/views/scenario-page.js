@@ -19,7 +19,7 @@ import {
   fetchScenarioResults,
   showAlert
 } from '../actions';
-import { prettyPrint, fetchStatus } from '../utils/utils';
+import { fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
 import config from '../config';
 import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
@@ -279,14 +279,18 @@ var ScenarioPage = React.createClass({
   render: function () {
     const { fetched, fetching, error } = fetchStatus(this.props.project, this.props.scenario);
     const dataScenario = this.props.scenario.data;
-    const formError = this.props.scenarioForm.error;
 
     if (!fetched && !fetching || !fetched && fetching) {
       return null;
     }
 
     if (error) {
-      return <div>Error: {prettyPrint(error)}</div>;
+      return (
+        <Alert type='danger'>
+          <h6>An error occurred</h6>
+          <p>{error.message}</p>
+        </Alert>
+      );
     }
 
     let resultsFile = dataScenario.files.find(f => f.type === 'results-all');
@@ -306,7 +310,6 @@ var ScenarioPage = React.createClass({
         </header>
         <div className='inpage__body'>
           <div className='inner'>
-            {formError ? <pre>{prettyPrint(formError)}</pre> : null}
 
             {this.renderOutdatedResultsMessage()}
 

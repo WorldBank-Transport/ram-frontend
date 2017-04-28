@@ -17,7 +17,7 @@ import {
   deleteScenario,
   showAlert
 } from '../actions';
-import { prettyPrint, fetchStatus } from '../utils/utils';
+import { fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
 import { fileTypesMatrix } from '../utils/constants';
 import config from '../config';
@@ -29,6 +29,7 @@ import ProjectFormModal from '../components/project/project-form-modal';
 import ProjectHeaderActions from '../components/project/project-header-actions';
 import ScenarioCreateModal from '../components/scenario/scenario-create-modal';
 import ScenarioDeleteAction from '../components/scenario/scenario-delete-action';
+import Alert from '../components/alert';
 
 var ProjectPageActive = React.createClass({
 
@@ -307,7 +308,12 @@ var ProjectPageActive = React.createClass({
     }
 
     if (error) {
-      return <div>Error: {prettyPrint(error)}</div>;
+      return (
+        <Alert type='danger'>
+          <h6>An error occurred</h6>
+          <p>{error.message}</p>
+        </Alert>
+      );
     }
 
     return (
