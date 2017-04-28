@@ -338,6 +338,7 @@ var ScenarioPage = React.createClass({
         <ScenarioEditModal
           _showGlobalLoading={showGlobalLoading}
           _hideGlobalLoading={hideGlobalLoading}
+          _showAlert={this.props._showAlert}
           revealed={this.state.scenarioEditMetadataModal}
           onCloseClick={this.closeModal.bind(null, 'edit-scenario')}
           scenarioForm={this.props.scenarioForm}

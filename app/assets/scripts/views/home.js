@@ -32,6 +32,7 @@ var Home = React.createClass({
     _invalidateProjects: T.func,
     _fetchProjects: T.func,
     _postProject: T.func,
+    _showAlert: T.func,
     _resetProjectFrom: T.func,
 
     projects: T.object,

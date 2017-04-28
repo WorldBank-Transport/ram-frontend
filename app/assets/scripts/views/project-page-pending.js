@@ -353,6 +353,7 @@ var ProjectPagePending = React.createClass({
           editing
           _showGlobalLoading={this.showLoading}
           _hideGlobalLoading={this.hideLoading}
+          _showAlert={this.props._showAlert}
           revealed={this.state.projectFormModal}
           onCloseClick={this.closeProjectModal}
           projectForm={this.props.projectForm}
@@ -365,6 +366,7 @@ var ProjectPagePending = React.createClass({
           finishingSetup
           _showGlobalLoading={this.showLoading}
           _hideGlobalLoading={this.hideLoading}
+          _showAlert={this.props._showAlert}
           revealed={this.state.scenarioFormModal}
           onCloseClick={this.closeScenarioModal}
           scenarioData={this.props.scenario.data}

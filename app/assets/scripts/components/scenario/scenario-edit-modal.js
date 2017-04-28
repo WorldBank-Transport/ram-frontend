@@ -21,7 +21,8 @@ const ScenarioEditModal = React.createClass({
     saveScenario: T.func,
     resetForm: T.func,
     _showGlobalLoading: T.func,
-    _hideGlobalLoading: T.func
+    _hideGlobalLoading: T.func,
+    _showAlert: T.func
   },
 
   getInitialState: function () {
@@ -37,18 +38,28 @@ const ScenarioEditModal = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
+    if (!this.props.revealed && !nextProps.revealed) {
+      // If the modal is not, nor is going to be revealed, do nothing.
+      return;
+    }
+
     if (this.props.scenarioForm.processing && !nextProps.scenarioForm.processing) {
       this.props._hideGlobalLoading();
     }
 
     if (this.props.scenarioForm.action === 'edit' &&
         this.props.scenarioForm.processing &&
-        !nextProps.scenarioForm.processing &&
-        !nextProps.scenarioForm.error) {
-      if (this.props.finishingSetup) {
-        this.onClose({scenarioSubmitted: true});
+        !nextProps.scenarioForm.processing) {
+    //
+      if (!nextProps.scenarioForm.error) {
+        if (this.props.finishingSetup) {
+          this.onClose({scenarioSubmitted: true});
+        } else {
+          this.props._showAlert('success', <p>{t('Scenario successfully updated')}</p>, true, 4500);
+          this.onClose();
+        }
       } else {
-        this.onClose();
+        this.props._showAlert('danger', <p>{nextProps.scenarioForm.error.message}</p>, true);
       }
       return;
     }
@@ -117,20 +128,6 @@ const ScenarioEditModal = React.createClass({
   onFieldChange: function (field, e) {
     let data = Object.assign({}, this.state.data, {[field]: e.target.value});
     this.setState({data});
-  },
-
-  renderError: function () {
-    let error = this.props.scenarioForm.error;
-
-    if (!error) {
-      return;
-    }
-
-    if (error.statusCode === 409) {
-      return <p>The name is already in use.</p>;
-    } else {
-      return <p>{error.message || error.error}</p>;
-    }
   },
 
   renderNameField: function () {
@@ -204,9 +201,6 @@ const ScenarioEditModal = React.createClass({
           </div>
         </ModalHeader>
         <ModalBody>
-
-          {this.renderError()}
-
           <form className={c('form', {'disable': processing})} onSubmit={this.onSubmit}>
             {this.renderNameField()}
             {this.renderDescriptionField()}

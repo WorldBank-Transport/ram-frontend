@@ -359,6 +359,7 @@ var ProjectPageActive = React.createClass({
           editing
           _showGlobalLoading={showGlobalLoading}
           _hideGlobalLoading={hideGlobalLoading}
+          _showAlert={this.props._showAlert}
           revealed={this.state.projectFormModal}
           onCloseClick={this.closeModal.bind(null, 'project-form')}
           projectForm={this.props.projectForm}

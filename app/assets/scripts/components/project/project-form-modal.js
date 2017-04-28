@@ -40,19 +40,29 @@ const ProjectFormModal = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
+    if (!this.props.revealed && !nextProps.revealed) {
+      // If the modal is not, nor is going to be revealed, do nothing.
+      return;
+    }
+
     if (this.props.projectForm.processing && !nextProps.projectForm.processing) {
       this.props._hideGlobalLoading();
     }
 
     if (this.props.projectForm.action === 'edit' &&
         this.props.projectForm.processing &&
-        !nextProps.projectForm.processing &&
-        !nextProps.projectForm.error) {
-      if (!this.props.editing) {
-        this.props._showAlert('success', <p>{t('Project successfully created')}</p>, true, 4500);
-        hashHistory.push(`${getLanguage()}/projects/${nextProps.projectForm.data.id}/setup`);
+        !nextProps.projectForm.processing) {
+      //
+      if (!nextProps.projectForm.error) {
+        if (this.props.editing) {
+          this.props._showAlert('success', <p>{t('Project successfully updated')}</p>, true, 4500);
+          this.onClose();
+        } else {
+          this.props._showAlert('success', <p>{t('Project successfully created')}</p>, true, 4500);
+          hashHistory.push(`${getLanguage()}/projects/${nextProps.projectForm.data.id}/setup`);
+        }
       } else {
-        this.onClose();
+        this.props._showAlert('danger', <p>{nextProps.projectForm.error.message}</p>, true);
       }
       return;
     }
@@ -113,20 +123,6 @@ const ProjectFormModal = React.createClass({
   onFieldChange: function (field, e) {
     let data = Object.assign({}, this.state.data, {[field]: e.target.value});
     this.setState({data});
-  },
-
-  renderError: function () {
-    let error = this.props.projectForm.error;
-
-    if (!error) {
-      return;
-    }
-
-    if (error.statusCode === 409) {
-      return <p>The name is already in use.</p>;
-    } else {
-      return <p>{error.message || error.error}</p>;
-    }
   },
 
   renderNameField: function () {
@@ -200,11 +196,6 @@ const ProjectFormModal = React.createClass({
           </div>
         </ModalHeader>
         <ModalBody>
-
-          {processing ? <p>Processing...</p> : null}
-
-          {this.renderError()}
-
           <form className={c('form', {'disable': processing})} onSubmit={this.onSubmit}>
             {this.renderNameField()}
             {this.renderDescriptionField()}

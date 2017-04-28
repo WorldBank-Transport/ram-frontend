@@ -60,17 +60,20 @@ const ScenarioCreateModal = React.createClass({
 
     if (this.props.scenarioForm.action === 'edit' &&
         this.props.scenarioForm.processing &&
-        !nextProps.scenarioForm.processing &&
-        !nextProps.scenarioForm.error) {
-      //
-      let scenarioData = nextProps.scenarioForm.data;
-      if (this.state.data.roadNetworkSource === 'new') {
-        // Upload file
-        this.setState({loading: true});
-        this.uploadScenarioFile(scenarioData.roadNetworkUpload.presignedUrl);
+        !nextProps.scenarioForm.processing) {
+    //
+      if (!nextProps.scenarioForm.error) {
+        let scenarioData = nextProps.scenarioForm.data;
+        if (this.state.data.roadNetworkSource === 'new') {
+          // Upload file
+          this.setState({loading: true});
+          this.uploadScenarioFile(scenarioData.roadNetworkUpload.presignedUrl);
+        } else {
+          this.props._showAlert('success', <p>{t('Scenario successfully created')}</p>, true, 4500);
+          hashHistory.push(`${getLanguage()}/projects/${scenarioData.project_id}/scenarios/${scenarioData.id}`);
+        }
       } else {
-        this.props._showAlert('success', <p>{t('Scenario successfully created')}</p>, true, 4500);
-        hashHistory.push(`${getLanguage()}/projects/${scenarioData.project_id}/scenarios/${scenarioData.id}`);
+        this.props._showAlert('danger', <p>{nextProps.scenarioForm.error.message}</p>, true);
       }
     }
   },
@@ -180,20 +183,6 @@ const ScenarioCreateModal = React.createClass({
     this.setState({data});
   },
 
-  renderError: function () {
-    let error = this.props.scenarioForm.error;
-
-    if (!error) {
-      return;
-    }
-
-    if (error.statusCode === 409) {
-      return <p>The name is already in use.</p>;
-    } else {
-      return <p>{error.message || error.error}</p>;
-    }
-  },
-
   renderNameField: function () {
     let charLimit = 100;
     let l = this.state.data.name.length;
@@ -265,9 +254,6 @@ const ScenarioCreateModal = React.createClass({
           </div>
         </ModalHeader>
         <ModalBody>
-
-          {this.renderError()}
-
           <form className={c('form', {'disabled': processing})} onSubmit={this.onSubmit}>
             {this.renderNameField()}
             {this.renderDescriptionField()}
