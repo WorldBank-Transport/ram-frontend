@@ -4,6 +4,7 @@ import ReactTooltip from 'react-tooltip';
 import c from 'classnames';
 
 import { t } from '../../utils/i18n';
+import boundsToMapLocation from '../../utils/zoom-to-bbox';
 import config from '../../config';
 import { showGlobalLoading, hideGlobalLoading } from '../global-loading';
 
@@ -15,7 +16,8 @@ const ScenarioIDModal = React.createClass({
     revealed: T.bool,
     onCloseClick: T.func,
 
-    scenarioData: T.object
+    scenarioData: T.object,
+    projectBbox: T.array
   },
 
   notifier: null,
@@ -73,6 +75,7 @@ const ScenarioIDModal = React.createClass({
   },
 
   render: function () {
+    const mapLocation = boundsToMapLocation(this.props.projectBbox);
     return (
       <Modal
         id='modal-scenario-metadata'
@@ -91,7 +94,7 @@ const ScenarioIDModal = React.createClass({
 
         <section className='ideditor-wrapper'>
           <h1 className='visually-hidden'>iD editor</h1>
-          <iframe src={config.iDEditor} className={c({'visually-hidden': !this.state.editorLoaded})} frameBorder='0' ref='editor'></iframe>
+          <iframe src={`${config.iDEditor}/#map=${mapLocation.zoom}/${mapLocation.center.lat}/${mapLocation.center.lng}`} className={c({'visually-hidden': !this.state.editorLoaded})} frameBorder='0' ref='editor'></iframe>
         </section>
 
         </ModalBody>
