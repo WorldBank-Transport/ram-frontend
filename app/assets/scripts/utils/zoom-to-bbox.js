@@ -32,7 +32,7 @@ const boundsToMapLocation = (inputCoords) => {
   };
 
   const getZoom = (mapPx, worldPx, fraction) => {
-    return Math.floor(Math.log(mapPx / worldPx / fraction) / Math.LN2);
+    return Math.ceil((Math.log(mapPx / worldPx / fraction) / Math.LN2) / 0.25) * 0.25;
   };
 
   const ne = bounds.northeast;
