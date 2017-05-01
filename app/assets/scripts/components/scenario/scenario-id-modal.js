@@ -18,29 +18,33 @@ const ScenarioIDModal = React.createClass({
     scenarioData: T.object
   },
 
-  setupNotifier: function () {
-    var n = notifier('rra-frontend', this.refs.editor.contentWindow);
+  notifier: null,
 
-    n.on('loaded', () => {
-      n.send('settings', {
+  setupNotifier: function () {
+    this.notifier = notifier('rra-frontend', this.refs.editor.contentWindow);
+
+    this.notifier.on('loaded', () => {
+      this.notifier.send('settings', {
         projectId: this.props.scenarioData.project_id,
         scenarioId: this.props.scenarioData.id
       });
     });
 
-    n.on('ready', () => {
+    this.notifier.on('ready', () => {
       hideGlobalLoading();
       this.setState({editorLoaded: true});
+    });
+
+    this.notifier.on('save:status', data => {
+      this.setState({saveEnabled: data.enabled});
     });
   },
 
   getInitialState: function () {
     return {
-      editorLoaded: false
+      editorLoaded: false,
+      saveEnabled: false
     };
-  },
-
-  componentDidMount: function () {
   },
 
   componentDidUpdate: function (prevProps) {
@@ -62,6 +66,10 @@ const ScenarioIDModal = React.createClass({
 
   onClose: function () {
     this.props.onCloseClick();
+  },
+
+  onSaveClick: function () {
+    this.notifier.send('save:click');
   },
 
   render: function () {
@@ -89,8 +97,12 @@ const ScenarioIDModal = React.createClass({
         </ModalBody>
         <ModalFooter>
           <button className='mfa-xmark' type='button' onClick={this.onClose}><span>{t('Cancel')}</span></button>
-          <button data-tip='Use save button in the editor' data-effect='solid' className='mfa-tick visually-disabled' type='submit'><span>{t('Save')}</span></button>
-          <ReactTooltip />
+          <button data-tip data-for='tip-no-save' className={c('mfa-tick', {'visually-disabled': !this.state.saveEnabled})} type='submit' onClick={this.onSaveClick}><span>{t('Save')}</span></button>
+
+        <ReactTooltip id='tip-no-save' effect='solid' disable={this.state.saveEnabled}>
+          {t('Nothing to save')}
+        </ReactTooltip>
+
         </ModalFooter>
       </Modal>
     );

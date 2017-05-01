@@ -42,6 +42,11 @@ const ScenarioGenSettingsModal = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
+    if (!this.props.revealed && !nextProps.revealed) {
+      // If the modal is not, nor is going to be revealed, do nothing.
+      return;
+    }
+
     if (this.props.scenarioForm.processing && !nextProps.scenarioForm.processing) {
       this.props._hideGlobalLoading();
     }

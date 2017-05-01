@@ -2,11 +2,11 @@
 import React, { PropTypes as T } from 'react';
 import c from 'classnames';
 import _ from 'lodash';
-import { hashHistory } from 'react-router';
 
-import { t, getLanguage } from '../../utils/i18n';
+import { t } from '../../utils/i18n';
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '../modal';
+import { Textarea, TextInput } from '../limited-fields';
 
 const ScenarioEditModal = React.createClass({
 
@@ -21,7 +21,8 @@ const ScenarioEditModal = React.createClass({
     saveScenario: T.func,
     resetForm: T.func,
     _showGlobalLoading: T.func,
-    _hideGlobalLoading: T.func
+    _hideGlobalLoading: T.func,
+    _showAlert: T.func
   },
 
   getInitialState: function () {
@@ -37,24 +38,34 @@ const ScenarioEditModal = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
+    if (!this.props.revealed && !nextProps.revealed) {
+      // If the modal is not, nor is going to be revealed, do nothing.
+      return;
+    }
+
     if (this.props.scenarioForm.processing && !nextProps.scenarioForm.processing) {
       this.props._hideGlobalLoading();
     }
 
     if (this.props.scenarioForm.action === 'edit' &&
         this.props.scenarioForm.processing &&
-        !nextProps.scenarioForm.processing &&
-        !nextProps.scenarioForm.error) {
-      if (this.props.finishingSetup) {
-        // hashHistory.push(`${getLanguage()}/projects/${nextProps.scenarioData.project_id}`);
-        this.onClose({scenarioSubmitted: true});
+        !nextProps.scenarioForm.processing) {
+    //
+      if (!nextProps.scenarioForm.error) {
+        if (this.props.finishingSetup) {
+          this.onClose({scenarioSubmitted: true});
+        } else {
+          this.props._showAlert('success', <p>{t('Scenario successfully updated')}</p>, true, 4500);
+          this.onClose();
+        }
       } else {
-        this.onClose();
+        this.props._showAlert('danger', <p>{nextProps.scenarioForm.error.message}</p>, true);
       }
       return;
     }
 
     if (!this.props.revealed && nextProps.revealed && !this.props.finishingSetup) {
+      this.props.resetForm();
       // Modal was revealed. Be sure the data is correct.
       this.setState({data: {
         name: _.get(nextProps.scenarioData, 'name', ''),
@@ -119,18 +130,56 @@ const ScenarioEditModal = React.createClass({
     this.setState({data});
   },
 
-  renderError: function () {
-    let error = this.props.scenarioForm.error;
+  renderNameField: function () {
+    let charLimit = 100;
+    let l = this.state.data.name.length;
+    let cl = c('form__help', {
+      'form__limit--near': l >= charLimit - 20,
+      'form__limit--reached': l >= charLimit
+    });
 
-    if (!error) {
-      return;
-    }
+    return (
+      <div className='form__group'>
+        <label className='form__label' htmlFor='scenario-name'>{t('Scenario name')}</label>
+        <TextInput
+          id='scenario-name'
+          name='scenario-name'
+          className='form__control form__control--medium'
+          placeholder={t('Untitled scenario')}
+          value={this.state.data.name}
+          onChange={this.onFieldChange.bind(null, 'name')}
+          limit={charLimit}
+        />
 
-    if (error.statusCode === 409) {
-      return <p>The name is already in use.</p>;
-    } else {
-      return <p>{error.message || error.error}</p>;
-    }
+        {this.state.errors.name ? <p className='form__error'>{t('A scenario name is required.')}</p> : null }
+
+        <p className={cl}>{l}/{charLimit}</p>
+      </div>
+    );
+  },
+
+  renderDescriptionField: function () {
+    let charLimit = 140;
+    let l = this.state.data.description.length;
+    let cl = c('form__help', {
+      'form__limit--near': l >= charLimit - 20,
+      'form__limit--reached': l >= charLimit
+    });
+
+    return (
+      <div className='form__group'>
+        <label className='form__label' htmlFor='scenario-desc'>{t('Description')} <small>({t('optional')})</small></label>
+        <Textarea
+          id='scenario-desc' rows='2'
+          className='form__control'
+          placeholder={t('Say something about this scenario')}
+          value={this.state.data.description}
+          onChange={this.onFieldChange.bind(null, 'description')}
+          limit={charLimit}
+        />
+        <p className={cl}>{l}/{charLimit}</p>
+      </div>
+    );
   },
 
   render: function () {
@@ -152,23 +201,9 @@ const ScenarioEditModal = React.createClass({
           </div>
         </ModalHeader>
         <ModalBody>
-
-          {this.renderError()}
-
           <form className={c('form', {'disable': processing})} onSubmit={this.onSubmit}>
-            <div className='form__group'>
-              <label className='form__label' htmlFor='scenario-name'>{t('Scenario name')}</label>
-              <input type='text' className='form__control form__control--medium' id='scenario-name' name='scenario-name' placeholder={t('Untitled scenario')} value={this.state.data.name} onChange={this.onFieldChange.bind(null, 'name')} />
-
-              {this.state.errors.name ? <p className='form__error'>{t('A Scenario name is required.')}</p> : null }
-
-              <p className='form__help'>Keep it short and sweet.</p>
-            </div>
-
-            <div className='form__group'>
-              <label className='form__label' htmlFor='scenario-desc'>{t('Description')} <small>({t('optional')})</small></label>
-              <textarea ref='description' className='form__control' id='scenario-desc' rows='2' placeholder={t('Say something about this scenario')} value={this.state.data.description} onChange={this.onFieldChange.bind(null, 'description')}></textarea>
-            </div>
+            {this.renderNameField()}
+            {this.renderDescriptionField()}
           </form>
         </ModalBody>
         <ModalFooter>

@@ -7,6 +7,7 @@ import { hashHistory } from 'react-router';
 import { t, getLanguage } from '../../utils/i18n';
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '../modal';
+import { Textarea, TextInput } from '../limited-fields';
 
 const ScenarioCreateModal = React.createClass({
   propTypes: {
@@ -20,7 +21,8 @@ const ScenarioCreateModal = React.createClass({
     saveScenario: T.func,
     resetForm: T.func,
     _showGlobalLoading: T.func,
-    _hideGlobalLoading: T.func
+    _hideGlobalLoading: T.func,
+    _showAlert: T.func
   },
 
   getInitialState: function () {
@@ -47,23 +49,32 @@ const ScenarioCreateModal = React.createClass({
   xhr: null,
 
   componentWillReceiveProps: function (nextProps) {
+    if (!this.props.revealed) {
+      // If it's not revealed don't do anything.
+      return;
+    }
+
     if (this.props.scenarioForm.processing && !nextProps.scenarioForm.processing) {
       this.props._hideGlobalLoading();
     }
 
     if (this.props.scenarioForm.action === 'edit' &&
         this.props.scenarioForm.processing &&
-        !nextProps.scenarioForm.processing &&
-        !nextProps.scenarioForm.error) {
-      //
-      let scenarioData = nextProps.scenarioForm.data;
-      if (this.state.data.roadNetworkSource === 'new') {
-        // Upload file
-        this.uploadScenarioFile(scenarioData.roadNetworkUpload.presignedUrl);
+        !nextProps.scenarioForm.processing) {
+    //
+      if (!nextProps.scenarioForm.error) {
+        let scenarioData = nextProps.scenarioForm.data;
+        if (this.state.data.roadNetworkSource === 'new') {
+          // Upload file
+          this.setState({loading: true});
+          this.uploadScenarioFile(scenarioData.roadNetworkUpload.presignedUrl);
+        } else {
+          this.props._showAlert('success', <p>{t('Scenario successfully created')}</p>, true, 4500);
+          hashHistory.push(`${getLanguage()}/projects/${scenarioData.project_id}/scenarios/${scenarioData.id}`);
+        }
       } else {
-        hashHistory.push(`${getLanguage()}/projects/${scenarioData.project_id}/scenarios/${scenarioData.id}`);
+        this.props._showAlert('danger', <p>{nextProps.scenarioForm.error.message}</p>, true);
       }
-      return;
     }
   },
 
@@ -162,7 +173,6 @@ const ScenarioCreateModal = React.createClass({
         payload.roadNetworkSourceScenario = this.state.data.roadNetworkSourceScenario;
       } else if (this.state.data.roadNetworkSource === 'new') {
         payload.roadNetworkSource = 'new';
-        this.setState({loading: true});
       }
       this.props.saveScenario(this.props.projectId, payload);
     }
@@ -173,18 +183,56 @@ const ScenarioCreateModal = React.createClass({
     this.setState({data});
   },
 
-  renderError: function () {
-    let error = this.props.scenarioForm.error;
+  renderNameField: function () {
+    let charLimit = 100;
+    let l = this.state.data.name.length;
+    let cl = c('form__help', {
+      'form__limit--near': l >= charLimit - 20,
+      'form__limit--reached': l >= charLimit
+    });
 
-    if (!error) {
-      return;
-    }
+    return (
+      <div className='form__group'>
+        <label className='form__label' htmlFor='scenario-name'>{t('Scenario name')}</label>
+        <TextInput
+          id='scenario-name'
+          name='scenario-name'
+          className='form__control form__control--medium'
+          placeholder={t('Untitled scenario')}
+          value={this.state.data.name}
+          onChange={this.onFieldChange.bind(null, 'name')}
+          limit={charLimit}
+        />
 
-    if (error.statusCode === 409) {
-      return <p>The name is already in use.</p>;
-    } else {
-      return <p>{error.message || error.error}</p>;
-    }
+        {this.state.errors.name ? <p className='form__error'>{t('A scenario name is required.')}</p> : null }
+
+        <p className={cl}>{l}/{charLimit}</p>
+      </div>
+    );
+  },
+
+  renderDescriptionField: function () {
+    let charLimit = 140;
+    let l = this.state.data.description.length;
+    let cl = c('form__help', {
+      'form__limit--near': l >= charLimit - 20,
+      'form__limit--reached': l >= charLimit
+    });
+
+    return (
+      <div className='form__group'>
+        <label className='form__label' htmlFor='scenario-desc'>{t('Description')} <small>({t('optional')})</small></label>
+        <Textarea
+          id='scenario-desc' rows='2'
+          className='form__control'
+          placeholder={t('Say something about this scenario')}
+          value={this.state.data.description}
+          onChange={this.onFieldChange.bind(null, 'description')}
+          limit={charLimit}
+        />
+        <p className={cl}>{l}/{charLimit}</p>
+      </div>
+    );
   },
 
   render: function () {
@@ -206,23 +254,9 @@ const ScenarioCreateModal = React.createClass({
           </div>
         </ModalHeader>
         <ModalBody>
-
-          {this.renderError()}
-
           <form className={c('form', {'disabled': processing})} onSubmit={this.onSubmit}>
-            <div className='form__group'>
-              <label className='form__label' htmlFor='scenario-name'>{t('Scenario name')}</label>
-              <input type='text' className='form__control form__control--medium' id='scenario-name' name='scenario-name' placeholder={t('Untitled scenario')} value={this.state.data.name} onChange={this.onFieldChange.bind(null, 'name')} />
-
-              {this.state.errors.name ? <p className='form__error'>{t('A Scenario name is required.')}</p> : null }
-
-              <p className='form__help'>Keep it short and sweet.</p>
-            </div>
-
-            <div className='form__group'>
-              <label className='form__label' htmlFor='scenario-desc'>{t('Description')} <small>({t('optional')})</small></label>
-              <textarea ref='description' className='form__control' id='scenario-desc' rows='2' placeholder={t('Say something about this scenario')} value={this.state.data.description} onChange={this.onFieldChange.bind(null, 'description')}></textarea>
-            </div>
+            {this.renderNameField()}
+            {this.renderDescriptionField()}
 
             <div className='form__group'>
               <label className='form__label'>Road network</label>

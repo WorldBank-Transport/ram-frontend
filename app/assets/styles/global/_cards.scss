@@ -52,6 +52,10 @@ a.card__contents {
   position: relative;
   margin: 0 (- $global-spacing) $global-spacing (- $global-spacing);
 
+  .link-wrapper {
+    display: block;
+  }
+
   img {
     position: relative;
     z-index: 1;
@@ -88,6 +92,7 @@ a.card__contents {
     content: "";
     box-shadow: inset 0 0 0 1px $base-alpha-color;
     pointer-events: none;
+    border-radius: $base-border-radius $base-border-radius 0 0;
   }
 }
 
@@ -244,6 +249,7 @@ a.card__contents {
   text-decoration: none;
   transition: opacity 0.24s ease 0s;
   background: #fff;
+  min-height: 10rem;
 
   /* Animation */
   transition: all 0.32s ease 0s;

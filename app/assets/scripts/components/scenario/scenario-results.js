@@ -5,8 +5,8 @@ import { connect } from 'react-redux';
 
 import {
   fetchScenarioResults
-} from '../actions';
-import { prettyPrint, percent } from '../utils/utils';
+} from '../../actions';
+import { prettyPrint, percent } from '../../utils/utils';
 
 const ScenarioResults = React.createClass({
 

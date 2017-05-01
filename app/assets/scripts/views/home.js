@@ -4,12 +4,15 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import c from 'classnames';
 import TimeAgo from 'timeago-react';
+import mapboxgl from 'mapbox-gl';
 
+import config from '../config';
 import {
   invalidateProjects,
   fetchProjects,
   postProject,
-  resetProjectFrom
+  resetProjectFrom,
+  showAlert
 } from '../actions';
 import { prettyPrint } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
@@ -29,6 +32,7 @@ var Home = React.createClass({
     _invalidateProjects: T.func,
     _fetchProjects: T.func,
     _postProject: T.func,
+    _showAlert: T.func,
     _resetProjectFrom: T.func,
 
     projects: T.object,
@@ -78,13 +82,10 @@ var Home = React.createClass({
       <li key={project.id}>
         <article className='project project--card card' id={`project-${project.id}`}>
           <div className='card__contents'>
-            <figure className='card__media'>
-              <Link to={projectUrl} title='View project' className='link-wrapper'>
-                <div className='card__thumbnail'>
-                  <img alt={t('Project thumbnail')} width='640' height='320' src='/assets/graphics/layout/projects-thumbnail-placeholder.png' />
-                </div>
-              </Link>
-            </figure>
+            <ProjectThumb
+              projectUrl={projectUrl}
+              bbox={project.bbox}
+            />
             <header className='card__header'>
               <div className='card__headline'>
                 <Link to={projectUrl} title={t('View project')} className='link-wrapper'>
@@ -163,6 +164,7 @@ var Home = React.createClass({
         <ProjectFormModal
           _showGlobalLoading={showGlobalLoading}
           _hideGlobalLoading={hideGlobalLoading}
+          _showAlert={this.props._showAlert}
           revealed={this.state.projectFormModal}
           onCloseClick={this.closeModal}
           projectForm={this.props.projectForm}
@@ -189,8 +191,59 @@ function dispatcher (dispatch) {
     _invalidateProjects: (...args) => dispatch(invalidateProjects(...args)),
     _fetchProjects: (...args) => dispatch(fetchProjects(...args)),
     _postProject: (...args) => dispatch(postProject(...args)),
-    _resetProjectFrom: (...args) => dispatch(resetProjectFrom(...args))
+    _resetProjectFrom: (...args) => dispatch(resetProjectFrom(...args)),
+    _showAlert: (...args) => dispatch(showAlert(...args))
   };
 }
 
 module.exports = connect(selector, dispatcher)(Home);
+
+const ProjectThumb = React.createClass({
+  propTypes: {
+    projectUrl: T.string,
+    bbox: T.array
+  },
+
+  theMap: null,
+
+  setupMap: function () {
+    mapboxgl.accessToken = config.mbtoken;
+    let { bbox } = this.props;
+
+    this.theMap = new mapboxgl.Map({
+      container: this.refs.map,
+      style: 'mapbox://styles/mapbox/streets-v10',
+      interactive: false
+    });
+
+    this.theMap.fitBounds(bbox);
+  },
+
+  componentDidMount: function () {
+    if (this.props.bbox) this.setupMap();
+  },
+
+  componentWillUnmount: function () {
+    if (this.theMap) {
+      this.theMap.remove();
+    }
+  },
+
+  render: function () {
+    let { projectUrl, bbox } = this.props;
+
+    return (
+      <figure className='card__media'>
+        <Link to={projectUrl} title='View project' className='link-wrapper'>
+          <div className='card__thumbnail'>
+          {bbox ? (
+            <div ref='map' className='map-wrapper' />
+          ) : (
+            <img alt={t('Project thumbnail')} width='640' height='320' src='/assets/graphics/layout/projects-thumbnail-placeholder.png' />
+          )}
+          </div>
+        </Link>
+      </figure>
+    );
+  }
+});

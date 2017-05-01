@@ -8,6 +8,7 @@ import {
   invalidateProjectItem,
   deleteScenario,
   patchScenario,
+  duplicateScenario,
   resetScenarioFrom,
   fetchProjectItem,
   invalidateScenarioItem,
@@ -15,9 +16,10 @@ import {
   startGenerateResults,
   // Fetch scenario without indication of loading.
   fetchScenarioItemSilent,
-  fetchScenarioResults
+  fetchScenarioResults,
+  showAlert
 } from '../actions';
-import { prettyPrint, fetchStatus } from '../utils/utils';
+import { fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
 import config from '../config';
 import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
@@ -29,7 +31,7 @@ import ScenarioGenSettingsModal from '../components/scenario/scenario-generation
 import ScenarioIDModal from '../components/scenario/scenario-id-modal';
 import Alert from '../components/alert';
 import LogBase from '../components/log-base';
-import ScenarioResults from '../components/scenario-results';
+import ScenarioResults from '../components/scenario/scenario-results';
 
 var ScenarioPage = React.createClass({
   propTypes: {
@@ -40,10 +42,12 @@ var ScenarioPage = React.createClass({
     _fetchScenarioItem: T.func,
     _deleteScenario: T.func,
     _patchScenario: T.func,
+    _duplicateScenario: T.func,
     _resetScenarioFrom: T.func,
     _startGenerateResults: T.func,
     _fetchScenarioItemSilent: T.func,
     _fetchScenarioResults: T.func,
+    _showAlert: T.func,
 
     scenario: T.object,
     project: T.object,
@@ -82,6 +86,7 @@ var ScenarioPage = React.createClass({
         break;
       case 'edit-network':
         this.setState({scenarioIDModal: false});
+        this.props._fetchScenarioItemSilent(this.props.params.projectId, this.props.params.scenarioId);
         break;
     }
   },
@@ -141,7 +146,24 @@ var ScenarioPage = React.createClass({
         !nextProps.scenarioForm.processing) {
       this.hideLoading();
       if (!nextProps.scenarioForm.error) {
+        this.props._showAlert('success', <p>{t('Scenario successfully deleted')}</p>, true, 4500);
         return hashHistory.push(`/${getLanguage()}/projects/${this.props.params.projectId}`);
+      } else {
+        this.props._showAlert('danger', <p>{t('An error occurred while deleting the scenario')}</p>, true);
+      }
+    }
+
+    // Scenario duplicate.
+    if (!this.state.scenarioEditMetadataModal &&
+        this.props.scenarioForm.action === 'edit' &&
+        this.props.scenarioForm.processing &&
+        !nextProps.scenarioForm.processing) {
+      this.hideLoading();
+      if (!nextProps.scenarioForm.error) {
+        this.props._showAlert('success', <p>{t('Scenario duplicated successfully')}</p>, true, 4500);
+        return hashHistory.push(`${getLanguage()}/projects/${nextProps.scenarioForm.data.project_id}/scenarios/${nextProps.scenarioForm.data.id}`);
+      } else {
+        this.props._showAlert('danger', <p>{t('An error occurred while duplicating the scenario - {reason}', {reason: nextProps.scenarioForm.error.message})}</p>, true);
       }
     }
 
@@ -156,6 +178,11 @@ var ScenarioPage = React.createClass({
     }
   },
 
+  onScenarioDuplicate: function () {
+    this.showLoading();
+    this.props._duplicateScenario(this.props.params.projectId, this.props.params.scenarioId);
+  },
+
   onScenarioAction: function (what, event) {
     event.preventDefault();
 
@@ -168,6 +195,9 @@ var ScenarioPage = React.createClass({
         break;
       case 'edit-network':
         this.setState({scenarioIDModal: true});
+        break;
+      case 'duplicate':
+        this.onScenarioDuplicate();
         break;
       case 'delete':
         this.showLoading();
@@ -223,17 +253,44 @@ var ScenarioPage = React.createClass({
     }
   },
 
+  renderOutdatedResultsMessage: function () {
+    let scenario = this.props.scenario.data;
+    let isGenerating = scenario.gen_analysis && scenario.gen_analysis.status === 'running';
+    // Only show message if the scenario is active and nothing is generating.
+    if (scenario.status !== 'active' || isGenerating) {
+      return null;
+    }
+
+    let genAt = scenario.data.res_gen_at;
+    genAt === 0 ? genAt : (new Date(genAt)).getTime();
+    let rnUpdatedAt = scenario.data.rn_updated_at;
+    rnUpdatedAt === 0 ? rnUpdatedAt : (new Date(rnUpdatedAt)).getTime();
+
+    if (rnUpdatedAt > genAt) {
+      return (
+        <Alert type='warning'>
+          <h6>{t('Outdated results')}</h6>
+          <p>{t('The road network was modified. Generate the results again to ensure they reflect the road network\'s last state.')}</p>
+        </Alert>
+      );
+    }
+  },
+
   render: function () {
     const { fetched, fetching, error } = fetchStatus(this.props.project, this.props.scenario);
     const dataScenario = this.props.scenario.data;
-    const formError = this.props.scenarioForm.error;
 
     if (!fetched && !fetching || !fetched && fetching) {
       return null;
     }
 
     if (error) {
-      return <div>Error: {prettyPrint(error)}</div>;
+      return (
+        <Alert type='danger'>
+          <h6>An error occurred</h6>
+          <p>{error.message}</p>
+        </Alert>
+      );
     }
 
     let resultsFile = dataScenario.files.find(f => f.type === 'results-all');
@@ -253,7 +310,8 @@ var ScenarioPage = React.createClass({
         </header>
         <div className='inpage__body'>
           <div className='inner'>
-            {formError ? <pre>{prettyPrint(formError)}</pre> : null}
+
+            {this.renderOutdatedResultsMessage()}
 
             <LogGen
               data={dataScenario.gen_analysis}
@@ -283,6 +341,7 @@ var ScenarioPage = React.createClass({
         <ScenarioEditModal
           _showGlobalLoading={showGlobalLoading}
           _hideGlobalLoading={hideGlobalLoading}
+          _showAlert={this.props._showAlert}
           revealed={this.state.scenarioEditMetadataModal}
           onCloseClick={this.closeModal.bind(null, 'edit-scenario')}
           scenarioForm={this.props.scenarioForm}
@@ -339,11 +398,13 @@ function dispatcher (dispatch) {
     _hideGlobalLoading: (...args) => dispatch(hideGlobalLoading(...args)),
     _deleteScenario: (...args) => dispatch(deleteScenario(...args)),
     _patchScenario: (...args) => dispatch(patchScenario(...args)),
+    _duplicateScenario: (...args) => dispatch(duplicateScenario(...args)),
     _resetScenarioFrom: (...args) => dispatch(resetScenarioFrom(...args)),
     _startGenerateResults: (...args) => dispatch(startGenerateResults(...args)),
 
     _fetchScenarioItemSilent: (...args) => dispatch(fetchScenarioItemSilent(...args)),
-    _fetchScenarioResults: (...args) => dispatch(fetchScenarioResults(...args))
+    _fetchScenarioResults: (...args) => dispatch(fetchScenarioResults(...args)),
+    _showAlert: (...args) => dispatch(showAlert(...args))
   };
 }
 

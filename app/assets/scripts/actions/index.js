@@ -2,6 +2,9 @@ import fetch from 'isomorphic-fetch';
 
 import config from '../config';
 
+// Just to unify where the actions come from.
+export { showAlert, hideAlert } from '../components/system-alerts';
+
 export const REQUEST_PROJECTS = 'REQUEST_PROJECTS';
 export const RECEIVE_PROJECTS = 'RECEIVE_PROJECTS';
 export const INVALIDATE_PROJECTS = 'INVALIDATE_PROJECTS';
@@ -185,6 +188,10 @@ export function patchScenario (projId, scId, data) {
 
 export function postScenario (projectId, data) {
   return postAndDispatch(`${config.api}/projects/${projectId}/scenarios`, data, startSubmitScenario, finishSubmitScenario);
+}
+
+export function duplicateScenario (projectId, scenarioId) {
+  return postAndDispatch(`${config.api}/projects/${projectId}/scenarios/${scenarioId}/duplicate`, {}, startSubmitScenario, finishSubmitScenario);
 }
 
 // The information needed to finish the project setup is basically related

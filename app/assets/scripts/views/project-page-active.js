@@ -11,10 +11,13 @@ import {
   deleteProject,
   fetchProjectScenarios,
   resetProjectFrom,
+  resetScenarioFrom,
   postScenario,
-  deleteScenario
+  duplicateScenario,
+  deleteScenario,
+  showAlert
 } from '../actions';
-import { prettyPrint, fetchStatus } from '../utils/utils';
+import { fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
 import { fileTypesMatrix } from '../utils/constants';
 import config from '../config';
@@ -26,6 +29,7 @@ import ProjectFormModal from '../components/project/project-form-modal';
 import ProjectHeaderActions from '../components/project/project-header-actions';
 import ScenarioCreateModal from '../components/scenario/scenario-create-modal';
 import ScenarioDeleteAction from '../components/scenario/scenario-delete-action';
+import Alert from '../components/alert';
 
 var ProjectPageActive = React.createClass({
 
@@ -35,9 +39,12 @@ var ProjectPageActive = React.createClass({
     _patchProject: T.func,
     _deleteProject: T.func,
     _resetProjectFrom: T.func,
+    _resetScenarioFrom: T.func,
     _fetchProjectScenarios: T.func,
     _deleteScenario: T.func,
     _postScenario: T.func,
+    _duplicateScenario: T.func,
+    _showAlert: T.func,
 
     params: T.object,
     project: T.object,
@@ -103,6 +110,14 @@ var ProjectPageActive = React.createClass({
     this.props._deleteScenario(scenario.project_id, scenario.id);
   },
 
+  onScenarioDuplicate: function (scenario, e) {
+    e.preventDefault();
+    this.showLoading();
+    this.props._duplicateScenario(scenario.project_id, scenario.id);
+    // We will need to load the scenarios again.
+    this.scenarioLoaded = false;
+  },
+
   checkAllLoaded: function (nextProps) {
     if (this.props.project.fetching && !nextProps.project.fetching) {
       this.projectLoaded = true;
@@ -161,7 +176,24 @@ var ProjectPageActive = React.createClass({
         !nextProps.projectForm.processing) {
       this.hideLoading();
       if (!nextProps.projectForm.error) {
+        this.props._showAlert('success', <p>{t('Project successfully deleted')}</p>, true, 4500);
         return hashHistory.push(`/${getLanguage()}/projects`);
+      } else {
+        this.props._showAlert('danger', <p>{t('An error occurred while deleting the project')}</p>, true);
+      }
+    }
+
+    // Scenario duplicate.
+    if (!this.state.scenarioCreateModal &&
+        this.props.scenarioForm.action === 'edit' &&
+        this.props.scenarioForm.processing &&
+        !nextProps.scenarioForm.processing) {
+      this.hideLoading();
+      if (!nextProps.scenarioForm.error) {
+        this.props._showAlert('success', <p>{t('Scenario duplicated successfully')}</p>, true, 4500);
+        return hashHistory.push(`${getLanguage()}/projects/${nextProps.scenarioForm.data.project_id}/scenarios/${nextProps.scenarioForm.data.id}`);
+      } else {
+        this.props._showAlert('danger', <p>{t('An error occurred while duplicating the scenario - {reason}', {reason: nextProps.scenarioForm.error.message})}</p>, true);
       }
     }
 
@@ -170,9 +202,10 @@ var ProjectPageActive = React.createClass({
         this.props.scenarioForm.processing &&
         !nextProps.scenarioForm.processing) {
       if (!nextProps.scenarioForm.error) {
-        console.log('scenario deleted');
+        this.props._showAlert('success', <p>{t('Scenario successfully deleted')}</p>, true, 4500);
         this.props._fetchProjectScenarios(this.props.params.projectId);
       } else {
+        this.props._showAlert('danger', <p>{t('An error occurred while deleting the scenario')}</p>, true);
         this.hideLoading();
       }
     }
@@ -218,7 +251,7 @@ var ProjectPageActive = React.createClass({
                   direction='down'
                   alignment='right' >
                     <ul className='drop__menu drop__menu--iconified' role='menu'>
-                      <li><a href='#' title={t('Duplicate scenario')} className='drop__menu-item dmi-copy' data-hook='dropdown:close'>{t('Duplicate scenario')}</a></li>
+                      <li><a href='#' title={t('Duplicate scenario')} className='drop__menu-item dmi-copy' data-hook='dropdown:close' onClick={this.onScenarioDuplicate.bind(null, scenario)}>{t('Duplicate scenario')}</a></li>
                     </ul>
                     <ul className='drop__menu drop__menu--iconified' role='menu'>
                       <li><ScenarioDeleteAction isMaster={isMaster} name={name} onDeleteConfirm={this.onScenarioDelete.bind(null, scenario)}/></li>
@@ -275,7 +308,12 @@ var ProjectPageActive = React.createClass({
     }
 
     if (error) {
-      return <div>Error: {prettyPrint(error)}</div>;
+      return (
+        <Alert type='danger'>
+          <h6>An error occurred</h6>
+          <p>{error.message}</p>
+        </Alert>
+      );
     }
 
     return (
@@ -327,6 +365,7 @@ var ProjectPageActive = React.createClass({
           editing
           _showGlobalLoading={showGlobalLoading}
           _hideGlobalLoading={hideGlobalLoading}
+          _showAlert={this.props._showAlert}
           revealed={this.state.projectFormModal}
           onCloseClick={this.closeModal.bind(null, 'project-form')}
           projectForm={this.props.projectForm}
@@ -338,13 +377,14 @@ var ProjectPageActive = React.createClass({
         <ScenarioCreateModal
           _showGlobalLoading={showGlobalLoading}
           _hideGlobalLoading={hideGlobalLoading}
+          _showAlert={this.props._showAlert}
           revealed={this.state.scenarioCreateModal}
           onCloseClick={this.closeModal.bind(null, 'new-scenario')}
           scenarioForm={this.props.scenarioForm}
           scenarioList={this.props.scenarios.data.results}
           projectId={this.props.params.projectId}
           saveScenario={this.props._postScenario}
-          resetForm={this.props._resetProjectFrom}
+          resetForm={this.props._resetScenarioFrom}
         />
 
       </section>
@@ -372,8 +412,11 @@ function dispatcher (dispatch) {
     _deleteProject: (...args) => dispatch(deleteProject(...args)),
     _fetchProjectScenarios: (...args) => dispatch(fetchProjectScenarios(...args)),
     _resetProjectFrom: (...args) => dispatch(resetProjectFrom(...args)),
+    _resetScenarioFrom: (...args) => dispatch(resetScenarioFrom(...args)),
     _deleteScenario: (...args) => dispatch(deleteScenario(...args)),
-    _postScenario: (...args) => dispatch(postScenario(...args))
+    _postScenario: (...args) => dispatch(postScenario(...args)),
+    _duplicateScenario: (...args) => dispatch(duplicateScenario(...args)),
+    _showAlert: (...args) => dispatch(showAlert(...args))
   };
 }
 
