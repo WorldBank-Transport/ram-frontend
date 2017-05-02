@@ -155,6 +155,7 @@ var ScenarioPage = React.createClass({
 
     // Scenario duplicate.
     if (!this.state.scenarioEditMetadataModal &&
+        !this.state.scenarioGenSettingsModal &&
         this.props.scenarioForm.action === 'edit' &&
         this.props.scenarioForm.processing &&
         !nextProps.scenarioForm.processing) {
