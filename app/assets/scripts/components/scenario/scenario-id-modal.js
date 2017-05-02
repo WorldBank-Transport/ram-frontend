@@ -4,7 +4,7 @@ import ReactTooltip from 'react-tooltip';
 import c from 'classnames';
 
 import { t } from '../../utils/i18n';
-import boundsToMapLocation from '../../utils/zoom-to-bbox';
+import { boundsToMapLocation } from '../../utils/geo';
 import config from '../../config';
 import { showGlobalLoading, hideGlobalLoading } from '../global-loading';
 
@@ -32,9 +32,13 @@ const ScenarioIDModal = React.createClass({
       });
     });
 
-    this.notifier.on('ready', () => {
+    this.notifier.on('ready', (data) => {
       hideGlobalLoading();
-      this.setState({editorLoaded: true});
+      this.setState({
+        editorLoaded: true,
+        editorWidth: data.mapWidth,
+        editorHeight: data.mapHeight
+      });
     });
 
     this.notifier.on('save:status', data => {
@@ -45,7 +49,9 @@ const ScenarioIDModal = React.createClass({
   getInitialState: function () {
     return {
       editorLoaded: false,
-      saveEnabled: false
+      saveEnabled: false,
+      editorWidth: 0,
+      editorHeight: 0
     };
   },
 
@@ -75,7 +81,8 @@ const ScenarioIDModal = React.createClass({
   },
 
   render: function () {
-    const mapLocation = boundsToMapLocation(this.props.projectBbox);
+    const mapLocation = boundsToMapLocation(this.props.projectBbox, this.state.editorWidth, this.state.editorHeight);
+
     return (
       <Modal
         id='modal-scenario-metadata'
