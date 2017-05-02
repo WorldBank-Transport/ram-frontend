@@ -156,18 +156,22 @@ textarea.form__control {
 /* Color modifiers
    ========================================================================== */
 
+.form__control.form__limit--near,
 .form__control--warning {
   box-shadow: inset 0 -2px 0 0 $warning-color;
 }
 
+.form__helper.form__limit--near,
 .form__helper--warning {
   color: $warning-color
 }
 
+.form__control.form__limit--reached,
 .form__control--danger {
   box-shadow: inset 0 -2px 0 0 $danger-color;
 }
 
+.form__helper.form__limit--reached,
 .form__helper--danger {
   color: $danger-color
 }
@@ -529,11 +533,5 @@ label[for] {
 
   > *:last-child {
     margin-bottom: 0;
-  }
-}
-
-.form__limit {
-  &--reached {
-    color: $danger-color;
   }
 }
