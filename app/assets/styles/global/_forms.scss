@@ -60,7 +60,6 @@ select.form__control {
   @include appearance(none);
   padding-right: 1rem;
   cursor: pointer;
-
   background: transparent url('data:image/svg+xml;utf8,' + urlencode('<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="10px" height="5px" viewBox="0 0 10 5" enable-background="new 0 0 10 5" xml:space="preserve"><g><polygon fill="#{$link-color}" points="5,5 0,0 10,0  "/></g></svg>')) center right no-repeat;
 }
 
@@ -151,6 +150,26 @@ textarea.form__control {
 .form__group--attached {
   margin-top: - $global-spacing;
   min-height: 2rem;
+}
+
+
+/* Color modifiers
+   ========================================================================== */
+
+.form__control--warning {
+  box-shadow: inset 0 -2px 0 0 $warning-color;
+}
+
+.form__helper--warning {
+  color: $warning-color
+}
+
+.form__control--danger {
+  box-shadow: inset 0 -2px 0 0 $danger-color;
+}
+
+.form__helper--danger {
+  color: $danger-color
 }
 
 
