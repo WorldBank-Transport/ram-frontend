@@ -161,8 +161,8 @@ textarea.form__control {
   box-shadow: inset 0 -2px 0 0 $warning-color;
 }
 
-.form__helper.form__limit--near,
-.form__helper--warning {
+.form__help.form__limit--near,
+.form__help--warning {
   color: $warning-color
 }
 
@@ -171,8 +171,8 @@ textarea.form__control {
   box-shadow: inset 0 -2px 0 0 $danger-color;
 }
 
-.form__helper.form__limit--reached,
-.form__helper--danger {
+.form__help.form__limit--reached,
+.form__help--danger {
   color: $danger-color
 }
 
