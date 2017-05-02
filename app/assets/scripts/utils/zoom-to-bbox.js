@@ -1,20 +1,10 @@
 'use strict';
 
-const boundsToMapLocation = (inputCoords) => {
+export function boundsToMapLocation (inputCoords, width, height) {
   const WORLD_DIM = { height: 256, width: 256 };
-  var ZOOM_MAX = 21;
+  const ZOOM_MAX = 21;
 
-  // height is 32rem in RRA css
-  const mapHeight = 32 * Number(window.getComputedStyle(document.body)
-                         .getPropertyValue('font-size').replace(/px/, ''));
-  // width is container width minus lesser of 33.33% and 400px in iD css
-  const containerWidth = document.querySelector('#app-container').offsetWidth;
-  const mapSidebarWidth = containerWidth * 0.33 < 400 ? Math.round(containerWidth * 0.33) : 400;
-
-  const mapDimensions = {
-    width: containerWidth - mapSidebarWidth,
-    height: mapHeight
-  };
+  const mapDimensions = { width, height };
 
   const bounds = {
     southwest: {
@@ -54,6 +44,4 @@ const boundsToMapLocation = (inputCoords) => {
   };
 
   return {zoom: zoom, center: center};
-};
-
-export default boundsToMapLocation;
+}
