@@ -1,5 +1,7 @@
 'use strict';
 import React from 'react';
+import _ from 'lodash';
+import c from 'classnames';
 
 export function prettyPrint (obj) {
   return (
@@ -45,4 +47,17 @@ export function percent (value, total, decimals = 2) {
 
 export function round (value, decimals = 2) {
   return Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
+}
+
+export function limitHelper (charLimit) {
+  return (currLength) => {
+    let remaining = charLimit - currLength;
+
+    let cl = _.curry(c, 2)({
+      'form__limit--near': remaining < 10,
+      'form__limit--reached': remaining < 0
+    });
+
+    return { c: cl, remaining, isOk: () => remaining >= 0 };
+  };
 }

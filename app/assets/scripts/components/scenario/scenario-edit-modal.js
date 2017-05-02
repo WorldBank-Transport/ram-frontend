@@ -4,9 +4,12 @@ import c from 'classnames';
 import _ from 'lodash';
 
 import { t } from '../../utils/i18n';
+import { limitHelper } from '../../utils/utils';
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '../modal';
-import { Textarea, TextInput } from '../limited-fields';
+
+var nameLimit = limitHelper(100);
+var descLimit = limitHelper(140);
 
 const ScenarioEditModal = React.createClass({
 
@@ -97,6 +100,16 @@ const ScenarioEditModal = React.createClass({
     return control;
   },
 
+  allowSubmit: function () {
+    if (this.props.scenarioForm.processing || this.state.loading) return false;
+
+    if (this.state.data.name.length === 0 || !nameLimit(this.state.data.name.length).isOk()) return false;
+
+    if (this.state.data.description.length > 0 && !descLimit(this.state.data.description.length).isOk()) return false;
+
+    return true;
+  },
+
   onSubmit: function (e) {
     e.preventDefault && e.preventDefault();
 
@@ -131,53 +144,43 @@ const ScenarioEditModal = React.createClass({
   },
 
   renderNameField: function () {
-    let charLimit = 100;
-    let l = this.state.data.name.length;
-    let cl = c('form__help', {
-      'form__limit--near': l >= charLimit - 20,
-      'form__limit--reached': l >= charLimit
-    });
+    let limit = nameLimit(this.state.data.name.length);
 
     return (
       <div className='form__group'>
         <label className='form__label' htmlFor='scenario-name'>{t('Scenario name')}</label>
-        <TextInput
+        <input
+          type='text'
           id='scenario-name'
           name='scenario-name'
-          className='form__control form__control--medium'
+          className={limit.c('form__control form__control--medium')}
           placeholder={t('Untitled scenario')}
           value={this.state.data.name}
           onChange={this.onFieldChange.bind(null, 'name')}
-          limit={charLimit}
         />
 
         {this.state.errors.name ? <p className='form__error'>{t('A scenario name is required.')}</p> : null }
 
-        <p className={cl}>{l}/{charLimit}</p>
+        <p className='form__help'>{limit.remaining}</p>
       </div>
     );
   },
 
   renderDescriptionField: function () {
-    let charLimit = 140;
-    let l = this.state.data.description.length;
-    let cl = c('form__help', {
-      'form__limit--near': l >= charLimit - 20,
-      'form__limit--reached': l >= charLimit
-    });
+    let limit = descLimit(this.state.data.description.length);
 
     return (
       <div className='form__group'>
         <label className='form__label' htmlFor='scenario-desc'>{t('Description')} <small>({t('optional')})</small></label>
-        <Textarea
-          id='scenario-desc' rows='2'
-          className='form__control'
+        <textarea
+          id='scenario-desc'
+          rows='2'
+          className={limit.c('form__control')}
           placeholder={t('Say something about this scenario')}
           value={this.state.data.description}
           onChange={this.onFieldChange.bind(null, 'description')}
-          limit={charLimit}
         />
-        <p className={cl}>{l}/{charLimit}</p>
+        <p className='form__help'>{limit.remaining}</p>
       </div>
     );
   },
@@ -208,7 +211,7 @@ const ScenarioEditModal = React.createClass({
         </ModalBody>
         <ModalFooter>
           <button className='mfa-xmark' type='button' onClick={this.onClose}><span>{t('Cancel')}</span></button>
-          <button className='mfa-tick' type='submit' onClick={this.onSubmit}><span>{this.props.finishingSetup ? t('Create scenario') : t('Save')}</span></button>
+          <button className={c('mfa-tick', {'disabled': !this.allowSubmit()})} type='submit' onClick={this.onSubmit}><span>{this.props.finishingSetup ? t('Create scenario') : t('Save')}</span></button>
         </ModalFooter>
       </Modal>
     );
