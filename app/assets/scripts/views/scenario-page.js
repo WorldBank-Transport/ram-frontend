@@ -373,6 +373,7 @@ var ScenarioPage = React.createClass({
           revealed={this.state.scenarioIDModal}
           onCloseClick={this.closeModal.bind(null, 'edit-network')}
           scenarioData={dataScenario}
+          projectBbox={this.props.project.data.bbox}
         />
 
       </section>
