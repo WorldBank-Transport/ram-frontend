@@ -58,6 +58,6 @@ export function limitHelper (charLimit) {
       'form__limit--reached': remaining < 0
     });
 
-    return { c: cl, remaining };
+    return { c: cl, remaining, isOk: () => remaining >= 0 };
   };
 }

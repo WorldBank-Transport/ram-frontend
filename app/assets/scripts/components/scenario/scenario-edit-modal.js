@@ -100,6 +100,16 @@ const ScenarioEditModal = React.createClass({
     return control;
   },
 
+  allowSubmit: function () {
+    if (this.props.scenarioForm.processing || this.state.loading) return false;
+
+    if (this.state.data.name.length === 0 || !nameLimit(this.state.data.name.length).isOk()) return false;
+
+    if (this.state.data.description.length > 0 && !descLimit(this.state.data.description.length).isOk()) return false;
+
+    return true;
+  },
+
   onSubmit: function (e) {
     e.preventDefault && e.preventDefault();
 
@@ -201,7 +211,7 @@ const ScenarioEditModal = React.createClass({
         </ModalBody>
         <ModalFooter>
           <button className='mfa-xmark' type='button' onClick={this.onClose}><span>{t('Cancel')}</span></button>
-          <button className='mfa-tick' type='submit' onClick={this.onSubmit}><span>{this.props.finishingSetup ? t('Create scenario') : t('Save')}</span></button>
+          <button className={c('mfa-tick', {'disabled': !this.allowSubmit()})} type='submit' onClick={this.onSubmit}><span>{this.props.finishingSetup ? t('Create scenario') : t('Save')}</span></button>
         </ModalFooter>
       </Modal>
     );

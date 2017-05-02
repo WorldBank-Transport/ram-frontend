@@ -159,6 +159,16 @@ const ScenarioCreateModal = React.createClass({
     return control;
   },
 
+  allowSubmit: function () {
+    if (this.props.scenarioForm.processing || this.state.loading) return false;
+
+    if (this.state.data.name.length === 0 || !nameLimit(this.state.data.name.length).isOk()) return false;
+
+    if (this.state.data.description.length > 0 && !descLimit(this.state.data.description.length).isOk()) return false;
+
+    return true;
+  },
+
   onSubmit: function (e) {
     e.preventDefault && e.preventDefault();
 
@@ -291,7 +301,7 @@ const ScenarioCreateModal = React.createClass({
         </ModalBody>
         <ModalFooter>
           <button className='mfa-xmark' type='button' onClick={this.onClose}><span>{t('Cancel')}</span></button>
-          <button className={c('mfa-tick', {'disabled': processing})} type='submit' onClick={this.onSubmit}><span>{t('Create')}</span></button>
+          <button className={c('mfa-tick', {'disabled': !this.allowSubmit()})} type='submit' onClick={this.onSubmit}><span>{t('Create')}</span></button>
         </ModalFooter>
       </Modal>
     );
