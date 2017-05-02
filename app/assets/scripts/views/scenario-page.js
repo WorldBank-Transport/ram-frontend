@@ -136,6 +136,8 @@ var ScenarioPage = React.createClass({
       this.projectLoaded = false;
       this.scenarioLoaded = false;
       this.showLoading();
+      // Project will stay loaded, scenario needs to reload.
+      this.elementsLoaded = 1;
       this.props._fetchScenarioItem(nextProps.params.projectId, nextProps.params.scenarioId);
       return;
     }
