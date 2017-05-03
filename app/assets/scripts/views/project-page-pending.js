@@ -333,7 +333,7 @@ var ProjectPagePending = React.createClass({
         </header>
         <div className='inpage__body'>
           <div className='inner'>
-            <h2>{t('Project setup')}</h2>
+            <h2 className='inpage__section-title'>{t('Project setup')}</h2>
             <Log
               data={data.finish_setup}
               receivedAt={this.props.project.receivedAt}

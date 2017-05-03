@@ -55,26 +55,31 @@ const ScenarioResults = React.createClass({
 
     return (
       <div>
-        <h2>Points of interest</h2>
+        <h2 className='inpage__section-title'>Points of interest</h2>
 
-        <section className='card'>
+        <section className='card card--analysis-result'>
           <div className='card__contents'>
-            <h1 className='card__title'>Assorted</h1>
-
-            <table className='table'>
-              <thead>
-                <tr>
-                  <th>Admin area</th>
-                  <th>10 min</th>
-                  <th>20 min</th>
-                  <th>30 min</th>
-                  <th>60 min</th>
-                </tr>
-              </thead>
-              <tbody>
-              {data.map(aa => this.renderAccessibilityTableRow(poi, aa))}
-              </tbody>
-            </table>
+            <header className='card__header'>
+              <h1 className='card__title'>Assorted</h1>
+            </header>
+            <div className='card__body'>
+              <div className='table-wrapper'>
+                <table className='table'>
+                  <thead>
+                    <tr>
+                      <th>Admin area</th>
+                      <th>10 min</th>
+                      <th>20 min</th>
+                      <th>30 min</th>
+                      <th>60 min</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {data.map(aa => this.renderAccessibilityTableRow(poi, aa))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </section>
       </div>
