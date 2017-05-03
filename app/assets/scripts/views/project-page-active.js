@@ -246,8 +246,8 @@ var ProjectPageActive = React.createClass({
                   className='scenario-meta-menu'
                   triggerClassName='ca-ellipsis'
                   triggerActiveClassName='button--active'
-                  triggerText='Options'
-                  triggerTitle='Scenario options'
+                  triggerText={t('Options')}
+                  triggerTitle={t('Scenario options')}
                   direction='down'
                   alignment='right' >
                     <ul className='drop__menu drop__menu--iconified' role='menu'>

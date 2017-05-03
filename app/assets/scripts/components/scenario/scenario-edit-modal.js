@@ -161,7 +161,7 @@ const ScenarioEditModal = React.createClass({
 
         {this.state.errors.name ? <p className='form__error'>{t('A scenario name is required.')}</p> : null }
 
-        <p className='form__help'>{limit.remaining} {t('characters left')}</p>
+        <p className='form__help'>{t('{chars} characters left', {chars: limit.remaining})}</p>
       </div>
     );
   },
@@ -180,7 +180,7 @@ const ScenarioEditModal = React.createClass({
           value={this.state.data.description}
           onChange={this.onFieldChange.bind(null, 'description')}
         />
-        <p className='form__help'>{limit.remaining} {t('characters left')}</p>
+        <p className='form__help'>{t('{chars} characters left', {chars: limit.remaining})}</p>
       </div>
     );
   },
