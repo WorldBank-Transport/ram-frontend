@@ -72,7 +72,7 @@
   }
 
   &__body {
-    padding: ($global-spacing * 4) 0;
+    padding: ($global-spacing * 3) 0;
 
     > .inner {
       @extend .row, .row--centered;
