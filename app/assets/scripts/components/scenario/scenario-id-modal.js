@@ -4,7 +4,6 @@ import ReactTooltip from 'react-tooltip';
 import c from 'classnames';
 
 import { t } from '../../utils/i18n';
-import { boundsToMapLocation } from '../../utils/geo';
 import config from '../../config';
 import { showGlobalLoading, hideGlobalLoading } from '../global-loading';
 
@@ -28,17 +27,14 @@ const ScenarioIDModal = React.createClass({
     this.notifier.on('loaded', () => {
       this.notifier.send('settings', {
         projectId: this.props.scenarioData.project_id,
-        scenarioId: this.props.scenarioData.id
+        scenarioId: this.props.scenarioData.id,
+        bbox: this.props.projectBbox
       });
     });
 
     this.notifier.on('ready', (data) => {
       hideGlobalLoading();
-      this.setState({
-        editorLoaded: true,
-        editorWidth: data.mapWidth,
-        editorHeight: data.mapHeight
-      });
+      this.setState({ editorLoaded: true });
     });
 
     this.notifier.on('save:status', data => {
@@ -49,9 +45,7 @@ const ScenarioIDModal = React.createClass({
   getInitialState: function () {
     return {
       editorLoaded: false,
-      saveEnabled: false,
-      editorWidth: 0,
-      editorHeight: 0
+      saveEnabled: false
     };
   },
 
@@ -59,6 +53,8 @@ const ScenarioIDModal = React.createClass({
     if (!prevProps.revealed && this.props.revealed) {
       showGlobalLoading();
       this.setupNotifier();
+    } else if (prevProps.revealed && !this.props.revealed) {
+      this.notifier.destroy();
     }
   },
 
@@ -70,6 +66,7 @@ const ScenarioIDModal = React.createClass({
   },
 
   componentWillUnmount: function () {
+    this.notifier.destroy();
   },
 
   onClose: function () {
@@ -81,8 +78,6 @@ const ScenarioIDModal = React.createClass({
   },
 
   render: function () {
-    const mapLocation = boundsToMapLocation(this.props.projectBbox, this.state.editorWidth, this.state.editorHeight);
-
     return (
       <Modal
         id='modal-scenario-metadata'
@@ -101,7 +96,7 @@ const ScenarioIDModal = React.createClass({
 
         <section className='ideditor-wrapper'>
           <h1 className='visually-hidden'>iD editor</h1>
-          <iframe src={`${config.iDEditor}/#map=${mapLocation.zoom}/${mapLocation.center.lat}/${mapLocation.center.lng}`} className={c({'visually-hidden': !this.state.editorLoaded})} frameBorder='0' ref='editor'></iframe>
+          <iframe src={config.iDEditor} className={c({'visually-hidden': !this.state.editorLoaded})} frameBorder='0' ref='editor'></iframe>
         </section>
 
         </ModalBody>
@@ -140,6 +135,10 @@ function notifier (id, element) {
     send: (type, data = {}) => {
       let msg = Object.assign({}, { id: id, type: type }, data);
       element.postMessage(msg, '*');
+      return _notifier;
+    },
+    destroy: () => {
+      events = {};
       return _notifier;
     }
   };
