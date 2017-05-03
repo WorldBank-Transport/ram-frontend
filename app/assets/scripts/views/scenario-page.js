@@ -293,6 +293,13 @@ var ScenarioPage = React.createClass({
 
             {this.renderOutdatedResultsMessage()}
 
+            <div className='empty-content'>
+              <div className='prose prose--responsive'>
+                <p>There's no data to show yet. Please start by running analysis.</p>
+              </div>
+              <button title={t('Generate analysis')} className='card__button card__button--arrow-loop empty-content__cta'  type='button'><span>{t('Analysis')}</span></button>
+            </div>
+
             <LogGen
               data={dataScenario.gen_analysis}
               receivedAt={this.props.scenario.receivedAt}

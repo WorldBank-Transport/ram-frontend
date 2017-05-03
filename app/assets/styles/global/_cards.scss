@@ -283,3 +283,7 @@ a.card__contents {
 .card__button--add::before {
   @extend %collecticon-sm-plus;
 }
+
+.card__button--arrow-loop::before {
+  @extend %collecticon-arrow-loop;
+}

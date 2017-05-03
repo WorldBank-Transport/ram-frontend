@@ -112,3 +112,24 @@
     margin: 0 (-$global-spacing);
   }
 }
+
+.empty-content {
+  border: 4px dashed $base-alpha-color;
+  border-radius: $base-border-radius;
+  padding: $global-spacing * 4;
+  text-align: center;
+
+  .prose {
+    max-width: 28rem;
+    margin: 0 auto ($global-spacing * 2) auto;
+  }
+
+  > *:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.empty-content__cta {
+  display: inline-block;
+  max-width: 28rem;
+}
