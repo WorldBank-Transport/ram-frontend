@@ -74,11 +74,11 @@ var Modal = React.createClass({
     let bd = document.getElementsByTagName('body')[0];
     if (revealed) {
       this.componentAddedBodyClass = true;
-      bd.classList.add('unscrollable-y');
+      bd.classList.add('modal__unscrollable-y');
     } else if (this.componentAddedBodyClass) {
       // Only act if the class was added by this component.
       this.componentAddedBodyClass = false;
-      bd.classList.remove('unscrollable-y');
+      bd.classList.remove('modal__unscrollable-y');
     }
   },
 
