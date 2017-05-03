@@ -7,6 +7,7 @@ import {
   fetchScenarioResults
 } from '../../actions';
 import { prettyPrint, percent } from '../../utils/utils';
+import { t, getLanguage } from '../../utils/i18n';
 
 const ScenarioResults = React.createClass({
 
@@ -26,8 +27,8 @@ const ScenarioResults = React.createClass({
     if (!aa.results.length) {
       return (
         <tr key={aa.name}>
-          <td>{aa.name}</td>
-          <td colSpan={4}>There's no data.</td>
+          <th>{aa.name}</th>
+          <td className='table__empty-cell' colSpan={4}>{t('No data.')}</td>
         </tr>
       );
     }
@@ -40,7 +41,7 @@ const ScenarioResults = React.createClass({
 
     return (
       <tr key={aa.name}>
-        <td>{aa.name}</td>
+        <th>{aa.name}</th>
         <td>{percent(pop[0], totalPop)}%</td>
         <td>{percent(pop[1], totalPop)}%</td>
         <td>{percent(pop[2], totalPop)}%</td>
@@ -54,21 +55,28 @@ const ScenarioResults = React.createClass({
 
     return (
       <div>
-        <h2>Point of interest</h2>
-        <table className='table'>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>10 min</th>
-              <th>20 min</th>
-              <th>30 min</th>
-              <th>60 min</th>
-            </tr>
-          </thead>
-          <tbody>
-          {data.map(aa => this.renderAccessibilityTableRow(poi, aa))}
-          </tbody>
-        </table>
+        <h2>Points of interest</h2>
+
+        <section className='card'>
+          <div className='card__contents'>
+            <h1 className='card__title'>Assorted</h1>
+
+            <table className='table'>
+              <thead>
+                <tr>
+                  <th>Admin area</th>
+                  <th>10 min</th>
+                  <th>20 min</th>
+                  <th>30 min</th>
+                  <th>60 min</th>
+                </tr>
+              </thead>
+              <tbody>
+              {data.map(aa => this.renderAccessibilityTableRow(poi, aa))}
+              </tbody>
+            </table>
+          </div>
+        </section>
       </div>
     );
   },

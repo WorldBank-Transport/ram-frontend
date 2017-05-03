@@ -75,6 +75,13 @@
       background: rgba($base-color, 0.04);
     }
   }
+
+  .table__empty-cell {
+    text-align: center;
+    font-weight: $base-font-regular;
+    color: rgba($base-font-color, 0.48);
+    font-style: italic;
+  }
 }
 
 /* Prose specific */
