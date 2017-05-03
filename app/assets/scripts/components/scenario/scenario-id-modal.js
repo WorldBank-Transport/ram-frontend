@@ -54,7 +54,7 @@ const ScenarioIDModal = React.createClass({
       showGlobalLoading();
       this.setupNotifier();
     } else if (prevProps.revealed && !this.props.revealed) {
-      this.notifier.destroy();
+      if (this.notifier) { this.notifier.destroy(); }
     }
   },
 
@@ -66,7 +66,7 @@ const ScenarioIDModal = React.createClass({
   },
 
   componentWillUnmount: function () {
-    this.notifier.destroy();
+    if (this.notifier) { this.notifier.destroy(); }
   },
 
   onClose: function () {
