@@ -4,6 +4,9 @@
 
 .page {
   position: relative;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
 }
 
 /* Header
@@ -96,6 +99,7 @@
 
 .page__body {
   @extend .clearfix;
+  flex: 1;
 }
 
 
