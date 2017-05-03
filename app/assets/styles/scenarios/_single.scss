@@ -98,3 +98,17 @@
     height: 100%;
   }
 }
+
+
+/* Results
+   ========================================================================== */
+
+.card--analysis-result {
+  .card__contents {
+    padding: $global-spacing * 2;
+  }
+
+  .table-wrapper {
+    margin: 0 (-$global-spacing);
+  }
+}

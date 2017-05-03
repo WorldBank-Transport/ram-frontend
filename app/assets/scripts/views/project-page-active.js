@@ -246,8 +246,8 @@ var ProjectPageActive = React.createClass({
                   className='scenario-meta-menu'
                   triggerClassName='ca-ellipsis'
                   triggerActiveClassName='button--active'
-                  triggerText='Options'
-                  triggerTitle='Scenario options'
+                  triggerText={t('Options')}
+                  triggerTitle={t('Scenario options')}
                   direction='down'
                   alignment='right' >
                     <ul className='drop__menu drop__menu--iconified' role='menu'>
@@ -335,7 +335,7 @@ var ProjectPageActive = React.createClass({
 
             <section className='diptych diptych--info'>
 
-              <h2 className='diptych__title'>{t('Details')}</h2>
+              <h2 className='inpage__section-title'>{t('Details')}</h2>
               <div className='card'>
                 <div className='card__contents'>
                   <ul className='project-details-list'>
@@ -354,7 +354,7 @@ var ProjectPageActive = React.createClass({
             </section>
 
             <section className='diptych diptych--scenarios'>
-              <h2 className='diptych__title'>{t('Scenarios')}</h2>
+              <h2 className='inpage__section-title'>{t('Scenarios')}</h2>
               {this.renderScenariosList()}
             </section>
 

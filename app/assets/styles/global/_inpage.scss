@@ -64,6 +64,9 @@
 
     > * {
       vertical-align: top;
+    }
+
+    .ipa-main {
       margin-left: $global-spacing / 2;
     }
   }
@@ -78,5 +81,11 @@
     > *:last-child {
       margin-bottom: 0;
     }
+  }
+
+  &__section-title {
+    @include heading(1.5rem);
+    margin-bottom: $global-spacing * 2;
+    text-align: center;
   }
 }

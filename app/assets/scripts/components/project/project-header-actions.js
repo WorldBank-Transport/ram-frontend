@@ -44,7 +44,7 @@ const ProjectHeaderActions = React.createClass({
     }
 
     return (
-      <button title={t('Finish setup')} className={c('ipa-tick', {disabled: !readyToEndSetup || isFinishingSetup})} type='button' onClick={this.props.onAction.bind(null, 'finish')}><span>{t('Finish setup')}</span></button>
+      <button title={t('Finish setup')} className={c('ipa-tick ipa-main', {disabled: !readyToEndSetup || isFinishingSetup})} type='button' onClick={this.props.onAction.bind(null, 'finish')}><span>{t('Finish setup')}</span></button>
     );
   },
 
@@ -54,8 +54,8 @@ const ProjectHeaderActions = React.createClass({
         <Dropdown
           triggerClassName='ipa-ellipsis'
           triggerActiveClassName='button--active'
-          triggerText='Action'
-          triggerTitle='Action'
+          triggerText='Options'
+          triggerTitle={t('Project options')}
           direction='down'
           alignment='center' >
             <ul className='drop__menu drop__menu--iconified' role='menu'>
@@ -67,7 +67,7 @@ const ProjectHeaderActions = React.createClass({
         </Dropdown>
 
         {this.props.projectStatus === 'active'
-          ? <button title={t('Create new scenario')} className='ipa-plus' type='button' onClick={this.props.onAction.bind(null, 'new-scenario')}><span>{t('New scenario')}</span></button>
+          ? <button title={t('Create new scenario')} className='ipa-plus ipa-main' type='button' onClick={this.props.onAction.bind(null, 'new-scenario')}><span>{t('New scenario')}</span></button>
           : this.renderFinishSetupButton()
         }
 
