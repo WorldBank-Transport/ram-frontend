@@ -69,14 +69,7 @@
   font-weight: $base-font-bold;
   font-size: 0.75rem;
   line-height: 1rem;
-
-  .page__header & {
-    float: right;
-  }
-
-  .page__footer & {
-    float: left;
-  }
+  float: right;
 
   a {
     color: inherit;
@@ -114,7 +107,6 @@
   font-size: 0.875rem;
   line-height: 1.25rem;
   color: tint($base-color, 64%);
-  text-align: right;
   box-shadow: inset 0 1px 0 0 $base-alpha-color;
 
   small {
@@ -129,5 +121,14 @@
   *:last-child {
     margin-bottom: 0;
   }
+}
 
+.page__footer-nav {
+  @include column(6/12);
+  @include move(6/12);
+}
+
+.footer-credits {
+  @include column(6/12);
+  @include move(-6/12);
 }
