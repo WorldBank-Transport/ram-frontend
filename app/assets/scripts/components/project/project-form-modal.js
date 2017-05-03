@@ -143,7 +143,7 @@ const ProjectFormModal = React.createClass({
 
     return (
       <div className='form__group'>
-        <label className='form__label' htmlFor='project-name'>{t('Project name')}</label>
+        <label className='form__label' htmlFor='project-name'>{t('Name')}</label>
         <input
           type='text'
           id='project-name'

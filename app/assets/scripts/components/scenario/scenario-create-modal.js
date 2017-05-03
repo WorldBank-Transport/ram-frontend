@@ -201,7 +201,7 @@ const ScenarioCreateModal = React.createClass({
 
     return (
       <div className='form__group'>
-        <label className='form__label' htmlFor='scenario-name'>{t('Scenario name')}</label>
+        <label className='form__label' htmlFor='scenario-name'>{t('Name')}</label>
         <input
           type='text'
           id='scenario-name'
