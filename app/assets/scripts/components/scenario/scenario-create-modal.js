@@ -9,7 +9,7 @@ import { limitHelper } from '../../utils/utils';
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '../modal';
 
-var nameLimit = limitHelper(100);
+var nameLimit = limitHelper(80);
 var descLimit = limitHelper(140);
 
 const ScenarioCreateModal = React.createClass({
@@ -214,7 +214,7 @@ const ScenarioCreateModal = React.createClass({
 
         {this.state.errors.name ? <p className='form__error'>{t('A scenario name is required.')}</p> : null }
 
-        <p className='form__help'>{limit.remaining}</p>
+        <p className='form__help'>{limit.remaining} {t('characters left')}</p>
       </div>
     );
   },
@@ -233,7 +233,7 @@ const ScenarioCreateModal = React.createClass({
           value={this.state.data.description}
           onChange={this.onFieldChange.bind(null, 'description')}
         />
-        <p className='form__help'>{limit.remaining}</p>
+        <p className='form__help'>{limit.remaining} {t('characters left')}</p>
       </div>
     );
   },
