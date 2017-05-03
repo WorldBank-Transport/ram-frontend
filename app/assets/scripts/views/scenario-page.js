@@ -279,6 +279,9 @@ var ScenarioPage = React.createClass({
             <div className='inpage__headline'>
               {this.renderBreadcrumb()}
               <h1 className='inpage__title'>{dataScenario.name}</h1>
+              {dataScenario.description ? (
+                <p className='inpage__description'>{dataScenario.description}</p>
+              ) : null}
             </div>
             <ScenarioHeaderActions
               scenario={dataScenario}

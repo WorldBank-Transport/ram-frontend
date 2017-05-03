@@ -214,16 +214,21 @@ var ProjectPageActive = React.createClass({
   renderFiles: function () {
     let projectFiles = this.props.project.data.files;
     let projectId = this.props.project.data.id;
+    return (
+      <ul className='project-details-list'>
+        {projectFiles.map(file => ([
+          <li>
+            <div className={`project-detail ${file.type}`}>
+              <h3 className='project-detail__title' key={`${file.name}-label`}>{fileTypesMatrix[file.type].display}</h3>
+              <p className='action-wrapper'><a href={`${config.api}/projects/${projectId}/files/${file.id}`} title={t('Download file')} className='detail-download'><span>{t('Download')}</span></a></p>
+              <p key={`${file.name}-desc`}>{fileTypesMatrix[file.type].description}</p>
+            </div>
+          </li>
+        ]))}
+      </ul>
+    );
 
-    return projectFiles.map(file => ([
-      <li>
-        <div className={`project-detail ${file.type}`}>
-          <h3 className='project-detail__title' key={`${file.name}-label`}>{fileTypesMatrix[file.type].display}</h3>
-          <p className='action-wrapper'><a href={`${config.api}/projects/${projectId}/files/${file.id}`} title={t('Download file')} className='detail-download'><span>{t('Download')}</span></a></p>
-          <p key={`${file.name}-desc`}>{fileTypesMatrix[file.type].description}</p>
-        </div>
-      </li>
-    ]));
+    return 
   },
 
   renderScenarioCard: function (scenario) {
@@ -339,6 +344,9 @@ var ProjectPageActive = React.createClass({
             <div className='inpage__headline'>
               {this.renderBreadcrumb()}
               <h1 className='inpage__title'>{dataProject.name}</h1>
+              {dataProject.description ? (
+                <p className='inpage__description'>{dataProject.description}</p>
+              ) : null}
             </div>
             <ProjectHeaderActions
               project={dataProject}
@@ -350,21 +358,10 @@ var ProjectPageActive = React.createClass({
           <div className='inner'>
 
             <section className='diptych diptych--info'>
-
               <h2 className='inpage__section-title'>{t('Details')}</h2>
               <div className='card'>
                 <div className='card__contents'>
-                  <ul className='project-details-list'>
-                    <li>
-                      <div className='project-detail description'>
-                        {dataProject.description ? <h3 className='project-detail__title'>{t('Description')}</h3> : null}
-                        {dataProject.description ? (
-                          <p>{dataProject.description}</p>
-                        ) : null}
-                      </div>
-                    </li>
-                    {this.renderFiles()}
-                  </ul>
+                  {this.renderFiles()}
                 </div>
               </div>
             </section>

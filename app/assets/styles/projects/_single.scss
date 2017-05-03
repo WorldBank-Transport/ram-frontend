@@ -85,6 +85,12 @@
     }
   }
 
+  &__body {
+    > *:last-child {
+      margin-bottom: 0;
+    }
+  }
+
   .form__label {
     @extend .visually-hidden;
   }
