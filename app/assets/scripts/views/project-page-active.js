@@ -229,6 +229,22 @@ var ProjectPageActive = React.createClass({
   renderScenarioCard: function (scenario) {
     let {id, project_id: projectId, name, description, master: isMaster} = scenario;
 
+    let scenarioSubtitle;
+
+    if (scenario.scen_create && scenario.scen_create.status === 'running') {
+      scenarioSubtitle = t('Creating scenario');
+    } else if (scenario.data.res_gen_at !== 0) {
+      scenarioSubtitle = t('Analysis complete');
+
+      if (scenario.data.rn_updated_at > scenario.data.res_gen_at) {
+        scenarioSubtitle = t('Analysis outdated');
+      }
+    } else if (scenario.gen_analysis && scenario.gen_analysis.status === 'running') {
+      scenarioSubtitle = t('Analysis running');
+    } else {
+      scenarioSubtitle = t('No analysis yet');
+    }
+
     return (
       <li key={`scenario-${id}`}>
         <article className='scenario scenario--card card' id={`scenario-${id}`}>
@@ -238,7 +254,7 @@ var ProjectPageActive = React.createClass({
                 <Link to={`/${getLanguage()}/projects/${projectId}/scenarios/${id}`} title={t('View scenario')} className='link-wrapper'>
                   <h1 className='card__title'>{name}</h1>
                 </Link>
-                <p className='card__subtitle'>Scenario subtitle</p>
+                <p className='card__subtitle'>{scenarioSubtitle}</p>
               </div>
               <div className='card__actions'>
                 <Dropdown
