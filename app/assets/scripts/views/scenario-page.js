@@ -253,6 +253,26 @@ var ScenarioPage = React.createClass({
     }
   },
 
+  renderEmptyState: function () {
+    let scenario = this.props.scenario.data;
+    let isGenerating = scenario.gen_analysis && scenario.gen_analysis.status === 'running';
+    let isPending = scenario.scen_create && scenario.scen_create.status === 'running';
+    let hasResults = scenario.files.some(o => o.type === 'results');
+
+    if (isGenerating || isPending || hasResults) {
+      return null;
+    }
+
+    return (
+      <div className='empty-content'>
+        <div className='prose prose--responsive'>
+          <p>{t('There\'s no data to show yet. Please start by running analysis.')}</p>
+        </div>
+        <button title={t('Generate analysis')} className='card__button card__button--arrow-loop empty-content__cta' type='button' onClick={this.onScenarioAction.bind(null, 'generate')}><span>{t('Analysis')}</span></button>
+      </div>
+    );
+  },
+
   render: function () {
     const { fetched, fetching, error } = fetchStatus(this.props.project, this.props.scenario);
     const dataScenario = this.props.scenario.data;
@@ -293,13 +313,6 @@ var ScenarioPage = React.createClass({
 
             {this.renderOutdatedResultsMessage()}
 
-            <div className='empty-content'>
-              <div className='prose prose--responsive'>
-                <p>There's no data to show yet. Please start by running analysis.</p>
-              </div>
-              <button title={t('Generate analysis')} className='card__button card__button--arrow-loop empty-content__cta'  type='button'><span>{t('Analysis')}</span></button>
-            </div>
-
             <LogGen
               data={dataScenario.gen_analysis}
               receivedAt={this.props.scenario.receivedAt}
@@ -311,6 +324,8 @@ var ScenarioPage = React.createClass({
               receivedAt={this.props.scenario.receivedAt}
               update={this.props._fetchScenarioItemSilent.bind(null, this.props.params.projectId, this.props.params.scenarioId)}
             />
+
+            {this.renderEmptyState()}
 
             {resultsFile ? (
               <ScenarioResults
