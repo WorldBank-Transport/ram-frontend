@@ -56,8 +56,8 @@ const ScenarioHeaderActions = React.createClass({
           className='scenario-meta-menu'
           triggerClassName='ipa-ellipsis'
           triggerActiveClassName='button--active'
-          triggerText='Action'
-          triggerTitle='Action'
+          triggerText={t('Options')}
+          triggerTitle={t('Scenario options')}
           direction='down'
           alignment='center' >
             <ul className='drop__menu drop__menu--iconified' role='menu'>
@@ -68,10 +68,10 @@ const ScenarioHeaderActions = React.createClass({
               <li><ScenarioDeleteAction isMaster={isMaster} name={this.props.scenario.name} onDeleteConfirm={this.props.onAction.bind(null, 'delete')}/></li>
             </ul>
         </Dropdown>
-        <button data-tip data-for='tip-disable-reason' title={t('Edit network')} className={c('ipa-pencil', {'visually-disabled': isGenerating || isPending})} type='button' onClick={this.onEditClick.bind(null, !isGenerating)}><span>{t('Edit')}</span></button>
-        <a href={resultsUrl} data-tip data-for='tip-no-results' title={t('Download results')} className={c('ipa-download', {'visually-disabled': !hasResults})} onClick={(e) => !hasResults && e.preventDefault()}><span>{t('Download')}</span></a>
+        <button data-tip data-for='tip-disable-reason' title={t('Edit network')} className={c('ipa-pencil', {'visually-disabled': isGenerating || isPending})} type='button' onClick={this.onEditClick.bind(null, !isGenerating)}><span>{t('Network')}</span></button>
+        <a href={resultsUrl} data-tip data-for='tip-no-results' title={t('Download data')} className={c('ipa-download', {'visually-disabled': !hasResults})} onClick={(e) => !hasResults && e.preventDefault()}><span>{t('Data')}</span></a>
 
-        <button data-tip data-for='tip-disable-reason' title={t('Generate results')} className={c('ipa-arrow-loop', {'visually-disabled': isGenerating || isPending})} type='button' onClick={this.onGenerateClick.bind(null, !isGenerating)}><span>{t('Generate')}</span></button>
+        <button data-tip data-for='tip-disable-reason' title={t('Generate analysis')} className={c('ipa-arrow-loop ipa-main', {'visually-disabled': isGenerating || isPending})} type='button' onClick={this.onGenerateClick.bind(null, !isGenerating)}><span>{t('Analysis')}</span></button>
 
         {this.renderDisableReasonTip(isGenerating, isPending)}
 
