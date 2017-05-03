@@ -230,32 +230,6 @@ var ScenarioPage = React.createClass({
     );
   },
 
-  renderFiles: function () {
-    let data = this.props.scenario.data;
-    if (data.gen_analysis && !data.gen_analysis.error) {
-      let resultFiles = data.files.filter(f => f.type === 'results');
-
-      if (!resultFiles.length) return null;
-
-      return (
-        <div>
-          <h3>Result files</h3>
-          <ul>
-            {resultFiles.map(o => {
-              return (
-                <li key={o.id}>
-                  <a href={`${config.api}/projects/${data.project_id}/scenarios/${data.id}/files/${o.id}?download=true`}>{o.name}</a>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      );
-    } else {
-      return <p>No results were generated for this scenario yet.</p>;
-    }
-  },
-
   renderOutdatedResultsMessage: function () {
     let scenario = this.props.scenario.data;
     let isGenerating = scenario.gen_analysis && scenario.gen_analysis.status === 'running';
@@ -327,8 +301,6 @@ var ScenarioPage = React.createClass({
               receivedAt={this.props.scenario.receivedAt}
               update={this.props._fetchScenarioItemSilent.bind(null, this.props.params.projectId, this.props.params.scenarioId)}
             />
-
-            {dataScenario.status === 'active' ? this.renderFiles() : null}
 
             {resultsFile ? (
               <ScenarioResults
