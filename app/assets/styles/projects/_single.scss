@@ -97,15 +97,26 @@
 }
 
 .diptych {
-  @include column(6/12, $cycle: 2);
+  @include column(6/12);
   margin-top: $global-spacing * 2;
 
   &:nth-child(1),
   &:nth-child(2) {
     margin-top: 0;
   }
+
+  .inpage__section-title {
+    text-align: left;
+  }
 }
 
+// .diptych--info {
+//   @include column(4/12);
+// }
+
+// .diptych--scenarios {
+//   @include column(8/12);
+// }
 
 /* Details list
    ========================================================================== */
