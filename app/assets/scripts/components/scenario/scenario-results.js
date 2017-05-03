@@ -2,12 +2,13 @@
 // This is a connected component.
 import React, { PropTypes as T } from 'react';
 import { connect } from 'react-redux';
+import _ from 'lodash';
 
 import {
   fetchScenarioResults
 } from '../../actions';
 import { prettyPrint, percent } from '../../utils/utils';
-import { t, getLanguage } from '../../utils/i18n';
+import { t } from '../../utils/i18n';
 
 const ScenarioResults = React.createClass({
 
@@ -75,7 +76,7 @@ const ScenarioResults = React.createClass({
                     </tr>
                   </thead>
                   <tbody>
-                  {data.map(aa => this.renderAccessibilityTableRow(poi, aa))}
+                  {_.sortBy(data, o => _.deburr(o.name)).map(aa => this.renderAccessibilityTableRow(poi, aa))}
                   </tbody>
                 </table>
               </div>
