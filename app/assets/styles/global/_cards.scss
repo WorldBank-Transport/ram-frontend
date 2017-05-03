@@ -125,6 +125,10 @@ a.card__contents {
   > * {
     vertical-align: top;
     margin-left: $global-spacing / 2;
+
+    &:last-child {
+      margin-right: -$global-spacing / 2;
+    }
   }
 }
 
