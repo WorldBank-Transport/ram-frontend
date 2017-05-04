@@ -21,7 +21,6 @@ import {
 } from '../actions';
 import { fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
-import config from '../config';
 import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
 
 import Breadcrumb from '../components/breadcrumb';
@@ -32,6 +31,7 @@ import ScenarioIDModal from '../components/scenario/scenario-id-modal';
 import Alert from '../components/alert';
 import LogBase from '../components/log-base';
 import ScenarioResults from '../components/scenario/scenario-results';
+import StickyHeader from '../components/sticky-header';
 
 var ScenarioPage = React.createClass({
   propTypes: {
@@ -294,20 +294,18 @@ var ScenarioPage = React.createClass({
 
     return (
       <section className='inpage inpage--hub'>
-        <header className='inpage__header'>
-          <div className='inner'>
-            <div className='inpage__headline'>
-              {this.renderBreadcrumb()}
-              <h1 className='inpage__title' title={dataScenario.name}>{dataScenario.name}</h1>
-              {dataScenario.description ? (
-                <p className='inpage__description'>{dataScenario.description}</p>
-              ) : null}
-            </div>
-            <ScenarioHeaderActions
-              scenario={dataScenario}
-              onAction={this.onScenarioAction} />
+        <StickyHeader className='inpage__header'>
+          <div className='inpage__headline'>
+            {this.renderBreadcrumb()}
+            <h1 className='inpage__title' title={dataScenario.name}>{dataScenario.name}</h1>
+            {dataScenario.description ? (
+              <p className='inpage__description'>{dataScenario.description}</p>
+            ) : null}
           </div>
-        </header>
+          <ScenarioHeaderActions
+            scenario={dataScenario}
+            onAction={this.onScenarioAction} />
+        </StickyHeader>
         <div className='inpage__body'>
           <div className='inner'>
 

@@ -25,6 +25,7 @@ import { t, getLanguage } from '../utils/i18n';
 import { fileTypesMatrix } from '../utils/constants';
 import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
 
+import StickyHeader from '../components/sticky-header';
 import Breadcrumb from '../components/breadcrumb';
 import ProjectFileInput from '../components/project/project-file-input';
 import ProjectFileCard from '../components/project/project-file-card';
@@ -319,21 +320,19 @@ var ProjectPagePending = React.createClass({
 
     return (
       <section className='inpage inpage--hub'>
-        <header className='inpage__header'>
-          <div className='inner'>
-            <div className='inpage__headline'>
-              {this.renderBreadcrumb()}
-              <h1 className='inpage__title' title={data.name}>{data.name}</h1>
-              {data.description ? (
-                <p className='inpage__description'>{data.description}</p>
-              ) : null}
-            </div>
-            <ProjectHeaderActions
-              project={data}
-              projectStatus='pending'
-              onAction={this.onProjectAction} />
+        <StickyHeader className='inpage__header'>
+          <div className='inpage__headline'>
+            {this.renderBreadcrumb()}
+            <h1 className='inpage__title' title={data.name}>{data.name}</h1>
+            {data.description ? (
+              <p className='inpage__description'>{data.description}</p>
+            ) : null}
           </div>
-        </header>
+          <ProjectHeaderActions
+            project={data}
+            projectStatus='pending'
+            onAction={this.onProjectAction} />
+        </StickyHeader>
         <div className='inpage__body'>
           <div className='inner'>
             <h2 className='inpage__section-title'>{t('Project setup')}</h2>

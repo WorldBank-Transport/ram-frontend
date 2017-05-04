@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import _ from 'lodash';
 import c from 'classnames';
 import ReactTooltip from 'react-tooltip';
-
+import { StickyContainer } from 'react-sticky';
 import { t } from '../utils/i18n';
 
 import Header from '../components/header';
@@ -30,7 +30,9 @@ var App = React.createClass({
         <GlobalLoading />
         <Header />
         <main className='page__body' role='main'>
+          <StickyContainer>
           {this.props.children}
+          </StickyContainer>
         </main>
         <Footer />
         <ConfirmationPrompt />
