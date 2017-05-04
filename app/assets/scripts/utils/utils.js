@@ -61,3 +61,27 @@ export function limitHelper (charLimit) {
     return { c: cl, remaining, isOk: () => remaining >= 0 };
   };
 }
+
+export function toTimeStr (value) {
+  let remainder = value;
+  let hours = Math.floor(remainder / 3600);
+  remainder %= 3600;
+  let minutes = Math.floor(remainder / 60);
+  remainder %= 60;
+  let seconds = Math.round(remainder);
+
+  let pieces = [];
+  if (hours) {
+    pieces.push(hours < 10 ? `0${hours}H` : `${hours}H`);
+  }
+
+  if (minutes) {
+    pieces.push(minutes < 10 ? `0${minutes}M` : `${minutes}M`);
+  }
+
+  if (seconds) {
+    pieces.push(seconds < 10 ? `0${seconds}S` : `${seconds}S`);
+  }
+
+  return pieces.join(' ');
+}

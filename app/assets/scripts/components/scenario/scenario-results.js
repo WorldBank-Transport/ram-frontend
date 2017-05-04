@@ -3,11 +3,12 @@
 import React, { PropTypes as T } from 'react';
 import { connect } from 'react-redux';
 import _ from 'lodash';
+import c from 'classnames';
 
 import {
   fetchScenarioResults
 } from '../../actions';
-import { prettyPrint, percent } from '../../utils/utils';
+import { prettyPrint, percent, toTimeStr } from '../../utils/utils';
 import { t } from '../../utils/i18n';
 
 const ScenarioResults = React.createClass({
@@ -20,8 +21,30 @@ const ScenarioResults = React.createClass({
     _fetchScenarioResults: T.func
   },
 
+  getInitialState: function () {
+    return {
+      rawSort: {
+        field: 'name',
+        asc: true
+      }
+    };
+  },
+
   componentDidMount: function () {
     this.props._fetchScenarioResults(this.props.projectId, this.props.scenarioId, this.props.resultFileId);
+  },
+
+  setRawSort: function (field, e) {
+    e && e.preventDefault();
+
+    let sort;
+    if (field === this.state.rawSort.field) {
+      sort = { field, asc: !this.state.rawSort.asc };
+    } else {
+      sort = { field, asc: true };
+    }
+
+    this.setState({ rawSort: sort });
   },
 
   renderAccessibilityTableRow: function (poi, aa) {
@@ -87,6 +110,79 @@ const ScenarioResults = React.createClass({
     );
   },
 
+  renderRawResultsTable: function () {
+    let data = this.props.results.data;
+    let { field: sortField, asc } = this.state.rawSort;
+
+    let villages = data.reduce((acc, o) => {
+      if (!o.results.length) return acc;
+
+      // Add admin area name to each village.
+      let results = o.results.map(r => {
+        r.aa = o.name;
+        return r;
+      });
+
+      return acc.concat(results);
+    }, []);
+
+    // Sort villages.
+    villages = _.sortBy(villages, sortField);
+    if (!asc) {
+      villages.reverse();
+    }
+
+    const renderTh = (title, field) => {
+      let cl = c('table__sort', {
+        'table__sort--none': sortField !== field,
+        'table__sort--asc': sortField === field && asc,
+        'table__sort--desc': sortField === field && !asc
+      });
+
+      return (
+        <th><a href='#' className={cl} title={t(`Sort by ${title}`)} onClick={this.setRawSort.bind(null, field)}>{title}</a></th>
+      );
+    };
+
+    return (
+      <div>
+        <h2 className='inpage__section-title'>Village level raw data </h2>
+
+        <section className='card card--analysis-result'>
+          <div className='card__contents'>
+            <header className='card__header visually-hidden'>
+              <h1 className='card__title'>All Villages</h1>
+            </header>
+            <div className='card__body'>
+              <div className='table-wrapper'>
+                <table className='table'>
+                  <thead>
+                    <tr>
+                      {renderTh('Village', 'name')}
+                      {renderTh('Admin area', 'aa')}
+                      {renderTh('Population', 'population')}
+                      {renderTh('Time to POI', 'poi.pointOfInterest')}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {villages.map(o => (
+                      <tr key={_.kebabCase(`${o.aa}-${o.lat}-${o.lng}`)}>
+                        <th>{o.name || 'N/A'}</th>
+                        <td>{o.aa}</td>
+                        <td>{o.population || 'N/A'}</td>
+                        <td>{toTimeStr(o.poi.pointOfInterest)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  },
+
   render: function () {
     let { fetched, fetching, error } = this.props.results;
 
@@ -105,6 +201,7 @@ const ScenarioResults = React.createClass({
     return (
       <div>
         {this.renderAccessibilityTable('pointOfInterest')}
+        {this.renderRawResultsTable()}
       </div>
     );
   }

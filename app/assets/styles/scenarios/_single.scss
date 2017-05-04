@@ -104,6 +104,8 @@
    ========================================================================== */
 
 .card--analysis-result {
+  margin-bottom: $global-spacing * 2;
+
   .card__contents {
     padding: $global-spacing * 2;
   }
