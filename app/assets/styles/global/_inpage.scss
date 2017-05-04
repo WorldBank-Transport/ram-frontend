@@ -37,7 +37,7 @@
   .inpage__description {
     transition: all 0.24s ease 0s;
     max-height: 20rem;
-    margin-top: $global-spacing;
+    margin-top: $global-spacing / 2;
   }
 
   .inpage__header--sticky .inpage__description {
@@ -60,11 +60,12 @@
     a {
       @extend .truncated;
       color: inherit;
-      max-width: 12rem;
+      max-width: 14rem;
     }
 
     * {
       display: inline-block;
+      vertical-align: top;
     }
 
     li {
