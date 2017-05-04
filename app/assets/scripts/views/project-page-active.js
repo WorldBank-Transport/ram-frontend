@@ -326,7 +326,11 @@ var ProjectPageActive = React.createClass({
     const dataProject = this.props.project.data;
 
     if (!fetched && !fetching || !fetched && fetching) {
-      return null;
+      return (
+        <section className='inpage inpage--hub'>
+          <StickyHeader className='inpage__header' />
+        </section>
+      );
     }
 
     if (error) {

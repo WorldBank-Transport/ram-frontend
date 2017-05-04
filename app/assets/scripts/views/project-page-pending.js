@@ -300,13 +300,12 @@ var ProjectPagePending = React.createClass({
   render: function () {
     let { fetched, fetching, error, data, receivedAt } = this.props.project;
 
-    if (!fetched && !fetching) {
-      return null;
-    }
-
-    // Show if it's the first loading time.
-    if (!receivedAt && fetching) {
-      return null;
+    if (!fetched && !fetching || !fetched && fetching) {
+      return (
+        <section className='inpage inpage--hub'>
+          <StickyHeader className='inpage__header' />
+        </section>
+      );
     }
 
     if (error) {

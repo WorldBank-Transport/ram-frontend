@@ -121,12 +121,12 @@ var Home = React.createClass({
   renderProjectList: function () {
     let { fetched, fetching, error, data } = this.props.projects;
 
-    if (!fetched && !fetching) {
-      return null;
-    }
-
-    if (fetching) {
-      return null;
+    if (!fetched && !fetching || !fetched && fetching) {
+      return (
+        <section className='inpage inpage--hub'>
+          <StickyHeader className='inpage__header' />
+        </section>
+      );
     }
 
     if (error) {
