@@ -22,6 +22,7 @@
   padding: $global-spacing;
   overflow: hidden;
   flex: 1 1 100%;
+  min-height: 10rem;
 
   /* Animation */
   transition: all 0.16s ease 0s;
@@ -102,7 +103,6 @@ a.card__contents {
 
 .card__header {
   display: flex;
-  flex: 1;
   width: 100%;
   margin-bottom: $global-spacing;
 

@@ -323,7 +323,7 @@ var ProjectPagePending = React.createClass({
           <div className='inner'>
             <div className='inpage__headline'>
               {this.renderBreadcrumb()}
-              <h1 className='inpage__title'>{data.name}</h1>
+              <h1 className='inpage__title' title={data.name}>{data.name}</h1>
               {data.description ? (
                 <p className='inpage__description'>{data.description}</p>
               ) : null}

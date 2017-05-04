@@ -30,6 +30,8 @@
 
   .inpage__title {
     @include heading(1.5rem);
+    @extend .truncated;
+    max-width: 100%;
   }
 
   .inpage__breadcrumb {
@@ -42,7 +44,9 @@
     color: rgba(#fff, 0.8);
 
     a {
+      @extend .truncated;
       color: inherit;
+      max-width: 12rem;
     }
 
     * {
