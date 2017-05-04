@@ -18,6 +18,7 @@ import { prettyPrint } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
 import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
 
+import StickyHeader from '../components/sticky-header';
 import ProjectFormModal from '../components/project/project-form-modal';
 
 const projectStatusMatrix = {
@@ -145,16 +146,14 @@ var Home = React.createClass({
   render: function () {
     return (
       <section className='inpage inpage--hub'>
-        <header className='inpage__header'>
-          <div className='inner'>
-            <div className='inpage__headline'>
-              <h1 className='inpage__title'>{t('Projects')}</h1>
-            </div>
-            <div className='inpage__actions'>
-              <button title={t('Create new project')} className='ipa-plus' type='button' onClick={this.openModal}><span>{t('New project')}</span></button>
-            </div>
+        <StickyHeader className='inpage__header'>
+          <div className='inpage__headline'>
+            <h1 className='inpage__title'>{t('Projects')}</h1>
           </div>
-        </header>
+          <div className='inpage__actions'>
+            <button title={t('Create new project')} className='ipa-plus' type='button' onClick={this.openModal}><span>{t('New project')}</span></button>
+          </div>
+        </StickyHeader>
         <div className='inpage__body'>
           <div className='inner'>
             {this.renderProjectList()}

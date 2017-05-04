@@ -23,6 +23,7 @@ import { fileTypesMatrix } from '../utils/constants';
 import config from '../config';
 import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
 
+import StickyHeader from '../components/sticky-header';
 import Breadcrumb from '../components/breadcrumb';
 import Dropdown from '../components/dropdown';
 import ProjectFormModal from '../components/project/project-form-modal';
@@ -339,21 +340,19 @@ var ProjectPageActive = React.createClass({
 
     return (
       <section className='inpage inpage--hub'>
-        <header className='inpage__header'>
-          <div className='inner'>
-            <div className='inpage__headline'>
-              {this.renderBreadcrumb()}
-              <h1 className='inpage__title' title={dataProject.name}>{dataProject.name}</h1>
-              {dataProject.description ? (
-                <p className='inpage__description'>{dataProject.description}</p>
-              ) : null}
-            </div>
-            <ProjectHeaderActions
-              project={dataProject}
-              projectStatus='active'
-              onAction={this.onProjectAction} />
+        <StickyHeader className='inpage__header'>
+          <div className='inpage__headline'>
+            {this.renderBreadcrumb()}
+            <h1 className='inpage__title' title={dataProject.name}>{dataProject.name}</h1>
+            {dataProject.description ? (
+              <p className='inpage__description'>{dataProject.description}</p>
+            ) : null}
           </div>
-        </header>
+          <ProjectHeaderActions
+            project={dataProject}
+            projectStatus='active'
+            onAction={this.onProjectAction} />
+        </StickyHeader>
         <div className='inpage__body'>
           <div className='inner'>
 

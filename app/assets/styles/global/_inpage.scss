@@ -14,7 +14,6 @@
 
     > .inner {
       @extend .row, .row--centered;
-      min-height: 3rem;
       display: flex;
       align-items: flex-end;
     }
@@ -32,6 +31,21 @@
     @include heading(1.5rem);
     @extend .truncated;
     max-width: 100%;
+    margin: 0;
+  }
+
+  .inpage__description {
+    transition: all 0.24s ease 0s;
+    max-height: 20rem;
+    margin-top: $global-spacing;
+  }
+
+  .inpage__header--sticky .inpage__description {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+    overflow: hidden;
+    visibility: hidden;
   }
 
   .inpage__breadcrumb {
