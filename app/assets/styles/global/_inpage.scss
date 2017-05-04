@@ -35,18 +35,17 @@
   }
 
   .inpage__description {
-    margin-top: $global-spacing;
+    transition: all 0.24s ease 0s;
     max-height: 20rem;
-    opacity: 1;
-    overflow: visible;
-    transition: all 0.12s ease 0s;
+    margin-top: $global-spacing;
   }
 
   .inpage__header--sticky .inpage__description {
-    opacity: 0;
     max-height: 0;
+    opacity: 0;
+    margin-top: 0;
     overflow: hidden;
-    margin: 0;
+    visibility: hidden;
   }
 
   .inpage__breadcrumb {
