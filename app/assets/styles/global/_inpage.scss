@@ -118,3 +118,54 @@
     text-align: center;
   }
 }
+
+
+/* Inpage actions
+   ========================================================================== */
+
+/**
+ * "ipa-" prefix stands for "inpage action"
+ */
+
+[class^="ipa-"],
+[class*=" ipa-"] {
+  @extend .button;
+}
+
+.ipa-main {
+  @extend .button--primary-raised-dark;
+}
+
+.ipa-plus::before {
+  @extend %collecticon-sm-plus;
+}
+
+.ipa-tick::before {
+  @extend %collecticon-sm-tick;
+}
+
+.ipa-ellipsis,
+.ipa-download,
+.ipa-pencil {
+   @extend .button--achromic;
+}
+
+.ipa-ellipsis {
+  @extend .button--text-hidden;
+
+  &::before {
+    @extend %collecticon-ellipsis-vertical;
+  }
+}
+
+.ipa-download::before {
+  @extend %collecticon-download-3;
+}
+
+.ipa-pencil::before {
+  @extend %collecticon-pencil;
+}
+
+.ipa-arrow-loop::before {
+  @extend %collecticon-arrow-loop;
+}

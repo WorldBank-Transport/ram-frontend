@@ -3,66 +3,6 @@
    ========================================================================== */
 
 
-/* Inpage actions
-   ========================================================================== */
-
-/**
- * "ipa-" prefix stands for "inpage action"
- */
-
-[class^="ipa-"],
-[class*=" ipa-"] {
-  @extend .button;
-}
-
-.ipa-plus,
-.ipa-tick,
-.ipa-cog,
-.ipa-arrow-loop {
-  @extend .button--primary-raised-dark;
-}
-
-.ipa-plus::before {
-  @extend %collecticon-sm-plus;
-}
-
-.ipa-tick::before {
-  @extend %collecticon-sm-tick;
-}
-
-.ipa-ellipsis {
-  @extend .button--achromic, .button--text-hidden;
-
-  &::before {
-    @extend %collecticon-ellipsis-vertical;
-  }
-}
-
-.ipa-download,
-.ipa-pencil {
-   @extend .button--achromic;
-}
-
-.ipa-download::before {
-  @extend %collecticon-download-3;
-}
-
-.ipa-pencil::before {
-  @extend %collecticon-pencil;
-}
-
-.ipa-arrow-loop::before {
-  @extend %collecticon-arrow-loop;
-}
-
-.ipa-cog {
-  @extend .button--text-hidden;
-
-  &::before {
-    @extend %collecticon-cog;
-  }
-}
-
 /* Drop menu actions
    ========================================================================== */
 
