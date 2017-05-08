@@ -147,7 +147,7 @@ var Home = React.createClass({
             <h1 className='inpage__title'>{t('Projects')}</h1>
           </div>
           <div className='inpage__actions'>
-            <button title={t('Create new project')} className='ipa-plus' type='button' onClick={this.openModal}><span>{t('New project')}</span></button>
+            <button title={t('Create new project')} className='ipa-plus ipa-main' type='button' onClick={this.openModal}><span>{t('New project')}</span></button>
           </div>
         </StickyHeader>
         <div className='inpage__body'>

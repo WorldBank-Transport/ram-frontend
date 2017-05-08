@@ -5,11 +5,11 @@
 /* Colors
    ========================================================================== */
 
-$base-color: #2E4C45;                                   // Dark gray-ish green
-$primary-color: #43C272;                                // Green
-$secondary-color: #287895;                              // Jelly Bean
+$base-color: #002244;                                   // WBG Solid Blue
+$primary-color: #0071BC;                                // WBG Dark Blue (used on WBG website links)
+$secondary-color: #872B90;                              // Vivid Violet
 
-$accent-color: #00B380;                                 // Dark green
+$accent-color: #009FDA;                                 // WBG Bright Blue
 
 $danger-color: #FF5722;                                 // Red
 $success-color: $accent-color;                          // Dark green
@@ -33,7 +33,7 @@ $infographic-color-e: #e0da10;    // Yellow-ish green
 
 $root-font-size: 16px;
 
-$base-font-color: tint($base-color, 20%);
+$base-font-color: tint($base-color, 32%);
 $base-font-family: "Muli", "Helvetica Neue", Helvetica, Arial, sans-serif;
 $base-font-style: normal;
 $base-font-light: 100;
