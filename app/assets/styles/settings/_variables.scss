@@ -11,22 +11,16 @@ $secondary-color: #872B90;                              // Vivid Violet
 
 $accent-color: #009FDA;                                 // WBG Bright Blue
 
-$danger-color: #FF5722;                                 // Red
-$success-color: $accent-color;                          // Dark green
-$warning-color: #f6d55f;                                // Yellow
-$info-color: #35A2D8;                                   // Blue
-
 $link-color: $primary-color;
 $base-alpha-color: rgba($base-color, 0.08);
 
+/* State colors */
 
-/* Infographic colors */
+$danger-color: #FF5722;                                 // Red
+$success-color: #16A085;                                // Green
+$warning-color: #f6d55f;                                // Yellow
+$info-color: $accent-color;                             // Blue
 
-$infographic-color-a: #ff5252;    // Red
-$infographic-color-b: #97c42d;    // Light green
-$infographic-color-c: #0ba0af;    // Blue
-$infographic-color-d: #e88006;    // Orange
-$infographic-color-e: #e0da10;    // Yellow-ish green
 
 /* Typography
    ========================================================================== */
