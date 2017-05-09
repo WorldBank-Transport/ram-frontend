@@ -19,6 +19,7 @@ var App = React.createClass({
 
   propTypes: {
     routes: T.array,
+    location: T.object,
     children: T.object
   },
 
@@ -28,7 +29,7 @@ var App = React.createClass({
     return (
       <div className={c('page', pageClass)}>
         <GlobalLoading />
-        <Header />
+        <Header pathname={this.props.location.pathname} />
         <main className='page__body' role='main'>
           <StickyContainer>
           {this.props.children}
