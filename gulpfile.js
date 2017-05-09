@@ -1,6 +1,7 @@
 'use strict';
 
 var fs = require('fs');
+var path = require('path');
 var cp = require('child_process');
 var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
@@ -18,6 +19,7 @@ var rev = require('gulp-rev');
 var revReplace = require('gulp-rev-replace');
 var SassString = require('node-sass').types.String;
 var notifier = require('node-notifier');
+var marked = require('marked');
 
 // /////////////////////////////////////////////////////////////////////////////
 // --------------------------- Variables -------------------------------------//
@@ -56,7 +58,7 @@ gulp.task('default', ['clean'], function () {
   gulp.start('build');
 });
 
-gulp.task('serve', ['vendorScripts', 'javascript', 'styles', 'fonts'], function () {
+gulp.task('serve', ['vendorScripts', 'markdown', 'javascript', 'styles', 'fonts'], function () {
   browserSync({
     port: 3000,
     ghostMode: false,
@@ -79,6 +81,7 @@ gulp.task('serve', ['vendorScripts', 'javascript', 'styles', 'fonts'], function 
   gulp.watch('app/assets/styles/**/*.scss', ['styles']);
   gulp.watch('app/assets/fonts/**/*', ['fonts']);
   gulp.watch('package.json', ['vendorScripts']);
+  gulp.watch('app/content/**/*', ['markdown']);
   gulp.watch('app/assets/graphics/collecticons/**', ['collecticons']);
 });
 
@@ -188,7 +191,7 @@ gulp.task('collecticons', function (done) {
 // --------------------------- Helper tasks -----------------------------------//
 // ----------------------------------------------------------------------------//
 
-gulp.task('build', ['vendorScripts', 'javascript', 'collecticons'], function () {
+gulp.task('build', ['vendorScripts', 'markdown', 'javascript', 'collecticons'], function () {
   gulp.start(['html', 'images', 'fonts', 'extras'], function () {
     return gulp.src('dist/**/*')
       .pipe($.size({title: 'build', gzip: true}))
@@ -268,4 +271,14 @@ gulp.task('extras', function () {
   ], {
     dot: true
   }).pipe(gulp.dest('dist'));
+});
+
+gulp.task('markdown', function () {
+  return gulp.src('app/content/**/*.md')
+    .pipe(gutil.buffer())
+    .pipe($.markdownToJson(marked, 'content.json', function (data, file) {
+      data.filename = path.basename(file.path);
+      return data;
+    }))
+    .pipe(gulp.dest('app/assets/content'));
 });
