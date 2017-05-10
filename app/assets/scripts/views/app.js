@@ -23,6 +23,24 @@ var App = React.createClass({
     children: T.object
   },
 
+  goToAnchor: function (hash) {
+    if (!hash) return;
+    let el = document.querySelector(hash);
+    if (el) {
+      el.scrollIntoView();
+    }
+  },
+
+  componentDidMount: function () {
+    this.goToAnchor(this.props.location.hash);
+  },
+
+  componentDidUpdate: function (prevProps) {
+    if (this.props.location.hash && prevProps.location.hash !== this.props.location.hash) {
+      this.goToAnchor(this.props.location.hash);
+    }
+  },
+
   render: function () {
     const pageClass = _.get(_.last(this.props.routes), 'pageClass', '');
 

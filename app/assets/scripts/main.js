@@ -21,6 +21,9 @@ import Help from './views/help';
 const history = syncHistoryWithStore(hashHistory, store);
 
 const scrollerMiddleware = useScroll((prevRouterProps, currRouterProps) => {
+  // When a hash is set do not scroll to the top.
+  if (currRouterProps.location.hash) return false;
+
   return prevRouterProps &&
     decodeURIComponent(currRouterProps.location.pathname) !== decodeURIComponent(prevRouterProps.location.pathname);
 });

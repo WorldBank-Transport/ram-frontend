@@ -1,11 +1,11 @@
 ## Setting up a project
 Every project needs 5 different inputs to calculate accessibility for a region:
 
-1. [administrative boundaries](#administrative-boundaries)
-2. [population data](#population-data)
-3. [points of interest](#points-of-interest)
-4. [road network](#road-network)
-5. [OSRM profile](#profile)
+1. [administrative boundaries](#/en/help#administrative-boundaries)
+2. [population data](#/en/help#population-data)
+3. [points of interest](#/en/help#points-of-interest)
+4. [road network](#/en/help#road-network)
+5. [OSRM profile](#/en/help#profile)
 
 These files need to be compatible with each other. This means - for example - that the population data, road network and POI all need to fit within the administrative boundaries, or that the OSRM profile specifies travel speeds for road types that in the road network file.
 
