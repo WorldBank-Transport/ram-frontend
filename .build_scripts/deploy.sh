@@ -7,6 +7,11 @@ if [[ $TRAVIS_BRANCH == ${STAGING_BRANCH} ]]; then
 elif [[ $TRAVIS_BRANCH == ${DEPLOY_BRANCH} ]]; then
   LATEST_TAG=latest-stable
 fi
+elif [[ $TRAVIS_BRANCH == test ]]; then
+  echo $DOCKER_USERNAME
+  echo $DOCKER_PASSWD
+  exit 1;
+fi
 
 echo "Building source image"
 docker build -t $DOCKER_SRC_IMAGE .
