@@ -7,6 +7,12 @@ env:
   - CXX=g++-4.8
   - DEPLOY_BRANCH=master
   - STAGING_BRANCH=develop
+  - DOCKER_SRC_IMAGE=rra-frontend
+  - DOCKER_REPOSITORY=wbtransport/rra-frontend
+  # DOCKER_USER
+  - secure: bjzCPncMWzZGWczHo5B7ytrIMDNjkPfUl5iOdDEX6pPrcp8Gl2hxdOzGW74Ot5Fd6Esw+Yctda1O61jEyP+QX7Ud1EHIagwYg/DIBf/AyWsdx2AA47+uAvkpu5ab7UPwt6pBq7E2hJ5YAXvbRhsOUFe7YCJZQyh+I67D1yC1PU8FFOI+A6E3tU6k6XYxhJEsBSuD8zp+HKIi+x6/Tg54xjLEIHKvp3s8DkYpCp9OB6PWHPa6r9anQ6g1MWUQWH4eLLmU5b47M4vzZ+oNkVKg/TvJV8WYSh19pv8nDQRzWdsYGwC2Z+1QTppHo2QIc5lfM59IqZkjBInU8CprDtONO/g+wIQRY5Lc0PSPY9x/dqSg9EvlcbHvA4ny8DhaROx79ckG8OwLQFrxD+pD7wFuG2bYGjB7HKhx60XhLvtkX2+MMntQ3Vqgp79q5wAgrx9cYvMDmyuX5AOpvWkclYqteg0aDSH0ZX+YWhJ3k572hfehNOh+t9k+aEG5DN30r7hYtdsTJES2qBMVT8BRGYiHHM18WmVlEs8Zm1yBTIcTT/viquUvfFMR25YiCS6fQsp+C5/SC7z2u/r8g4ey6hGTNa6xcpEiA3zIfzB72nJD9OXxXJBknG5jzLR+q2HdKeurp31lOTiV4TUwQkG07kxWefrDkyQsi95EkvlCAMDeBXc=
+  # DOCKER_PASSWD
+  - secure: pH5dHL4yI7BWKuAaNUCYDw5uxypyw6Jehzz8tMfhbU2leek1xefaLbvCqWZ58GfIp6qXhyHdpVWnW20SgxfTrvT8gEfA8BFRgaiF1cotzhy1BfmEnG91tjVHLTPcaDI0jbFL3ADk++qlg19vPUORilXOKy+fo0KAkwTjs+KahWWmnK2+rCY0LKlnpmah+MNi8IuF0gN9i7Yfo2K5YwOQbS/OedDTGzzvPL5yRh3KjBeMDb5XBKEsYQmN+/eJKrPK2Z/49nQJTwIymKk1tqK6F/crw5Bqzn0o3hvMjGa/7BeY4+A/lRuw/vZVTzod0dt7T7DFkGj84vJ4pyCEsOcF4LytqgU4sqY94ECfUpsOIosht4Kitdvn9q+ItE5KQJyUE8H3G0/VimMP4YhT5ZJmKGkuyYdZgxu77QLqxdBQBP9KpDjY7QgRiUOBsqxNayeK0+PB+hL3SnAZl2VxK54yi7RwSTCE6s/j/idO4rDxr/m3ufGJXeKKJQzv+pEKKdhb/49IYHS2ydflQXD/7z8OZ537XotkaVV/UU/dqp0p1IagRPotzG+aDG6Cq+1gi0GinA0X4/C+22BmBBse43g8D2aVmwoT9sQBVHJli329BH5vzHD3vosUGgqDCd5UlRu6nQoCBWS2o/Yh0RiT5O/bNu4aASept7DbbVWhQ5iIxfc=
 
 addons:
   apt:
@@ -28,15 +34,25 @@ script:
 - yarn run build
 
 deploy:
-  - provider: s3
-    access_key_id: AKIAILREAKXPJOWAXTBQ
-    secret_access_key:
-      secure: tIcdJM91mqbv7zQCUSRNkT8OEViNBLltR6StE3QyOkUrnmMLZZ0uliSwxztuaM/BxnM5g3M4mO+MOL674HEGSyJueKlaPfFBdJAU7f3amphWdCI8KnN/SToOF9UMI3aKUFTDuYAefkD5mXCiyDehbboLCTj/USOMBGkz7McVCeNHQUy3EwtgJ2cRE6s6b22nQ+NkeTmzwXJKjYgyYh4mf+wuIJ3mVuXeUpl+pzNObNaWd4ncvgYlHGabVard6zVvqp/rGbmf/JiMZeziuxJSlFn6Hd9QM/fc2KsWy/SUYlHue4AODu33EjUwS6Hhgiw92Lf3aAq73qM2CE8WDxQBgajIiCoP2PYToMRvVneLyQ0oq3briLbRbBXdIzpB7oihxvablqUoIoNymhap96xoU+YXsW6FE1mGb6o8inGSvfR/qGykRbhB4KwRschzH+SoWp6AGucKt2i7coEDIhOcnaiq3Lphuak8uoeT4bfceMU2W/GwaM6fUk3IGyG0XsJmamXgotKcyzY4n4FPqC4riuNwOSw/OuURL17va5MWAHumQ5HCJ+EZjI3470CRcTI7+Z1AZDg7SZuqqffsRQ8Zdoyjl6Ek+/cYS3jRDl8NHETFe7p/prD1I4vcvUcB34mB0IVCrO98codSNzr+Q1gNi2xBI1FcuPaJRMMI2d/ztS0=
-    bucket: rra-staging
-    acl: public_read
-    local-dir: "./dist/"
-    skip-cleanup: true
-    region: us-east-1
-    on:
-      repo: WorldBank-Transport/rra-frontend
-      branch: "${STAGING_BRANCH}"
+- provider: s3
+  access_key_id: AKIAILREAKXPJOWAXTBQ
+  secret_access_key:
+    secure: tIcdJM91mqbv7zQCUSRNkT8OEViNBLltR6StE3QyOkUrnmMLZZ0uliSwxztuaM/BxnM5g3M4mO+MOL674HEGSyJueKlaPfFBdJAU7f3amphWdCI8KnN/SToOF9UMI3aKUFTDuYAefkD5mXCiyDehbboLCTj/USOMBGkz7McVCeNHQUy3EwtgJ2cRE6s6b22nQ+NkeTmzwXJKjYgyYh4mf+wuIJ3mVuXeUpl+pzNObNaWd4ncvgYlHGabVard6zVvqp/rGbmf/JiMZeziuxJSlFn6Hd9QM/fc2KsWy/SUYlHue4AODu33EjUwS6Hhgiw92Lf3aAq73qM2CE8WDxQBgajIiCoP2PYToMRvVneLyQ0oq3briLbRbBXdIzpB7oihxvablqUoIoNymhap96xoU+YXsW6FE1mGb6o8inGSvfR/qGykRbhB4KwRschzH+SoWp6AGucKt2i7coEDIhOcnaiq3Lphuak8uoeT4bfceMU2W/GwaM6fUk3IGyG0XsJmamXgotKcyzY4n4FPqC4riuNwOSw/OuURL17va5MWAHumQ5HCJ+EZjI3470CRcTI7+Z1AZDg7SZuqqffsRQ8Zdoyjl6Ek+/cYS3jRDl8NHETFe7p/prD1I4vcvUcB34mB0IVCrO98codSNzr+Q1gNi2xBI1FcuPaJRMMI2d/ztS0=
+  bucket: rra-staging
+  acl: public_read
+  local-dir: "./dist/"
+  skip-cleanup: true
+  region: us-east-1
+  on:
+    repo: WorldBank-Transport/rra-frontend
+    branch: "${STAGING_BRANCH}"
+- provider: script
+  skip_cleanup: true
+  script: ".build_scripts/deploy.sh"
+  on:
+    branch: "${STAGING_BRANCH}"
+- provider: script
+  skip_cleanup: true
+  script: ".build_scripts/deploy.sh"
+  on:
+    branch: "${DEPLOY_BRANCH}"
