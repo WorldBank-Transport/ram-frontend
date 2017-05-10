@@ -27,6 +27,9 @@ cache:
   directories:
   - node_modules
 
+services:
+  - docker
+
 before_script:
 - yarn test
 
