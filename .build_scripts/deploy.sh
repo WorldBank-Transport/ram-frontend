@@ -8,6 +8,10 @@ elif [[ $TRAVIS_BRANCH == ${DEPLOY_BRANCH} ]]; then
   LATEST_TAG=latest-stable
 fi
 
+echo "Rebuilding app"
+rm -rf dist
+yarn run build-offline
+
 echo "Building source image"
 docker build -t $DOCKER_SRC_IMAGE .
 
