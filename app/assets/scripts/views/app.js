@@ -19,7 +19,26 @@ var App = React.createClass({
 
   propTypes: {
     routes: T.array,
+    location: T.object,
     children: T.object
+  },
+
+  goToAnchor: function (hash) {
+    if (!hash) return;
+    let el = document.querySelector(hash);
+    if (el) {
+      el.scrollIntoView();
+    }
+  },
+
+  componentDidMount: function () {
+    this.goToAnchor(this.props.location.hash);
+  },
+
+  componentDidUpdate: function (prevProps) {
+    if (this.props.location.hash && prevProps.location.hash !== this.props.location.hash) {
+      this.goToAnchor(this.props.location.hash);
+    }
   },
 
   render: function () {
@@ -28,7 +47,7 @@ var App = React.createClass({
     return (
       <div className={c('page', pageClass)}>
         <GlobalLoading />
-        <Header />
+        <Header pathname={this.props.location.pathname} />
         <main className='page__body' role='main'>
           <StickyContainer>
           {this.props.children}

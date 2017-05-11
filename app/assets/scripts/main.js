@@ -16,10 +16,14 @@ import UhOh from './views/uhoh';
 import ProjectPageActive from './views/project-page-active';
 import ProjectPagePending from './views/project-page-pending';
 import ScenarioPage from './views/scenario-page';
+import Help from './views/help';
 
 const history = syncHistoryWithStore(hashHistory, store);
 
 const scrollerMiddleware = useScroll((prevRouterProps, currRouterProps) => {
+  // When a hash is set do not scroll to the top.
+  if (currRouterProps.location.hash) return false;
+
   return prevRouterProps &&
     decodeURIComponent(currRouterProps.location.pathname) !== decodeURIComponent(prevRouterProps.location.pathname);
 });
@@ -40,6 +44,7 @@ render((
         <Route path="projects/:projectId/setup" component={ProjectPagePending}/>
         <Route path="projects/:projectId" component={ProjectPageActive}/>
         <Route path="projects/:projectId/scenarios/:scenarioId" component={ScenarioPage}/>
+        <Route path="help" component={Help}/>
         <IndexRoute component={Home} pageClass='page--homepage' />
         <Redirect from='/:lang/projects/:projectId/scenarios' to='/:lang/projects/:projectId' />
         <Redirect from='/:lang/projects' to='/:lang' />

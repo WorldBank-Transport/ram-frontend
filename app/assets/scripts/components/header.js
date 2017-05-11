@@ -1,5 +1,5 @@
 'use strict';
-import React from 'react';
+import React, { PropTypes as T } from 'react';
 import { Link } from 'react-router';
 import c from 'classnames';
 
@@ -10,7 +10,9 @@ import Dropdown from '../components/dropdown';
 
 const Header = React.createClass({
 
-  propTypes: {},
+  propTypes: {
+    pathname: T.string
+  },
 
   render: function () {
     return (
@@ -37,9 +39,10 @@ const Header = React.createClass({
                   let cl = c('drop__menu-item', {
                     'drop__menu-item--active': l.key === getLanguage()
                   });
+                  let url = this.props.pathname.replace(`/${getLanguage()}`, `/${l.key}`);
                   return (
                     <li key={l.key}>
-                      <Link to={`/${l.key}`} title={t('Select language')} className={cl} data-hook='dropdown:close'>{l.name}</Link>
+                      <Link to={url} title={t('Select language')} className={cl} data-hook='dropdown:close'>{l.name}</Link>
                     </li>
                   );
                 })}

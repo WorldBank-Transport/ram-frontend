@@ -67,6 +67,8 @@ bower_components
 .sass-cache
 test/bower_components
 
+app/assets/content
+
 
 ################################################
 # Node.js / NPM
