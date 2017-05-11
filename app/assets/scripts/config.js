@@ -22,9 +22,13 @@ var defaultsDeep = require('lodash').defaultsDeep;
 var configurations = require('./config/*.js', {mode: 'hash'});
 var config = configurations.local || {};
 
-if (process.env.DS_ENV === 'staging') {
-  defaultsDeep(config, configurations.staging);
+if (process.env.DS_ENV === 'offline') {
+  config = configurations.offline;
+} else {
+  if (process.env.DS_ENV === 'staging') {
+    defaultsDeep(config, configurations.staging);
+  }
+  defaultsDeep(config, configurations.production);
 }
-defaultsDeep(config, configurations.production);
 
 module.exports = config;
