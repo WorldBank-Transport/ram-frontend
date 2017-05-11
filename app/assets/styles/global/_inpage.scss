@@ -1,0 +1,175 @@
+/* ==========================================================================
+   Global: inPage
+   ========================================================================== */
+
+.inpage {
+  &__header {
+    @extend .antialiased;
+    position: relative;
+    z-index: 2;
+    background: $accent-color;
+    color: #fff;
+    padding: ($global-spacing * 1.5) 0;
+    box-shadow: 0 14px 16px 0 rgba($base-color, 0.08);
+    min-height: 5rem;
+
+    > .inner {
+      @extend .row, .row--centered;
+      display: flex;
+      align-items: flex-end;
+    }
+  }
+
+  &__headline {
+    @include column(6/12);
+
+    /* Animation */
+    @include animation(reveal 0.24s ease 0s 1);
+
+    > *:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .inpage__title {
+    @include heading(1.5rem);
+    @extend .truncated;
+    max-width: 100%;
+    margin: 0;
+  }
+
+  .inpage__description {
+    transition: all 0.24s ease 0s;
+    max-height: 20rem;
+    margin-top: $global-spacing / 2;
+  }
+
+  .inpage__header--sticky .inpage__description {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+    overflow: hidden;
+    visibility: hidden;
+  }
+
+  .inpage__breadcrumb {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.875rem;
+    line-height: 1rem;
+    text-transform: uppercase;
+    color: rgba(#fff, 0.8);
+
+    a {
+      @extend .truncated;
+      color: inherit;
+      max-width: 14rem;
+    }
+
+    * {
+      display: inline-block;
+      vertical-align: top;
+    }
+
+    li {
+      &:not(:last-child)::after {
+        content: '/';
+        margin: 0 ($global-spacing / 4);
+      }
+    }
+  }
+
+  .inpage__actions {
+    @include column(6/12);
+    text-align: right;
+    font-size: 0;
+
+    /* Animation */
+    @include animation(reveal 0.48s ease 0s 1);
+
+    > * {
+      vertical-align: top;
+    }
+
+    .ipa-main {
+      margin-left: $global-spacing / 2;
+    }
+  }
+
+  &__body {
+    padding: ($global-spacing * 3) 0;
+
+    /* Animation */
+    @include animation(reveal 0.64s ease 0s 1);
+
+    > .inner {
+      @extend .row, .row--centered;
+    }
+
+    > *:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__section-title {
+    @include heading(1.5rem);
+    margin-bottom: $global-spacing * 2;
+    text-align: center;
+  }
+
+  &__section-description {
+    margin-bottom: $global-spacing * 2;
+  }
+}
+
+
+/* Inpage actions
+   ========================================================================== */
+
+/**
+ * "ipa-" prefix stands for "inpage action"
+ */
+
+[class^="ipa-"],
+[class*=" ipa-"] {
+  @extend .button;
+}
+
+.ipa-main {
+  @extend .button--primary-raised-dark;
+}
+
+.ipa-plus::before {
+  @extend %collecticon-sm-plus;
+}
+
+.ipa-tick::before {
+  @extend %collecticon-sm-tick;
+}
+
+.ipa-ellipsis,
+.ipa-download,
+.ipa-pencil {
+   @extend .button--achromic;
+}
+
+.ipa-ellipsis {
+  @extend .button--text-hidden;
+
+  &::before {
+    @extend %collecticon-ellipsis-vertical;
+  }
+}
+
+.ipa-download::before {
+  @extend %collecticon-download-3;
+}
+
+.ipa-pencil::before {
+  @extend %collecticon-pencil;
+}
+
+.ipa-arrow-loop::before {
+  @extend %collecticon-arrow-loop;
+}

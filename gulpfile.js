@@ -1,6 +1,8 @@
 'use strict';
 
 var fs = require('fs');
+var path = require('path');
+var cp = require('child_process');
 var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
 var del = require('del');
@@ -17,6 +19,7 @@ var rev = require('gulp-rev');
 var revReplace = require('gulp-rev-replace');
 var SassString = require('node-sass').types.String;
 var notifier = require('node-notifier');
+var marked = require('marked');
 
 // /////////////////////////////////////////////////////////////////////////////
 // --------------------------- Variables -------------------------------------//
@@ -55,9 +58,10 @@ gulp.task('default', ['clean'], function () {
   gulp.start('build');
 });
 
-gulp.task('serve', ['vendorScripts', 'javascript', 'styles', 'fonts'], function () {
+gulp.task('serve', ['vendorScripts', 'markdown', 'javascript', 'styles', 'fonts'], function () {
   browserSync({
     port: 3000,
+    ghostMode: false,
     server: {
       baseDir: ['.tmp', 'app'],
       routes: {
@@ -70,12 +74,15 @@ gulp.task('serve', ['vendorScripts', 'javascript', 'styles', 'fonts'], function 
   gulp.watch([
     'app/*.html',
     'app/assets/graphics/**/*',
-    '.tmp/assets/fonts/**/*'
+    '.tmp/assets/fonts/**/*',
+    '!app/assets/graphics/collecticons/**/*'
   ]).on('change', reload);
 
   gulp.watch('app/assets/styles/**/*.scss', ['styles']);
   gulp.watch('app/assets/fonts/**/*', ['fonts']);
   gulp.watch('package.json', ['vendorScripts']);
+  gulp.watch('app/content/**/*', ['markdown']);
+  gulp.watch('app/assets/graphics/collecticons/**', ['collecticons']);
 });
 
 gulp.task('clean', function () {
@@ -154,11 +161,37 @@ gulp.task('vendorScripts', function () {
     .pipe(reload({stream: true}));
 });
 
+// /////////////////////////////////////////////////////////////////////////////
+// ------------------------- Collecticon tasks -------------------------------//
+// --------------------- (Font generation related) ---------------------------//
+// ---------------------------------------------------------------------------//
+gulp.task('collecticons', function (done) {
+  var args = [
+    'node_modules/collecticons-processor/bin/collecticons.js',
+    'compile',
+    'app/assets/graphics/collecticons/',
+    '--font-embed',
+    '--font-dest', 'app/assets/fonts',
+    '--font-name', 'Collecticons',
+    '--font-types', 'woff',
+    '--style-format', 'sass',
+    '--style-dest', 'app/assets/styles/core/',
+    '--style-name', 'collecticons',
+    '--class-name', 'collecticon',
+    '--author-name', 'Development Seed',
+    '--author-url', 'https://developmentseed.org/',
+    '--no-preview'
+  ];
+
+  return cp.spawn('node', args, {stdio: 'inherit'})
+    .on('close', done);
+});
+
 // //////////////////////////////////////////////////////////////////////////////
 // --------------------------- Helper tasks -----------------------------------//
 // ----------------------------------------------------------------------------//
 
-gulp.task('build', ['vendorScripts', 'javascript'], function () {
+gulp.task('build', ['vendorScripts', 'markdown', 'javascript', 'collecticons'], function () {
   gulp.start(['html', 'images', 'fonts', 'extras'], function () {
     return gulp.src('dist/**/*')
       .pipe($.size({title: 'build', gzip: true}))
@@ -238,4 +271,14 @@ gulp.task('extras', function () {
   ], {
     dot: true
   }).pipe(gulp.dest('dist'));
+});
+
+gulp.task('markdown', function () {
+  return gulp.src('app/content/**/*.md')
+    .pipe(gutil.buffer())
+    .pipe($.markdownToJson(marked, 'content.json', function (data, file) {
+      data.filename = path.basename(file.path);
+      return data;
+    }))
+    .pipe(gulp.dest('app/assets/content'));
 });

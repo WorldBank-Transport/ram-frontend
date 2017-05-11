@@ -1,0 +1,218 @@
+/* ==========================================================================
+   Projects: Single
+   ========================================================================== */
+
+/* Project setup block
+   ========================================================================== */
+
+.psb {
+  @include column(6/12, $cycle: 2);
+  margin-top: $global-spacing * 2;
+
+  &:nth-child(1),
+  &:nth-child(2) {
+    margin-top: 0;
+  }
+
+  > .inner {
+    position: relative;
+    padding-left: $global-spacing * 2;
+
+    &::before {
+      @extend %collecticon-sm-tick;
+      position: absolute;
+      top: 0.05rem;
+      left: 0;
+      background: $base-font-color;
+      height: 1.5rem;
+      width: 1.5rem;
+      border-radius: $full-border-radius;
+      color: #fff;
+      font-size: 1rem;
+      line-height: 1.5rem;
+      text-align: center;
+      opacity: 0.32;
+
+      /* Animation */
+      transition: all 0.32s ease 0s;
+    }
+  }
+
+  &--complete > .inner::before {
+    opacity: 1;
+  }
+
+  &__header {
+    margin-bottom: $global-spacing * 1.5;
+
+    > *:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__headline {
+    > *:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__title {
+    @include heading(1.25rem);
+    margin-bottom: $global-spacing / 2;
+  }
+
+  &__description {
+    color: rgba($base-font-color, 0.64);
+
+    > *:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__actions {
+    font-size: 0;
+
+    .button {
+      margin: 0 ($global-spacing / 4);
+
+      &:first-child {
+        margin-left: 0;
+      }
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+
+  &__body {
+    > *:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .form__label {
+    @extend .visually-hidden;
+  }
+}
+
+.diptych {
+  @include column(6/12);
+  margin-top: $global-spacing * 2;
+
+  &:nth-child(1),
+  &:nth-child(2) {
+    margin-top: 0;
+  }
+
+  .inpage__section-title {
+    text-align: left;
+  }
+}
+
+// .diptych--info {
+//   @include column(4/12);
+// }
+
+// .diptych--scenarios {
+//   @include column(8/12);
+// }
+
+/* Details list
+   ========================================================================== */
+
+.project-details-list {
+  list-style: none;
+  margin: 0 (-$global-spacing) 0 0;
+  padding: ($global-spacing * 1.5) 0 ($global-spacing * 1.5) ($global-spacing * 4);
+
+  li:not(:last-child) {
+    box-shadow: inset 0 -1px 0 0 $base-alpha-color;
+    padding-bottom: $global-spacing;
+    margin: 0 0 $global-spacing 0;
+  }
+}
+
+.detail-download {
+  @extend .button, .button--primary-plain, .button--text-hidden;
+
+  &::before {
+    @extend %collecticon-download-3;
+  }
+}
+
+.project-detail {
+  position: relative;
+  padding-right: $global-spacing * 4;
+
+  > *:last-child {
+    margin: 0;
+  }
+
+  &::before,
+  .action-wrapper {
+    position: absolute;
+    top: 50%;
+    transform: translate(0, -50%);
+    margin: 0;
+  }
+
+  &::before {
+    left: - $global-spacing * 3.5;
+    font-size: 2rem;
+    opacity: 0.32;
+  }
+
+  .action-wrapper {
+    right: $global-spacing;
+  }
+
+  &.description::before {
+    @extend %collecticon-text-block;
+  }
+
+  &.profile::before {
+    @extend %collecticon-page-cog;
+  }
+
+  &.villages::before {
+    @extend %collecticon-houses;
+  }
+
+  &.admin-bounds::before {
+    @extend %collecticon-fence;
+  }
+}
+
+.project-detail__title {
+  @include heading(1rem);
+  margin: 0;
+}
+
+
+/* Scenarios list
+   ========================================================================== */
+
+.scenarios-card-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+
+  > li {
+    @include column(6/12, $cycle: 2);
+    margin-top: $global-spacing;
+    display: flex;
+
+    &:nth-child(1),
+    &:nth-child(2) {
+      margin-top: 0;
+    }
+  }
+
+  .card,
+  .card__contents {
+     width: 100%;
+  }
+}

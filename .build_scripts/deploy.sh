@@ -1,12 +1,26 @@
 #!/usr/bin/env bash
 set -e # halt script on error
 
-echo "Get ready, we're pushing to gh-pages!"
-cd dist
-git init
-git config user.name "Travis-CI"
-git config user.email "travis@somewhere.com"
-git add .
-git commit -m "CI deploy to gh-pages"
-git push --force --quiet "https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git" master:gh-pages > /dev/null 2>&1
-echo "Good to go!"
+# Setting correct variables based on the environment we're deploying to
+if [[ $TRAVIS_BRANCH == ${STAGING_BRANCH} ]]; then
+  LATEST_TAG=latest-dev
+elif [[ $TRAVIS_BRANCH == ${DEPLOY_BRANCH} ]]; then
+  LATEST_TAG=latest-stable
+fi
+
+echo "Rebuilding app"
+rm -rf dist
+yarn run build-offline
+
+echo "Building source image"
+docker build -t $DOCKER_SRC_IMAGE .
+
+docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWD"
+
+echo "Pushing image to Docker Hub:$TRAVIS_COMMIT"
+docker tag $DOCKER_SRC_IMAGE $DOCKER_REPOSITORY:$TRAVIS_COMMIT
+docker push $DOCKER_REPOSITORY:$TRAVIS_COMMIT
+
+echo "Also pushing as :$LATEST_TAG"
+docker tag $DOCKER_SRC_IMAGE $DOCKER_REPOSITORY:$LATEST_TAG
+docker push $DOCKER_REPOSITORY:$LATEST_TAG

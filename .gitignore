@@ -38,6 +38,7 @@
 ################################################
 
 app/assets/scripts/config/local.js
+app/assets/styles/core/_collecticons.scss
 
 
 ################################################
@@ -65,6 +66,8 @@ node_modules
 bower_components
 .sass-cache
 test/bower_components
+
+app/assets/content
 
 
 ################################################
@@ -110,3 +113,5 @@ temp
 tmp
 .tmp
 dist
+
+docker-compose-generated.yml
