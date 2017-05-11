@@ -335,7 +335,8 @@ var ProjectPagePending = React.createClass({
         <div className='inpage__body'>
           <div className='inner'>
             <h2 className='inpage__section-title'>{t('Project setup')}</h2>
-            <p className='inpage__section-description' dangerouslySetInnerHTML={{__html: `Upload these files before running analysis. See the <a href="/#${getLanguage()}/help">help section</a> for more information about the requirements of each file.`}}>
+            <p className='inpage__section-description'>
+              {t('Upload these files before running analysis. See the {link} for more information about the requirements of each file.', {link: <Link to={`/${getLanguage()}/help`} title={t('Visit help page')} target='_blank'>{t('help section')}</Link>})}
             </p>
             <Log
               data={data.finish_setup}
