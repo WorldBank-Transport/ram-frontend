@@ -32,8 +32,9 @@ import Alert from '../components/alert';
 import LogBase from '../components/log-base';
 import ScenarioResults from '../components/scenario/scenario-results';
 import StickyHeader from '../components/sticky-header';
+import FatalError from '../components/fatal-error';
 
-var ScenarioPage = React.createClass({
+const ScenarioPage = React.createClass({
   propTypes: {
     params: T.object,
     _invalidateProjectItem: T.func,
@@ -286,12 +287,7 @@ var ScenarioPage = React.createClass({
     }
 
     if (error) {
-      return (
-        <Alert type='danger'>
-          <h6>An error occurred</h6>
-          <p>{error.message}</p>
-        </Alert>
-      );
+      return <FatalError />;
     }
 
     let resultsFile = dataScenario.files.find(f => f.type === 'results-all');

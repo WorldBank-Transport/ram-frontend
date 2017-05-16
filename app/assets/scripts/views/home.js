@@ -14,19 +14,19 @@ import {
   resetProjectFrom,
   showAlert
 } from '../actions';
-import { prettyPrint } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
 import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
 
 import StickyHeader from '../components/sticky-header';
 import ProjectFormModal from '../components/project/project-form-modal';
+import FatalError from '../components/fatal-error';
 
 const projectStatusMatrix = {
   active: 'Active',
   pending: 'Draft'
 };
 
-var Home = React.createClass({
+const Home = React.createClass({
   displayName: 'Home',
 
   propTypes: {
@@ -119,14 +119,10 @@ var Home = React.createClass({
   },
 
   renderProjectList: function () {
-    let { fetched, fetching, error, data } = this.props.projects;
+    let { fetched, fetching, data } = this.props.projects;
 
     if (!fetched && !fetching || !fetched && fetching) {
       return null;
-    }
-
-    if (error) {
-      return <div>Error: {prettyPrint(error)}</div>;
     }
 
     return (
@@ -140,6 +136,12 @@ var Home = React.createClass({
   },
 
   render: function () {
+    let { fetched, fetching, error } = this.props.projects;
+
+    if (fetched && !fetching && error) {
+      return <FatalError />;
+    }
+
     return (
       <section className='inpage inpage--hub'>
         <StickyHeader className='inpage__header'>

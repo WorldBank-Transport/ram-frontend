@@ -31,8 +31,9 @@ import ProjectHeaderActions from '../components/project/project-header-actions';
 import ScenarioCreateModal from '../components/scenario/scenario-create-modal';
 import ScenarioDeleteAction from '../components/scenario/scenario-delete-action';
 import Alert from '../components/alert';
+import FatalError from '../components/fatal-error';
 
-var ProjectPageActive = React.createClass({
+const ProjectPageActive = React.createClass({
 
   propTypes: {
     _invalidateProjectItem: T.func,
@@ -228,8 +229,6 @@ var ProjectPageActive = React.createClass({
         ]))}
       </ul>
     );
-
-    return 
   },
 
   renderScenarioCard: function (scenario) {
@@ -334,12 +333,7 @@ var ProjectPageActive = React.createClass({
     }
 
     if (error) {
-      return (
-        <Alert type='danger'>
-          <h6>An error occurred</h6>
-          <p>{error.message}</p>
-        </Alert>
-      );
+      return <FatalError />;
     }
 
     return (

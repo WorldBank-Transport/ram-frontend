@@ -34,8 +34,9 @@ import ProjectHeaderActions from '../components/project/project-header-actions';
 import ScenarioEditModal from '../components/scenario/scenario-edit-modal';
 import Alert from '../components/alert';
 import LogBase from '../components/log-base';
+import FatalError from '../components/fatal-error';
 
-var ProjectPagePending = React.createClass({
+const ProjectPagePending = React.createClass({
   displayName: 'ProjectPagePending',
 
   propTypes: {
@@ -298,7 +299,7 @@ var ProjectPagePending = React.createClass({
   },
 
   render: function () {
-    let { fetched, fetching, error, data, receivedAt } = this.props.project;
+    let { fetched, fetching, error, data } = this.props.project;
 
     if (!fetched && !fetching || !fetched && fetching) {
       return (
@@ -309,12 +310,7 @@ var ProjectPagePending = React.createClass({
     }
 
     if (error) {
-      return (
-        <Alert type='danger'>
-          <h6>An error occurred</h6>
-          <p>{error.message}</p>
-        </Alert>
-      );
+      return <FatalError />;
     }
 
     return (
