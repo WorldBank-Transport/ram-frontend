@@ -6,7 +6,7 @@ import _ from 'lodash';
 import { t, getLanguage } from '../utils/i18n';
 import content from '../../content/content.json';
 
-var Help = React.createClass({
+const Help = React.createClass({
   render: function () {
     let data = _.get(content, ['help', getLanguage()], null);
     if (!data) {
@@ -14,7 +14,7 @@ var Help = React.createClass({
     }
 
     return (
-      <section className='inpage'>
+      <section className='inpage inpage--single'>
         <header className='inpage__header'>
           <div className='inner'>
             <div className='inpage__headline'>
