@@ -2,7 +2,6 @@
 import React, { PropTypes as T } from 'react';
 import c from 'classnames';
 
-import { fetchJSON } from '../../actions';
 import config from '../../config';
 import { t } from '../../utils/i18n';
 
@@ -67,32 +66,29 @@ const ProjectFileInput = React.createClass({
 
     this.setState({loading: true});
 
-    fetchJSON(url, {method: 'POST', body: JSON.stringify({type})})
-      .then(res => {
-        const { presignedUrl } = res;
-        this.xhr = new window.XMLHttpRequest();
+    let formData = new FormData();
 
-        this.xhr.upload.addEventListener('progress', (evt) => {
-          if (evt.lengthComputable) {
-            this.setState({uploaded: evt.loaded});
-          }
-        }, false);
+    formData.append('type', type);
+    formData.append('file', file);
 
-        this.xhr.onreadystatechange = e => {
-          if (this.xhr.readyState === XMLHttpRequest.DONE) {
-            this.setState(this.getInitialState());
-            this.props.onFileUploadComplete();
-          }
-        };
+    this.xhr = new window.XMLHttpRequest();
 
-        // start upload
-        this.xhr.open('PUT', presignedUrl, true);
-        this.xhr.send(file);
-      })
-      .catch(err => {
-        console.log('err', err);
-        throw new Error(err.error);
-      });
+    this.xhr.upload.addEventListener('progress', (evt) => {
+      if (evt.lengthComputable) {
+        this.setState({uploaded: evt.loaded});
+      }
+    }, false);
+
+    this.xhr.onreadystatechange = e => {
+      if (this.xhr.readyState === XMLHttpRequest.DONE) {
+        this.setState(this.getInitialState());
+        this.props.onFileUploadComplete();
+      }
+    };
+
+    // start upload
+    this.xhr.open('POST', url, true);
+    this.xhr.send(formData);
   },
 
   render: function () {

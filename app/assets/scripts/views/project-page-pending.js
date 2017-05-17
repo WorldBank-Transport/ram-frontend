@@ -18,8 +18,10 @@ import {
   resetScenarioFrom,
   // Fetch project without indication of loading.
   fetchProjectItemSilent,
+  fetchScenarioItemSilent,
   showAlert
 } from '../actions';
+
 import { prettyPrint } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
 import { fileTypesMatrix } from '../utils/constants';
@@ -52,6 +54,7 @@ const ProjectPagePending = React.createClass({
     _resetProjectFrom: T.func,
     _resetScenarioFrom: T.func,
     _fetchProjectItemSilent: T.func,
+    _fetchScenarioItemSilent: T.func,
     _showAlert: T.func,
 
     params: T.object,
@@ -113,8 +116,8 @@ const ProjectPagePending = React.createClass({
   },
 
   onFileUploadComplete: function () {
-    this.props._fetchProjectItem(this.props.params.projectId);
-    this.props._fetchScenarioItem(this.props.params.projectId, 0);
+    this.props._fetchProjectItemSilent(this.props.params.projectId);
+    this.props._fetchScenarioItemSilent(this.props.params.projectId, 0);
   },
 
   onFileDeleteComplete: function (file) {
@@ -403,6 +406,7 @@ function dispatcher (dispatch) {
     _resetScenarioFrom: (...args) => dispatch(resetScenarioFrom(...args)),
 
     _fetchProjectItemSilent: (...args) => dispatch(fetchProjectItemSilent(...args)),
+    _fetchScenarioItemSilent: (...args) => dispatch(fetchScenarioItemSilent(...args)),
     _showAlert: (...args) => dispatch(showAlert(...args))
   };
 }
