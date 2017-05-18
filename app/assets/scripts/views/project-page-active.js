@@ -12,10 +12,11 @@ import {
   fetchProjectScenarios,
   resetProjectFrom,
   resetScenarioFrom,
-  postScenario,
   duplicateScenario,
   deleteScenario,
-  showAlert
+  showAlert,
+  startSubmitScenario,
+  finishSubmitScenario
 } from '../actions';
 import { fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
@@ -44,9 +45,10 @@ const ProjectPageActive = React.createClass({
     _resetScenarioFrom: T.func,
     _fetchProjectScenarios: T.func,
     _deleteScenario: T.func,
-    _postScenario: T.func,
     _duplicateScenario: T.func,
     _showAlert: T.func,
+    _startSubmitScenario: T.func,
+    _finishSubmitScenario: T.func,
 
     params: T.object,
     project: T.object,
@@ -393,7 +395,8 @@ const ProjectPageActive = React.createClass({
           scenarioForm={this.props.scenarioForm}
           scenarioList={this.props.scenarios.data.results}
           projectId={this.props.params.projectId}
-          saveScenario={this.props._postScenario}
+          startSubmitScenario={this.props._startSubmitScenario}
+          finishSubmitScenario={this.props._finishSubmitScenario}
           resetForm={this.props._resetScenarioFrom}
         />
 
@@ -424,9 +427,10 @@ function dispatcher (dispatch) {
     _resetProjectFrom: (...args) => dispatch(resetProjectFrom(...args)),
     _resetScenarioFrom: (...args) => dispatch(resetScenarioFrom(...args)),
     _deleteScenario: (...args) => dispatch(deleteScenario(...args)),
-    _postScenario: (...args) => dispatch(postScenario(...args)),
     _duplicateScenario: (...args) => dispatch(duplicateScenario(...args)),
-    _showAlert: (...args) => dispatch(showAlert(...args))
+    _showAlert: (...args) => dispatch(showAlert(...args)),
+    _startSubmitScenario: (...args) => dispatch(startSubmitScenario(...args)),
+    _finishSubmitScenario: (...args) => dispatch(finishSubmitScenario(...args))
   };
 }
 
