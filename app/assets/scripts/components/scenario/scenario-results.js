@@ -21,6 +21,8 @@ const ScenarioResults = React.createClass({
     _fetchScenarioResults: T.func
   },
 
+  analysisMins: [10, 20, 30, 60, 90, 120],
+
   getInitialState: function () {
     return {
       rawSort: {
@@ -52,7 +54,7 @@ const ScenarioResults = React.createClass({
       return (
         <tr key={aa.name}>
           <th>{aa.name}</th>
-          <td className='table__empty-cell' colSpan={4}>{t('No data.')}</td>
+          <td className='table__empty-cell' colSpan={this.analysisMins.length}>{t('No data.')}</td>
         </tr>
       );
     }
@@ -60,16 +62,12 @@ const ScenarioResults = React.createClass({
     // Helper to sum the population of the admin area villages.
     const sumPop = (arr) => arr.reduce((acc, o) => acc + (parseInt(o.population) || 1), 0);
     let totalPop = sumPop(aa.results);
-    let times = [10, 20, 30, 60];
-    let pop = times.map(time => sumPop(aa.results.filter(o => o.poi[poi] <= time * 60)));
+    let pop = this.analysisMins.map(time => sumPop(aa.results.filter(o => o.poi[poi] <= time * 60)));
 
     return (
       <tr key={aa.name}>
         <th>{aa.name}</th>
-        <td>{percent(pop[0], totalPop)}%</td>
-        <td>{percent(pop[1], totalPop)}%</td>
-        <td>{percent(pop[2], totalPop)}%</td>
-        <td>{percent(pop[3], totalPop)}%</td>
+        {pop.map((o, i) => <td key={this.analysisMins[i]}>{percent(o, totalPop)}%</td>)}
       </tr>
     );
   },
@@ -91,11 +89,8 @@ const ScenarioResults = React.createClass({
                 <table className='table'>
                   <thead>
                     <tr>
-                      <th>Admin area</th>
-                      <th>10 min</th>
-                      <th>20 min</th>
-                      <th>30 min</th>
-                      <th>60 min</th>
+                      <th>{t('Admin area')}</th>
+                      {this.analysisMins.map((o, i) => <th key={o}>{t('{min} min', {min: o})}</th>)}
                     </tr>
                   </thead>
                   <tbody>

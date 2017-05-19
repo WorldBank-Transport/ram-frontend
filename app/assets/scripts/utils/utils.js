@@ -66,9 +66,9 @@ export function toTimeStr (value) {
   let remainder = value;
   let hours = Math.floor(remainder / 3600);
   remainder %= 3600;
-  let minutes = Math.floor(remainder / 60);
-  remainder %= 60;
-  let seconds = Math.round(remainder);
+  let minutes = Math.round(remainder / 60);
+  // remainder %= 60;
+  // let seconds = Math.round(remainder);
 
   let pieces = [];
   if (hours) {
@@ -79,9 +79,9 @@ export function toTimeStr (value) {
     pieces.push(minutes < 10 ? `0${minutes}M` : `${minutes}M`);
   }
 
-  if (seconds) {
-    pieces.push(seconds < 10 ? `0${seconds}S` : `${seconds}S`);
-  }
+  // if (seconds) {
+  //   pieces.push(seconds < 10 ? `0${seconds}S` : `${seconds}S`);
+  // }
 
   return pieces.join(' ');
 }
