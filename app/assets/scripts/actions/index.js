@@ -310,3 +310,46 @@ export function fetchJSON (url, options) {
       });
     });
 }
+
+export function postFormdata (url, data, progressCb) {
+  let xhr = new window.XMLHttpRequest();
+  let promise = new Promise((resolve, reject) => {
+    xhr.upload.addEventListener('progress', (evt) => {
+      if (evt.lengthComputable) {
+        progressCb(evt.loaded);
+      }
+    }, false);
+
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        if (xhr.status === 0) {
+          return reject({error: 'Failed to reach server'});
+        }
+
+        let json;
+        try {
+          json = JSON.parse(xhr.responseText);
+        } catch (e) {
+          console.log('json parse error', e);
+          return reject({
+            error: e.message,
+            body: xhr.responseText
+          });
+        }
+        return xhr.status >= 400
+          ? reject(json)
+          : resolve(json);
+      }
+    };
+
+    xhr.onerror = () => {
+      return reject({error: 'Failed to reach server'});
+    };
+
+    // Start upload.
+    xhr.open('POST', url, true);
+    xhr.send(data);
+  });
+
+  return {xhr, promise};
+}

@@ -4,8 +4,10 @@ import c from 'classnames';
 import _ from 'lodash';
 import { hashHistory } from 'react-router';
 
+import config from '../../config';
 import { t, getLanguage } from '../../utils/i18n';
 import { limitHelper } from '../../utils/utils';
+import { postFormdata } from '../../actions';
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '../modal';
 
@@ -21,7 +23,8 @@ const ScenarioCreateModal = React.createClass({
     scenarioList: T.array,
     projectId: T.string,
 
-    saveScenario: T.func,
+    startSubmitScenario: T.func,
+    finishSubmitScenario: T.func,
     resetForm: T.func,
     _showGlobalLoading: T.func,
     _hideGlobalLoading: T.func,
@@ -67,14 +70,8 @@ const ScenarioCreateModal = React.createClass({
     //
       if (!nextProps.scenarioForm.error) {
         let scenarioData = nextProps.scenarioForm.data;
-        if (this.state.data.roadNetworkSource === 'new') {
-          // Upload file
-          this.setState({loading: true});
-          this.uploadScenarioFile(scenarioData.roadNetworkUpload.presignedUrl);
-        } else {
-          this.props._showAlert('success', <p>{t('Scenario successfully created')}</p>, true, 4500);
-          hashHistory.push(`${getLanguage()}/projects/${scenarioData.project_id}/scenarios/${scenarioData.id}`);
-        }
+        this.props._showAlert('success', <p>{t('Scenario successfully created')}</p>, true, 4500);
+        hashHistory.push(`${getLanguage()}/projects/${scenarioData.project_id}/scenarios/${scenarioData.id}`);
       } else {
         this.props._showAlert('danger', <p>{nextProps.scenarioForm.error.message}</p>, true);
       }
@@ -110,37 +107,6 @@ const ScenarioCreateModal = React.createClass({
     this.setState({data});
   },
 
-  onFileUploadComplete: function () {
-    this.setState({loading: false});
-    let scenarioData = this.props.scenarioForm.data;
-    hashHistory.push(`${getLanguage()}/projects/${scenarioData.project_id}/scenarios/${scenarioData.id}`);
-  },
-
-  uploadScenarioFile: function (presignedUrl) {
-    this.xhr = new window.XMLHttpRequest();
-    let file = this.state.data.roadNetworkSourceFile.file;
-
-    this.xhr.upload.addEventListener('progress', (evt) => {
-      if (evt.lengthComputable) {
-        // I know what I'm doing here.
-        let data = this.state.data;
-        data.roadNetworkSourceFile.uploaded = evt.loaded;
-        this.setState({data});
-      }
-    }, false);
-
-    this.xhr.onreadystatechange = e => {
-      if (this.xhr.readyState === XMLHttpRequest.DONE) {
-        this.setState(this.getInitialState());
-        this.onFileUploadComplete();
-      }
-    };
-
-    // start upload
-    this.xhr.open('PUT', presignedUrl, true);
-    this.xhr.send(file);
-  },
-
   checkErrors: function () {
     let control = true;
     let errors = this.getInitialState().errors;
@@ -172,22 +138,56 @@ const ScenarioCreateModal = React.createClass({
   onSubmit: function (e) {
     e.preventDefault && e.preventDefault();
 
-    if (this.checkErrors()) {
-      var payload = {
-        name: this.state.data.name,
-        description: this.state.data.description || null
-      };
-      // On create we only want to send properties that were filled in.
-      payload = _.pickBy(payload, v => v !== null);
+    if (this.checkErrors() && !this.xhr) {
+      this.props._showGlobalLoading();
 
-      if (this.state.data.roadNetworkSource === 'clone') {
-        this.props._showGlobalLoading();
-        payload.roadNetworkSource = 'clone';
-        payload.roadNetworkSourceScenario = this.state.data.roadNetworkSourceScenario;
-      } else if (this.state.data.roadNetworkSource === 'new') {
-        payload.roadNetworkSource = 'new';
+      let {
+        name,
+        description,
+        roadNetworkSource,
+        roadNetworkSourceScenario,
+        roadNetworkSourceFile
+      } = this.state.data;
+
+      let formData = new FormData();
+      formData.append('name', name);
+      formData.append('roadNetworkSource', roadNetworkSource);
+
+      if (description) {
+        formData.append('description', description);
       }
-      this.props.saveScenario(this.props.projectId, payload);
+
+      switch (roadNetworkSource) {
+        case 'new':
+          formData.append('roadNetworkFile', roadNetworkSourceFile.file);
+          break;
+        case 'clone':
+          formData.append('roadNetworkSourceScenario', roadNetworkSourceScenario);
+          break;
+      }
+
+      let onProgress = progress => {
+        let data = _.cloneDeep(this.state.data);
+        data.roadNetworkSourceFile.uploaded = progress;
+        this.setState({data});
+      };
+
+      this.props.startSubmitScenario();
+
+      let { xhr, promise } = postFormdata(`${config.api}/projects/${this.props.projectId}/scenarios`, formData, onProgress);
+      this.xhr = xhr;
+
+      promise
+        .then(result => {
+          this.xhr = null;
+          console.log('re', result);
+          this.props.finishSubmitScenario(result);
+        })
+        .catch(err => {
+          this.xhr = null;
+          console.log('err', err);
+          this.props.finishSubmitScenario(null, err);
+        });
     }
   },
 
