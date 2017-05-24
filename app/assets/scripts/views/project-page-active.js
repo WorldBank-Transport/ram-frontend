@@ -224,7 +224,7 @@ const ProjectPageActive = React.createClass({
           <li>
             <div className={`project-detail ${file.type}`}>
               <h3 className='project-detail__title' key={`${file.name}-label`}>{fileTypesMatrix[file.type].display}</h3>
-              <p className='action-wrapper'><a href={`${config.api}/projects/${projectId}/files/${file.id}`} title={t('Download file')} className='detail-download'><span>{t('Download')}</span></a></p>
+              <p className='action-wrapper'><a href={`${config.api}/projects/${projectId}/files/${file.id}?download=true`} title={t('Download file')} className='detail-download'><span>{t('Download')}</span></a></p>
               <p key={`${file.name}-desc`}>{fileTypesMatrix[file.type].description}</p>
             </div>
           </li>
