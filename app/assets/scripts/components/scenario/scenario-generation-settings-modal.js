@@ -36,7 +36,7 @@ const ScenarioGenSettingsModal = React.createClass({
       data: {
         selectedAreas: this.props.scenarioData.admin_areas
           .filter(o => o.selected)
-          .map(o => o.name)
+          .map(o => o.id)
       }
     };
   },
@@ -66,7 +66,7 @@ const ScenarioGenSettingsModal = React.createClass({
       this.setState({data: {
         selectedAreas: nextProps.scenarioData.admin_areas
           .filter(o => o.selected)
-          .map(o => o.name)
+          .map(o => o.id)
       }});
     }
   },
@@ -91,7 +91,7 @@ const ScenarioGenSettingsModal = React.createClass({
       this.setState({data: {selectedAreas: []}});
     } else if (what === 'all') {
       this.setState({data: {
-        selectedAreas: this.props.scenarioData.admin_areas.map(o => o.name)
+        selectedAreas: this.props.scenarioData.admin_areas.map(o => o.id)
       }});
     }
   },
@@ -109,7 +109,7 @@ const ScenarioGenSettingsModal = React.createClass({
 
   onFieldChange: function (field, e) {
     if (field === 'selectedAreas') {
-      let val = e.target.value;
+      let val = parseInt(e.target.value);
       let areas = this.state.data.selectedAreas;
       let idx = areas.indexOf(val);
       if (idx === -1) {
@@ -132,10 +132,10 @@ const ScenarioGenSettingsModal = React.createClass({
     return <p>{error.message || error.error}</p>;
   },
 
-  renderCheckbox: function (val, idx) {
+  renderCheckbox: function (val) {
     return (
-      <label key={idx} className='form__option form__option--inline form__option--custom-checkbox' title={val.name}>
-        <input type='checkbox' name={`checkbox-${idx}`} value={val.name} onChange={this.onFieldChange.bind(null, 'selectedAreas')} checked={this.state.data.selectedAreas.indexOf(val.name) !== -1}/>
+      <label key={val.id} className='form__option form__option--inline form__option--custom-checkbox' title={val.name}>
+        <input type='checkbox' name={`checkbox-${val.id}`} value={val.id} onChange={this.onFieldChange.bind(null, 'selectedAreas')} checked={this.state.data.selectedAreas.indexOf(val.id) !== -1}/>
         <span className='form__option__text'>{val.name}</span>
         <span className='form__option__ui'></span>
       </label>
