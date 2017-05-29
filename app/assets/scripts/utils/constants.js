@@ -6,7 +6,7 @@ export const fileTypesMatrix = {
     display: t('Administrative Boundaries'),
     description: t('A GeoJSON containing polygons with the administrative boundaries.')
   },
-  villages: {
+  origins: {
     display: t('Population data'),
     description: t('A GeoJSON with population point data. This will be used as the Origin in the analysis.')
   },

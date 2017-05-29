@@ -59,7 +59,7 @@ const ScenarioResults = React.createClass({
       );
     }
 
-    // Helper to sum the population of the admin area villages.
+    // Helper to sum the population of the admin area origins.
     const sumPop = (arr) => arr.reduce((acc, o) => acc + (parseInt(o.population) || 1), 0);
     let totalPop = sumPop(aa.results);
     let pop = this.analysisMins.map(time => sumPop(aa.results.filter(o => o.poi[poi] <= time * 60)));
@@ -109,10 +109,10 @@ const ScenarioResults = React.createClass({
     let data = this.props.results.data;
     let { field: sortField, asc } = this.state.rawSort;
 
-    let villages = data.reduce((acc, o) => {
+    let origins = data.reduce((acc, o) => {
       if (!o.results.length) return acc;
 
-      // Add admin area name to each village.
+      // Add admin area name to each origin.
       let results = o.results.map(r => {
         r.aa = o.name;
         return r;
@@ -121,10 +121,10 @@ const ScenarioResults = React.createClass({
       return acc.concat(results);
     }, []);
 
-    // Sort villages.
-    villages = _.sortBy(villages, sortField);
+    // Sort origins.
+    origins = _.sortBy(origins, sortField);
     if (!asc) {
-      villages.reverse();
+      origins.reverse();
     }
 
     const renderTh = (title, field) => {
@@ -141,26 +141,26 @@ const ScenarioResults = React.createClass({
 
     return (
       <div>
-        <h2 className='inpage__section-title'>Village level raw data </h2>
+        <h2 className='inpage__section-title'>Origin level raw data </h2>
 
         <section className='card card--analysis-result'>
           <div className='card__contents'>
             <header className='card__header visually-hidden'>
-              <h1 className='card__title'>All Villages</h1>
+              <h1 className='card__title'>All origins</h1>
             </header>
             <div className='card__body'>
               <div className='table-wrapper'>
                 <table className='table'>
                   <thead>
                     <tr>
-                      {renderTh('Village', 'name')}
+                      {renderTh('Origin', 'name')}
                       {renderTh('Admin area', 'aa')}
                       {renderTh('Population', 'population')}
                       {renderTh('Time to POI', 'poi.pointOfInterest')}
                     </tr>
                   </thead>
                   <tbody>
-                    {villages.map(o => (
+                    {origins.map(o => (
                       <tr key={_.kebabCase(`${o.aa}-${o.lat}-${o.lng}`)}>
                         <th>{o.name || 'N/A'}</th>
                         <td>{o.aa}</td>
