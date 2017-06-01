@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch';
+import { stringify as buildAPIQS } from 'qs';
 
 import config from '../config';
 
@@ -41,6 +42,10 @@ export const RECEIVE_GENERATE_RESULTS = 'RECEIVE_GENERATE_RESULTS';
 export const REQUEST_SCENARIO_RESULTS = 'REQUEST_SCENARIO_RESULTS';
 export const RECEIVE_SCENARIO_RESULTS = 'RECEIVE_SCENARIO_RESULTS';
 export const INVALIDATE_SCENARIO_RESULTS = 'INVALIDATE_SCENARIO_RESULTS';
+
+export const REQUEST_SCENARIO_RESULTS_RAW = 'REQUEST_SCENARIO_RESULTS_RAW';
+export const RECEIVE_SCENARIO_RESULTS_RAW = 'RECEIVE_SCENARIO_RESULTS_RAW';
+export const INVALIDATE_SCENARIO_RESULTS_RAW = 'INVALIDATE_SCENARIO_RESULTS_RAW';
 
 // Projects
 
@@ -226,7 +231,7 @@ export function startGenerateResults (projectId, scenarioId) {
   return postAndDispatch(`${config.api}/projects/${projectId}/scenarios/${scenarioId}/generate`, null, requestGenerateResults, receiveGenerateResults);
 }
 
-// Project Scenarios
+// Scenario Analysis results
 
 export function invalidateScenarioResults () {
   return { type: INVALIDATE_SCENARIO_RESULTS };
@@ -240,8 +245,31 @@ export function receiveScenarioResults (scenarios, error = null) {
   return { type: RECEIVE_SCENARIO_RESULTS, data: scenarios, error, receivedAt: Date.now() };
 }
 
-export function fetchScenarioResults (projectId, scenarioId, fileId) {
-  return getAndDispatch(`${config.api}/projects/${projectId}/scenarios/${scenarioId}/files/${fileId}?download=true`, requestScenarioResults, receiveScenarioResults);
+export function fetchScenarioResults (projectId, scenarioId) {
+  return getAndDispatch(`${config.api}/projects/${projectId}/scenarios/${scenarioId}/results/analysis`, requestScenarioResults, receiveScenarioResults);
+}
+
+// Scenario Raw Results
+
+export function invalidateScenarioResultsRaw () {
+  return { type: INVALIDATE_SCENARIO_RESULTS_RAW };
+}
+
+export function requestScenarioResultsRaw () {
+  return { type: REQUEST_SCENARIO_RESULTS_RAW };
+}
+
+export function receiveScenarioResultsRaw (scenarios, error = null) {
+  return { type: RECEIVE_SCENARIO_RESULTS_RAW, data: scenarios, error, receivedAt: Date.now() };
+}
+
+export function fetchScenarioResultsRaw (projectId, scenarioId, page = 1, filters = {}) {
+  filters.page = page;
+  filters.limit = 30;
+  let f = buildAPIQS(filters);
+
+  let url = `${config.api}/projects/${projectId}/scenarios/${scenarioId}/results/raw?${f}`;
+  return getAndDispatch(url, requestScenarioResultsRaw, receiveScenarioResultsRaw);
 }
 
 // Fetcher function

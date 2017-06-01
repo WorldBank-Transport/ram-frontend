@@ -329,7 +329,6 @@ const ScenarioPage = React.createClass({
               <ScenarioResults
                 projectId={dataScenario.project_id}
                 scenarioId={dataScenario.id}
-                resultFileId={resultsFile.id}
               />
             ) : null}
 
