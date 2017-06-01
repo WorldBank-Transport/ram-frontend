@@ -31,7 +31,6 @@ import ProjectFormModal from '../components/project/project-form-modal';
 import ProjectHeaderActions from '../components/project/project-header-actions';
 import ScenarioCreateModal from '../components/scenario/scenario-create-modal';
 import ScenarioDeleteAction from '../components/scenario/scenario-delete-action';
-import Alert from '../components/alert';
 import FatalError from '../components/fatal-error';
 
 const ProjectPageActive = React.createClass({
