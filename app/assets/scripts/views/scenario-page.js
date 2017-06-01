@@ -441,7 +441,6 @@ class LogGen extends LogBase {
           </Alert>
         );
       case 'routing':
-      case 'routing:area':
         if (log.data.message.match(/started/)) {
           return (
             <Alert type='info'>
@@ -457,6 +456,13 @@ class LogGen extends LogBase {
             </Alert>
           );
         }
+      case 'routing:area':
+        return (
+          <Alert type='info'>
+            <h6>Generating results 4/5 <TimeAgo datetime={log.created_at} /></h6>
+            <p>{log.data.remaining} admin areas remaining. Last processed - {log.data.adminArea}</p>
+          </Alert>
+        );
       case 'results:bucket':
       case 'results:files':
         return (
