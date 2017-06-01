@@ -92,7 +92,7 @@ const ScenarioResults = React.createClass({
 
     // On subsequent requests do not redraw.
     if (!receivedAt) {
-      if (!fetched && !fetching) {
+      if (!fetched || fetching) {
         return null;
       }
 
@@ -228,7 +228,7 @@ class AccessibilityTable extends React.PureComponent {
   }
 
   render (poi) {
-    if (!this.props.fetched && !this.props.fetching) {
+    if (!this.props.fetched || this.props.fetching) {
       return null;
     }
 
