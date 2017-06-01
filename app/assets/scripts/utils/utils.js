@@ -73,10 +73,11 @@ export function toTimeStr (value) {
   let pieces = [];
   if (hours) {
     pieces.push(hours < 10 ? `0${hours}H` : `${hours}H`);
-  }
-
-  if (minutes) {
     pieces.push(minutes < 10 ? `0${minutes}M` : `${minutes}M`);
+  } else if (minutes) {
+    pieces.push(minutes < 10 ? `0${minutes}M` : `${minutes}M`);
+  } else {
+    return '<1M';
   }
 
   // if (seconds) {
