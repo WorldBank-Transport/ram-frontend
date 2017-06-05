@@ -345,6 +345,34 @@ const ProjectPagePending = React.createClass({
             />
 
             {this.renderFileUploadSection()}
+
+            <div className='debug-wrapper'>
+
+            <section className='card'>
+              <div className='card__contents'>
+                <header className='card__header'>
+                  <div className='card__headline'>
+                    <a title='Edit detail' className='link-wrapper' href='#'>
+                      <h1 className='card__title'>Administrative Boundaries</h1>
+                    </a>
+                    <p className='card__subtitle'>1 Source file</p>
+                  </div>
+                  <div className="card__actions">
+                    <button className="ca-ellipsis" type="button" title="Scenario options">
+                      <span>Options</span>
+                    </button>
+                  </div>
+                </header>
+                <div className='card__body'>
+                  <div className='card__summary'>
+                    <p>A GeoJSON with population point data. This will be used as the Origin in the analysis.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            </div>
+
           </div>
         </div>
 
