@@ -28,16 +28,53 @@
 
     &::before {
       position: absolute;
-      @extend %collecticon-page-cog;
       left: $global-spacing * 2;
       font-size: 2rem;
       opacity: 0.32;
+    }
 
-      .red & {
-        
-      }
+    &::after {
+      @extend %collecticon-sm-tick;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 3rem;
+      height: 3rem;
+      line-height: 3rem;
+      color: #fff;
+      text-align: right;
+      background: linear-gradient(135deg, transparent 50%, $success-color 0);
+      -webkit-backface-visibility: hidden;
+      padding: 0.5rem;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.24s ease 0s;
     }
   }
+}
+
+.psb--complete {
+  opacity: 1;
+}
+
+.psb--profile .card__contents::before {
+  @extend %collecticon-page-cog;
+}
+
+.psb--villages .card__contents::before {
+  @extend %collecticon-houses;
+}
+
+.psb--admin-bounds .card__contents::before {
+  @extend %collecticon-fence;
+}
+
+.psb--road-network .card__contents::before {
+  @extend %collecticon-road;
+}
+
+.psb--poi .card__contents::before {
+  @extend %collecticon-marker;
 }
 
 .diptych {

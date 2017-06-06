@@ -96,6 +96,7 @@ const ProjectFileInput = React.createClass({
       <ProjectSetupBlock
         name={this.props.name}
         description={this.props.description}
+        type={this.props.type}
         complete={false} >
 
         <form className='form'>

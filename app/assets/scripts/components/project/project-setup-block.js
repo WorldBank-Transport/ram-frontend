@@ -7,13 +7,14 @@ const ProjectSetupBlock = React.createClass({
   propTypes: {
     name: T.string,
     description: T.string,
+    type: T.string,
     complete: T.bool,
     children: T.object
   },
 
   render: function () {
     return (
-      <section className={c('card psb', {'psb--complete': this.props.complete})}>
+      <section className={c(`card psb psb--${this.props.type}`, {'psb--complete': this.props.complete})}>
         <div className='card__contents'>
           <header className='card__header'>
             <div className='card__headline'>

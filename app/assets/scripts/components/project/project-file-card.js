@@ -81,6 +81,7 @@ const ProjectFileCard = React.createClass({
       <ProjectSetupBlock
         name={this.props.name}
         description={this.props.description}
+        type={this.props.type}
         complete >
 
         <div className='psb__actions'>
