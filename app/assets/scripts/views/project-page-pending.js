@@ -240,7 +240,7 @@ const ProjectPagePending = React.createClass({
     }
 
     return (
-      <div>
+      <div className='psb-grid'>
         {filesBLock}
       </div>
     );
@@ -334,9 +334,6 @@ const ProjectPagePending = React.createClass({
         <div className='inpage__body'>
           <div className='inner'>
             <h2 className='inpage__section-title'>{t('Project setup')}</h2>
-            <p className='inpage__section-description'>
-              {t('Upload these files before running analysis. See the {link} for more information about the requirements of each file.', {link: <Link to={`/${getLanguage()}/help`} title={t('Visit help page')} target='_blank'>{t('help section')}</Link>})}
-            </p>
             <Log
               data={data.finish_setup}
               receivedAt={this.props.project.receivedAt}
@@ -345,33 +342,6 @@ const ProjectPagePending = React.createClass({
             />
 
             {this.renderFileUploadSection()}
-
-            <div className='debug-wrapper'>
-
-            <section className='card'>
-              <div className='card__contents'>
-                <header className='card__header'>
-                  <div className='card__headline'>
-                    <a title='Edit detail' className='link-wrapper' href='#'>
-                      <h1 className='card__title'>Administrative Boundaries</h1>
-                    </a>
-                    <p className='card__subtitle'>1 Source file</p>
-                  </div>
-                  <div className="card__actions">
-                    <button className="ca-ellipsis" type="button" title="Scenario options">
-                      <span>Options</span>
-                    </button>
-                  </div>
-                </header>
-                <div className='card__body'>
-                  <div className='card__summary'>
-                    <p>A GeoJSON with population point data. This will be used as the Origin in the analysis.</p>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            </div>
 
           </div>
         </div>

@@ -117,29 +117,6 @@ a.card__contents {
   }
 }
 
-.card__actions {
-  flex: 1 1 auto;
-  text-align: right;
-  font-size: 0;
-
-  > * {
-    vertical-align: top;
-    margin-left: $global-spacing / 2;
-
-    &:last-child {
-      margin-right: -$global-spacing / 2;
-    }
-  }
-}
-
-.ca-ellipsis {
-  @extend .button, .button--small, .button--primary-plain, .button--text-hidden;
-
-  &::before {
-    @extend %collecticon-ellipsis-vertical;
-  }
-}
-
 .card__title {
   @include heading(1.25rem);
   margin: 0;
@@ -227,6 +204,72 @@ a.card__contents {
   .status {
     float: right;
   }
+}
+
+
+/* Card actions
+   ========================================================================== */
+
+.card__actions {
+  flex: 1 1 auto;
+  text-align: right;
+  font-size: 0;
+  white-space: nowrap;
+
+  * {
+    vertical-align: top;
+  }
+
+  > *:last-child {
+    margin-right: -$global-spacing / 4;
+  }
+}
+
+.actions__menu {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  box-shadow: inset -1px 0 0 0 $base-alpha-color;
+  padding: 0 ($global-spacing / 2);
+
+  &:last-child {
+    box-shadow: none;
+    padding-right: 0;
+  }
+
+  &, > li {
+    display: inline-block;
+  }
+
+  > li:not(:last-child) {
+    margin-right: $global-spacing / 4;
+  }
+}
+
+
+/**
+ * "ca-" prefix stands for "card action"
+ */
+
+[class^="ca-"],
+[class*=" ca-"] {
+  @extend .button, .button--small, .button--primary-plain, .button--text-hidden;
+}
+
+.ca-ellipsis::before {
+  @extend %collecticon-ellipsis-vertical;
+}
+
+.ca-download::before {
+  @extend %collecticon-download-3;
+}
+
+.ca-question::before {
+  @extend %collecticon-circle-question;
+}
+
+.ca-pencil::before {
+  @extend %collecticon-pencil;
 }
 
 
