@@ -239,7 +239,9 @@ const ProjectPageActive = React.createClass({
 
     if (scenario.scen_create && scenario.scen_create.status === 'running') {
       scenarioSubtitle = t('Creating scenario');
-    } else if (scenario.data.res_gen_at !== 0) {
+
+    // Checking against the string 0, because normally it's a date string.
+    } else if (scenario.data.res_gen_at !== '0') {
       scenarioSubtitle = t('Analysis complete');
 
       if (scenario.data.rn_updated_at > scenario.data.res_gen_at) {
