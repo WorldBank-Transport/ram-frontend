@@ -39,6 +39,9 @@ export const FINISH_DELETE_SCENARIO = 'FINISH_DELETE_PROJECT';
 export const REQUEST_GENERATE_RESULTS = 'REQUEST_GENERATE_RESULTS';
 export const RECEIVE_GENERATE_RESULTS = 'RECEIVE_GENERATE_RESULTS';
 
+export const REQUEST_ABORT_GENERATE_RESULTS = 'REQUEST_ABORT_GENERATE_RESULTS';
+export const RECEIVE_ABORT_GENERATE_RESULTS = 'RECEIVE_ABORT_GENERATE_RESULTS';
+
 export const REQUEST_SCENARIO_RESULTS = 'REQUEST_SCENARIO_RESULTS';
 export const RECEIVE_SCENARIO_RESULTS = 'RECEIVE_SCENARIO_RESULTS';
 export const INVALIDATE_SCENARIO_RESULTS = 'INVALIDATE_SCENARIO_RESULTS';
@@ -227,8 +230,39 @@ export function receiveGenerateResults (data, error = null) {
   return { type: RECEIVE_GENERATE_RESULTS, data: data, error, receivedAt: Date.now() };
 }
 
-export function startGenerateResults (projectId, scenarioId) {
-  return postAndDispatch(`${config.api}/projects/${projectId}/scenarios/${scenarioId}/generate`, null, requestGenerateResults, receiveGenerateResults);
+export function startGenerateResults (projectId, scenarioId, cb = () => {}) {
+  // See abortGenerateResults()
+  let receiveComposed = (data, error = null) => {
+    cb(error, data);
+    return receiveGenerateResults(data, error);
+  };
+  return postAndDispatch(`${config.api}/projects/${projectId}/scenarios/${scenarioId}/generate`, null, requestGenerateResults, receiveComposed);
+}
+
+// Abort Generate results
+
+export function requestAbortGenerateResults () {
+  return { type: REQUEST_ABORT_GENERATE_RESULTS };
+}
+
+export function receiveAbortGenerateResults (data, error = null) {
+  return { type: RECEIVE_ABORT_GENERATE_RESULTS, data: data, error, receivedAt: Date.now() };
+}
+
+// Special function with callbacks.
+export function abortGenerateResults (projectId, scenarioId, cb) {
+  // OMG what's going on here?
+  // Glad you ask!
+  // The abortGenerateResults only issues a request, but we need to show
+  // and hide a loading indicator. To still use actions we compose the action
+  // to trigger the callback.
+  // Alternatively we'd have needed to create a new reducer and store the state,
+  // but to only manage a loading it would be overkill.
+  let receiveComposed = (data, error = null) => {
+    cb(error, data);
+    return receiveAbortGenerateResults(data, error);
+  };
+  return deleteAndDispatch(`${config.api}/projects/${projectId}/scenarios/${scenarioId}/generate`, requestAbortGenerateResults, receiveComposed);
 }
 
 // Scenario Analysis results

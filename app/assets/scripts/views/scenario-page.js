@@ -17,7 +17,8 @@ import {
   // Fetch scenario without indication of loading.
   fetchScenarioItemSilent,
   fetchScenarioResults,
-  showAlert
+  showAlert,
+  abortGenerateResults
 } from '../actions';
 import { fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
@@ -49,6 +50,7 @@ const ScenarioPage = React.createClass({
     _fetchScenarioItemSilent: T.func,
     _fetchScenarioResults: T.func,
     _showAlert: T.func,
+    _abortGenerateResults: T.func,
 
     scenario: T.object,
     project: T.object,
@@ -206,6 +208,10 @@ const ScenarioPage = React.createClass({
       case 'delete':
         this.showLoading();
         this.props._deleteScenario(this.props.params.projectId, this.props.params.scenarioId);
+        break;
+      case 'abort':
+        this.showLoading();
+        this.props._abortGenerateResults(this.props.params.projectId, this.props.params.scenarioId, () => this.hideLoading());
         break;
       default:
         throw new Error(`Project action not implemented: ${what}`);
@@ -402,7 +408,8 @@ function dispatcher (dispatch) {
 
     _fetchScenarioItemSilent: (...args) => dispatch(fetchScenarioItemSilent(...args)),
     _fetchScenarioResults: (...args) => dispatch(fetchScenarioResults(...args)),
-    _showAlert: (...args) => dispatch(showAlert(...args))
+    _showAlert: (...args) => dispatch(showAlert(...args)),
+    _abortGenerateResults: (...args) => dispatch(abortGenerateResults(...args))
   };
 }
 
