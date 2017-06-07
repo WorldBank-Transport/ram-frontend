@@ -21,6 +21,29 @@
   }
 }
 
+.psb-group {
+  @extend %card-skin;
+
+  .psb {
+    overflow: hidden;
+
+    &:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 5rem;
+      height: 1px;
+      width: 100%;
+      background: $base-alpha-color;
+    }
+
+    .card__contents {
+      background: none;
+      box-shadow: none;
+    }
+  }
+}
+
 .psb {
   .card__contents {
     position: relative;
@@ -89,79 +112,6 @@
   .inpage__section-title {
     text-align: left;
   }
-}
-
-
-
-/* Details list
-   ========================================================================== */
-
-.project-details-list {
-  list-style: none;
-  margin: 0 (-$global-spacing) 0 0;
-  padding: ($global-spacing * 1.5) 0 ($global-spacing * 1.5) ($global-spacing * 4);
-
-  li:not(:last-child) {
-    box-shadow: inset 0 -1px 0 0 $base-alpha-color;
-    padding-bottom: $global-spacing;
-    margin: 0 0 $global-spacing 0;
-  }
-}
-
-.detail-download {
-  @extend .button, .button--primary-plain, .button--text-hidden;
-
-  &::before {
-    @extend %collecticon-download-3;
-  }
-}
-
-.project-detail {
-  position: relative;
-  padding-right: $global-spacing * 4;
-
-  > *:last-child {
-    margin: 0;
-  }
-
-  &::before,
-  .action-wrapper {
-    position: absolute;
-    top: 50%;
-    transform: translate(0, -50%);
-    margin: 0;
-  }
-
-  &::before {
-    left: - $global-spacing * 3.5;
-    font-size: 2rem;
-    opacity: 0.32;
-  }
-
-  .action-wrapper {
-    right: $global-spacing;
-  }
-
-  &.description::before {
-    @extend %collecticon-text-block;
-  }
-
-  &.profile::before {
-    @extend %collecticon-page-cog;
-  }
-
-  &.villages::before {
-    @extend %collecticon-houses;
-  }
-
-  &.admin-bounds::before {
-    @extend %collecticon-fence;
-  }
-}
-
-.project-detail__title {
-  @include heading(1rem);
-  margin: 0;
 }
 
 

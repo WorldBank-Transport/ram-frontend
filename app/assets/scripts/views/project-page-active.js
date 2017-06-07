@@ -3,6 +3,7 @@ import React, { PropTypes as T } from 'react';
 import { hashHistory, Link } from 'react-router';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
+import c from 'classnames';
 
 import {
   invalidateProjectItem,
@@ -219,17 +220,46 @@ const ProjectPageActive = React.createClass({
     let projectFiles = this.props.project.data.files;
     let projectId = this.props.project.data.id;
     return (
-      <ul className='project-details-list'>
-        {projectFiles.map(file => ([
-          <li>
-            <div className={`project-detail ${file.type}`}>
-              <h3 className='project-detail__title' key={`${file.name}-label`}>{fileTypesMatrix[file.type].display}</h3>
-              <p className='action-wrapper'><a href={`${config.api}/projects/${projectId}/files/${file.id}?download=true`} title={t('Download file')} className='detail-download'><span>{t('Download')}</span></a></p>
-              <p key={`${file.name}-desc`}>{fileTypesMatrix[file.type].description}</p>
+      projectFiles.map(file => (
+        <section className={c(`card psb psb--${file.type}`, {'psb--complete': file.complete})}>
+          <div className='card__contents'>
+            <header className='card__header'>
+              <div className='card__headline'>
+                <a title='Edit detail' className='link-wrapper' href='#'>
+                  <h1 className='card__title'>{file.name}</h1>
+                </a>
+                <p className='card__subtitle'>1 Source file</p>
+              </div>
+              <div className="card__actions actions">
+                <ul className="actions__menu">
+                  <li>
+                    <a className="actions__menu-item ca-question" title="Learn more" href="#">
+                      <span>What is this?</span>
+                    </a>
+                  </li>
+                </ul>
+                <ul className="actions__menu">
+                  <li>
+                    <a className="actions__menu-item ca-download" title="Export raw data" href="#">
+                      <span>Download</span>
+                    </a>
+                  </li>
+                  <li>
+                    <button className="actions__menu-item ca-pencil" type="button" title="Modify details">
+                      <span>Edit</span>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </header>
+            <div className='card__body'>
+              <div className='card__summary'>
+                <p>A GeoJSON containing polygons with the administrative boundaries.</p>
+              </div>
             </div>
-          </li>
-        ]))}
-      </ul>
+          </div>
+        </section>
+      ))
     );
   },
 
@@ -356,16 +386,14 @@ const ProjectPageActive = React.createClass({
         <div className='inpage__body'>
           <div className='inner'>
 
-            <section className='diptych diptych--info'>
+            <section className='diptych'>
               <h2 className='inpage__section-title'>{t('Details')}</h2>
-              <div className='card'>
-                <div className='card__contents'>
-                  {this.renderFiles()}
-                </div>
+              <div className='psb-group'>
+                {this.renderFiles()}
               </div>
             </section>
 
-            <section className='diptych diptych--scenarios'>
+            <section className='diptych'>
               <h2 className='inpage__section-title'>{t('Scenarios')}</h2>
               {this.renderScenariosList()}
             </section>
