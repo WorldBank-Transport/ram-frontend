@@ -139,8 +139,8 @@ textarea.form__control {
    ========================================================================== */
 
 .form__group {
-  margin-bottom: $global-spacing;
   @extend .clearfix;
+  margin-bottom: $global-spacing;
 
   > *:last-child {
     margin-bottom: 0;
@@ -569,5 +569,26 @@ label[for] {
 
   > *:last-child {
     margin-bottom: 0;
+  }
+}
+
+
+/* Form rows (minimal grid system)
+   ========================================================================== */
+
+.form__row {
+  @extend .clearfix;
+  margin-bottom: $global-spacing;
+}
+
+.form__row--col2 {
+  > * {
+    @include column(6/12, $cycle: 2);
+    margin: ($global-spacing) 0 0 0;
+
+    &:nth-child(1),
+    &:nth-child(2) {
+      margin-top: 0;
+    }
   }
 }
