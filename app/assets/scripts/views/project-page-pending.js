@@ -38,6 +38,8 @@ import Alert from '../components/alert';
 import LogBase from '../components/log-base';
 import FatalError from '../components/fatal-error';
 
+import { Modal, ModalHeader, ModalBody, ModalFooter } from '../components/modal';
+
 const ProjectPagePending = React.createClass({
   displayName: 'ProjectPagePending',
 
@@ -371,6 +373,54 @@ const ProjectPagePending = React.createClass({
           saveScenario={this.props._finishProjectSetup}
           resetForm={this.props._resetScenarioFrom}
         />
+
+        <Modal
+          id='modal-scenario-metadata'
+          className='modal--small'
+          revealed={true} >
+
+          <ModalHeader>
+            <div className='modal__headline'>
+              <h1 className='modal__title'>{t('Create new scenario')}</h1>
+              <div className='modal__description'>
+                <p>{t('Lorem ipsum dolor sit amet.')}</p>
+              </div>
+            </div>
+          </ModalHeader>
+          <ModalBody>
+
+            <form className='form'>
+
+            <div className='form__group'>
+              <label className='form__label' htmlFor='field1'>{t('Name')}</label>
+              <input type='text' id='field1' name='field1' className='form__control' placeholder={t('Blah blah')} />
+            </div>
+
+            <fieldset className='form__fieldset'>
+              <div className='form__fieldset-header'>
+                <div className='form__fieldset-headline'>
+                  <legend className='form__legend'>Field 1</legend>
+                </div>
+                <div className="form__fieldset-actions">
+                  <button type="button" className="ffa-trash" title="Delete fieldset"><span>Delete</span></button>
+                </div>
+              </div>
+
+              <div className='form__group'>
+                <label className='form__label' htmlFor='field1'>{t('Name')}</label>
+                <input type='text' id='field1' name='field1' className='form__control' placeholder={t('Blah blah')} />
+              </div>
+
+            </fieldset>
+
+            </form>
+
+          </ModalBody>
+          <ModalFooter>
+            <button className='mfa-xmark' type='button'><span>{t('Cancel')}</span></button>
+            <button className={('mfa-tick')} type='submit'><span>{t('Create')}</span></button>
+          </ModalFooter>
+        </Modal>
 
       </section>
     );

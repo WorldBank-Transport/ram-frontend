@@ -155,7 +155,7 @@ const ScenarioGenSettingsModal = React.createClass({
 
         <ModalHeader>
           <div className='modal__headline'>
-            <h1 className='modal__title'>{t('Generate results')}</h1>
+            <h1 className='modal__title'>{t('Analyse')}</h1>
             <div className='modal__description'>
               <p>{t('Select the areas for which you want to generate data. Note that generating new results will replace current ones.')}</p>
             </div>
@@ -183,7 +183,7 @@ const ScenarioGenSettingsModal = React.createClass({
         </ModalBody>
         <ModalFooter>
           <button className='mfa-xmark' type='button' onClick={this.onClose}><span>{t('Cancel')}</span></button>
-          <button className={c('mfa-tick', {disabled: !isAAselected})} type='submit' onClick={this.onSubmit}><span>{t('Generate')}</span></button>
+          <button className={c('mfa-tick', {disabled: !isAAselected})} type='submit' onClick={this.onSubmit}><span>{t('Analyse')}</span></button>
         </ModalFooter>
       </Modal>
     );
