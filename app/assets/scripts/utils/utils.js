@@ -63,6 +63,10 @@ export function limitHelper (charLimit) {
 }
 
 export function toTimeStr (value) {
+  if (isNaN(value) || value === null) {
+    return 'n/a';
+  }
+
   let remainder = value;
   let hours = Math.floor(remainder / 3600);
   remainder %= 3600;
