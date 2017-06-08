@@ -134,9 +134,9 @@ const ScenarioGenSettingsModal = React.createClass({
 
   renderCheckbox: function (val, idx) {
     return (
-      <label key={idx} className='form__option form__option--inline form__option--custom-checkbox' title={val.name}>
+      <label key={idx} className='form__option form__option--custom-checkbox' title={val.name}>
         <input type='checkbox' name={`checkbox-${idx}`} value={val.name} onChange={this.onFieldChange.bind(null, 'selectedAreas')} checked={this.state.data.selectedAreas.indexOf(val.name) !== -1}/>
-        <span className='form__option__text'>{val.name}</span>
+        <span className='form__option__text truncated'>{val.name}</span>
         <span className='form__option__ui'></span>
       </label>
     );
@@ -169,14 +169,22 @@ const ScenarioGenSettingsModal = React.createClass({
 
           <form className={c('form', {'disable': processing})} onSubmit={this.onSubmit}>
             <div className='form__group form-group-areas'>
-              <label className='form__label'>Admin areas</label>
-              <dl className='form__options-menu'>
-                <dt>Select</dt>
-                <dd><button type='button' className='foma-select-all' title={t('Select all')} onClick={this.selectAA.bind(null, 'all')}><span>{t('All')}</span></button></dd>
-                <dd><button type='button' className='foma-select-none' title={t('Deselect none')} onClick={this.selectAA.bind(null, 'none')}><span>{t('None')}</span></button></dd>
-              </dl>
+              <div className='form__inner-header'>
+                <div className='form__inner-headline'>
+                  <label className='form__label'>Admin areas</label>
+                </div>
+                <div className="form__inner-actions">
+                  <dl className='form__options-menu'>
+                    <dt>Select</dt>
+                    <dd><button type='button' className='fia-global' title={t('Select all')} onClick={this.selectAA.bind(null, 'all')}><span>{t('All')}</span></button></dd>
+                    <dd><button type='button' className='fia-global' title={t('Deselect none')} onClick={this.selectAA.bind(null, 'none')}><span>{t('None')}</span></button></dd>
+                  </dl>
+                </div>
+              </div>
 
-              {this.props.scenarioData.admin_areas.map(this.renderCheckbox)}
+              <div className="form__col form__col--3">
+                {this.props.scenarioData.admin_areas.map(this.renderCheckbox)}
+              </div>
 
             </div>
           </form>
