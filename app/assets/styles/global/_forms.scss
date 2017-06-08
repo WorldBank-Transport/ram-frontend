@@ -398,11 +398,17 @@ label[for] {
 }
 
 .form__option:not(.form__option--inline):not(.form__option--switch) {
-  display: table; // Hack-ish. Please fix me.
+  // display: table; // Hack-ish. Please fix me.
 }
 
 .form__option + .form__option {
   margin-top: - $global-spacing / 2;
+}
+
+.form__option__text {
+  max-width: 100%;
+  display: inline-block;
+  vertical-align: top;
 }
 
 /* Form option inline modifier */
@@ -578,8 +584,39 @@ label[for] {
       margin-top: 0;
     }
   }
+
+  .form__option + .form__option {
+    margin-top: $global-spacing / 2;
+
+    &:nth-child(1),
+    &:nth-child(2) {
+      margin-top: 0;
+    }
+  }
 }
 
+.form__col--3 {
+  > * {
+    @include column(4/12, $cycle: 3);
+    margin: ($global-spacing) 0 0 0;
+
+    &:nth-child(1),
+    &:nth-child(2),
+    &:nth-child(3) {
+      margin-top: 0;
+    }
+  }
+
+  .form__option + .form__option {
+    margin-top: $global-spacing / 2;
+
+    &:nth-child(1),
+    &:nth-child(2),
+    &:nth-child(3) {
+      margin-top: 0;
+    }
+  }
+}
 
 /* Form inner actions
    ========================================================================== */
@@ -611,7 +648,7 @@ label[for] {
   }
 
   > *:last-child {
-    margin-right: -$global-spacing / 4;
+    margin-right: -$global-spacing / 2;
   }
 }
 
@@ -635,6 +672,23 @@ label[for] {
 
 .fia-global {
   @extend .button--primary-plain;
+}
+
+.form__options-menu {
+  display: inline-block;
+  margin: 0 0 ($global-spacing / 2) 0;
+
+  > * {
+    display: inline-block;
+    margin: 0;
+  }
+
+  dt {
+    @extend .heading-alt;
+    font-size: 0.75rem;
+    line-height: 1.5rem;
+    margin: 0 ($global-spacing / 2) 0 0;
+  }
 }
 
 

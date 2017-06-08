@@ -401,11 +401,44 @@ const ProjectPagePending = React.createClass({
                     <label className='form__label' htmlFor='inputText4'>{t('Input 04')}</label>
                   </div>
                   <div className="form__inner-actions">
-                    <button type="button" className="fia-global" title="Output some action"><span>Action</span></button>
+                    <dl className='form__options-menu'>
+                      <dt>Select</dt>
+                      <dd><button type='button' className='fia-global' title={t('Select all')}><span>{t('All')}</span></button></dd>
+                      <dd><button type='button' className='fia-global' title={t('Deselect none')}><span>{t('None')}</span></button></dd>
+                    </dl>
                   </div>
                 </div>
 
-                <input type='text' id='inputText4' name='inputText4' className='form__control' placeholder={t('Input text')} />
+                <div className="form__col form__col--3">
+
+                  <label className='form__option form__option--custom-checkbox' title='This is a title'>
+                    <input type='checkbox' name='checkbox1' />
+                    <span className='form__option__text'>Checkbox 01</span>
+                    <span className='form__option__ui'></span>
+                  </label>
+                  <label className='form__option form__option--custom-checkbox' title='This is a title'>
+                    <input type='checkbox' name='checkbox2' />
+                    <span className='form__option__text'>Checkbox 02</span>
+                    <span className='form__option__ui'></span>
+                  </label>
+                  <label className='form__option form__option--custom-checkbox' title='This is a title'>
+                    <input type='checkbox' name='checkbox3' />
+                    <span className='form__option__text'>Checkbox 03</span>
+                    <span className='form__option__ui'></span>
+                  </label>
+                  <label className='form__option form__option--custom-checkbox' title='This is a title'>
+                    <input type='checkbox' name='checkbox4' />
+                    <span className='form__option__text'>Checkbox 04</span>
+                    <span className='form__option__ui'></span>
+                  </label>
+                  <label className='form__option form__option--custom-checkbox' title='This is a title'>
+                    <input type='checkbox' name='checkbox5' />
+                    <span className='form__option__text'>Checkbox 05</span>
+                    <span className='form__option__ui'></span>
+                  </label>
+
+                </div>
+
               </div>
 
               <fieldset className='form__fieldset'>
