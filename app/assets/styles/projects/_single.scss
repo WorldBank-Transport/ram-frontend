@@ -76,7 +76,7 @@
   }
 }
 
-.psb--complete {
+.psb--complete .card__contents::after {
   opacity: 1;
 }
 
