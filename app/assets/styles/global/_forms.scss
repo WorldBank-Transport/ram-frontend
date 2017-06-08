@@ -3,10 +3,9 @@
    ========================================================================== */
 
 .form {
-  margin-bottom: $global-spacing;
-
+  &,
   > * {
-    margin-bottom: $global-spacing * 1.5;
+    margin-bottom: $global-spacing ;
   }
 
   > *:last-child {
@@ -183,44 +182,17 @@ textarea.form__control {
   display: table;
   border-collapse: separate;
   width: 100%;
+  white-space: nowrap;
 }
 
-.form__addon:first-child > * {
-  z-index: 2;
-  margin-right: -2px;
-}
-
-.form__addon:last-child > * {
-  z-index: 2;
-  margin-left: -2px;
-}
-
-.form__input-group .form__control:not(:last-child),
-.form__addon:not(:last-child) .form__addon-label,
-.form__addon:not(:first-child) > .button-group:not(:last-child) > .button,
-.form__addon:not(:last-child) > .button,
-.form__addon:not(:last-child) > .button-group > .button {
-  border-bottom-right-radius: 0;
-  border-top-right-radius: 0;
-}
-
-.form__input-group .form__control:not(:first-child),
-.form__addon:not(:first-child) .form__addon-label,
-.form__addon:not(:first-child) > .button,
-.form__addon:not(:first-child) > .button-group > .button,
-.form__addon:not(:last-child) > .button-group:not(:first-child) > .button,
-.form__addon:not(:last-child) > .button:not(:first-child) {
-  border-bottom-left-radius: 0;
-  border-top-left-radius: 0;
-}
-
-.form__addon {
+.form__input-addon {
   position: relative;
   width: 1%;
   vertical-align: middle;
+  box-shadow: inset 0 -1px 0 0 rgba($base-color, 0.16);
 }
 
-.form__addon,
+.form__input-addon,
 .form__input-group .form__control {
   display: table-cell;
 }
@@ -230,26 +202,27 @@ textarea.form__control {
   float: left;
   width: 100%;
   margin-bottom: 0;
-
-  &:focus {
-    z-index: 2;
-  }
 }
 
-.form__addon-label {
+.form__input-addon-label {
   display: inline-block;
   line-height: 1.5rem;
   font-size: 1rem;
-  padding: 0.25rem 0.75rem;
+  padding: 0.25rem ($global-spacing / 2);
   min-width: 2rem;
   text-align: center;
-  background: tint($base-color, 96%);
-  color: rgba($base-font-color, 0.64);
-  border-radius: $base-border-radius;
-  box-shadow: inset 0 0 0 2px rgba($base-color, 0.16);
-  margin-bottom: 0;
-}
+  font-style: normal;
+  font-weight: $base-font-bold;
+  opacity: 0.64;
 
+  .form__input-addon:first-child & {
+    padding-left: 0;
+  }
+
+  .form__input-addon:last-child & {
+    padding-right: 0;
+  }
+}
 
 /* Form addon label size modifiers
    ========================================================================== */
