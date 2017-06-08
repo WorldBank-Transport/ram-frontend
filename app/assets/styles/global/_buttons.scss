@@ -183,7 +183,7 @@
   &::after {
     margin: 0;
   }
-  > *:not([class^="openaq-ds-icon-"]):not([class*=" openaq-ds-icon-"]):not([class^="collecticons-"]):not([class*=" collecticons-"]) {
+  > *:not([class^="collecticon-"]):not([class*=" collecticon-"]) {
     @extend .visually-hidden;
   }
   :not(.button-group) & {
