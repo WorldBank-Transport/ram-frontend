@@ -126,7 +126,7 @@ const ProjectPagePending = React.createClass({
     switch (file.type) {
       case 'profile':
       case 'admin-bounds':
-      case 'villages':
+      case 'origins':
         this.props._removeProjectItemFile(file.id);
         break;
       case 'poi':
@@ -228,7 +228,7 @@ const ProjectPagePending = React.createClass({
     let filesBLock = [
       this.renderFile('profile', this.props.project.data.files),
       this.renderFile('admin-bounds', this.props.project.data.files),
-      this.renderFile('villages', this.props.project.data.files)
+      this.renderFile('origins', this.props.project.data.files)
     ];
 
     if (!fetched && !receivedAt && fetching) {

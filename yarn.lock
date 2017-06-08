@@ -5690,7 +5690,7 @@ qs@6.2.1:
   version "6.2.1"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.2.1.tgz#ce03c5ff0935bc1d9d69a9f14cbd18e568d67625"
 
-"qs@>= 0.4.0", qs@~6.4.0:
+"qs@>= 0.4.0", qs@^6.4.0, qs@~6.4.0:
   version "6.4.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.4.0.tgz#13e26d28ad6b0ffaa91312cd3bf708ed351e7233"
 
@@ -5762,7 +5762,7 @@ rc@^1.1.2, rc@^1.1.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-addons-create-fragment@^15.4.2:
+react-addons-create-fragment@^15.0.0, react-addons-create-fragment@^15.4.2:
   version "15.5.3"
   resolved "https://registry.yarnpkg.com/react-addons-create-fragment/-/react-addons-create-fragment-15.5.3.tgz#d0025675a9e98b2591240382c73b491251066109"
   dependencies:
@@ -5784,6 +5784,15 @@ react-dom@^15.4.2:
     loose-envify "^1.1.0"
     object-assign "^4.1.0"
     prop-types "~15.5.7"
+
+react-paginate@^4.4.2:
+  version "4.4.2"
+  resolved "https://registry.yarnpkg.com/react-paginate/-/react-paginate-4.4.2.tgz#ca1a34c518b99f171e04234b5c62f4ac98568d40"
+  dependencies:
+    classnames "^2.2.5"
+    prop-types "^15.5.7"
+    react "^15.0.0"
+    react-addons-create-fragment "^15.0.0"
 
 react-redux@^5.0.2:
   version "5.0.4"
@@ -5857,7 +5866,7 @@ react-widgets@^3.4.6:
     deconstruct-number-format "0.0.1"
     format-number-with-string "0.0.2"
 
-react@^15.4.2:
+react@^15.0.0, react@^15.4.2:
   version "15.5.4"
   resolved "https://registry.yarnpkg.com/react/-/react-15.5.4.tgz#fa83eb01506ab237cdc1c8c3b1cea8de012bf047"
   dependencies:

@@ -17,7 +17,8 @@ import {
   // Fetch scenario without indication of loading.
   fetchScenarioItemSilent,
   fetchScenarioResults,
-  showAlert
+  showAlert,
+  abortGenerateResults
 } from '../actions';
 import { fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
@@ -49,6 +50,7 @@ const ScenarioPage = React.createClass({
     _fetchScenarioItemSilent: T.func,
     _fetchScenarioResults: T.func,
     _showAlert: T.func,
+    _abortGenerateResults: T.func,
 
     scenario: T.object,
     project: T.object,
@@ -207,6 +209,10 @@ const ScenarioPage = React.createClass({
         this.showLoading();
         this.props._deleteScenario(this.props.params.projectId, this.props.params.scenarioId);
         break;
+      case 'abort':
+        this.showLoading();
+        this.props._abortGenerateResults(this.props.params.projectId, this.props.params.scenarioId, () => this.hideLoading());
+        break;
       default:
         throw new Error(`Project action not implemented: ${what}`);
     }
@@ -329,7 +335,6 @@ const ScenarioPage = React.createClass({
               <ScenarioResults
                 projectId={dataScenario.project_id}
                 scenarioId={dataScenario.id}
-                resultFileId={resultsFile.id}
               />
             ) : null}
 
@@ -403,7 +408,8 @@ function dispatcher (dispatch) {
 
     _fetchScenarioItemSilent: (...args) => dispatch(fetchScenarioItemSilent(...args)),
     _fetchScenarioResults: (...args) => dispatch(fetchScenarioResults(...args)),
-    _showAlert: (...args) => dispatch(showAlert(...args))
+    _showAlert: (...args) => dispatch(showAlert(...args)),
+    _abortGenerateResults: (...args) => dispatch(abortGenerateResults(...args))
   };
 }
 
@@ -442,7 +448,6 @@ class LogGen extends LogBase {
           </Alert>
         );
       case 'routing':
-      case 'routing:area':
         if (log.data.message.match(/started/)) {
           return (
             <Alert type='info'>
@@ -458,6 +463,13 @@ class LogGen extends LogBase {
             </Alert>
           );
         }
+      case 'routing:area':
+        return (
+          <Alert type='info'>
+            <h6>Generating results 4/5 <TimeAgo datetime={log.created_at} /></h6>
+            <p>{log.data.remaining} admin areas remaining. Last processed - {log.data.adminArea}</p>
+          </Alert>
+        );
       case 'results:bucket':
       case 'results:files':
         return (

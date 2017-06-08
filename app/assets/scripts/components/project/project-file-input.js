@@ -55,7 +55,7 @@ const ProjectFileInput = React.createClass({
     switch (type) {
       case 'profile':
       case 'admin-bounds':
-      case 'villages':
+      case 'origins':
         url = `${config.api}/projects/${projectId}/files`;
         break;
       case 'poi':

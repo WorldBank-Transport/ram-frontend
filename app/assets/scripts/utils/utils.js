@@ -63,6 +63,10 @@ export function limitHelper (charLimit) {
 }
 
 export function toTimeStr (value) {
+  if (isNaN(value) || value === null) {
+    return 'n/a';
+  }
+
   let remainder = value;
   let hours = Math.floor(remainder / 3600);
   remainder %= 3600;
@@ -73,10 +77,11 @@ export function toTimeStr (value) {
   let pieces = [];
   if (hours) {
     pieces.push(hours < 10 ? `0${hours}H` : `${hours}H`);
-  }
-
-  if (minutes) {
     pieces.push(minutes < 10 ? `0${minutes}M` : `${minutes}M`);
+  } else if (minutes) {
+    pieces.push(minutes < 10 ? `0${minutes}M` : `${minutes}M`);
+  } else {
+    return '<1M';
   }
 
   // if (seconds) {

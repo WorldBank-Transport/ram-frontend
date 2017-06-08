@@ -40,7 +40,7 @@ const ProjectFileCard = React.createClass({
       switch (type) {
         case 'profile':
         case 'admin-bounds':
-        case 'villages':
+        case 'origins':
           url = `${config.api}/projects/${projectId}/files/${fileId}`;
           break;
         case 'poi':
@@ -68,7 +68,7 @@ const ProjectFileCard = React.createClass({
     switch (type) {
       case 'profile':
       case 'admin-bounds':
-      case 'villages':
+      case 'origins':
         downloadLink = `${config.api}/projects/${projectId}/files/${fileId}?download=true`;
         break;
       case 'poi':

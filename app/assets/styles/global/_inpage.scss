@@ -183,3 +183,11 @@
 .ipa-arrow-loop::before {
   @extend %collecticon-arrow-loop;
 }
+
+.ipa-cancel {
+  @extend .button--danger-raised-light;
+
+  &::before {
+    @extend %collecticon-sm-xmark;
+  }
+}
