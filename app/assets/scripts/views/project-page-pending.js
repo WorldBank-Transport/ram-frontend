@@ -398,10 +398,15 @@ const ProjectPagePending = React.createClass({
               <div className='form__group'>
                 <label className='form__label' htmlFor='inputText5'>{t('Input 05')}</label>
                 <div className='form__input-group'>
-                  <span className='form__input-addon'><i className='form__input-addon-label'>Label</i></span>
+                  <span className='form__input-addon'><i className='form__input-addon-label'>Prefix addon</i></span>
                   <input type='text' id='inputText5' name='inputText5' className='form__control' placeholder={t('Input text')} />
                   <div className='form__input-addon'><button type="button" className="button button--danger-plain button--text-hidden" title="Delete fieldset"><i className='collecticon-trash-bin'></i><span>Delete</span></button></div>
                 </div>
+              </div>
+
+              <div className='form__group'>
+                <label className='form__label' htmlFor='inputText1'>{t('Input file 01')}</label>
+                <input type='file' id='inputFile1' name='inputFile1' className='form__control' placeholder={t('Input file')} />
               </div>
 
               <div className="form__group">

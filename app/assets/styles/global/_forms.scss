@@ -507,7 +507,7 @@ label[for] {
   }
 
   input:checked ~ .form__option__ui {
-    background: $primary-color;
+    background: $accent-color;
 
     &::before {
       transform: translate(100%, -50%);
