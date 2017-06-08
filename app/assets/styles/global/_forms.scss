@@ -384,7 +384,7 @@ label[for] {
 .form__option {
   position: relative;
   display: inline-block;
-  margin-bottom: $global-spacing;
+  margin-top: $global-spacing / 2;
   font-size: 1rem;
   line-height: 1.5;
   cursor: pointer;
@@ -395,14 +395,6 @@ label[for] {
     top: $global-spacing / 4;
     left: 0;
   }
-}
-
-.form__option:not(.form__option--inline):not(.form__option--switch) {
-  // display: table; // Hack-ish. Please fix me.
-}
-
-.form__option + .form__option {
-  margin-top: - $global-spacing / 2;
 }
 
 .form__option__text {
@@ -667,21 +659,15 @@ label[for] {
 .form__hascol {
   @extend .clearfix;
   margin-bottom: $global-spacing;
+
+  > *:not(.form__option) {
+    margin: ($global-spacing) 0 0 0;
+  }
 }
 
 .form__hascol--2 {
   > * {
     @include column(6/12, $cycle: 2);
-    margin: ($global-spacing) 0 0 0;
-
-    &:nth-child(1),
-    &:nth-child(2) {
-      margin-top: 0;
-    }
-  }
-
-  .form__option + .form__option {
-    margin-top: $global-spacing / 2;
 
     &:nth-child(1),
     &:nth-child(2) {
@@ -693,7 +679,6 @@ label[for] {
 .form__hascol--3 {
   > * {
     @include column(4/12, $cycle: 3);
-    margin: ($global-spacing) 0 0 0;
 
     &:nth-child(1),
     &:nth-child(2),
@@ -701,13 +686,16 @@ label[for] {
       margin-top: 0;
     }
   }
+}
 
-  .form__option + .form__option {
-    margin-top: $global-spacing / 2;
+.form__hascol--4 {
+  > * {
+    @include column(3/12, $cycle: 4);
 
     &:nth-child(1),
     &:nth-child(2),
-    &:nth-child(3) {
+    &:nth-child(3),
+    &:nth-child(4) {
       margin-top: 0;
     }
   }
