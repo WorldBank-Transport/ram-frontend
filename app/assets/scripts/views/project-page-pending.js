@@ -376,7 +376,7 @@ const ProjectPagePending = React.createClass({
 
         <Modal
           id='modal-scenario-metadata'
-          className='modal--small'
+          className='modal--medium'
           revealed={true} >
 
           <ModalHeader>
@@ -390,41 +390,36 @@ const ProjectPagePending = React.createClass({
           <ModalBody>
 
             <form className='form'>
-
-            <div className='form__group'>
-              <label className='form__label' htmlFor='field1'>{t('Name')}</label>
-              <input type='text' id='field1' name='field1' className='form__control' placeholder={t('Blah blah')} />
-            </div>
-
-            <fieldset className='form__fieldset'>
-              <div className='form__fieldset-header'>
-                <div className='form__fieldset-headline'>
-                  <legend className='form__legend'>Field 1</legend>
-                </div>
-                <div className="form__fieldset-actions">
-                  <button type="button" className="ffa-trash" title="Delete fieldset"><span>Delete</span></button>
-                </div>
-              </div>
-
               <div className='form__group'>
-                <label className='form__label' htmlFor='field1'>{t('Name')}</label>
-                <input type='text' id='field1' name='field1' className='form__control' placeholder={t('Blah blah')} />
+                <label className='form__label' htmlFor='inputText1'>{t('Input 01')}</label>
+                <input type='text' id='inputText1' name='inputText1' className='form__control' placeholder={t('Input text')} />
               </div>
 
-              <div className="form__col form__col--2">
-                <div className='form__group'>
-                  <label className='form__label' htmlFor='field1'>{t('Name')}</label>
-                  <input type='text' id='field1' name='field1' className='form__control' placeholder={t('Blah blah')} />
+              <fieldset className='form__fieldset'>
+                <div className='form__fieldset-header'>
+                  <div className='form__fieldset-headline'>
+                    <legend className='form__legend'>Fieldset 01</legend>
+                  </div>
+                  <div className="form__fieldset-actions">
+                    <button type="button" className="ffa-trash" title="Delete fieldset"><span>Delete</span></button>
+                  </div>
                 </div>
 
-                <div className='form__group'>
-                  <label className='form__label' htmlFor='field1'>{t('Name')}</label>
-                  <input type='text' id='field1' name='field1' className='form__control' placeholder={t('Blah blah')} />
+                <div className="form__col form__col--2">
+                  <div className='form__group'>
+                    <label className='form__label' htmlFor='inputText2'>{t('Input 02')}</label>
+                    <input type='text' id='inputText2' name='inputText2' className='form__control' placeholder={t('Input text')} />
+                  </div>
+                  <div className='form__group'>
+                    <label className='form__label' htmlFor='inputText3'>{t('Input 03')}</label>
+                    <input type='text' id='inputText3' name='inputText3' className='form__control' placeholder={t('Input text')} />
+                  </div>
                 </div>
+              </fieldset>
+
+              <div className='form__extra-actions'>
+                <button type="button" className="fea-plus" title="Add new fieldset"><span>New fieldset</span></button>
               </div>
-
-            </fieldset>
-
             </form>
 
           </ModalBody>

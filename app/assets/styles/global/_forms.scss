@@ -592,3 +592,28 @@ label[for] {
     }
   }
 }
+
+
+/* Form extra and main actions
+   ========================================================================== */
+
+.form__extra-actions {
+  @extend .clearfix;
+  margin-bottom: $global-spacing;
+
+  * {
+    vertical-align: top;
+  }
+
+  > *:first-child {
+    margin-left: -$global-spacing;
+  }
+}
+
+.fea-plus {
+  @extend .button, .button--primary-plain;
+
+  &::before {
+    @extend %collecticon-sm-plus;
+  }
+}
