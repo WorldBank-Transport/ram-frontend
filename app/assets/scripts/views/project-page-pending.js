@@ -409,7 +409,7 @@ const ProjectPagePending = React.createClass({
                   </div>
                 </div>
 
-                <div className="form__col form__col--3">
+                <div className="form__hascol form__hascol--3">
 
                   <label className='form__option form__option--custom-checkbox' title='This is a title'>
                     <input type='checkbox' name='checkbox1' />
@@ -451,7 +451,7 @@ const ProjectPagePending = React.createClass({
                   </div>
                 </div>
 
-                <div className="form__col form__col--2">
+                <div className="form__hascol form__hascol--2">
                   <div className='form__group'>
                     <label className='form__label' htmlFor='inputText2'>{t('Input 02')}</label>
                     <input type='text' id='inputText2' name='inputText2' className='form__control' placeholder={t('Input text')} />

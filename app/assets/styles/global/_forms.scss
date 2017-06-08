@@ -566,58 +566,6 @@ label[for] {
 }
 
 
-/* Form columns (simple grid system)
-   ========================================================================== */
-
-.form__col {
-  @extend .clearfix;
-  margin-bottom: $global-spacing;
-}
-
-.form__col--2 {
-  > * {
-    @include column(6/12, $cycle: 2);
-    margin: ($global-spacing) 0 0 0;
-
-    &:nth-child(1),
-    &:nth-child(2) {
-      margin-top: 0;
-    }
-  }
-
-  .form__option + .form__option {
-    margin-top: $global-spacing / 2;
-
-    &:nth-child(1),
-    &:nth-child(2) {
-      margin-top: 0;
-    }
-  }
-}
-
-.form__col--3 {
-  > * {
-    @include column(4/12, $cycle: 3);
-    margin: ($global-spacing) 0 0 0;
-
-    &:nth-child(1),
-    &:nth-child(2),
-    &:nth-child(3) {
-      margin-top: 0;
-    }
-  }
-
-  .form__option + .form__option {
-    margin-top: $global-spacing / 2;
-
-    &:nth-child(1),
-    &:nth-child(2),
-    &:nth-child(3) {
-      margin-top: 0;
-    }
-  }
-}
-
 /* Form inner actions
    ========================================================================== */
 
@@ -713,5 +661,58 @@ label[for] {
 
   &::before {
     @extend %collecticon-sm-plus;
+  }
+}
+
+
+/* Form columns (simple grid system)
+   ========================================================================== */
+
+.form__hascol {
+  @extend .clearfix;
+  margin-bottom: $global-spacing;
+}
+
+.form__hascol--2 {
+  > * {
+    @include column(6/12, $cycle: 2);
+    margin: ($global-spacing) 0 0 0;
+
+    &:nth-child(1),
+    &:nth-child(2) {
+      margin-top: 0;
+    }
+  }
+
+  .form__option + .form__option {
+    margin-top: $global-spacing / 2;
+
+    &:nth-child(1),
+    &:nth-child(2) {
+      margin-top: 0;
+    }
+  }
+}
+
+.form__hascol--3 {
+  > * {
+    @include column(4/12, $cycle: 3);
+    margin: ($global-spacing) 0 0 0;
+
+    &:nth-child(1),
+    &:nth-child(2),
+    &:nth-child(3) {
+      margin-top: 0;
+    }
+  }
+
+  .form__option + .form__option {
+    margin-top: $global-spacing / 2;
+
+    &:nth-child(1),
+    &:nth-child(2),
+    &:nth-child(3) {
+      margin-top: 0;
+    }
   }
 }

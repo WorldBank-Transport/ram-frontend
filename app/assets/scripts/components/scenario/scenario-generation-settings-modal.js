@@ -182,7 +182,7 @@ const ScenarioGenSettingsModal = React.createClass({
                 </div>
               </div>
 
-              <div className="form__col form__col--3">
+              <div className="form__hascol form__hascol--3">
                 {this.props.scenarioData.admin_areas.map(this.renderCheckbox)}
               </div>
 
