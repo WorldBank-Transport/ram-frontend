@@ -6,6 +6,7 @@ import ReactTooltip from 'react-tooltip';
 import config from '../../config';
 import Dropdown from '../dropdown';
 import { t } from '../../utils/i18n';
+import { showConfirm } from '../confirmation-prompt';
 
 import ScenarioDeleteAction from './scenario-delete-action';
 
@@ -16,8 +17,21 @@ const ScenarioHeaderActions = React.createClass({
     scenario: T.object
   },
 
-  onGenerateClick: function (isActive, e) {
-    isActive && this.props.onAction('generate', e);
+  onGenerateClick: function (e) {
+    this.props.onAction('generate', e);
+  },
+
+  onAbortClick: function (e) {
+    showConfirm({
+      title: t('Abort analysis'),
+      body: (
+        <div>
+          <p>{t('Are you sure you want to abort the analysis?')}</p>
+        </div>
+      )
+    }, () => {
+      this.props.onAction('abort', e);
+    });
   },
 
   onEditClick: function (isActive, e) {
@@ -38,6 +52,33 @@ const ScenarioHeaderActions = React.createClass({
       <ReactTooltip id='tip-disable-reason' effect='solid' disable={disable}>
         {txt}
       </ReactTooltip>
+    );
+  },
+
+  renderGenerateAbort: function (isGenerating, isPending) {
+    if (isGenerating) {
+      return (
+        <button
+          data-tip-disable={true}
+          title={t('Abort analysis')}
+          className='ipa-cancel'
+          type='button'
+          onClick={this.onAbortClick}>
+          <span>{t('Analysis')}</span>
+        </button>
+      );
+    }
+
+    return (
+      <button
+       data-tip
+       data-for='tip-disable-reason'
+       title={t('Generate analysis')}
+       className={c('ipa-arrow-loop ipa-main', {'visually-disabled': isPending})}
+       type='button'
+       onClick={this.onGenerateClick}>
+       <span>{t('Analysis')}</span>
+      </button>
     );
   },
 
@@ -74,14 +115,13 @@ const ScenarioHeaderActions = React.createClass({
         <ReactTooltip />
 
         <a href={resultsUrl} data-tip data-for='tip-no-results' title={t('Download data')} className={c('ipa-download', {'visually-disabled': !hasResults})} onClick={(e) => !hasResults && e.preventDefault()}><span>{t('Data')}</span></a>
-
-        <button data-tip data-for='tip-disable-reason' title={t('Generate analysis')} className={c('ipa-arrow-loop ipa-main', {'visually-disabled': isGenerating || isPending})} type='button' onClick={this.onGenerateClick.bind(null, !isGenerating)}><span>{t('Analysis')}</span></button>
-
-        {this.renderDisableReasonTip(isGenerating, isPending)}
-
         <ReactTooltip id='tip-no-results' effect='solid' disable={hasResults}>
           {t('No results were generated yet')}
         </ReactTooltip>
+
+        {this.renderGenerateAbort(isGenerating, isPending)}
+
+        {this.renderDisableReasonTip(isGenerating, isPending)}
 
       </div>
     );

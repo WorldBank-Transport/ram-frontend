@@ -113,6 +113,10 @@
   .table-wrapper {
     margin: 0 (-$global-spacing);
   }
+
+  .table {
+    margin-bottom: $global-spacing * 2;
+  }
 }
 
 .empty-content {
