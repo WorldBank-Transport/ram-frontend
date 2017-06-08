@@ -411,7 +411,7 @@ const ProjectPagePending = React.createClass({
                 <input type='text' id='field1' name='field1' className='form__control' placeholder={t('Blah blah')} />
               </div>
 
-              <div className="form__row form__row--col2">
+              <div className="form__col form__col--2">
                 <div className='form__group'>
                   <label className='form__label' htmlFor='field1'>{t('Name')}</label>
                   <input type='text' id='field1' name='field1' className='form__control' placeholder={t('Blah blah')} />
@@ -422,8 +422,6 @@ const ProjectPagePending = React.createClass({
                   <input type='text' id='field1' name='field1' className='form__control' placeholder={t('Blah blah')} />
                 </div>
               </div>
-
-
 
             </fieldset>
 

@@ -573,15 +573,15 @@ label[for] {
 }
 
 
-/* Form rows (minimal grid system)
+/* Form columns (simple grid system)
    ========================================================================== */
 
-.form__row {
+.form__col {
   @extend .clearfix;
   margin-bottom: $global-spacing;
 }
 
-.form__row--col2 {
+.form__col--2 {
   > * {
     @include column(6/12, $cycle: 2);
     margin: ($global-spacing) 0 0 0;
