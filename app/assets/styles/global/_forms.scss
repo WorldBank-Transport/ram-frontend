@@ -5,6 +5,10 @@
 .form {
   margin-bottom: $global-spacing;
 
+  > * {
+    margin-bottom: $global-spacing * 1.5;
+  }
+
   > *:last-child {
     margin-bottom: 0;
   }
@@ -140,7 +144,6 @@ textarea.form__control {
 
 .form__group {
   @extend .clearfix;
-  margin-bottom: $global-spacing;
 
   > *:last-child {
     margin-bottom: 0;
@@ -302,7 +305,8 @@ textarea.form__control {
   position: relative;
   border: 0;
   border-radius: $base-border-radius;
-  margin: 0 (-$global-spacing) $global-spacing (-$global-spacing);
+  margin-left: (-$global-spacing);
+  margin-right: (-$global-spacing);
   padding: $global-spacing;
   background: rgba($base-color, 0.04);
 
@@ -633,7 +637,6 @@ label[for] {
 
 .form__extra-actions {
   @extend .clearfix;
-  margin-bottom: $global-spacing;
 
   * {
     vertical-align: top;

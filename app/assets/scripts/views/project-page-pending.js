@@ -395,6 +395,22 @@ const ProjectPagePending = React.createClass({
                 <input type='text' id='inputText1' name='inputText1' className='form__control' placeholder={t('Input text')} />
               </div>
 
+              <div className="form__group">
+                <label className="form__label">Road network</label>
+
+                <label className="form__option form__option--inline form__option--custom-radio">
+                  <input type="radio" name="radio1" id="radio1a" />
+                  <span className="form__option__text">Radio 01</span>
+                  <span className="form__option__ui"></span>
+                </label>
+
+                <label className="form__option form__option--inline form__option--custom-radio">
+                  <input type="radio" name="radio1" id="radio1b" />
+                  <span className="form__option__text">Radio 02</span>
+                  <span className="form__option__ui"></span>
+                </label>
+              </div>
+
               <div className='form__group'>
                 <div className='form__inner-header'>
                   <div className='form__inner-headline'>
