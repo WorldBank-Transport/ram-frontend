@@ -395,13 +395,26 @@ const ProjectPagePending = React.createClass({
                 <input type='text' id='inputText1' name='inputText1' className='form__control' placeholder={t('Input text')} />
               </div>
 
+              <div className='form__group'>
+                <div className='form__inner-header'>
+                  <div className='form__inner-headline'>
+                    <label className='form__label' htmlFor='inputText4'>{t('Input 04')}</label>
+                  </div>
+                  <div className="form__inner-actions">
+                    <button type="button" className="fia-global" title="Output some action"><span>Action</span></button>
+                  </div>
+                </div>
+
+                <input type='text' id='inputText4' name='inputText4' className='form__control' placeholder={t('Input text')} />
+              </div>
+
               <fieldset className='form__fieldset'>
-                <div className='form__fieldset-header'>
-                  <div className='form__fieldset-headline'>
+                <div className='form__inner-header'>
+                  <div className='form__inner-headline'>
                     <legend className='form__legend'>Fieldset 01</legend>
                   </div>
-                  <div className="form__fieldset-actions">
-                    <button type="button" className="ffa-trash" title="Delete fieldset"><span>Delete</span></button>
+                  <div className="form__inner-actions">
+                    <button type="button" className="fia-trash" title="Delete fieldset"><span>Delete</span></button>
                   </div>
                 </div>
 
