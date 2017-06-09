@@ -6,6 +6,7 @@ import ReactTooltip from 'react-tooltip';
 import config from '../../config';
 import Dropdown from '../dropdown';
 import { t } from '../../utils/i18n';
+import { scenarioHasResults } from '../../utils/utils';
 import { showConfirm } from '../confirmation-prompt';
 
 import ScenarioDeleteAction from './scenario-delete-action';
@@ -87,7 +88,7 @@ const ScenarioHeaderActions = React.createClass({
     let isMaster = this.props.scenario.master;
     let isPending = this.props.scenario.status === 'pending';
 
-    let hasResults = this.props.scenario.files.some(f => f.type === 'results');
+    let hasResults = scenarioHasResults(this.props.scenario);
     let resultsUrl = `${config.api}/projects/${this.props.scenario.project_id}/scenarios/${this.props.scenario.id}/results?download=true`;
 
     return (

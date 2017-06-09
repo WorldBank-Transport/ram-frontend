@@ -24,21 +24,17 @@ import {
 
 import { prettyPrint } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
-import { fileTypesMatrix } from '../utils/constants';
 import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
 
 import StickyHeader from '../components/sticky-header';
 import Breadcrumb from '../components/breadcrumb';
-import ProjectFileInput from '../components/project/project-file-input';
-import ProjectFileCard from '../components/project/project-file-card';
 import ProjectFormModal from '../components/project/project-form-modal';
 import ProjectHeaderActions from '../components/project/project-header-actions';
 import ScenarioEditModal from '../components/scenario/scenario-edit-modal';
 import Alert from '../components/alert';
 import LogBase from '../components/log-base';
 import FatalError from '../components/fatal-error';
-
-import { Modal, ModalHeader, ModalBody, ModalFooter } from '../components/modal';
+import PorjectFile from '../components/project/project-file';
 
 const ProjectPagePending = React.createClass({
   displayName: 'ProjectPagePending',
@@ -226,9 +222,9 @@ const ProjectPagePending = React.createClass({
     }
 
     let filesBLock = [
-      this.renderFile('profile', this.props.project.data.files),
-      this.renderFile('admin-bounds', this.props.project.data.files),
-      this.renderFile('origins', this.props.project.data.files)
+      this.renderFile('profile', this.props.project.data.sourceData.profile),
+      this.renderFile('admin-bounds', this.props.project.data.sourceData['admin-bounds']),
+      this.renderFile('origins', this.props.project.data.sourceData.origins)
     ];
 
     if (!fetched && !receivedAt && fetching) {
@@ -237,8 +233,8 @@ const ProjectPagePending = React.createClass({
     } else if (fetched && error) {
       filesBLock.push(<div key='error'>Error: {prettyPrint(error)}</div>);
     } else if (fetched) {
-      filesBLock.push(this.renderFile('road-network', data.files));
-      filesBLock.push(this.renderFile('poi', data.files));
+      filesBLock.push(this.renderFile('road-network', data.sourceData['road-network']));
+      filesBLock.push(this.renderFile('poi', data.sourceData.poi));
     }
 
     return (
@@ -248,45 +244,23 @@ const ProjectPagePending = React.createClass({
     );
   },
 
-  renderFile: function (key, files) {
-    // Check if the file exists in the project.
-    const file = files.find(f => f.type === key);
+  renderFile: function (key, data) {
+    let complete;
+    if (data.type === 'osm') {
+      complete = true;
+    } else if (data.type === 'file') {
+      complete = data.files >= 1;
+    }
+    const projectId = this.props.project.data.id;
+    const scenarioId = this.props.scenario.data.id;
 
-    return file
-      ? this.renderFileCard(file)
-      : this.renderFileInput(key);
-  },
-
-  renderFileInput: function (key) {
-    let { display, description } = fileTypesMatrix[key];
-    let projectId = this.props.project.data.id;
-    let scenarioId = this.props.scenario.data.id;
     return (
-      <ProjectFileInput
+      <PorjectFile
         key={key}
-        name={display}
-        description={description}
         type={key}
         projectId={projectId}
         scenarioId={scenarioId}
-        onFileUploadComplete={this.onFileUploadComplete} />
-    );
-  },
-
-  renderFileCard: function (file) {
-    let { display, description } = fileTypesMatrix[file.type];
-    let projectId = this.props.project.data.id;
-    let scenarioId = this.props.scenario.data.id;
-    return (
-      <ProjectFileCard
-        key={file.type}
-        fileId={file.id}
-        name={display}
-        description={description}
-        type={file.type}
-        projectId={projectId}
-        scenarioId={scenarioId}
-        onFileDeleteComplete={this.onFileDeleteComplete.bind(null, file)} />
+        complete={complete} />
     );
   },
 
@@ -373,138 +347,6 @@ const ProjectPagePending = React.createClass({
           saveScenario={this.props._finishProjectSetup}
           resetForm={this.props._resetScenarioFrom}
         />
-
-        <Modal
-          id='modal-scenario-metadata'
-          className='modal--medium'
-          revealed={true} >
-
-          <ModalHeader>
-            <div className='modal__headline'>
-              <h1 className='modal__title'>{t('Create new scenario')}</h1>
-              <div className='modal__description'>
-                <p>{t('Lorem ipsum dolor sit amet.')}</p>
-              </div>
-            </div>
-          </ModalHeader>
-          <ModalBody>
-
-            <form className='form'>
-              <div className='form__group'>
-                <label className='form__label' htmlFor='inputText1'>{t('Input 01')}</label>
-                <input type='text' id='inputText1' name='inputText1' className='form__control' placeholder={t('Input text')} />
-              </div>
-
-              <div className='form__group'>
-                <label className='form__label' htmlFor='inputText5'>{t('Input 05')}</label>
-                <div className='form__input-group'>
-                  <span className='form__input-addon'><i className='form__input-addon-label'>Prefix addon</i></span>
-                  <input type='text' id='inputText5' name='inputText5' className='form__control' placeholder={t('Input text')} />
-                  <div className='form__input-addon'><button type="button" className="button button--danger-plain button--text-hidden" title="Delete fieldset"><i className='collecticon-trash-bin'></i><span>Delete</span></button></div>
-                </div>
-              </div>
-
-              <div className='form__group'>
-                <label className='form__label' htmlFor='inputText1'>{t('Input file 01')}</label>
-                <input type='file' id='inputFile1' name='inputFile1' className='form__control' placeholder={t('Input file')} />
-              </div>
-
-              <div className="form__group">
-                <label className="form__label">Road network</label>
-
-                <label className="form__option form__option--inline form__option--custom-radio">
-                  <input type="radio" name="radio1" id="radio1a" />
-                  <span className="form__option__text">Radio 01</span>
-                  <span className="form__option__ui"></span>
-                </label>
-
-                <label className="form__option form__option--inline form__option--custom-radio">
-                  <input type="radio" name="radio1" id="radio1b" />
-                  <span className="form__option__text">Radio 02</span>
-                  <span className="form__option__ui"></span>
-                </label>
-              </div>
-
-              <div className='form__group'>
-                <div className='form__inner-header'>
-                  <div className='form__inner-headline'>
-                    <label className='form__label' htmlFor='inputText4'>{t('Input 04')}</label>
-                  </div>
-                  <div className="form__inner-actions">
-                    <dl className='form__options-menu'>
-                      <dt>Select</dt>
-                      <dd><button type='button' className='fia-global' title={t('Select all')}><span>{t('All')}</span></button></dd>
-                      <dd><button type='button' className='fia-global' title={t('Deselect none')}><span>{t('None')}</span></button></dd>
-                    </dl>
-                  </div>
-                </div>
-
-                <div className="form__hascol form__hascol--3">
-
-                  <label className='form__option form__option--custom-checkbox' title='This is a title'>
-                    <input type='checkbox' name='checkbox1' />
-                    <span className='form__option__text'>Checkbox 01</span>
-                    <span className='form__option__ui'></span>
-                  </label>
-                  <label className='form__option form__option--custom-checkbox' title='This is a title'>
-                    <input type='checkbox' name='checkbox2' />
-                    <span className='form__option__text'>Checkbox 02</span>
-                    <span className='form__option__ui'></span>
-                  </label>
-                  <label className='form__option form__option--custom-checkbox' title='This is a title'>
-                    <input type='checkbox' name='checkbox3' />
-                    <span className='form__option__text'>Checkbox 03</span>
-                    <span className='form__option__ui'></span>
-                  </label>
-                  <label className='form__option form__option--custom-checkbox' title='This is a title'>
-                    <input type='checkbox' name='checkbox4' />
-                    <span className='form__option__text'>Checkbox 04</span>
-                    <span className='form__option__ui'></span>
-                  </label>
-                  <label className='form__option form__option--custom-checkbox' title='This is a title'>
-                    <input type='checkbox' name='checkbox5' />
-                    <span className='form__option__text'>Checkbox 05</span>
-                    <span className='form__option__ui'></span>
-                  </label>
-
-                </div>
-
-              </div>
-
-              <fieldset className='form__fieldset'>
-                <div className='form__inner-header'>
-                  <div className='form__inner-headline'>
-                    <legend className='form__legend'>Fieldset 01</legend>
-                  </div>
-                  <div className="form__inner-actions">
-                    <button type="button" className="fia-trash" title="Delete fieldset"><span>Delete</span></button>
-                  </div>
-                </div>
-
-                <div className="form__hascol form__hascol--2">
-                  <div className='form__group'>
-                    <label className='form__label' htmlFor='inputText2'>{t('Input 02')}</label>
-                    <input type='text' id='inputText2' name='inputText2' className='form__control' placeholder={t('Input text')} />
-                  </div>
-                  <div className='form__group'>
-                    <label className='form__label' htmlFor='inputText3'>{t('Input 03')}</label>
-                    <input type='text' id='inputText3' name='inputText3' className='form__control' placeholder={t('Input text')} />
-                  </div>
-                </div>
-              </fieldset>
-
-              <div className='form__extra-actions'>
-                <button type="button" className="fea-plus" title="Add new fieldset"><span>New fieldset</span></button>
-              </div>
-            </form>
-
-          </ModalBody>
-          <ModalFooter>
-            <button className='mfa-xmark' type='button'><span>{t('Cancel')}</span></button>
-            <button className={('mfa-tick')} type='submit'><span>{t('Create')}</span></button>
-          </ModalFooter>
-        </Modal>
-
       </section>
     );
   }

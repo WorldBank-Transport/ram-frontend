@@ -4,6 +4,7 @@ import { hashHistory, Link } from 'react-router';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import c from 'classnames';
+import _ from 'lodash';
 
 import {
   invalidateProjectItem,
@@ -21,8 +22,6 @@ import {
 } from '../actions';
 import { fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
-import { fileTypesMatrix } from '../utils/constants';
-import config from '../config';
 import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
 
 import StickyHeader from '../components/sticky-header';
@@ -33,6 +32,8 @@ import ProjectHeaderActions from '../components/project/project-header-actions';
 import ScenarioCreateModal from '../components/scenario/scenario-create-modal';
 import ScenarioDeleteAction from '../components/scenario/scenario-delete-action';
 import FatalError from '../components/fatal-error';
+
+import PorjectFile from '../components/project/project-file';
 
 const ProjectPageActive = React.createClass({
 
@@ -216,50 +217,13 @@ const ProjectPageActive = React.createClass({
   },
 
   renderFiles: function () {
-    let projectFiles = this.props.project.data.files;
-    let projectId = this.props.project.data.id;
-    return (
-      projectFiles.map(file => (
-        <section className={c(`card psb psb--${file.type}`, {'psb--complete': file.complete})}>
-          <div className='card__contents'>
-            <header className='card__header'>
-              <div className='card__headline'>
-                <a title='Edit detail' className='link-wrapper' href='#'>
-                  <h1 className='card__title'>{file.name}</h1>
-                </a>
-                <p className='card__subtitle'>1 Source file</p>
-              </div>
-              <div className="card__actions actions">
-                <ul className="actions__menu">
-                  <li>
-                    <a className="actions__menu-item ca-question" title="Learn more" href="#">
-                      <span>What is this?</span>
-                    </a>
-                  </li>
-                </ul>
-                <ul className="actions__menu">
-                  <li>
-                    <a className="actions__menu-item ca-download" title="Export raw data" href="#">
-                      <span>Download</span>
-                    </a>
-                  </li>
-                  <li>
-                    <button className="actions__menu-item ca-pencil" type="button" title="Modify details">
-                      <span>Edit</span>
-                    </button>
-                  </li>
-                </ul>
-              </div>
-            </header>
-            <div className='card__body'>
-              <div className='card__summary'>
-                <p>A GeoJSON containing polygons with the administrative boundaries.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-      ))
-    );
+    const projectId = this.props.project.data.id;
+    return _.map(this.props.project.data.sourceData, (o, key) => (
+      <PorjectFile
+        key={key}
+        type={key}
+        projectId={projectId} />
+    ));
   },
 
   renderScenarioCard: function (scenario) {
