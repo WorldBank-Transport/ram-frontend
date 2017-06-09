@@ -66,6 +66,21 @@ class Playground extends React.Component {
               <input type='file' id='inputFile1' name='inputFile1' className='form__control' placeholder={t('Input file')} />
             </div>
 
+            <div className="form__group form__group--attached">
+              <label className="form__label visually-hidden" for="road-network-clone-options">Clone from scenario</label>
+              <select name="road-network-clone-options" id="road-network-clone-options" className="form__control">
+                <option value="1100">Main scenario 1100</option>
+                <option value="1200">Other</option>
+                <option value="1400">Yet Other</option>
+              </select>
+            </div>
+
+            <div className="form__group">
+              <label className="form__label" for="project-desc">Description <small>optional</small></label>
+              <textarea id="project-desc" rows="2" className="form__control" placeholder="Say something about this project"></textarea>
+              <p className="form__help">140 characters left</p>
+            </div>
+
             <div className="form__group">
               <label className="form__label">Road network</label>
 
