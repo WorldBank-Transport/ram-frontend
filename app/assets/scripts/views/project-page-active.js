@@ -3,7 +3,6 @@ import React, { PropTypes as T } from 'react';
 import { hashHistory, Link } from 'react-router';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import c from 'classnames';
 import _ from 'lodash';
 
 import {
@@ -222,7 +221,8 @@ const ProjectPageActive = React.createClass({
       <PorjectFile
         key={key}
         type={key}
-        projectId={projectId} />
+        projectId={projectId}
+        editable={false} />
     ));
   },
 

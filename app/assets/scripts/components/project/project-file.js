@@ -24,6 +24,10 @@ class ProjectSetupBlock extends React.Component {
   }
 
   renderModal () {
+    if (!this.props.editable) {
+      return null;
+    }
+
     var TheModal = null;
     switch (this.props.type) {
       case 'profile':
@@ -78,11 +82,13 @@ class ProjectSetupBlock extends React.Component {
                     <span>Download</span>
                   </a>
                 </li>
-                <li>
-                  <button className='actions__menu-item ca-pencil' type='button' title='Modify details' onClick={this.openModal.bind(this)}>
-                    <span>Edit</span>
-                  </button>
-                </li>
+                {this.props.editable ? (
+                  <li>
+                    <button className='actions__menu-item ca-pencil' type='button' title='Modify details' onClick={this.openModal.bind(this)}>
+                      <span>Edit</span>
+                    </button>
+                  </li>
+                ) : null}
               </ul>
             </div>
           </header>
@@ -99,7 +105,12 @@ class ProjectSetupBlock extends React.Component {
   }
 }
 
+ProjectSetupBlock.defaultProps = {
+  editable: true
+};
+
 ProjectSetupBlock.propTypes = {
+  editable: T.bool,
   type: T.string,
   complete: T.bool,
   sourceData: T.object
