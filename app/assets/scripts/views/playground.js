@@ -57,7 +57,7 @@ class Playground extends React.Component {
               <div className='form__input-group'>
                 <span className='form__input-addon'><i className='form__input-addon-label'>Prefix addon</i></span>
                 <input type='text' id='inputText5' name='inputText5' className='form__control' placeholder={t('Input text')} />
-                <div className='form__input-addon'><button type="button" className="button button--danger-plain button--text-hidden" title="Delete fieldset"><i className='collecticon-trash-bin'></i><span>Delete</span></button></div>
+                <div className='form__input-addon'><button type='button' className='button button--danger-plain button--text-hidden' title='Delete fieldset'><i className='collecticon-trash-bin'></i><span>Delete</span></button></div>
               </div>
             </div>
 
@@ -66,34 +66,34 @@ class Playground extends React.Component {
               <input type='file' id='inputFile1' name='inputFile1' className='form__control' placeholder={t('Input file')} />
             </div>
 
-            <div className="form__group form__group--attached">
-              <label className="form__label visually-hidden" for="road-network-clone-options">Clone from scenario</label>
-              <select name="road-network-clone-options" id="road-network-clone-options" className="form__control">
-                <option value="1100">Main scenario 1100</option>
-                <option value="1200">Other</option>
-                <option value="1400">Yet Other</option>
+            <div className='form__group form__group--attached'>
+              <label className='form__label visually-hidden' htmlFor='road-network-clone-options'>Clone from scenario</label>
+              <select name='road-network-clone-options' id='road-network-clone-options' className='form__control'>
+                <option value='1100'>Main scenario 1100</option>
+                <option value='1200'>Other</option>
+                <option value='1400'>Yet Other</option>
               </select>
             </div>
 
-            <div className="form__group">
-              <label className="form__label" for="project-desc">Description <small>optional</small></label>
-              <textarea id="project-desc" rows="2" className="form__control" placeholder="Say something about this project"></textarea>
-              <p className="form__help">140 characters left</p>
+            <div className='form__group'>
+              <label className='form__label' htmlFor='project-desc'>Description <small>optional</small></label>
+              <textarea id='project-desc' rows='2' className='form__control' placeholder='Say something about this project'></textarea>
+              <p className='form__help'>140 characters left</p>
             </div>
 
-            <div className="form__group">
-              <label className="form__label">Road network</label>
+            <div className='form__group'>
+              <label className='form__label'>Road network</label>
 
-              <label className="form__option form__option--inline form__option--custom-radio">
-                <input type="radio" name="radio1" id="radio1a" />
-                <span className="form__option__text">Radio 01</span>
-                <span className="form__option__ui"></span>
+              <label className='form__option form__option--inline form__option--custom-radio'>
+                <input type='radio' name='radio1' id='radio1a' />
+                <span className='form__option__text'>Radio 01</span>
+                <span className='form__option__ui'></span>
               </label>
 
-              <label className="form__option form__option--inline form__option--custom-radio">
-                <input type="radio" name="radio1" id="radio1b" />
-                <span className="form__option__text">Radio 02</span>
-                <span className="form__option__ui"></span>
+              <label className='form__option form__option--inline form__option--custom-radio'>
+                <input type='radio' name='radio1' id='radio1b' />
+                <span className='form__option__text'>Radio 02</span>
+                <span className='form__option__ui'></span>
               </label>
             </div>
 
@@ -102,7 +102,7 @@ class Playground extends React.Component {
                 <div className='form__inner-headline'>
                   <label className='form__label' htmlFor='inputText4'>{t('Input 04')}</label>
                 </div>
-                <div className="form__inner-actions">
+                <div className='form__inner-actions'>
                   <dl className='form__options-menu'>
                     <dt>Select</dt>
                     <dd><button type='button' className='fia-global' title={t('Select all')}><span>{t('All')}</span></button></dd>
@@ -111,7 +111,7 @@ class Playground extends React.Component {
                 </div>
               </div>
 
-              <div className="form__hascol form__hascol--3">
+              <div className='form__hascol form__hascol--3'>
 
                 <label className='form__option form__option--custom-checkbox' title='This is a title'>
                   <input type='checkbox' name='checkbox1' />
@@ -148,12 +148,12 @@ class Playground extends React.Component {
                 <div className='form__inner-headline'>
                   <legend className='form__legend'>Fieldset 01</legend>
                 </div>
-                <div className="form__inner-actions">
-                  <button type="button" className="fia-trash" title="Delete fieldset"><span>Delete</span></button>
+                <div className='form__inner-actions'>
+                  <button type='button' className='fia-trash' title='Delete fieldset'><span>Delete</span></button>
                 </div>
               </div>
 
-              <div className="form__hascol form__hascol--2">
+              <div className='form__hascol form__hascol--2'>
                 <div className='form__group'>
                   <label className='form__label' htmlFor='inputText2'>{t('Input 02')}</label>
                   <input type='text' id='inputText2' name='inputText2' className='form__control' placeholder={t('Input text')} />
@@ -166,7 +166,7 @@ class Playground extends React.Component {
             </fieldset>
 
             <div className='form__extra-actions'>
-              <button type="button" className="fea-plus" title="Add new fieldset"><span>New fieldset</span></button>
+              <button type='button' className='fea-plus' title='Add new fieldset'><span>New fieldset</span></button>
             </div>
           </form>
 
