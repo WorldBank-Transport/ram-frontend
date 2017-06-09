@@ -40,6 +40,11 @@
     .card__contents {
       background: none;
       box-shadow: none;
+      border-radius: 0;
+
+      &::after {
+        display: none;
+      }
     }
   }
 }
@@ -67,16 +72,16 @@
       color: #fff;
       text-align: right;
       background: linear-gradient(135deg, transparent 50%, $success-color 0);
-      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
       padding: 0.5rem;
       pointer-events: none;
-      opacity: 0;
+      opacity: 0.32;
       transition: opacity 0.24s ease 0s;
     }
   }
 }
 
-.psb--complete {
+.psb--complete .card__contents::after {
   opacity: 1;
 }
 
