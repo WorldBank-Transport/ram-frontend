@@ -249,7 +249,7 @@ const ProjectPagePending = React.createClass({
     if (data.type === 'osm') {
       complete = true;
     } else if (data.type === 'file') {
-      complete = data.files >= 1;
+      complete = data.files.length >= 1;
     }
     const projectId = this.props.project.data.id;
     const scenarioId = this.props.scenario.data.id;
@@ -260,7 +260,8 @@ const ProjectPagePending = React.createClass({
         type={key}
         projectId={projectId}
         scenarioId={scenarioId}
-        complete={complete} />
+        complete={complete}
+        sourceData={data} />
     );
   },
 
