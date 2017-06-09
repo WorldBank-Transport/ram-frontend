@@ -31,8 +31,7 @@ import ProjectHeaderActions from '../components/project/project-header-actions';
 import ScenarioCreateModal from '../components/scenario/scenario-create-modal';
 import ScenarioDeleteAction from '../components/scenario/scenario-delete-action';
 import FatalError from '../components/fatal-error';
-
-import PorjectFile from '../components/project/project-file';
+import PorjectSourceData from '../components/project/project-source';
 
 const ProjectPageActive = React.createClass({
 
@@ -215,10 +214,10 @@ const ProjectPageActive = React.createClass({
     }
   },
 
-  renderFiles: function () {
+  renderSourceData: function () {
     const projectId = this.props.project.data.id;
     return _.map(this.props.project.data.sourceData, (o, key) => (
-      <PorjectFile
+      <PorjectSourceData
         key={key}
         type={key}
         projectId={projectId}
@@ -354,7 +353,7 @@ const ProjectPageActive = React.createClass({
             <section className='diptych'>
               <h2 className='inpage__section-title'>{t('Details')}</h2>
               <div className='psb-group'>
-                {this.renderFiles()}
+                {this.renderSourceData()}
               </div>
             </section>
 

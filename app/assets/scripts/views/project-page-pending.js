@@ -34,7 +34,7 @@ import ScenarioEditModal from '../components/scenario/scenario-edit-modal';
 import Alert from '../components/alert';
 import LogBase from '../components/log-base';
 import FatalError from '../components/fatal-error';
-import PorjectFile from '../components/project/project-file';
+import PorjectSourceData from '../components/project/project-source';
 
 const ProjectPagePending = React.createClass({
   displayName: 'ProjectPagePending',
@@ -213,7 +213,7 @@ const ProjectPagePending = React.createClass({
     }
   },
 
-  renderFileUploadSection: function () {
+  renderSourceDataSection: function () {
     let { fetched, fetching, error, data, receivedAt } = this.props.scenario;
 
     // Do not render files if the project is finishing setup.
@@ -222,9 +222,9 @@ const ProjectPagePending = React.createClass({
     }
 
     let filesBLock = [
-      this.renderFile('profile', this.props.project.data.sourceData.profile),
-      this.renderFile('admin-bounds', this.props.project.data.sourceData['admin-bounds']),
-      this.renderFile('origins', this.props.project.data.sourceData.origins)
+      this.renderSourceData('profile', this.props.project.data.sourceData.profile),
+      this.renderSourceData('admin-bounds', this.props.project.data.sourceData['admin-bounds']),
+      this.renderSourceData('origins', this.props.project.data.sourceData.origins)
     ];
 
     if (!fetched && !receivedAt && fetching) {
@@ -233,8 +233,8 @@ const ProjectPagePending = React.createClass({
     } else if (fetched && error) {
       filesBLock.push(<div key='error'>Error: {prettyPrint(error)}</div>);
     } else if (fetched) {
-      filesBLock.push(this.renderFile('road-network', data.sourceData['road-network']));
-      filesBLock.push(this.renderFile('poi', data.sourceData.poi));
+      filesBLock.push(this.renderSourceData('road-network', data.sourceData['road-network']));
+      filesBLock.push(this.renderSourceData('poi', data.sourceData.poi));
     }
 
     return (
@@ -244,7 +244,7 @@ const ProjectPagePending = React.createClass({
     );
   },
 
-  renderFile: function (key, data) {
+  renderSourceData: function (key, data) {
     let complete;
     if (data.type === 'osm') {
       complete = true;
@@ -255,7 +255,7 @@ const ProjectPagePending = React.createClass({
     const scenarioId = this.props.scenario.data.id;
 
     return (
-      <PorjectFile
+      <PorjectSourceData
         key={key}
         type={key}
         projectId={projectId}
@@ -318,7 +318,7 @@ const ProjectPagePending = React.createClass({
               update={this.props._fetchProjectItemSilent.bind(null, this.props.params.projectId)}
             />
 
-            {this.renderFileUploadSection()}
+            {this.renderSourceDataSection()}
 
           </div>
         </div>

@@ -7,7 +7,7 @@ import { t } from '../../utils/i18n';
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '../modal';
 
-class ProjectSetupBlock extends React.Component {
+class PorjectSourceData extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
@@ -105,18 +105,18 @@ class ProjectSetupBlock extends React.Component {
   }
 }
 
-ProjectSetupBlock.defaultProps = {
+PorjectSourceData.defaultProps = {
   editable: true
 };
 
-ProjectSetupBlock.propTypes = {
+PorjectSourceData.propTypes = {
   editable: T.bool,
   type: T.string,
   complete: T.bool,
   sourceData: T.object
 };
 
-export default ProjectSetupBlock;
+export default PorjectSourceData;
 
 // Modal Components.
 // One per type. Forms are better handled on their own.
