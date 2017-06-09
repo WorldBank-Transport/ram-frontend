@@ -135,7 +135,7 @@ const ScenarioGenSettingsModal = React.createClass({
   renderCheckbox: function (val) {
     return (
       <label key={val.id} className='form__option form__option--custom-checkbox' title={val.name}>
-        <input type='checkbox' name={`checkbox-${val.id}`} value={val.name} onChange={this.onFieldChange.bind(null, 'selectedAreas')} checked={this.state.data.selectedAreas.indexOf(val.name) !== -1}/>
+        <input type='checkbox' name={`checkbox-${val.id}`} value={val.id} onChange={this.onFieldChange.bind(null, 'selectedAreas')} checked={this.state.data.selectedAreas.indexOf(val.id) !== -1}/>
         <span className='form__option__text truncated'>{val.name}</span>
         <span className='form__option__ui'></span>
       </label>
