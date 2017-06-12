@@ -5,7 +5,9 @@ import c from 'classnames';
 import { fileTypesMatrix } from '../../utils/constants';
 import { t } from '../../utils/i18n';
 
-import { Modal, ModalHeader, ModalBody, ModalFooter } from '../modal';
+import { ModalBody } from '../modal';
+import ModalBase from './source-modals/modal-base';
+import ModalPoi from './source-modals/modal-poi';
 
 class PorjectSourceData extends React.Component {
   constructor (props) {
@@ -52,6 +54,8 @@ class PorjectSourceData extends React.Component {
       revealed={this.state.modalOpen}
       type={this.props.type}
       sourceData={this.props.sourceData}
+      projectId={this.props.projectId}
+      scenarioId={this.props.scenarioId}
     />) : null;
   }
 
@@ -113,60 +117,15 @@ PorjectSourceData.propTypes = {
   editable: T.bool,
   type: T.string,
   complete: T.bool,
-  sourceData: T.object
+  sourceData: T.object,
+  projectId: T.number,
+  scenarioId: T.number
 };
 
 export default PorjectSourceData;
 
 // Modal Components.
 // One per type. Forms are better handled on their own.
-
-class ModalBase extends React.Component {
-  renderHeader () {
-    let { display, description } = fileTypesMatrix[this.props.type];
-    return (
-      <ModalHeader>
-        <div className='modal__headline'>
-          <h1 className='modal__title'>{t('Edit {type}', {type: display})}</h1>
-          <div className='modal__description'>
-            <p>{description}</p>
-          </div>
-        </div>
-      </ModalHeader>
-    );
-  }
-
-  renderFooter () {
-    return (
-      <ModalFooter>
-        <button className='mfa-xmark' type='button' onClick={this.props.onCloseClick}><span>{t('Cancel')}</span></button>
-        <button className='mfa-tick' type='submit' onClick={this.onSubmit.bind(this)}><span>{t('Save')}</span></button>
-      </ModalFooter>
-    );
-  }
-
-  render () {
-    return (
-      <Modal
-        id='modal-scenario-metadata'
-        className='modal--medium'
-        onCloseClick={this.props.onCloseClick}
-        revealed={this.props.revealed} >
-
-        {this.renderHeader()}
-        {this.renderBody()}
-        {this.renderFooter()}
-
-      </Modal>
-    );
-  }
-}
-
-ModalBase.propTypes = {
-  onCloseClick: T.func,
-  type: T.string,
-  revealed: T.bool
-};
 
 // ////////////////////////////////////////////////////////////////////////// //
 // /////////////                  Profile                       ///////////// //
@@ -187,7 +146,7 @@ class ModalProfile extends ModalBase {
           <div className='form__group'>
             <label className='form__label' htmlFor='profile'>{t('Source')}</label>
             <div className='form__input-group'>
-              <input type='text' id='profile' name='profile' className='form__control disabled' placeholder={sourceData.files[0].name} />
+              <input type='text' id='profile' name='profile' className='form__control' placeholder={sourceData.files[0].name} readOnly />
               <div className='form__input-addon'><button type='button' className='button button--danger-plain button--text-hidden' title={t('Remove file')}><i className='collecticon-trash-bin'></i><span>{t('Remove file')}</span></button></div>
             </div>
           </div>
@@ -226,7 +185,7 @@ class ModalAdminBounds extends ModalBase {
           <div className='form__group'>
             <label className='form__label' htmlFor='admin-bounds'>{t('Source')}</label>
             <div className='form__input-group'>
-              <input type='text' id='admin-bounds' name='admin-bounds' className='form__control disabled' placeholder={sourceData.files[0].name} />
+              <input type='text' id='admin-bounds' name='admin-bounds' className='form__control' placeholder={sourceData.files[0].name} readOnly/>
               <div className='form__input-addon'><button type='button' className='button button--danger-plain button--text-hidden' title={t('Remove file')}><i className='collecticon-trash-bin'></i><span>{t('Remove file')}</span></button></div>
             </div>
           </div>
@@ -275,7 +234,7 @@ class ModalOrigins extends ModalBase {
         <div className='form__group'>
           <label className='form__label' htmlFor='origins'>{t('Source')}</label>
           <div className='form__input-group'>
-            <input type='text' id='origins' name='origins' className='form__control disabled' placeholder={file.name} />
+            <input type='text' id='origins' name='origins' className='form__control' placeholder={file.name} readOnly />
             <div className='form__input-addon'><button type='button' className='button button--danger-plain button--text-hidden' title={t('Remove file')}><i className='collecticon-trash-bin'></i><span>{t('Remove file')}</span></button></div>
           </div>
         </div>
@@ -353,12 +312,13 @@ class ModalRoadNetwork extends ModalBase {
     return (
       <div className='form__group'>
         <div className='form__input-group'>
-          <input type='text' id='road-network' name='road-network' className='form__control disabled' placeholder={sourceData.files[0].name} />
+          <input type='text' id='road-network' name='road-network' className='form__control' placeholder={sourceData.files[0].name} readOnly />
           <div className='form__input-addon'><button type='button' className='button button--danger-plain button--text-hidden' title={t('Remove file')}><i className='collecticon-trash-bin'></i><span>{t('Remove file')}</span></button></div>
         </div>
       </div>
     );
   }
+
   renderBody () {
     return (
       <ModalBody>
@@ -386,105 +346,5 @@ class ModalRoadNetwork extends ModalBase {
 }
 
 ModalRoadNetwork.propTypes = {
-  sourceData: T.object
-};
-
-// ////////////////////////////////////////////////////////////////////////// //
-// /////////////                Road Network                    ///////////// //
-// ////////////////////////////////////////////////////////////////////////// //
-
-class ModalPoi extends ModalBase {
-  constructor (props) {
-    super(props);
-    this.state = {
-      source: props.sourceData.type || 'file'
-    };
-  }
-
-  onSubmit () {
-    console.log('Submit');
-  }
-
-  renderSourceFile () {
-    let sourceData = this.props.sourceData;
-    let hasFile = !!sourceData.files.length;
-
-    return (
-      <div>
-        {hasFile ? (
-          <div className='form__group'>
-            {sourceData.files.map((o, i) => (
-              <fieldset className='form__fieldset' key={o.id}>
-                <div className='form__inner-header'>
-                  <div className='form__inner-headline'>
-                    <legend className='form__legend'>{t('File {idx}', {idx: i + 1})}</legend>
-                  </div>
-                  <div className='form__inner-actions'>
-                    <button type='button' className='fia-trash' title='Delete fieldset'><span>Delete</span></button>
-                  </div>
-                </div>
-
-                <div className='form__hascol form__hascol--2 disabled'>
-                  <div className='form__group'>
-                    <input type='text' id={`file-${i}`} name={`file-${i}`} className='form__control' placeholder={o.name} />
-                  </div>
-                  <div className='form__group'>
-                    <input type='text' id={`type-${i}`} name={`type-${i}`} className='form__control' placeholder={o.subtype} />
-                  </div>
-                </div>
-              </fieldset>
-            ))}
-          </div>
-        ) : null}
-
-        <fieldset className='form__fieldset'>
-          <div className='form__inner-header'>
-            <div className='form__inner-headline'>
-              <legend className='form__legend'>{t('New file')}</legend>
-            </div>
-            <div className='form__inner-actions'>
-              <button type='button' className='fia-trash disabled' title='Delete fieldset'><span>Delete</span></button>
-            </div>
-          </div>
-
-          <div className='form__hascol form__hascol--2'>
-            <div className='form__group'>
-              <input type='file' id='poi-file' name='poi-file' className='form__control' placeholder={t('Select a poi file')} />
-            </div>
-            <div className='form__group'>
-              <input type='text' id='poi-type' name='poi-type' className='form__control' placeholder={t('Type of the poi')} />
-            </div>
-          </div>
-        </fieldset>
-      </div>
-    );
-  }
-  renderBody () {
-    return (
-      <ModalBody>
-        <form className='form'>
-          <div className='form__group'>
-            <label className='form__label'>Source</label>
-
-            <label className='form__option form__option--inline form__option--custom-radio'>
-              <input type='radio' name='source-type' id='file' checked={this.state.source === 'file'} />
-              <span className='form__option__text'>File upload</span>
-              <span className='form__option__ui'></span>
-            </label>
-
-            <label className='form__option form__option--inline form__option--custom-radio disabled'>
-              <input type='radio' name='source-type' id='osm' checked={this.state.source === 'osm'} />
-              <span className='form__option__text'>OSM data</span>
-              <span className='form__option__ui'></span>
-            </label>
-          </div>
-          {this.state.source === 'file' ? this.renderSourceFile() : null}
-        </form>
-      </ModalBody>
-    );
-  }
-}
-
-ModalPoi.propTypes = {
   sourceData: T.object
 };
