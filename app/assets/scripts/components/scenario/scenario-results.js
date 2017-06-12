@@ -241,7 +241,6 @@ class AccessibilityTable extends React.PureComponent {
     }
 
     let accessibilityTime = this.props.data;
-
     return (
       <div>
         <h2 className='inpage__section-title'>Points of interest</h2>
