@@ -264,7 +264,7 @@ const ScenarioPage = React.createClass({
     let scenario = this.props.scenario.data;
     let isGenerating = scenario.gen_analysis && scenario.gen_analysis.status === 'running';
     let isPending = scenario.scen_create && scenario.scen_create.status === 'running';
-    let hasResults = scenario.files.some(o => o.type === 'results');
+    let hasResults = scenario.files.some(o => o.type === 'results-json');
 
     if (isGenerating || isPending || hasResults) {
       return null;
@@ -296,7 +296,7 @@ const ScenarioPage = React.createClass({
       return <FatalError />;
     }
 
-    let resultsFile = dataScenario.files.find(f => f.type === 'results-all');
+    let resultsFile = dataScenario.files.find(f => f.type === 'results-json');
 
     return (
       <section className='inpage inpage--hub'>
