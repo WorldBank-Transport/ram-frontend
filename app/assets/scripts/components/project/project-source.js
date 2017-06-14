@@ -9,6 +9,7 @@ import { t, getLanguage } from '../../utils/i18n';
 import { ModalBody } from '../modal';
 import ModalBase from './source-modals/modal-base';
 import ModalPoi from './source-modals/modal-poi';
+import ModalProfile from './source-modals/modal-profile';
 
 class PorjectSourceData extends React.Component {
   constructor (props) {
@@ -133,45 +134,6 @@ export default PorjectSourceData;
 
 // Modal Components.
 // One per type. Forms are better handled on their own.
-
-// ////////////////////////////////////////////////////////////////////////// //
-// /////////////                  Profile                       ///////////// //
-// ////////////////////////////////////////////////////////////////////////// //
-
-class ModalProfile extends ModalBase {
-  onSubmit () {
-    console.log('Submit');
-  }
-
-  renderBody () {
-    let sourceData = this.props.sourceData;
-    let hasFile = !!sourceData.files.length;
-    return (
-      <ModalBody>
-        <form className='form'>
-        {hasFile ? (
-          <div className='form__group'>
-            <label className='form__label' htmlFor='profile'>{t('Source')}</label>
-            <div className='form__input-group'>
-              <input type='text' id='profile' name='profile' className='form__control' placeholder={sourceData.files[0].name} readOnly />
-              <div className='form__input-addon'><button type='button' className='button button--danger-plain button--text-hidden' title={t('Remove file')}><i className='collecticon-trash-bin'></i><span>{t('Remove file')}</span></button></div>
-            </div>
-          </div>
-        ) : (
-          <div className='form__group'>
-            <label className='form__label' htmlFor='profile'>{t('Source')}</label>
-            <input type='file' id='profile' name='profile' className='form__control' placeholder={t('Select a profile file')} />
-          </div>
-        )}
-        </form>
-      </ModalBody>
-    );
-  }
-}
-
-ModalProfile.propTypes = {
-  sourceData: T.object
-};
 
 // ////////////////////////////////////////////////////////////////////////// //
 // /////////////              Admin Boundaries                  ///////////// //
