@@ -11,6 +11,7 @@ import ModalBase from './source-modals/modal-base';
 import ModalPoi from './source-modals/modal-poi';
 import ModalProfile from './source-modals/modal-profile';
 import ModalAdminBounds from './source-modals/modal-admin-bounds';
+import ModalRoadNetwork from './source-modals/modal-road-network';
 
 class PorjectSourceData extends React.Component {
   constructor (props) {
@@ -208,74 +209,5 @@ class ModalOrigins extends ModalBase {
 }
 
 ModalOrigins.propTypes = {
-  sourceData: T.object
-};
-
-// ////////////////////////////////////////////////////////////////////////// //
-// /////////////                Road Network                    ///////////// //
-// ////////////////////////////////////////////////////////////////////////// //
-
-class ModalRoadNetwork extends ModalBase {
-  constructor (props) {
-    super(props);
-    this.state = {
-      source: props.sourceData.type || 'file'
-    };
-  }
-
-  onSubmit () {
-    console.log('Submit');
-  }
-
-  renderSourceFile () {
-    let sourceData = this.props.sourceData;
-    let hasFile = !!sourceData.files.length;
-
-    if (!hasFile) {
-      return (
-        <div className='form__group'>
-          <label className='form__label' htmlFor='road-network'>{t('Source')}</label>
-          <input type='file' id='road-network' name='road-network' className='form__control' placeholder={t('Select a road network file')} />
-        </div>
-      );
-    }
-
-    return (
-      <div className='form__group'>
-        <div className='form__input-group'>
-          <input type='text' id='road-network' name='road-network' className='form__control' placeholder={sourceData.files[0].name} readOnly />
-          <div className='form__input-addon'><button type='button' className='button button--danger-plain button--text-hidden' title={t('Remove file')}><i className='collecticon-trash-bin'></i><span>{t('Remove file')}</span></button></div>
-        </div>
-      </div>
-    );
-  }
-
-  renderBody () {
-    return (
-      <ModalBody>
-        <form className='form'>
-          <div className='form__group'>
-            <label className='form__label'>Source</label>
-
-            <label className='form__option form__option--inline form__option--custom-radio'>
-              <input type='radio' name='source-type' id='file' checked={this.state.source === 'file'} />
-              <span className='form__option__text'>File upload</span>
-              <span className='form__option__ui'></span>
-            </label>
-
-            <label className='form__option form__option--inline form__option--custom-radio disabled'>
-              <input type='radio' name='source-type' id='osm' checked={this.state.source === 'osm'} />
-              <span className='form__option__text'>OSM data</span>
-              <span className='form__option__ui'></span>
-            </label>
-          </div>
-          {this.state.source === 'file' ? this.renderSourceFile() : null}
-        </form>
-      </ModalBody>
-    );
-  }
-}
-
-ModalRoadNetwork.propTypes = {
   sourceData: T.object
 };
