@@ -17,8 +17,17 @@ var subtypeLimit = limitHelper(15);
 class ModalPoi extends ModalBase {
   constructor (props) {
     super(props);
+    this.initState(props);
+  }
 
-    let fileFields = this.props.sourceData.files.concat(this.getBasePoiFileField());
+  componentWillReceiveProps (nextProps) {
+    if (!this.props.revealed && nextProps.revealed) {
+      this.initState(nextProps);
+    }
+  }
+
+  initState (props) {
+    let fileFields = props.sourceData.files.concat(this.getBasePoiFileField());
 
     this.state = {
       source: props.sourceData.type || 'file',
@@ -104,9 +113,6 @@ class ModalPoi extends ModalBase {
 
   onSubmit () {
     showGlobalLoading();
-    // TODO:
-    // - submit files to delete
-    // - handle errors
 
     let deleteFilesPromiseFn = this.state.filesToRemove.map(o => () => {
       return fetchJSON(`${config.api}/projects/${this.props.projectId}/scenarios/${this.props.projectId}/files/${o}`, {method: 'DELETE'})
