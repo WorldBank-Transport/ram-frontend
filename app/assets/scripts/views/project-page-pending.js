@@ -113,11 +113,6 @@ const ProjectPagePending = React.createClass({
     }
   },
 
-  onFileUploadComplete: function () {
-    this.props._fetchProjectItemSilent(this.props.params.projectId);
-    this.props._fetchScenarioItemSilent(this.props.params.projectId, 0);
-  },
-
   onFileDeleteComplete: function (file) {
     switch (file.type) {
       case 'profile':
@@ -254,6 +249,11 @@ const ProjectPagePending = React.createClass({
     const projectId = this.props.project.data.id;
     const scenarioId = this.props.scenario.data.id;
 
+    const refreshData = () => {
+      this.props._fetchProjectItemSilent(this.props.params.projectId);
+      this.props._fetchScenarioItemSilent(this.props.params.projectId, 0);
+    };
+
     return (
       <PorjectSourceData
         key={key}
@@ -261,7 +261,10 @@ const ProjectPagePending = React.createClass({
         projectId={projectId}
         scenarioId={scenarioId}
         complete={complete}
-        sourceData={data} />
+        sourceData={data}
+        refreshData={refreshData}
+        _showAlert={this.props._showAlert}
+      />
     );
   },
 

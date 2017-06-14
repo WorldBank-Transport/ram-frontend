@@ -6,7 +6,8 @@ import _ from 'lodash';
 import config from '../../../config';
 import { limitHelper } from '../../../utils/utils';
 import { t } from '../../../utils/i18n';
-import { postFormdata } from '../../../actions';
+import { postFormdata, fetchJSON } from '../../../actions';
+import { showGlobalLoading, hideGlobalLoading } from '../../global-loading';
 
 import { ModalBody } from '../../modal';
 import ModalBase from './modal-base';
@@ -21,10 +22,9 @@ class ModalPoi extends ModalBase {
 
     this.state = {
       source: props.sourceData.type || 'file',
-      fileFields
+      fileFields,
+      filesToRemove: []
     };
-
-    this.filesToRemove = [];
   }
 
   getBasePoiFileField () {
@@ -49,7 +49,7 @@ class ModalPoi extends ModalBase {
 
   removeUploadedFile (id) {
     this.removePoiFileField(id);
-    this.filesToRemove.push(id);
+    this.setState({filesToRemove: this.state.filesToRemove.concat(id)});
   }
 
   onFileSelected (id, event) {
@@ -91,7 +91,7 @@ class ModalPoi extends ModalBase {
 
       if (isEmpty) {
         // Was another file removed?
-        return !!this.filesToRemove.length;
+        return !!this.state.filesToRemove.length;
       }
 
       // If not nothing was done so there's nothing to submit.
@@ -99,37 +99,78 @@ class ModalPoi extends ModalBase {
     }
 
     // All files need a subtype and a file.
-    return this.state.fileFields.every(f => f.created_at || (f.file && f.subtype && subtypeLimit(f.subtype.length).isOk()));
+    return this.state.filesToRemove.length || this.state.fileFields.every(f => f.created_at || (f.file && f.subtype && subtypeLimit(f.subtype.length).isOk()));
   }
 
   onSubmit () {
+    showGlobalLoading();
     // TODO:
     // - submit files to delete
-    // - submit files sequentially
     // - handle errors
 
+    let deleteFilesPromiseFn = this.state.filesToRemove.map(o => () => {
+      return fetchJSON(`${config.api}/projects/${this.props.projectId}/scenarios/${this.props.projectId}/files/${o}`, {method: 'DELETE'})
+        .then(() => {
+          let filesToRemove = _.without(this.state.filesToRemove, o);
+          this.setState({filesToRemove});
+        })
+        .catch(err => {
+          let f = _.find(this.state.fileFields, {id: o});
+          this.props._showAlert('danger', <p>An error occurred while deleting file {f.name}: {err.message}</p>, true);
+          // Rethrow to stop chain.
+          throw err;
+        });
+    });
+
     // Data to submit.
-    let newFiles = this.state.fileFields.filter(o => !o.created_at).map(o => {
+    let newFilesPromiseFn = this.state.fileFields.filter(o => !o.created_at && o.file).map(o => () => {
       let formData = new FormData();
-      formData.append('type', 'file');
+      formData.append('source-type', 'file');
+      formData.append('source-name', 'poi');
       formData.append('subtype', o.subtype);
       formData.append('file', o.file);
 
+      const fileIdx = _.findIndex(this.state.fileFields, ['id', o.id]);
+
       let onProgress = progress => {
         let fileFields = _.clone(this.state.fileFields);
-        const idx = _.findIndex(fileFields, ['id', o.id]);
-        fileFields[idx].uploaded = progress;
+        fileFields[fileIdx].uploaded = progress;
         this.setState({fileFields});
       };
 
-      let { xhr, promise } = postFormdata(`${config.api}/projects/${this.props.projectId}/scenarios/${this.props.projectId}/source-data`, formData, onProgress);
+      let { promise } = postFormdata(`${config.api}/projects/${this.props.projectId}/scenarios/${this.props.projectId}/source-data`, formData, onProgress);
       // this.xhr = xhr;
-      return promise;
+      return promise
+        .then(res => {
+          let fileFields = _.clone(this.state.fileFields);
+          fileFields[fileIdx] = res;
+          this.setState({fileFields});
+        })
+        .catch(err => {
+          this.props._showAlert('danger', <p>An error occurred while uploading file {o.subtype}: {err.message}</p>, true);
+          // Rethrow to stop chain.
+          throw err;
+        });
     });
 
-    Promise.all(newFiles)
+    let resolver = Promise.resolve();
+    deleteFilesPromiseFn.concat(newFilesPromiseFn).forEach(promise => {
+      resolver = resolver.then(() => promise());
+    });
+
+    resolver
       .then(res => {
-        console.log('rea', res);
+        // Add new field if there isn't one.
+        let hasEmpty = this.state.fileFields.some(o => !o.created_at);
+        if (!hasEmpty) {
+          this.addPoiFileField();
+        }
+        this.setState({filesToRemove: []});
+        hideGlobalLoading();
+        this.props.onCloseClick(true);
+      })
+      .catch(e => {
+        hideGlobalLoading();
       });
   }
 
@@ -251,7 +292,10 @@ class ModalPoi extends ModalBase {
 ModalPoi.propTypes = {
   sourceData: T.object,
   projectId: T.number,
-  scenarioId: T.number
+  scenarioId: T.number,
+  _showAlert: T.func,
+  _showGlobalLoading: T.func,
+  _hideGlobalLoading: T.func
 };
 
 export default ModalPoi;

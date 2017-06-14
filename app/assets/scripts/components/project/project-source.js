@@ -1,9 +1,10 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
+import { Link } from 'react-router';
 import c from 'classnames';
 
 import { fileTypesMatrix } from '../../utils/constants';
-import { t } from '../../utils/i18n';
+import { t, getLanguage } from '../../utils/i18n';
 
 import { ModalBody } from '../modal';
 import ModalBase from './source-modals/modal-base';
@@ -21,8 +22,11 @@ class PorjectSourceData extends React.Component {
     this.setState({modalOpen: true});
   }
 
-  closeModal () {
+  closeModal (needRefresh) {
     this.setState({modalOpen: false});
+    if (needRefresh) {
+      this.props.refreshData();
+    }
   }
 
   renderModal () {
@@ -56,11 +60,12 @@ class PorjectSourceData extends React.Component {
       sourceData={this.props.sourceData}
       projectId={this.props.projectId}
       scenarioId={this.props.scenarioId}
+      _showAlert={this.props._showAlert}
     />) : null;
   }
 
   render () {
-    let { display, description } = fileTypesMatrix[this.props.type];
+    let { display, description, helpPath } = fileTypesMatrix[this.props.type];
 
     return (
       <section className={c(`card psb psb--${this.props.type}`, {'psb--complete': this.props.complete})}>
@@ -75,9 +80,9 @@ class PorjectSourceData extends React.Component {
             <div className='card__actions actions'>
               <ul className='actions__menu'>
                 <li>
-                  <a className='actions__menu-item ca-question' title='Learn more' href='#'>
+                  <Link className='actions__menu-item ca-question' title='Learn more' to={`/${getLanguage()}${helpPath}`}>
                     <span>What is this?</span>
-                  </a>
+                  </Link>
                 </li>
               </ul>
               <ul className='actions__menu'>
@@ -119,7 +124,9 @@ PorjectSourceData.propTypes = {
   complete: T.bool,
   sourceData: T.object,
   projectId: T.number,
-  scenarioId: T.number
+  scenarioId: T.number,
+  _showAlert: T.func,
+  refreshData: T.func
 };
 
 export default PorjectSourceData;
