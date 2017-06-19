@@ -335,6 +335,7 @@ const ScenarioPage = React.createClass({
               <ScenarioResults
                 projectId={dataScenario.project_id}
                 scenarioId={dataScenario.id}
+                bbox={this.props.project.data.bbox}
               />
             ) : null}
 

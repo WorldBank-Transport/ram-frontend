@@ -3,16 +3,17 @@
 import React, { PropTypes as T } from 'react';
 import { connect } from 'react-redux';
 import c from 'classnames';
-
 import ReactPaginate from 'react-paginate';
 
 import {
   fetchScenarioResults,
   fetchScenarioResultsRaw,
+  fetchScenarioResultsGeoJSON,
   showAlert
 } from '../../actions';
 import { round, toTimeStr } from '../../utils/utils';
 import { t } from '../../utils/i18n';
+import ResultsMap from './scenario-results-map';
 import { showGlobalLoading, hideGlobalLoading } from '../global-loading';
 
 const ScenarioResults = React.createClass({
@@ -20,10 +21,13 @@ const ScenarioResults = React.createClass({
   propTypes: {
     projectId: T.number,
     scenarioId: T.number,
+    bbox: T.array,
     aggregatedResults: T.object,
     rawResults: T.object,
+    geojsonResults: T.object,
     _fetchScenarioResults: T.func,
     _fetchScenarioResultsRaw: T.func,
+    _fetchScenarioResultsGeoJSON: T.func,
     _showAlert: T.func
   },
 
@@ -41,6 +45,7 @@ const ScenarioResults = React.createClass({
     showGlobalLoading();
     this.props._fetchScenarioResults(this.props.projectId, this.props.scenarioId);
     this.props._fetchScenarioResultsRaw(this.props.projectId, this.props.scenarioId, 1);
+    this.props._fetchScenarioResultsGeoJSON(this.props.projectId, this.props.scenarioId);
   },
 
   componentWillReceiveProps: function (nextProps) {
@@ -48,10 +53,12 @@ const ScenarioResults = React.createClass({
     let nextAggregated = nextProps.aggregatedResults;
     let currRaw = this.props.rawResults;
     let nextRaw = nextProps.rawResults;
+    let currGeoJSON = this.props.geojsonResults;
+    let nextGeoJSON = nextProps.geojsonResults;
 
-    if ((!currAggregated.fetched && nextAggregated.fetched) || (!currRaw.fetched && nextRaw.fetched)) {
+    if ((!currAggregated.fetched && nextAggregated.fetched) || (!currRaw.fetched && nextRaw.fetched) || (!currGeoJSON.fetched && nextGeoJSON.fetched)) {
       hideGlobalLoading();
-      let e = nextAggregated.error || nextRaw.error;
+      let e = nextAggregated.error || nextRaw.error || nextGeoJSON.error;
       if (e) {
         this.props._showAlert('danger', <p>{t('An error occurred while loading the results - {reason}', {reason: e.message})}</p>, true);
       }
@@ -179,6 +186,10 @@ const ScenarioResults = React.createClass({
   render: function () {
     return (
       <div>
+        <ResultsMap
+          data={this.props.geojsonResults}
+          bbox={this.props.bbox}
+        />
         <AccessibilityTable
           fetched={this.props.aggregatedResults.fetched}
           fetching={this.props.aggregatedResults.fetching}
@@ -194,7 +205,8 @@ const ScenarioResults = React.createClass({
 function selector (state) {
   return {
     aggregatedResults: state.scenarioResults,
-    rawResults: state.scenarioResultsRaw
+    rawResults: state.scenarioResultsRaw,
+    geojsonResults: state.scenarioResultsGeoJSON
   };
 }
 
@@ -202,6 +214,7 @@ function dispatcher (dispatch) {
   return {
     _fetchScenarioResults: (...args) => dispatch(fetchScenarioResults(...args)),
     _fetchScenarioResultsRaw: (...args) => dispatch(fetchScenarioResultsRaw(...args)),
+    _fetchScenarioResultsGeoJSON: (...args) => dispatch(fetchScenarioResultsGeoJSON(...args)),
     _showAlert: (...args) => dispatch(showAlert(...args))
   };
 }
@@ -241,7 +254,6 @@ class AccessibilityTable extends React.PureComponent {
     }
 
     let accessibilityTime = this.props.data;
-
     return (
       <div>
         <h2 className='inpage__section-title'>Points of interest</h2>

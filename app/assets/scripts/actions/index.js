@@ -50,6 +50,9 @@ export const REQUEST_SCENARIO_RESULTS_RAW = 'REQUEST_SCENARIO_RESULTS_RAW';
 export const RECEIVE_SCENARIO_RESULTS_RAW = 'RECEIVE_SCENARIO_RESULTS_RAW';
 export const INVALIDATE_SCENARIO_RESULTS_RAW = 'INVALIDATE_SCENARIO_RESULTS_RAW';
 
+export const REQUEST_SCENARIO_RESULTS_GEOJSON = 'REQUEST_SCENARIO_RESULTS_GEOJSON';
+export const RECEIVE_SCENARIO_RESULTS_GEOJSON = 'RECEIVE_SCENARIO_RESULTS_GEOJSON';
+
 // Projects
 
 export function invalidateProjects () {
@@ -304,6 +307,21 @@ export function fetchScenarioResultsRaw (projectId, scenarioId, page = 1, filter
 
   let url = `${config.api}/projects/${projectId}/scenarios/${scenarioId}/results/raw?${f}`;
   return getAndDispatch(url, requestScenarioResultsRaw, receiveScenarioResultsRaw);
+}
+
+// Fetches the latest GeoJSON
+
+export function requestScenarioResultsGeoJSON () {
+  return { type: REQUEST_SCENARIO_RESULTS_GEOJSON };
+}
+
+export function receiveScenarioResultsGeoJSON (resultsGeo, error = null) {
+  return { type: RECEIVE_SCENARIO_RESULTS_GEOJSON, data: resultsGeo, error, receivedAt: Date.now() };
+}
+
+export function fetchScenarioResultsGeoJSON (projectId, scenarioId) {
+  let url = `${config.api}/projects/${projectId}/scenarios/${scenarioId}/results/geojson`;
+  return getAndDispatch(url, requestScenarioResultsGeoJSON, receiveScenarioResultsGeoJSON);
 }
 
 // Fetcher function
