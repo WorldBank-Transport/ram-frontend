@@ -143,3 +143,34 @@
 .map-wrapper {
   height: 500px;
 }
+
+#legendETA {
+  ul {
+    display: inline-block;
+    list-style: none;
+    padding: 0;
+  }
+
+  li {
+    border-top: 1rem;
+    border-top-style: solid;
+    float: left;
+    width: 2rem;
+
+    span {
+      display: inline-block;
+      font-size: 0.75rem;
+      margin-left: -1rem;
+      text-align: center;
+      width: 2rem;
+    }
+  }
+
+  .l1 { border-top-color: #1a9850; }
+  .l2 { border-top-color: #91cf60; }
+  .l3 { border-top-color: #d9ef8b; }
+  .l4 { border-top-color: #fee08b; }
+  .l5 { border-top-color: #fc8d59; }
+  .l6 { border-top-color: #d73027; }
+  .l7 { border-top-color: #4d4d4d; }
+}

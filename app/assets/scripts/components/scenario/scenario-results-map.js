@@ -91,6 +91,20 @@ class ResultsMap extends React.Component {
       <div>
         <h2 className='inpage__section-title'>ETA Visualization</h2>
         <section ref='map' className='map-wrapper card--analysis-result' />
+        <div id='legend'>
+          <div id='legendETA'>
+            <h3>Travel time in minutes</h3>
+            <ul>
+              <li className='l1'><span>0</span></li>
+              <li className='l2'><span>10</span></li>
+              <li className='l3'><span>20</span></li>
+              <li className='l4'><span>30</span></li>
+              <li className='l5'><span>60</span></li>
+              <li className='l6'><span>90</span></li>
+              <li className='l7'><span>120</span></li>
+            </ul>
+          </div>
+        </div>
       </div>
     );
   }
