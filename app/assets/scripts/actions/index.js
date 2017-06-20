@@ -50,8 +50,8 @@ export const REQUEST_SCENARIO_RESULTS_RAW = 'REQUEST_SCENARIO_RESULTS_RAW';
 export const RECEIVE_SCENARIO_RESULTS_RAW = 'RECEIVE_SCENARIO_RESULTS_RAW';
 export const INVALIDATE_SCENARIO_RESULTS_RAW = 'INVALIDATE_SCENARIO_RESULTS_RAW';
 
-export const REQUEST_SCENARIO_RESULTS_GEOJSON = 'REQUEST_SCENARIO_RESULTS_GEOJSON';
-export const RECEIVE_SCENARIO_RESULTS_GEOJSON = 'RECEIVE_SCENARIO_RESULTS_GEOJSON';
+export const REQUEST_SCENARIO_RESULTS_GEO = 'REQUEST_SCENARIO_RESULTS_GEO';
+export const RECEIVE_SCENARIO_RESULTS_GEO = 'RECEIVE_SCENARIO_RESULTS_GEO';
 
 // Projects
 
@@ -309,19 +309,19 @@ export function fetchScenarioResultsRaw (projectId, scenarioId, page = 1, filter
   return getAndDispatch(url, requestScenarioResultsRaw, receiveScenarioResultsRaw);
 }
 
-// Fetches the latest GeoJSON
+// Fetches the minified results
 
-export function requestScenarioResultsGeoJSON () {
-  return { type: REQUEST_SCENARIO_RESULTS_GEOJSON };
+export function requestScenarioResultsGeo () {
+  return { type: REQUEST_SCENARIO_RESULTS_GEO };
 }
 
-export function receiveScenarioResultsGeoJSON (resultsGeo, error = null) {
-  return { type: RECEIVE_SCENARIO_RESULTS_GEOJSON, data: resultsGeo, error, receivedAt: Date.now() };
+export function receiveScenarioResultsGeo (resultsGeo, error = null) {
+  return { type: RECEIVE_SCENARIO_RESULTS_GEO, data: resultsGeo, error, receivedAt: Date.now() };
 }
 
-export function fetchScenarioResultsGeoJSON (projectId, scenarioId) {
-  let url = `${config.api}/projects/${projectId}/scenarios/${scenarioId}/results/geojson`;
-  return getAndDispatch(url, requestScenarioResultsGeoJSON, receiveScenarioResultsGeoJSON);
+export function fetchScenarioResultsGeo (projectId, scenarioId) {
+  let url = `${config.api}/projects/${projectId}/scenarios/${scenarioId}/results/geo`;
+  return getAndDispatch(url, requestScenarioResultsGeo, receiveScenarioResultsGeo);
 }
 
 // Fetcher function

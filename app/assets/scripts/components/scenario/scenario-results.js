@@ -8,7 +8,7 @@ import ReactPaginate from 'react-paginate';
 import {
   fetchScenarioResults,
   fetchScenarioResultsRaw,
-  fetchScenarioResultsGeoJSON,
+  fetchScenarioResultsGeo,
   showAlert
 } from '../../actions';
 import { round, toTimeStr } from '../../utils/utils';
@@ -27,7 +27,7 @@ const ScenarioResults = React.createClass({
     geojsonResults: T.object,
     _fetchScenarioResults: T.func,
     _fetchScenarioResultsRaw: T.func,
-    _fetchScenarioResultsGeoJSON: T.func,
+    _fetchScenarioResultsGeo: T.func,
     _showAlert: T.func
   },
 
@@ -45,7 +45,7 @@ const ScenarioResults = React.createClass({
     showGlobalLoading();
     this.props._fetchScenarioResults(this.props.projectId, this.props.scenarioId);
     this.props._fetchScenarioResultsRaw(this.props.projectId, this.props.scenarioId, 1);
-    this.props._fetchScenarioResultsGeoJSON(this.props.projectId, this.props.scenarioId);
+    this.props._fetchScenarioResultsGeo(this.props.projectId, this.props.scenarioId);
   },
 
   componentWillReceiveProps: function (nextProps) {
@@ -206,7 +206,7 @@ function selector (state) {
   return {
     aggregatedResults: state.scenarioResults,
     rawResults: state.scenarioResultsRaw,
-    geojsonResults: state.scenarioResultsGeoJSON
+    geojsonResults: state.scenarioResultsGeo
   };
 }
 
@@ -214,7 +214,7 @@ function dispatcher (dispatch) {
   return {
     _fetchScenarioResults: (...args) => dispatch(fetchScenarioResults(...args)),
     _fetchScenarioResultsRaw: (...args) => dispatch(fetchScenarioResultsRaw(...args)),
-    _fetchScenarioResultsGeoJSON: (...args) => dispatch(fetchScenarioResultsGeoJSON(...args)),
+    _fetchScenarioResultsGeo: (...args) => dispatch(fetchScenarioResultsGeo(...args)),
     _showAlert: (...args) => dispatch(showAlert(...args))
   };
 }

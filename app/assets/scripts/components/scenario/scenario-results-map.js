@@ -28,13 +28,13 @@ class ResultsMap extends React.Component {
         'type': 'circle',
         'source': {
           type: 'geojson',
-          data: this.props.data.data
+          data: this.props.data.data.geojson
         },
         'paint': {
           'circle-color': {
             'base': 1,
             'type': 'interval',
-            'property': 'e0',
+            'property': 'e-0',
             'stops': [
               [0, '#1a9850'],
               [600, '#91cf60'],
@@ -48,7 +48,7 @@ class ResultsMap extends React.Component {
           'circle-radius': {
             'base': 1,
             'type': 'interval',
-            'property': 'pn0',
+            'property': 'pn-0',
             'stops': [
               [{zoom: 0, value: 0}, 2],
               [{zoom: 0, value: 1}, 5],
