@@ -235,6 +235,7 @@ class ModalOrigins extends ModalBase {
       .then(res => {
         this.setState({fileToRemove: null});
         hideGlobalLoading();
+        this.props._showAlert('success', <p>{t('Origins source successfully saved')}</p>, true, 4500);
         this.props.onCloseClick(true);
       })
       .catch(e => {

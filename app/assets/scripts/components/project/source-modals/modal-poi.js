@@ -173,6 +173,7 @@ class ModalPoi extends ModalBase {
         }
         this.setState({filesToRemove: []});
         hideGlobalLoading();
+        this.props._showAlert('success', <p>{t('Point of interest source successfully saved')}</p>, true, 4500);
         this.props.onCloseClick(true);
       })
       .catch(e => {
