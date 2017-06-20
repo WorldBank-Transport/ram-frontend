@@ -57,7 +57,8 @@ class ModalOrigins extends ModalBase {
   }
 
   onFileSelected (id, event) {
-    let fileField = _.clone(this.state.fileField);
+    this.setState({ fileField: this.getBaseFileField() });
+    let fileField = this.getBaseFileField();
 
     // Store file reference.
     const file = event.target.files[0];
@@ -70,6 +71,12 @@ class ModalOrigins extends ModalBase {
     // File contents.
     readFileAsJSON(file)
       .then(res => {
+        // Every feature must have a name attribute.
+        let hasName = res.features.every(f => !!f.properties.name);
+        if (!hasName) {
+          throw new Error('Invalid file selected: All features must have a name');
+        }
+
         // Get the indicator common to every feature. Number indicators only.
         let indicators = res.features.map(o => {
           let numberKeys = [];
@@ -87,10 +94,8 @@ class ModalOrigins extends ModalBase {
         });
         indicators = intersect;
 
-        hideGlobalLoading();
-
         if (!indicators.length) {
-          return this.props._showAlert('danger', <p>Invalid file selected: There are no available attributes to select</p>, true);
+          throw new Error('Invalid file selected: There are no available attributes to select');
         }
 
         // Select the first available indicator.
@@ -100,9 +105,11 @@ class ModalOrigins extends ModalBase {
 
         this.setState({ fileField });
       })
-      .catch(() => {
+      .catch(err => {
         hideGlobalLoading();
-        this.props._showAlert('danger', <p>Invalid file selected: Not valid geoJSON file</p>, true);
+        let msg = err instanceof Error ? err.message : 'Invalid file selected: Not valid geoJSON file';
+
+        return this.props._showAlert('danger', <p>{msg}</p>, true);
       });
   }
 
