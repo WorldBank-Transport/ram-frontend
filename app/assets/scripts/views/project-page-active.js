@@ -221,6 +221,7 @@ const ProjectPageActive = React.createClass({
         key={key}
         type={key}
         projectId={projectId}
+        sourceData={o}
         editable={false} />
     ));
   },

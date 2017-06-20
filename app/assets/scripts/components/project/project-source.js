@@ -5,9 +5,8 @@ import c from 'classnames';
 
 import { fileTypesMatrix } from '../../utils/constants';
 import { t, getLanguage } from '../../utils/i18n';
+import config from '../../config';
 
-import { ModalBody } from '../modal';
-import ModalBase from './source-modals/modal-base';
 import ModalPoi from './source-modals/modal-poi';
 import ModalProfile from './source-modals/modal-profile';
 import ModalAdminBounds from './source-modals/modal-admin-bounds';
@@ -24,6 +23,13 @@ class PorjectSourceData extends React.Component {
 
   openModal () {
     this.setState({modalOpen: true});
+  }
+
+  onTitleClick (e) {
+    if (this.props.editable) {
+      e.preventDefault();
+      return this.openModal();
+    }
   }
 
   closeModal (needRefresh) {
@@ -68,37 +74,62 @@ class PorjectSourceData extends React.Component {
     />) : null;
   }
 
+  renderSourceInfo () {
+    if (this.props.sourceData.type === 'osm') {
+      return <p className='card__subtitle'>{t('OSM source data')}</p>;
+    }
+
+    if (!this.props.sourceData.files.length) {
+      return <p className='card__subtitle'>{t('No source files')}</p>;
+    }
+
+    return <p className='card__subtitle'>{t('{count} source files', {count: this.props.sourceData.files.length})}</p>;
+  }
+
   render () {
     let { display, description, helpPath } = fileTypesMatrix[this.props.type];
+
+    let downloadLink;
+    switch (this.props.type) {
+      case 'profile':
+      case 'admin-bounds':
+      case 'origins':
+        downloadLink = `${config.api}/projects/${this.props.projectId}/source-data?download=true&type=${this.props.type}`;
+        break;
+      case 'poi':
+      case 'road-network':
+        downloadLink = `${config.api}/projects/${this.props.projectId}/scenarios/${this.props.scenarioId}/source-data?download=true&type=${this.props.type}`;
+        break;
+    }
 
     return (
       <section className={c(`card psb psb--${this.props.type}`, {'psb--complete': this.props.complete})}>
         <div className='card__contents'>
           <header className='card__header'>
             <div className='card__headline'>
-              <a title='Edit detail' className='link-wrapper' href='#'>
+              <a title={t('Edit detail')} className='link-wrapper' href={downloadLink} onClick={this.onTitleClick.bind(this)}>
                 <h1 className='card__title'>{display}</h1>
               </a>
-              <p className='card__subtitle'>1 Source file</p>
+              {this.renderSourceInfo()}
             </div>
             <div className='card__actions actions'>
               <ul className='actions__menu'>
                 <li>
-                  <Link className='actions__menu-item ca-question' title='Learn more' to={`/${getLanguage()}${helpPath}`}>
-                    <span>What is this?</span>
+                  <Link className='actions__menu-item ca-question' title={t('Learn more')} to={`/${getLanguage()}${helpPath}`}>
+                    <span>{t('What is this?')}</span>
                   </Link>
                 </li>
               </ul>
               <ul className='actions__menu'>
                 <li>
-                  <a className='actions__menu-item ca-download' title='Export raw data' href='#'>
-                    <span>Download</span>
+                  <a className={c('actions__menu-item ca-download', {disabled: this.props.sourceData.files.length === 0})} title={t('Export raw data')} href={downloadLink}>
+                    <span>{t('Download')}</span>
                   </a>
                 </li>
                 {this.props.editable ? (
                   <li>
-                    <button className='actions__menu-item ca-pencil' type='button' title='Modify details' onClick={this.openModal.bind(this)}>
-                      <span>Edit</span>
+                    <button className='actions__menu-item ca-pencil' type='button' title={t('Modify details')} onClick={this.openModal.bind(this)}>
+                      <span>{t('Edit')}</span>
                     </button>
                   </li>
                 ) : null}
