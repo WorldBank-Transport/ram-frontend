@@ -4,12 +4,15 @@ import _ from 'lodash';
 import c from 'classnames';
 
 import config from '../../../config';
+import { limitHelper } from '../../../utils/utils';
 import { t } from '../../../utils/i18n';
 import { postFormdata, fetchJSON } from '../../../actions';
 import { showGlobalLoading, hideGlobalLoading } from '../../global-loading';
 
 import { ModalBody } from '../../modal';
 import ModalBase from './modal-base';
+
+var labelLimit = limitHelper(20);
 
 class ModalOrigins extends ModalBase {
   constructor (props) {
@@ -144,13 +147,15 @@ class ModalOrigins extends ModalBase {
     }
     // Are all attributes valid?
     let validAttr = this.state.fileField.indicators.every(o => o.key !== '' && o.label !== '');
+    // Are all lengths valid?
+    let validLength = this.state.fileField.indicators.every(o => labelLimit(o.label.length).isOk());
     // Check for doubles.
     let doubles = _(this.state.fileField.indicators)
       .groupBy('key')
       .values()
       .some(o => o.length > 1);
 
-    return validAttr && !doubles;
+    return validAttr && validLength && !doubles;
   }
 
   onSubmit () {
@@ -277,32 +282,36 @@ class ModalOrigins extends ModalBase {
   renderIndicators () {
     let { fileField } = this.state;
 
-    return fileField.indicators.map((o, i) => (
-      <fieldset className={c('form__fieldset', {disabled: fileField.file === null})} key={`${o.key}-${i}`}>
-        <div className='form__inner-header'>
-          <div className='form__inner-headline'>
-            <legend className='form__legend'>{t('Attribute {idx}', {idx: i + 1})}</legend>
-          </div>
-          <div className='form__inner-actions'>
-            <button type='button' className={c('fia-trash', {disabled: fileField.indicators.length <= 1})} title='Delete fieldset' onClick={this.onIndicatorRemove.bind(this, i)}><span>Delete</span></button>
-          </div>
-        </div>
-
-        <div className='form__hascol form__hascol--2'>
-          <div className='form__group'>
-            <label className='form__label' htmlFor={`key-${i}`}>{t('Key')}</label>
-            <select id={`key-${i}`} name={`key-${i}`} className='form__control' value={o.key} onChange={this.onIndicatorKeySelect.bind(this, i)}>
-              {fileField.availableInd.map(ind => <option key={ind} value={ind}>{ind}</option>)}
-            </select>
+    return fileField.indicators.map((o, i) => {
+      let limit = labelLimit(o.label.length);
+      return (
+        <fieldset className={c('form__fieldset', {disabled: fileField.file === null})} key={`${o.key}-${i}`}>
+          <div className='form__inner-header'>
+            <div className='form__inner-headline'>
+              <legend className='form__legend'>{t('Attribute {idx}', {idx: i + 1})}</legend>
+            </div>
+            <div className='form__inner-actions'>
+              <button type='button' className={c('fia-trash', {disabled: fileField.indicators.length <= 1})} title='Delete fieldset' onClick={this.onIndicatorRemove.bind(this, i)}><span>Delete</span></button>
+            </div>
           </div>
 
-          <div className='form__group'>
-            <label className='form__label' htmlFor={`label-${i}`}>{t('Label')}</label>
-            <input type='text' id={`label-${i}`} name={`label-${i}`} className='form__control' value={o.label} onChange={this.onIndicatorLabelChange.bind(this, i)} />
+          <div className='form__hascol form__hascol--2'>
+            <div className='form__group'>
+              <label className='form__label' htmlFor={`key-${i}`}>{t('Key')}</label>
+              <select id={`key-${i}`} name={`key-${i}`} className='form__control' value={o.key} onChange={this.onIndicatorKeySelect.bind(this, i)}>
+                {fileField.availableInd.map(ind => <option key={ind} value={ind}>{ind}</option>)}
+              </select>
+            </div>
+
+            <div className='form__group'>
+              <label className='form__label' htmlFor={`label-${i}`}>{t('Label')}</label>
+              <input type='text' id={`label-${i}`} name={`label-${i}`} className={limit.c('form__control')} value={o.label} onChange={this.onIndicatorLabelChange.bind(this, i)} />
+              <p className='form__help'>{t('{chars} characters left', {chars: limit.remaining})}</p>
+            </div>
           </div>
-        </div>
-      </fieldset>
-    ));
+        </fieldset>
+      );
+    });
   }
 
   renderBody () {
