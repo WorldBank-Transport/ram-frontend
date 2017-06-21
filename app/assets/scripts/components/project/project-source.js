@@ -115,7 +115,7 @@ class PorjectSourceData extends React.Component {
             <div className='card__actions actions'>
               <ul className='actions__menu'>
                 <li>
-                  <Link className='actions__menu-item ca-question' title={t('Learn more')} to={`/${getLanguage()}${helpPath}`}>
+                  <Link className='actions__menu-item ca-question' title={t('Learn more')} target='_blank' to={`/${getLanguage()}${helpPath}`}>
                     <span>{t('What is this?')}</span>
                   </Link>
                 </li>
