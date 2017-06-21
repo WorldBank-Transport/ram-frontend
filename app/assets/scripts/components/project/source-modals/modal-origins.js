@@ -73,7 +73,7 @@ class ModalOrigins extends ModalBase {
         // Every feature must have a name attribute.
         let hasName = res.features.every(f => !!f.properties.name);
         if (!hasName) {
-          throw new Error('Invalid file selected: All features must have a name');
+          throw new Error('Invalid file selected: All features must have a \'name\' property');
         }
 
         // Get the indicator common to every feature. Number indicators only.
@@ -94,7 +94,7 @@ class ModalOrigins extends ModalBase {
         indicators = intersect;
 
         if (!indicators.length) {
-          throw new Error('Invalid file selected: There are no available attributes to select');
+          throw new Error('Invalid file selected: There are no available fields that could be used as population estimate');
         }
 
         // Select the first available indicator.
@@ -107,7 +107,7 @@ class ModalOrigins extends ModalBase {
       })
       .catch(err => {
         hideGlobalLoading();
-        let msg = err instanceof Error ? err.message : 'Invalid file selected: Not valid geoJSON file';
+        let msg = err instanceof Error ? err.message : 'Invalid file selected: Not a valid GeoJSON file';
 
         return this.props._showAlert('danger', <p>{msg}</p>, true);
       });
@@ -296,7 +296,7 @@ class ModalOrigins extends ModalBase {
         <fieldset className={c('form__fieldset', {disabled: fileField.file === null})} key={`${o.key}-${i}`}>
           <div className='form__inner-header'>
             <div className='form__inner-headline'>
-              <legend className='form__legend'>{t('Attribute {idx}', {idx: i + 1})}</legend>
+              <legend className='form__legend'>{t('Population estimate {idx}', {idx: i + 1})}</legend>
             </div>
             <div className='form__inner-actions'>
               <button type='button' className={c('fia-trash', {disabled: fileField.indicators.length <= 1})} title='Delete fieldset' onClick={this.onIndicatorRemove.bind(this, i)}><span>Delete</span></button>
@@ -332,7 +332,7 @@ class ModalOrigins extends ModalBase {
           {hasFile ? this.renderFullFileField() : this.renderEmptyFileField()}
           {this.renderIndicators()}
           <div className='form__extra-actions'>
-            <button type='button' className={c('fea-plus', {disabled: fileField.file === null})} title='Add new attribute' onClick={this.addIndicatorField.bind(this)}><span>New attribute</span></button>
+            <button type='button' className={c('fea-plus', {disabled: fileField.file === null})} title='Add new population estimate' onClick={this.addIndicatorField.bind(this)}><span>New population estimate</span></button>
           </div>
         </form>
       </ModalBody>
