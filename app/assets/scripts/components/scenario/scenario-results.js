@@ -127,10 +127,10 @@ const ScenarioResults = React.createClass({
     };
 
     return (
-      <div>
+      <section className='analysis-result-section'>
         <h2 className='inpage__section-title'>Origin level raw data </h2>
 
-        <section className='card card--analysis-result'>
+        <div className='card card--analysis-result'>
           <div className='card__contents'>
             <header className='card__header visually-hidden'>
               <h1 className='card__title'>All origins</h1>
@@ -178,14 +178,14 @@ const ScenarioResults = React.createClass({
               </div>
             </div>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     );
   },
 
   render: function () {
     return (
-      <div>
+      <div className='rwrapper'>
         <ResultsMap
           data={this.props.geojsonResults}
           bbox={this.props.bbox}
@@ -255,11 +255,11 @@ class AccessibilityTable extends React.PureComponent {
 
     let accessibilityTime = this.props.data;
     return (
-      <div>
+      <section className='analysis-result-section'>
         <h2 className='inpage__section-title'>Points of interest</h2>
         {accessibilityTime.map(poi => {
           return (
-            <section className='card card--analysis-result' key={poi.poi}>
+            <div className='card card--analysis-result' key={poi.poi}>
               <div className='card__contents'>
                 <header className='card__header'>
                   <h1 className='card__title'>{poi.poi === 'pointOfInterest' ? 'Assorted' : poi.poi}</h1>
@@ -280,10 +280,10 @@ class AccessibilityTable extends React.PureComponent {
                   </div>
                 </div>
               </div>
-            </section>
+            </div>
           );
         })}
-      </div>
+      </section>
     );
   }
 }

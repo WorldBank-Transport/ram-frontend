@@ -102,9 +102,16 @@
 
 /* Results
    ========================================================================== */
+.analysis-result-section {
+  margin-bottom: $global-spacing * 3;
+
+  > *:last-child {
+    margin-bottom: 0;
+  }
+}
 
 .card--analysis-result {
-  margin-bottom: $global-spacing * 3;
+  margin-bottom: $global-spacing * 2;
 
   .card__contents {
     padding: $global-spacing * 2;
@@ -140,22 +147,51 @@
   max-width: 28rem;
 }
 
-.map-wrapper {
-  height: 500px;
+
+/* Results: ETA Vis
+   ========================================================================== */
+
+.scenario-vis__media {
+  position: relative;
+  margin: 0 (-$global-spacing * 2);
 }
 
-#legendETA {
-  ul {
-    display: inline-block;
-    list-style: none;
-    padding: 0;
+.scenario-vis__map {
+  height: 32rem;
+}
+
+.scenario-vis__legend {
+  position: absolute;
+  bottom: $global-spacing;
+  left: $global-spacing;
+  background: rgba(#fff, 0.80);
+  padding: $global-spacing;
+  border-radius: $base-border-radius;
+
+  h3 {
+    @extend .heading-alt;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    margin-bottom: $global-spacing / 2;
   }
 
-  li {
+  dl {
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+  }
+
+  dt {
+    @extend .visually-hidden;
+  }
+
+  dd {
     border-top: 1rem;
     border-top-style: solid;
     float: left;
     width: 2rem;
+    margin: 0;
+    line-height: 1;
 
     span {
       display: inline-block;

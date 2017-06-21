@@ -13,12 +13,14 @@
     float: left;
   }
 
-  .previous a, .next a {
-    @extend .button, .button--primary-raised-light;
+  .previous a,
+  .next a {
+    @extend .button, .button--primary-plain;
     text-decoration: none;
     text-transform: uppercase;
     padding-right: 0;
     padding-left: 0;
+
     span {
       @extend .visually-hidden;
     }
@@ -27,6 +29,7 @@
   .previous a {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
+
     &:before {
       @extend %collecticon-chevron-left;
     }
@@ -35,6 +38,7 @@
   .next a {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
+
     &:before {
       @extend %collecticon-chevron-right;
     }
@@ -42,15 +46,16 @@
 
   .pages {
     @extend .clearfix;
+
     &__wrapper {
       float: left;
 
       &.active .pages__page {
-        @extend .button--primary-raised-dark;
+        @extend .button--primary-plain:active;
       }
 
       .pages__page {
-        @extend .button, .button--primary-raised-light;
+        @extend .button, .button--primary-plain;
         border-radius: 0;
       }
     }
