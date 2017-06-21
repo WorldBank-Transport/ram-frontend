@@ -24,7 +24,7 @@
     @include column(6/12);
 
     /* Animation */
-    @include animation(reveal 0.24s ease 0s 1);
+    animation: reveal 0.24s ease 0s 1;
 
     > *:last-child {
       margin-bottom: 0;
@@ -86,7 +86,7 @@
     font-size: 0;
 
     /* Animation */
-    @include animation(reveal 0.48s ease 0s 1);
+    animation: reveal 0.48s ease 0s 1;
 
     > * {
       vertical-align: top;
@@ -101,7 +101,7 @@
     padding: ($global-spacing * 3) 0;
 
     /* Animation */
-    @include animation(reveal 0.64s ease 0s 1);
+    animation: reveal 0.64s ease 0s 1;
 
     > .inner {
       @extend .row, .row--centered;

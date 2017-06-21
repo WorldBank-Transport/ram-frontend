@@ -149,7 +149,7 @@ main {
  * Style selection appearance (via ::selection pseudo-element).
  */
 
-@include selection {
+::selection {
   background-color: rgba($base-color, 0.64);
   color: #fff;
 }
