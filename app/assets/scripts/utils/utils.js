@@ -90,3 +90,9 @@ export function toTimeStr (value) {
 
   return pieces.join(' ');
 }
+
+export function scenarioHasResults (scenario) {
+  return scenario.gen_analysis &&
+    scenario.gen_analysis.status === 'complete' &&
+    _.last(scenario.gen_analysis.logs).code === 'success';
+}

@@ -134,9 +134,9 @@ const ScenarioGenSettingsModal = React.createClass({
 
   renderCheckbox: function (val) {
     return (
-      <label key={val.id} className='form__option form__option--inline form__option--custom-checkbox' title={val.name}>
+      <label key={val.id} className='form__option form__option--custom-checkbox' title={val.name}>
         <input type='checkbox' name={`checkbox-${val.id}`} value={val.id} onChange={this.onFieldChange.bind(null, 'selectedAreas')} checked={this.state.data.selectedAreas.indexOf(val.id) !== -1}/>
-        <span className='form__option__text'>{val.name}</span>
+        <span className='form__option__text truncated'>{val.name}</span>
         <span className='form__option__ui'></span>
       </label>
     );
@@ -155,7 +155,7 @@ const ScenarioGenSettingsModal = React.createClass({
 
         <ModalHeader>
           <div className='modal__headline'>
-            <h1 className='modal__title'>{t('Generate results')}</h1>
+            <h1 className='modal__title'>{t('Analyse')}</h1>
             <div className='modal__description'>
               <p>{t('Select the areas for which you want to generate data. Note that generating new results will replace current ones.')}</p>
             </div>
@@ -169,21 +169,29 @@ const ScenarioGenSettingsModal = React.createClass({
 
           <form className={c('form', {'disable': processing})} onSubmit={this.onSubmit}>
             <div className='form__group form-group-areas'>
-              <label className='form__label'>Admin areas</label>
-              <dl className='form__options-menu'>
-                <dt>Select</dt>
-                <dd><button type='button' className='foma-select-all' title={t('Select all')} onClick={this.selectAA.bind(null, 'all')}><span>{t('All')}</span></button></dd>
-                <dd><button type='button' className='foma-select-none' title={t('Deselect none')} onClick={this.selectAA.bind(null, 'none')}><span>{t('None')}</span></button></dd>
-              </dl>
+              <div className='form__inner-header'>
+                <div className='form__inner-headline'>
+                  <label className='form__label'>Admin areas</label>
+                </div>
+                <div className="form__inner-actions">
+                  <dl className='form__options-menu'>
+                    <dt>Select</dt>
+                    <dd><button type='button' className='fia-global' title={t('Select all')} onClick={this.selectAA.bind(null, 'all')}><span>{t('All')}</span></button></dd>
+                    <dd><button type='button' className='fia-global' title={t('Deselect none')} onClick={this.selectAA.bind(null, 'none')}><span>{t('None')}</span></button></dd>
+                  </dl>
+                </div>
+              </div>
 
-              {this.props.scenarioData.admin_areas.map(this.renderCheckbox)}
+              <div className="form__hascol form__hascol--3">
+                {this.props.scenarioData.admin_areas.map(this.renderCheckbox)}
+              </div>
 
             </div>
           </form>
         </ModalBody>
         <ModalFooter>
           <button className='mfa-xmark' type='button' onClick={this.onClose}><span>{t('Cancel')}</span></button>
-          <button className={c('mfa-tick', {disabled: !isAAselected})} type='submit' onClick={this.onSubmit}><span>{t('Generate')}</span></button>
+          <button className={c('mfa-tick', {disabled: !isAAselected})} type='submit' onClick={this.onSubmit}><span>{t('Analyse')}</span></button>
         </ModalFooter>
       </Modal>
     );

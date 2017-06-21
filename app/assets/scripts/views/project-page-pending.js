@@ -24,19 +24,17 @@ import {
 
 import { prettyPrint } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
-import { fileTypesMatrix } from '../utils/constants';
 import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
 
 import StickyHeader from '../components/sticky-header';
 import Breadcrumb from '../components/breadcrumb';
-import ProjectFileInput from '../components/project/project-file-input';
-import ProjectFileCard from '../components/project/project-file-card';
 import ProjectFormModal from '../components/project/project-form-modal';
 import ProjectHeaderActions from '../components/project/project-header-actions';
 import ScenarioEditModal from '../components/scenario/scenario-edit-modal';
 import Alert from '../components/alert';
 import LogBase from '../components/log-base';
 import FatalError from '../components/fatal-error';
+import PorjectSourceData from '../components/project/project-source';
 
 const ProjectPagePending = React.createClass({
   displayName: 'ProjectPagePending',
@@ -113,11 +111,6 @@ const ProjectPagePending = React.createClass({
       this.elementsLoaded = 1;
       this.props._fetchProjectItem(this.props.params.projectId);
     }
-  },
-
-  onFileUploadComplete: function () {
-    this.props._fetchProjectItemSilent(this.props.params.projectId);
-    this.props._fetchScenarioItemSilent(this.props.params.projectId, 0);
   },
 
   onFileDeleteComplete: function (file) {
@@ -215,7 +208,7 @@ const ProjectPagePending = React.createClass({
     }
   },
 
-  renderFileUploadSection: function () {
+  renderSourceDataSection: function () {
     let { fetched, fetching, error, data, receivedAt } = this.props.scenario;
 
     // Do not render files if the project is finishing setup.
@@ -224,9 +217,9 @@ const ProjectPagePending = React.createClass({
     }
 
     let filesBLock = [
-      this.renderFile('profile', this.props.project.data.files),
-      this.renderFile('admin-bounds', this.props.project.data.files),
-      this.renderFile('origins', this.props.project.data.files)
+      this.renderSourceData('profile', this.props.project.data.sourceData.profile),
+      this.renderSourceData('admin-bounds', this.props.project.data.sourceData['admin-bounds']),
+      this.renderSourceData('origins', this.props.project.data.sourceData.origins)
     ];
 
     if (!fetched && !receivedAt && fetching) {
@@ -235,56 +228,43 @@ const ProjectPagePending = React.createClass({
     } else if (fetched && error) {
       filesBLock.push(<div key='error'>Error: {prettyPrint(error)}</div>);
     } else if (fetched) {
-      filesBLock.push(this.renderFile('road-network', data.files));
-      filesBLock.push(this.renderFile('poi', data.files));
+      filesBLock.push(this.renderSourceData('road-network', data.sourceData['road-network']));
+      filesBLock.push(this.renderSourceData('poi', data.sourceData.poi));
     }
 
     return (
-      <div>
+      <div className='psb-grid'>
         {filesBLock}
       </div>
     );
   },
 
-  renderFile: function (key, files) {
-    // Check if the file exists in the project.
-    const file = files.find(f => f.type === key);
+  renderSourceData: function (key, data) {
+    let complete;
+    if (data.type === 'osm') {
+      complete = true;
+    } else if (data.type === 'file') {
+      complete = data.files.length >= 1;
+    }
+    const projectId = this.props.project.data.id;
+    const scenarioId = this.props.scenario.data.id;
 
-    return file
-      ? this.renderFileCard(file)
-      : this.renderFileInput(key);
-  },
+    const refreshData = () => {
+      this.props._fetchProjectItemSilent(this.props.params.projectId);
+      this.props._fetchScenarioItemSilent(this.props.params.projectId, 0);
+    };
 
-  renderFileInput: function (key) {
-    let { display, description } = fileTypesMatrix[key];
-    let projectId = this.props.project.data.id;
-    let scenarioId = this.props.scenario.data.id;
     return (
-      <ProjectFileInput
+      <PorjectSourceData
         key={key}
-        name={display}
-        description={description}
         type={key}
         projectId={projectId}
         scenarioId={scenarioId}
-        onFileUploadComplete={this.onFileUploadComplete} />
-    );
-  },
-
-  renderFileCard: function (file) {
-    let { display, description } = fileTypesMatrix[file.type];
-    let projectId = this.props.project.data.id;
-    let scenarioId = this.props.scenario.data.id;
-    return (
-      <ProjectFileCard
-        key={file.type}
-        fileId={file.id}
-        name={display}
-        description={description}
-        type={file.type}
-        projectId={projectId}
-        scenarioId={scenarioId}
-        onFileDeleteComplete={this.onFileDeleteComplete.bind(null, file)} />
+        complete={complete}
+        sourceData={data}
+        refreshData={refreshData}
+        _showAlert={this.props._showAlert}
+      />
     );
   },
 
@@ -334,9 +314,6 @@ const ProjectPagePending = React.createClass({
         <div className='inpage__body'>
           <div className='inner'>
             <h2 className='inpage__section-title'>{t('Project setup')}</h2>
-            <p className='inpage__section-description'>
-              {t('Upload these files before running analysis. See the {link} for more information about the requirements of each file.', {link: <Link to={`/${getLanguage()}/help`} title={t('Visit help page')} target='_blank'>{t('help section')}</Link>})}
-            </p>
             <Log
               data={data.finish_setup}
               receivedAt={this.props.project.receivedAt}
@@ -344,7 +321,8 @@ const ProjectPagePending = React.createClass({
               update={this.props._fetchProjectItemSilent.bind(null, this.props.params.projectId)}
             />
 
-            {this.renderFileUploadSection()}
+            {this.renderSourceDataSection()}
+
           </div>
         </div>
 
@@ -373,7 +351,6 @@ const ProjectPagePending = React.createClass({
           saveScenario={this.props._finishProjectSetup}
           resetForm={this.props._resetScenarioFrom}
         />
-
       </section>
     );
   }

@@ -20,7 +20,7 @@ import {
   showAlert,
   abortGenerateResults
 } from '../actions';
-import { fetchStatus } from '../utils/utils';
+import { fetchStatus, scenarioHasResults } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
 import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
 
@@ -264,9 +264,8 @@ const ScenarioPage = React.createClass({
     let scenario = this.props.scenario.data;
     let isGenerating = scenario.gen_analysis && scenario.gen_analysis.status === 'running';
     let isPending = scenario.scen_create && scenario.scen_create.status === 'running';
-    let hasResults = scenario.files.some(o => o.type === 'results');
 
-    if (isGenerating || isPending || hasResults) {
+    if (isGenerating || isPending || scenarioHasResults(scenario)) {
       return null;
     }
 
@@ -295,8 +294,6 @@ const ScenarioPage = React.createClass({
     if (error) {
       return <FatalError />;
     }
-
-    let resultsFile = dataScenario.files.find(f => f.type === 'results-all');
 
     return (
       <section className='inpage inpage--hub'>
@@ -331,7 +328,7 @@ const ScenarioPage = React.createClass({
 
             {this.renderEmptyState()}
 
-            {resultsFile ? (
+            {scenarioHasResults(dataScenario) ? (
               <ScenarioResults
                 projectId={dataScenario.project_id}
                 scenarioId={dataScenario.id}

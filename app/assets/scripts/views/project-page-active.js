@@ -3,6 +3,7 @@ import React, { PropTypes as T } from 'react';
 import { hashHistory, Link } from 'react-router';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
+import _ from 'lodash';
 
 import {
   invalidateProjectItem,
@@ -20,8 +21,6 @@ import {
 } from '../actions';
 import { fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
-import { fileTypesMatrix } from '../utils/constants';
-import config from '../config';
 import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
 
 import StickyHeader from '../components/sticky-header';
@@ -32,6 +31,7 @@ import ProjectHeaderActions from '../components/project/project-header-actions';
 import ScenarioCreateModal from '../components/scenario/scenario-create-modal';
 import ScenarioDeleteAction from '../components/scenario/scenario-delete-action';
 import FatalError from '../components/fatal-error';
+import PorjectSourceData from '../components/project/project-source';
 
 const ProjectPageActive = React.createClass({
 
@@ -214,22 +214,16 @@ const ProjectPageActive = React.createClass({
     }
   },
 
-  renderFiles: function () {
-    let projectFiles = this.props.project.data.files;
-    let projectId = this.props.project.data.id;
-    return (
-      <ul className='project-details-list'>
-        {projectFiles.map(file => ([
-          <li>
-            <div className={`project-detail ${file.type}`}>
-              <h3 className='project-detail__title' key={`${file.name}-label`}>{fileTypesMatrix[file.type].display}</h3>
-              <p className='action-wrapper'><a href={`${config.api}/projects/${projectId}/files/${file.id}?download=true`} title={t('Download file')} className='detail-download'><span>{t('Download')}</span></a></p>
-              <p key={`${file.name}-desc`}>{fileTypesMatrix[file.type].description}</p>
-            </div>
-          </li>
-        ]))}
-      </ul>
-    );
+  renderSourceData: function () {
+    const projectId = this.props.project.data.id;
+    return _.map(this.props.project.data.sourceData, (o, key) => (
+      <PorjectSourceData
+        key={key}
+        type={key}
+        projectId={projectId}
+        sourceData={o}
+        editable={false} />
+    ));
   },
 
   renderScenarioCard: function (scenario) {
@@ -357,16 +351,14 @@ const ProjectPageActive = React.createClass({
         <div className='inpage__body'>
           <div className='inner'>
 
-            <section className='diptych diptych--info'>
+            <section className='diptych'>
               <h2 className='inpage__section-title'>{t('Details')}</h2>
-              <div className='card'>
-                <div className='card__contents'>
-                  {this.renderFiles()}
-                </div>
+              <div className='psb-group'>
+                {this.renderSourceData()}
               </div>
             </section>
 
-            <section className='diptych diptych--scenarios'>
+            <section className='diptych'>
               <h2 className='inpage__section-title'>{t('Scenarios')}</h2>
               {this.renderScenariosList()}
             </section>
