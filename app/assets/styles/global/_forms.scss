@@ -58,6 +58,8 @@
    ========================================================================== */
 
 select.form__control {
+  -webkit-appearance: none;
+  -moz-appearance: none;
   appearance: none;
   padding-right: 1rem;
   cursor: pointer;
