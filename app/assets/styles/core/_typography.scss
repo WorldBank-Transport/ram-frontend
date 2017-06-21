@@ -26,7 +26,7 @@
   @include media(medium-up) {
     font-size: $prose-resp-font-size;
     line-height: $prose-resp-line-height;
-  
+
     > * {
       margin-bottom: $prose-resp-font-size * $prose-resp-line-height; // same as line-height
     }
@@ -69,7 +69,7 @@ p, ul, ol, dl, pre, blockquote {
 .drop-cap::first-letter {
   font-size: 3.4em;
   padding: 0 0.1em 0 0;
-  line-height: 0.7; 
+  line-height: 0.7;
   float: left;
   margin: 0.1em 0.1em 0 0;
 }
@@ -246,7 +246,7 @@ abbr[title] {
 .heading-alt {
   text-transform: uppercase;
   font-weight: $base-font-regular;
-  color: rgba($base-font-color, 0.48);
+  color: rgba($base-font-color, 0.56);
 }
 
 h1 {
@@ -293,7 +293,7 @@ h4, h5, h6 {
   > h4,
   > h5,
   > h6 { @include heading(1rem, large-up); }               // 16, 20, 24
-  
+
 
   @include media(medium-up) {
     > h1:not(:first-child),

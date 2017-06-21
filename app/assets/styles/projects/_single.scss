@@ -2,98 +2,107 @@
    Projects: Single
    ========================================================================== */
 
-/* Project setup block
+/* Project setup blocks
    ========================================================================== */
 
-.psb {
-  @include column(6/12, $cycle: 2);
-  margin-top: $global-spacing * 2;
+.psb-grid {
+  display: flex;
+  flex-wrap: wrap;
 
-  &:nth-child(1),
-  &:nth-child(2) {
-    margin-top: 0;
+  .psb {
+    @include column(6/12, $cycle: 2);
+    margin-top: $global-spacing * 2;
+    display: flex;
+
+    &:nth-child(1),
+    &:nth-child(2) {
+      margin-top: 0;
+    }
   }
+}
 
-  > .inner {
+.psb-group {
+  @extend %card-skin;
+
+  .psb {
+    overflow: hidden;
+
+    &:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 5rem;
+      height: 1px;
+      width: 100%;
+      background: $base-alpha-color;
+    }
+
+    .card__contents {
+      background: none;
+      box-shadow: none;
+      border-radius: 0;
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+}
+
+.psb {
+  .card__contents {
     position: relative;
-    padding-left: $global-spacing * 2;
+    padding: ($global-spacing * 2) ($global-spacing * 2) ($global-spacing * 2) ($global-spacing * 5);
 
     &::before {
+      position: absolute;
+      left: $global-spacing * 2;
+      font-size: 2rem;
+      opacity: 0.32;
+    }
+
+    &::after {
       @extend %collecticon-sm-tick;
       position: absolute;
-      top: 0.05rem;
-      left: 0;
-      background: $base-font-color;
-      height: 1.5rem;
-      width: 1.5rem;
-      border-radius: $full-border-radius;
+      bottom: 0;
+      right: 0;
+      width: 3rem;
+      height: 3rem;
+      line-height: 3rem;
       color: #fff;
-      font-size: 1rem;
-      line-height: 1.5rem;
-      text-align: center;
+      text-align: right;
+      background: linear-gradient(135deg, transparent 50%, $success-color 0);
+      backface-visibility: hidden;
+      padding: 0.5rem;
+      pointer-events: none;
       opacity: 0.32;
-
-      /* Animation */
-      transition: all 0.32s ease 0s;
+      transition: opacity 0.24s ease 0s;
     }
   }
+}
 
-  &--complete > .inner::before {
-    opacity: 1;
-  }
+.psb--complete .card__contents::after {
+  opacity: 1;
+}
 
-  &__header {
-    margin-bottom: $global-spacing * 1.5;
+.psb--profile .card__contents::before {
+  @extend %collecticon-page-cog;
+}
 
-    > *:last-child {
-      margin-bottom: 0;
-    }
-  }
+.psb--origins .card__contents::before {
+  @extend %collecticon-houses;
+}
 
-  &__headline {
-    > *:last-child {
-      margin-bottom: 0;
-    }
-  }
+.psb--admin-bounds .card__contents::before {
+  @extend %collecticon-fence;
+}
 
-  &__title {
-    @include heading(1.25rem);
-    margin-bottom: $global-spacing / 2;
-  }
+.psb--road-network .card__contents::before {
+  @extend %collecticon-road;
+}
 
-  &__description {
-    color: rgba($base-font-color, 0.64);
-
-    > *:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  &__actions {
-    font-size: 0;
-
-    .button {
-      margin: 0 ($global-spacing / 4);
-
-      &:first-child {
-        margin-left: 0;
-      }
-
-      &:last-child {
-        margin-right: 0;
-      }
-    }
-  }
-
-  &__body {
-    > *:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  .form__label {
-    @extend .visually-hidden;
-  }
+.psb--poi .card__contents::before {
+  @extend %collecticon-marker;
 }
 
 .diptych {
@@ -188,7 +197,6 @@
   @include heading(1rem);
   margin: 0;
 }
-
 
 /* Scenarios list
    ========================================================================== */

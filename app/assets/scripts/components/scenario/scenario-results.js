@@ -136,15 +136,17 @@ const ScenarioResults = React.createClass({
                       {renderTh('Origin', 'origin_name')}
                       {renderTh('Admin area', 'aa_name')}
                       {renderTh('Population', 'pop_value')}
+                      {renderTh('Poi type', 'poi_type')}
                       {renderTh('Time to POI', 'time_to_poi')}
                     </tr>
                   </thead>
                   <tbody>
                     {data.results.map(o => (
-                      <tr key={o.origin_id}>
+                      <tr key={`${o.origin_id}-${o.poi_type}`}>
                         <th>{o.origin_name || 'N/A'}</th>
                         <td>{o.aa_name}</td>
                         <td>{o.pop_value || 'N/A'}</td>
+                        <td>{o.poi_type}</td>
                         <td>{toTimeStr(o.time_to_poi)}</td>
                       </tr>
                     ))}
@@ -241,7 +243,6 @@ class AccessibilityTable extends React.PureComponent {
     }
 
     let accessibilityTime = this.props.data;
-
     return (
       <div>
         <h2 className='inpage__section-title'>Points of interest</h2>

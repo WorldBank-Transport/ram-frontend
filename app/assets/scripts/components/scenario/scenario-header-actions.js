@@ -6,6 +6,7 @@ import ReactTooltip from 'react-tooltip';
 import config from '../../config';
 import Dropdown from '../dropdown';
 import { t } from '../../utils/i18n';
+import { scenarioHasResults } from '../../utils/utils';
 import { showConfirm } from '../confirmation-prompt';
 
 import ScenarioDeleteAction from './scenario-delete-action';
@@ -87,7 +88,7 @@ const ScenarioHeaderActions = React.createClass({
     let isMaster = this.props.scenario.master;
     let isPending = this.props.scenario.status === 'pending';
 
-    let hasResults = this.props.scenario.files.some(f => f.type === 'results');
+    let hasResults = scenarioHasResults(this.props.scenario);
     let resultsUrl = `${config.api}/projects/${this.props.scenario.project_id}/scenarios/${this.props.scenario.id}/results?download=true`;
 
     return (
@@ -114,7 +115,21 @@ const ScenarioHeaderActions = React.createClass({
         <button data-tip={t('Coming soon')} data-effect='solid' title={t('Edit network')} className='ipa-pencil visually-disabled' type='button' ><span>{t('Network')}</span></button>
         <ReactTooltip />
 
-        <a href={resultsUrl} data-tip data-for='tip-no-results' title={t('Download data')} className={c('ipa-download', {'visually-disabled': !hasResults})} onClick={(e) => !hasResults && e.preventDefault()}><span>{t('Data')}</span></a>
+        <Dropdown
+          onChange={(open) => open ? ReactTooltip.rebuild() : ReactTooltip.hide()}
+          className={c({'visually-disabled': !hasResults})}
+          triggerClassName='ipa-download'
+          triggerActiveClassName='button--active'
+          triggerText={t('Data')}
+          triggerTitle={t('Download data')}
+          direction='down'
+          alignment='center' >
+            <ul className='drop__menu' role='menu'>
+              <li><a href={`${resultsUrl}&type=csv`} data-tip data-for='tip-no-results' title={t('Download data in CSV format')} className='drop__menu-item csv' onClick={(e) => !hasResults && e.preventDefault()}><span>{t('CSV format')}</span></a></li>
+              <li><a href={`${resultsUrl}&type=geojson`} data-tip data-for='tip-no-results' title={t('Download data in GeoJSON format')} className='drop__menu-item geojson' onClick={(e) => !hasResults && e.preventDefault()}><span>{t('GeoJSON format')}</span></a></li>
+            </ul>
+        </Dropdown>
+
         <ReactTooltip id='tip-no-results' effect='solid' disable={hasResults}>
           {t('No results were generated yet')}
         </ReactTooltip>
