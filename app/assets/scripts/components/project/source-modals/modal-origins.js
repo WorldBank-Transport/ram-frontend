@@ -29,7 +29,6 @@ class ModalOrigins extends ModalBase {
   initState (props) {
     let fileField;
     if (props.sourceData.files.length) {
-      console.log('props.sourceData.files', props.sourceData.files);
       fileField = props.sourceData.files[0];
       fileField.indicators = fileField.data.indicators;
       fileField.availableInd = fileField.data.availableInd;
@@ -103,6 +102,7 @@ class ModalOrigins extends ModalBase {
         // Store all the available indicators.
         fileField.availableInd = indicators;
 
+        hideGlobalLoading();
         this.setState({ fileField });
       })
       .catch(err => {
