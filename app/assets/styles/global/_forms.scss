@@ -61,9 +61,9 @@ select.form__control {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  padding-right: 1rem;
+  padding-right: 1.5rem;
   cursor: pointer;
-  background: transparent url('data:image/svg+xml;utf8,' + urlencode('<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="10px" height="5px" viewBox="0 0 10 5" enable-background="new 0 0 10 5" xml:space="preserve"><g><polygon fill="#{$link-color}" points="5,5 0,0 10,0  "/></g></svg>')) center right no-repeat;
+  background: transparent url('data:image/svg+xml;utf8,' + urlencode('<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="10px" height="5px" viewBox="0 0 10 5" enable-background="new 0 0 10 5" xml:space="preserve"><g><polygon fill="#{$link-color}" points="5,5 0,0 10,0  "/></g></svg>')) right center no-repeat;
 }
 
 /* IE specific */
@@ -93,6 +93,36 @@ select.form__control:-moz-focusring {
 textarea.form__control {
   height: auto;
   resize: none;
+}
+
+
+/* Form file
+   ========================================================================== */
+
+.form__file {
+  @extend .form__control;
+  position: relative;
+  cursor: pointer;
+  padding-right: 1.5rem;
+
+  &::before {
+    @extend %collecticon-folder;
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    right: 0;
+    transform: translate(0, -50%);
+    color: $link-color;
+  }
+
+  > input {
+    @extend .visually-hidden;
+  }
+
+  &--remove::before {
+    @extend %collecticon-trash-bin;
+    color: $danger-color;
+  }
 }
 
 
@@ -461,7 +491,7 @@ label[for] {
       border-radius: $base-border-radius;
     }
 
-    &:before {
+    &::before {
       @extend %collecticon-sm-tick;
       color: $link-color;
     }
