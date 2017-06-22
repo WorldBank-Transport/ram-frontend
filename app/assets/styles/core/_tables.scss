@@ -7,6 +7,10 @@
   max-width: 100%;
   margin-bottom: $global-spacing;
 
+  &:not(:last-child) {
+    box-shadow: inset 0 -1px 0 0 $base-alpha-color;
+  }
+
   th, td  {
     padding: $global-spacing / 2;
     vertical-align: top;

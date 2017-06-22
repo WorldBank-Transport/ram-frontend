@@ -72,11 +72,11 @@
       color: #fff;
       text-align: right;
       background: linear-gradient(135deg, transparent 50%, $success-color 0);
-      backface-visibility: hidden;
       padding: 0.5rem;
       pointer-events: none;
       opacity: 0.32;
       transition: opacity 0.24s ease 0s;
+      backface-visibility: hidden;
     }
   }
 }

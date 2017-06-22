@@ -67,11 +67,28 @@
   }
 
   .table-wrapper {
-    margin: 0 (-$global-spacing);
+    margin-left: (-$global-spacing * 2);
+    margin-right: (-$global-spacing * 2);
+
+    > *:last-child {
+      margin-bottom: 0;
+    }
+
+    &:not(:last-child) {
+      margin-bottom: $global-spacing;
+    }
   }
 
   .table {
-    margin-bottom: $global-spacing * 2;
+    th:first-child,
+    td:first-child {
+      padding-left: $global-spacing * 2;
+    }
+
+    th:last-child,
+    td:last-child {
+      padding-right: $global-spacing * 2;
+    }
   }
 }
 
