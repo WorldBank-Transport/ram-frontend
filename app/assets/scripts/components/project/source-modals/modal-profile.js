@@ -138,7 +138,7 @@ class ModalProfile extends ModalBase {
     let hasFile = !!fileField.created_at;
     return (
       <ModalBody>
-        <form className='form'>
+        <form className='form' onSubmit={ e => { e.preventDefault(); this.allowSubmit() && this.onSubmit(); } }>
         {hasFile ? (
           <div className='form__group'>
             <label className='form__label' htmlFor='profile'>{t('Source')}</label>

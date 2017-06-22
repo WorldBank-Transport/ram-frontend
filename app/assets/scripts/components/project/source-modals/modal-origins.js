@@ -328,7 +328,7 @@ class ModalOrigins extends ModalBase {
 
     return (
       <ModalBody>
-        <form className='form'>
+        <form className='form' onSubmit={ e => { e.preventDefault(); this.allowSubmit() && this.onSubmit(); } }>
           {hasFile ? this.renderFullFileField() : this.renderEmptyFileField()}
           {this.renderIndicators()}
           <div className='form__extra-actions'>

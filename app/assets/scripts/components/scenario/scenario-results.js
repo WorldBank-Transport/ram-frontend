@@ -56,7 +56,7 @@ const ScenarioResults = React.createClass({
     };
 
     this.props._fetchScenarioResults(this.props.projectId, this.props.scenarioId, filters);
-    this.props._fetchScenarioResultsRaw(this.props.projectId, this.props.scenarioId, 1);
+    this.props._fetchScenarioResultsRaw(this.props.projectId, this.props.scenarioId, 1, filters);
     this.props._fetchScenarioResultsGeo(this.props.projectId, this.props.scenarioId);
   },
 
@@ -98,11 +98,32 @@ const ScenarioResults = React.createClass({
     });
   },
 
+  onFilterChange: function (field, value, event) {
+    event.preventDefault();
+    this.setState({
+      [field]: value,
+      rawSort: {
+        field: 'origin_name',
+        asc: true
+      },
+      rawPage: 1
+    }, () => {
+      this.requestRawResults();
+      this.props._fetchScenarioResults(this.props.projectId, this.props.scenarioId, {
+        poiType: this.state.activePoiType,
+        popInd: this.state.activePopInd
+      });
+      this.props._fetchScenarioResultsGeo(this.props.projectId, this.props.scenarioId);
+    });
+  },
+
   requestRawResults: function () {
     showGlobalLoading();
     this.props._fetchScenarioResultsRaw(this.props.projectId, this.props.scenarioId, this.state.rawPage, {
       sortBy: this.state.rawSort.field,
-      sortDir: this.state.rawSort.asc ? 'asc' : 'desc'
+      sortDir: this.state.rawSort.asc ? 'asc' : 'desc',
+      poiType: this.state.activePoiType,
+      popInd: this.state.activePopInd
     });
   },
 
@@ -138,6 +159,8 @@ const ScenarioResults = React.createClass({
       );
     };
 
+    let popLabel = data.results.length ? this.props.popInd.find(o => o.key === data.results[0].pop_key).label : t('Population');
+
     return (
       <article className='card card--analysis-result'>
         <div className='card__contents'>
@@ -152,8 +175,7 @@ const ScenarioResults = React.createClass({
                   <tr>
                     {renderTh('Origin', 'origin_name')}
                     {renderTh('Admin area', 'aa_name')}
-                    {renderTh('Population', 'pop_value')}
-                    {renderTh('Poi type', 'poi_type')}
+                    {renderTh(popLabel, 'pop_value')}
                     {renderTh('Time to POI', 'time_to_poi')}
                   </tr>
                 </thead>
@@ -163,7 +185,6 @@ const ScenarioResults = React.createClass({
                       <th>{o.origin_name || 'N/A'}</th>
                       <td>{o.aa_name}</td>
                       <td>{o.pop_value || 'N/A'}</td>
-                      <td>{o.poi_type}</td>
                       <td>{toTimeStr(o.time_to_poi)}</td>
                     </tr>
                   ))}
@@ -194,44 +215,70 @@ const ScenarioResults = React.createClass({
     );
   },
 
+  renderFilters: function () {
+    let activePopIndLabel = this.props.popInd.find(o => o.key === this.state.activePopInd).label;
+    let activePoiTypeLabel = this.props.poiTypes.find(o => o.key === this.state.activePoiType).label;
+
+    return (
+      <nav className='inpage__sec-nav'>
+        <dl className='filters-menu'>
+          <dt>{t('Population')}</dt>
+          <dd>
+            <Dropdown
+              triggerClassName='button button--achromic drop__toggle--caret'
+              triggerActiveClassName='button--active'
+              triggerText={activePopIndLabel}
+              triggerTitle={t('Change Population')}
+              direction='down'
+              alignment='left' >
+                <ul className='drop__menu drop__menu--select' role='menu'>
+                  {this.props.popInd.map(o => (
+                    <li key={o.key}>
+                      <a
+                        href='#'
+                        title={t('Select Population')}
+                        className={c('drop__menu-item', {'drop__menu-item--active': o.key === this.state.activePopInd})}
+                        onClick={this.onFilterChange.bind(this, 'activePopInd', o.key)} >
+                        <span>{o.label}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+            </Dropdown>
+          </dd>
+          <dt>{t('Point of Interest')}</dt>
+          <dd>
+            <Dropdown
+              triggerClassName='button button--achromic drop__toggle--caret'
+              triggerActiveClassName='button--active'
+              triggerText={activePoiTypeLabel}
+              triggerTitle={t('Change Point of Interest')}
+              direction='down'
+              alignment='left' >
+                <ul className='drop__menu drop__menu--select' role='menu'>
+                  {this.props.poiTypes.map(o => (
+                    <li key={o.key}>
+                      <a
+                        href='#'
+                        title={t('Select Point of Interest')}
+                        className={c('drop__menu-item', {'drop__menu-item--active': o.key === this.state.activePoiType})}
+                        onClick={this.onFilterChange.bind(this, 'activePoiType', o.key)} >
+                        <span>{o.label}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+            </Dropdown>
+          </dd>
+        </dl>
+      </nav>
+    );
+  },
+
   render: function () {
     return (
       <div className='rwrapper'>
-        <nav className='inpage__sec-nav'>
-          <dl className='filters-menu'>
-            <dt>Population</dt>
-            <dd>
-              <Dropdown
-                triggerClassName='button button--achromic drop__toggle--caret'
-                triggerActiveClassName='button--active'
-                triggerText={t('Women')}
-                triggerTitle={t('Change Population')}
-                direction='down'
-                alignment='left' >
-                  <ul className='drop__menu drop__menu--select' role='menu'>
-                    <li><a href='#' title={t('Select Population')} className='drop__menu-item drop__menu-item--active'><span>Population name 1</span></a></li>
-                    <li><a href='#' title={t('Select Population')} className='drop__menu-item'><span>Population name 2</span></a></li>
-                  </ul>
-              </Dropdown>
-            </dd>
-            <dt>Point of Interest</dt>
-            <dd>
-              <Dropdown
-                triggerClassName='button button--achromic drop__toggle--caret'
-                triggerActiveClassName='button--active'
-                triggerText={t('Hospitals')}
-                triggerTitle={t('Change Point of Interest')}
-                direction='down'
-                alignment='left' >
-                  <ul className='drop__menu drop__menu--select' role='menu'>
-                    <li><a href='#' title={t('Select Point of Interest')} className='drop__menu-item drop__menu-item--active'><span>POI name 1</span></a></li>
-                    <li><a href='#' title={t('Select Point of Interest')} className='drop__menu-item'><span>POI name 2</span></a></li>
-                  </ul>
-              </Dropdown>
-            </dd>
-          </dl>
-        </nav>
-
+        {this.renderFilters()}
         <ResultsMap
           data={this.props.geojsonResults}
           bbox={this.props.bbox}
