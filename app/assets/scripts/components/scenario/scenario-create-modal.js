@@ -269,9 +269,14 @@ const ScenarioCreateModal = React.createClass({
                 <span className='form__option__text'>{t('Clone from scenario')}</span>
                 <span className='form__option__ui'></span>
               </label>
-              <label className='form__option form__option--inline form__option--custom-radio disabled'>
+              <label className='form__option form__option--inline form__option--custom-radio'>
                 <input type='radio' name='road-network' id='road-network-new' value='new' onChange={this.onFieldChange.bind(null, 'roadNetworkSource')} checked={this.state.data.roadNetworkSource === 'new'}/>
                 <span className='form__option__text'>{t('Upload new')}</span>
+                <span className='form__option__ui'></span>
+              </label>
+              <label className='form__option form__option--inline form__option--custom-radio disabled'>
+                <input type='radio' name='road-network' id='road-network-osm' value='osm' onChange={this.onFieldChange.bind(null, 'roadNetworkSource')} checked={this.state.data.roadNetworkSource === 'osm'}/>
+                <span className='form__option__text'>{t('OSM data')}</span>
                 <span className='form__option__ui'></span>
               </label>
             </div>
