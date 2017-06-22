@@ -328,13 +328,7 @@ const ScenarioPage = React.createClass({
 
             {this.renderEmptyState()}
 
-            {scenarioHasResults(dataScenario) ? (
-              <ScenarioResults
-                projectId={dataScenario.project_id}
-                scenarioId={dataScenario.id}
-                bbox={this.props.project.data.bbox}
-              />
-            ) : null}
+            {scenarioHasResults(dataScenario) ? <ScenarioResults /> : null}
 
           </div>
         </div>

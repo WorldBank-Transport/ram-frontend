@@ -282,8 +282,11 @@ export function receiveScenarioResults (scenarios, error = null) {
   return { type: RECEIVE_SCENARIO_RESULTS, data: scenarios, error, receivedAt: Date.now() };
 }
 
-export function fetchScenarioResults (projectId, scenarioId) {
-  return getAndDispatch(`${config.api}/projects/${projectId}/scenarios/${scenarioId}/results/analysis`, requestScenarioResults, receiveScenarioResults);
+export function fetchScenarioResults (projectId, scenarioId, filters = {}) {
+  let f = buildAPIQS(filters);
+
+  let url = `${config.api}/projects/${projectId}/scenarios/${scenarioId}/results/analysis?${f}`;
+  return getAndDispatch(url, requestScenarioResults, receiveScenarioResults);
 }
 
 // Scenario Raw Results

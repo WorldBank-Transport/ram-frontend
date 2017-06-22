@@ -25,6 +25,8 @@ const ScenarioResults = React.createClass({
     aggregatedResults: T.object,
     rawResults: T.object,
     geojsonResults: T.object,
+    poiTypes: T.array,
+    popInd: T.array,
     _fetchScenarioResults: T.func,
     _fetchScenarioResultsRaw: T.func,
     _fetchScenarioResultsGeo: T.func,
@@ -37,13 +39,21 @@ const ScenarioResults = React.createClass({
         field: 'origin_name',
         asc: true
       },
-      rawPage: 1
+      rawPage: 1,
+      activePoiType: this.props.poiTypes[0].key,
+      activePopInd: this.props.popInd[0].key
     };
   },
 
   componentDidMount: function () {
     showGlobalLoading();
-    this.props._fetchScenarioResults(this.props.projectId, this.props.scenarioId);
+
+    let filters = {
+      poiType: this.state.activePoiType,
+      popInd: this.state.activePopInd
+    };
+
+    this.props._fetchScenarioResults(this.props.projectId, this.props.scenarioId, filters);
     this.props._fetchScenarioResultsRaw(this.props.projectId, this.props.scenarioId, 1);
     this.props._fetchScenarioResultsGeo(this.props.projectId, this.props.scenarioId);
   },
@@ -202,7 +212,15 @@ const ScenarioResults = React.createClass({
 });
 
 function selector (state) {
+  let popInd = state.projectItem.data.sourceData.origins.files[0].data.indicators;
+  let poiTypes = state.scenarioItem.data.sourceData.poi.files.map(o => ({key: o.subtype, label: o.subtype}));
+
   return {
+    projectId: state.projectItem.data.id,
+    bbox: state.projectItem.data.bbox,
+    scenarioId: state.scenarioItem.data.id,
+    popInd,
+    poiTypes,
     aggregatedResults: state.scenarioResults,
     rawResults: state.scenarioResultsRaw,
     geojsonResults: state.scenarioResultsGeo
@@ -253,33 +271,30 @@ class AccessibilityTable extends React.PureComponent {
     }
 
     let accessibilityTime = this.props.data;
+
     return (
-      accessibilityTime.map(poi => {
-        return (
-          <article className='card card--analysis-result' key={poi.poi}>
-            <div className='card__contents'>
-              <header className='card__header'>
-                <h1 className='card__title'>{poi.poi === 'pointOfInterest' ? 'Assorted' : poi.poi}</h1>
-              </header>
-              <div className='card__body'>
-                <div className='table-wrapper'>
-                  <table className='table'>
-                    <thead>
-                      <tr>
-                        <th>{t('Admin area')}</th>
-                        {poi.analysisMins.map((o, i) => <th key={o}>{t('{min} min', {min: o})}</th>)}
-                      </tr>
-                    </thead>
-                    <tbody>
-                    {poi.adminAreas.map(aa => this.renderAccessibilityTableRow(poi, aa))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+      <article className='card card--analysis-result' key={accessibilityTime.poi}>
+        <div className='card__contents'>
+          <header className='card__header'>
+            <h1 className='card__title'>{accessibilityTime.poi === 'pointOfInterest' ? 'Assorted' : accessibilityTime.poi}</h1>
+          </header>
+          <div className='card__body'>
+            <div className='table-wrapper'>
+              <table className='table'>
+                <thead>
+                  <tr>
+                    <th>{t('Admin area')}</th>
+                    {accessibilityTime.analysisMins.map((o, i) => <th key={o}>{t('{min} min', {min: o})}</th>)}
+                  </tr>
+                </thead>
+                <tbody>
+                {accessibilityTime.adminAreas.map(aa => this.renderAccessibilityTableRow(accessibilityTime, aa))}
+                </tbody>
+              </table>
             </div>
-          </article>
-        );
-      })
+          </div>
+        </div>
+      </article>
     );
   }
 }
@@ -287,6 +302,6 @@ class AccessibilityTable extends React.PureComponent {
 AccessibilityTable.propTypes = {
   fetched: T.bool,
   fetching: T.bool,
-  data: T.array,
+  data: T.object,
   error: T.object
 };
