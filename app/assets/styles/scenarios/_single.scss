@@ -75,7 +75,8 @@
     }
 
     &:not(:last-child) {
-      margin-bottom: $global-spacing;
+      margin-bottom: $global-spacing * 2;
+      box-shadow: inset 0 -1px 0 0 $base-alpha-color;
     }
   }
 

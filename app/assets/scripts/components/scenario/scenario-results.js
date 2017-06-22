@@ -190,24 +190,22 @@ const ScenarioResults = React.createClass({
                   ))}
                 </tbody>
               </table>
-
-              <div className='pagination-wrapper'>
-                <ReactPaginate
-                  previousLabel={<span>previous</span>}
-                  nextLabel={<span>next</span>}
-                  breakLabel={<span className='pages__page'>...</span>}
-                  pageCount={Math.ceil(data.meta.found / data.meta.limit)}
-                  forcePage={data.meta.page - 1}
-                  marginPagesDisplayed={2}
-                  pageRangeDisplayed={5}
-                  onPageChange={this.handleRawPageChange}
-                  containerClassName={'pagination'}
-                  subContainerClassName={'pages'}
-                  pageClassName={'pages__wrapper'}
-                  pageLinkClassName={'pages__page'}
-                  activeClassName={'active'} />
-              </div>
-
+            </div>
+            <div className='pagination-wrapper'>
+              <ReactPaginate
+                previousLabel={<span>previous</span>}
+                nextLabel={<span>next</span>}
+                breakLabel={<span className='pages__page'>...</span>}
+                pageCount={Math.ceil(data.meta.found / data.meta.limit)}
+                forcePage={data.meta.page - 1}
+                marginPagesDisplayed={2}
+                pageRangeDisplayed={5}
+                onPageChange={this.handleRawPageChange}
+                containerClassName={'pagination'}
+                subContainerClassName={'pages'}
+                pageClassName={'pages__wrapper'}
+                pageLinkClassName={'pages__page'}
+                activeClassName={'active'} />
             </div>
           </div>
         </div>
