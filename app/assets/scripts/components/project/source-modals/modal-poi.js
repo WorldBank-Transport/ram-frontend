@@ -273,7 +273,7 @@ class ModalPoi extends ModalBase {
   renderBody () {
     return (
       <ModalBody>
-        <form className='form'>
+        <form className='form' onSubmit={ e => { e.preventDefault(); this.allowSubmit() && this.onSubmit(); } }>
           <div className='form__group'>
             <label className='form__label'>Source</label>
 
