@@ -210,7 +210,8 @@ const ProjectThumb = React.createClass({
     this.theMap = new mapboxgl.Map({
       container: this.refs.map,
       style: 'mapbox://styles/mapbox/streets-v10',
-      interactive: false
+      interactive: false,
+      attributionControl: false
     });
 
     this.theMap.fitBounds(bbox);

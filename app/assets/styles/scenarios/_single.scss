@@ -46,9 +46,16 @@
 
 /* Results
    ========================================================================== */
+.analysis-result-section {
+  margin-bottom: $global-spacing * 3;
+
+  > *:last-child {
+    margin-bottom: 0;
+  }
+}
 
 .card--analysis-result {
-  margin-bottom: $global-spacing * 3;
+  margin-bottom: $global-spacing * 2;
 
   .card__contents {
     padding: $global-spacing * 2;
@@ -82,4 +89,68 @@
 .empty-content__cta {
   display: inline-block;
   max-width: 28rem;
+}
+
+
+/* Results: ETA Vis
+   ========================================================================== */
+
+.scenario-vis__media {
+  position: relative;
+  margin: 0 (-$global-spacing * 2);
+}
+
+.scenario-vis__map {
+  height: 32rem;
+}
+
+.scenario-vis__legend {
+  position: absolute;
+  bottom: $global-spacing;
+  left: $global-spacing;
+  background: rgba(#fff, 0.80);
+  padding: $global-spacing;
+  border-radius: $base-border-radius;
+
+  h3 {
+    @extend .heading-alt;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    margin-bottom: $global-spacing / 2;
+  }
+
+  dl {
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+  }
+
+  dt {
+    @extend .visually-hidden;
+  }
+
+  dd {
+    border-top: 1rem;
+    border-top-style: solid;
+    float: left;
+    width: 2rem;
+    margin: 0;
+    line-height: 1;
+
+    span {
+      display: inline-block;
+      font-size: 0.75rem;
+      margin-left: -1rem;
+      text-align: center;
+      width: 2rem;
+    }
+  }
+
+  .l1 { border-top-color: #1a9850; }
+  .l2 { border-top-color: #91cf60; }
+  .l3 { border-top-color: #d9ef8b; }
+  .l4 { border-top-color: #fee08b; }
+  .l5 { border-top-color: #fc8d59; }
+  .l6 { border-top-color: #d73027; }
+  .l7 { border-top-color: #4d4d4d; }
 }
