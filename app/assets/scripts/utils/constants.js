@@ -28,3 +28,8 @@ export const fileTypesMatrix = {
     helpPath: '/help#profile'
   }
 };
+
+export const projectStatusMatrix = {
+  active: t('Active'),
+  pending: t('Draft')
+};

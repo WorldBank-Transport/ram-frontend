@@ -16,15 +16,11 @@ import {
 } from '../actions';
 import { t, getLanguage } from '../utils/i18n';
 import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
+import { projectStatusMatrix } from '../utils/constants';
 
 import StickyHeader from '../components/sticky-header';
 import ProjectFormModal from '../components/project/project-form-modal';
 import FatalError from '../components/fatal-error';
-
-const projectStatusMatrix = {
-  active: 'Active',
-  pending: 'Draft'
-};
 
 const Home = React.createClass({
   displayName: 'Home',
