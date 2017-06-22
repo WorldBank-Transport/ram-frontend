@@ -14,7 +14,7 @@ class ResultsMap extends React.Component {
       container: this.refs.map,
       style: 'mapbox://styles/mapbox/light-v9'
     });
-    this.theMap.addControl(new mapboxgl.NavigationControl(), 'top-left');
+    this.theMap.addControl(new mapboxgl.NavigationControl(), 'top-right');
     this.theMap.scrollZoom.disable();
     this.theMap.fitBounds(bbox);
     this.theMap.on('load', this.setupData.bind(this));
