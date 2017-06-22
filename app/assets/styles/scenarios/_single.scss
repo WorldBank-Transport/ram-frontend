@@ -120,6 +120,10 @@
 
 .scenario-vis__map {
   height: 32rem;
+
+  .mapboxgl-ctrl-top-right .mapboxgl-ctrl {
+    margin: $global-spacing;
+  }
 }
 
 .scenario-vis__legend {
