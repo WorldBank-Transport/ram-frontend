@@ -98,7 +98,7 @@ export function hideGlobalLoading (force = false) {
   hideGlobalLoadingCounted();
 }
 
-export function showGlobalLoadingCounted (count) {
+export function showGlobalLoadingCounted (count = null) {
   if (theGlobalLoading === null) {
     throw new Error('<GlobalLoading /> component not mounted');
   }
@@ -106,7 +106,7 @@ export function showGlobalLoadingCounted (count) {
     clearTimeout(hideTimeout);
   }
 
-  theGlobalLoadingCount = count || theGlobalLoadingCount + 1;
+  theGlobalLoadingCount = count === null ? theGlobalLoadingCount + 1 : count;
 
   theGlobalLoading.setState(Object.assign({}, {
     showTimestamp: Date.now(),
