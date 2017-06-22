@@ -17,10 +17,9 @@ export default function reducer (state = initialState, action) {
         state.error = action.error;
       } else {
         state.data = {
-          'meta': action.data.meta,
           'geojson': {
             'type': 'FeatureCollection',
-            'features': generateGeoJSON(action.data.results)
+            'features': generateGeoJSON(action.data)
           }
         };
       }
@@ -29,7 +28,6 @@ export default function reducer (state = initialState, action) {
   return state;
 }
 
-      // 'properties': Object.assign({}, f),
 /*
  * Generate a GeoJSON from an array of result objects
  */

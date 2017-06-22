@@ -62,8 +62,19 @@ class Playground extends React.Component {
             </div>
 
             <div className='form__group'>
-              <label className='form__label' htmlFor='inputText1'>{t('Input file 01')}</label>
-              <input type='file' id='inputFile1' name='inputFile1' className='form__control' placeholder={t('Input file')} />
+              <label className='form__label' htmlFor='inputText2'>{t('Input file 02')}</label>
+              <div className='form__file'>
+                <span className='form__file__text'>Choose file</span>
+                <input type='file' id='inputFile2' name='inputFile2' placeholder={t('Input file')} />
+              </div>
+            </div>
+
+            <div className='form__group'>
+              <label className='form__label' htmlFor='inputText3'>{t('Input file 03')}</label>
+              <div className='form__file form__file--remove'>
+                <span className='form__file__text'>my_first_file.json</span>
+                <input type='file' id='inputFile3' name='inputFile3' placeholder={t('Input file')} readOnly />
+              </div>
             </div>
 
             <div className='form__group form__group--attached'>

@@ -16,15 +16,11 @@ import {
 } from '../actions';
 import { t, getLanguage } from '../utils/i18n';
 import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
+import { projectStatusMatrix } from '../utils/constants';
 
 import StickyHeader from '../components/sticky-header';
 import ProjectFormModal from '../components/project/project-form-modal';
 import FatalError from '../components/fatal-error';
-
-const projectStatusMatrix = {
-  active: 'Active',
-  pending: 'Draft'
-};
 
 const Home = React.createClass({
   displayName: 'Home',
@@ -233,11 +229,11 @@ const ProjectThumb = React.createClass({
     return (
       <figure className='card__media'>
         <Link to={projectUrl} title='View project' className='link-wrapper'>
-          <div className='card__thumbnail'>
+          <div className='card__cover'>
           {bbox ? (
             <div ref='map' className='map-wrapper' />
           ) : (
-            <img alt={t('Project thumbnail')} width='640' height='320' src='/assets/graphics/layout/projects-thumbnail-placeholder.png' />
+            <img alt={t('Project cover')} width='640' height='320' src='/assets/graphics/layout/projects-thumbnail-placeholder.png' />
           )}
           </div>
         </Link>

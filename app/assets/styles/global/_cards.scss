@@ -65,16 +65,15 @@ a.card__contents {
   }
 
   &:first-child {
-    margin-top: - $global-spacing;
+    margin-top: -$global-spacing;
   }
 
   &:last-child {
-    margin-bottom: - $global-spacing;
+    margin-bottom: -$global-spacing !important;
   }
-
 }
 
-.card__thumbnail {
+.card__cover {
   position: relative;
   overflow: hidden;
   background: tint($base-color, 96%);
@@ -87,11 +86,19 @@ a.card__contents {
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 2;
+    z-index: 3;
     content: "";
     box-shadow: inset 0 0 0 1px $base-alpha-color;
     pointer-events: none;
     border-radius: $base-border-radius $base-border-radius 0 0;
+
+    .card__media:first-child & {
+      border-radius: $base-border-radius $base-border-radius 0 0;
+    }
+
+    .card__media:last-child & {
+      border-radius: 0 0 $base-border-radius $base-border-radius;
+    }
   }
 }
 

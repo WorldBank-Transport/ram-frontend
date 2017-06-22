@@ -15,15 +15,11 @@
 
   .previous a,
   .next a {
-    @extend .button, .button--primary-plain;
+    @extend .button, .button--primary-plain, .button--text-hidden;
     text-decoration: none;
     text-transform: uppercase;
     padding-right: 0;
     padding-left: 0;
-
-    span {
-      @extend .visually-hidden;
-    }
   }
 
   .previous a {

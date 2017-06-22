@@ -13,6 +13,16 @@ var hideTimeout = null;
 // the outside.
 var theGlobalLoading = null;
 
+// Store the amount of global loading calls so we can keep it visible until
+// all were hidden.
+let theGlobalLoadingCount = 0;
+
+// Decrement function to ensure the count never goes below zero.
+let decrementCount = () => {
+  if (--theGlobalLoadingCount < 0) theGlobalLoadingCount = 0;
+  return theGlobalLoadingCount;
+};
+
 const GlobalLoading = React.createClass({
   componentAddedBodyClass: false,
 
@@ -81,6 +91,14 @@ const GlobalLoading = React.createClass({
 export default GlobalLoading;
 
 export function showGlobalLoading () {
+  showGlobalLoadingCounted(0);
+}
+
+export function hideGlobalLoading (force = false) {
+  hideGlobalLoadingCounted();
+}
+
+export function showGlobalLoadingCounted (count = null) {
   if (theGlobalLoading === null) {
     throw new Error('<GlobalLoading /> component not mounted');
   }
@@ -88,34 +106,33 @@ export function showGlobalLoading () {
     clearTimeout(hideTimeout);
   }
 
+  theGlobalLoadingCount = count === null ? theGlobalLoadingCount + 1 : count;
+
   theGlobalLoading.setState(Object.assign({}, {
     showTimestamp: Date.now(),
     revealed: true
   }));
 }
 
-export function hideGlobalLoading (force = false) {
+export function hideGlobalLoadingCounted (force = false) {
   if (theGlobalLoading === null) {
     throw new Error('<GlobalLoading /> component not mounted');
   }
 
+  const hide = () => theGlobalLoading.setState(Object.assign({}, {revealed: false}));
+
   if (force) {
-    return theGlobalLoading.setState(Object.assign({}, {
-      revealed: false
-    }));
+    theGlobalLoadingCount = 0;
+    return hide();
   }
 
   let time = theGlobalLoading.state.showTimestamp;
   let diff = Date.now() - time;
   if (diff >= MIN_TIME) {
-    theGlobalLoading.setState(Object.assign({}, {
-      revealed: false
-    }));
+    if (!decrementCount()) return hide();
   } else {
     hideTimeout = setTimeout(() => {
-      theGlobalLoading.setState(Object.assign({}, {
-        revealed: false
-      }));
+      if (!decrementCount()) return hide();
     }, MIN_TIME - diff);
   }
 }

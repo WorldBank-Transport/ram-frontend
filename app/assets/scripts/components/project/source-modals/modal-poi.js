@@ -8,6 +8,7 @@ import { limitHelper } from '../../../utils/utils';
 import { t } from '../../../utils/i18n';
 import { postFormdata, fetchJSON } from '../../../actions';
 import { showGlobalLoading, hideGlobalLoading } from '../../global-loading';
+import { FileInput } from '../../file-input';
 
 import { ModalBody } from '../../modal';
 import ModalBase from './modal-base';
@@ -61,12 +62,11 @@ class ModalPoi extends ModalBase {
     this.setState({filesToRemove: this.state.filesToRemove.concat(id)});
   }
 
-  onFileSelected (id, event) {
+  onFileSelected (id, file, event) {
     let fileFields = _.clone(this.state.fileFields);
     const idx = _.findIndex(fileFields, ['id', id]);
 
     // Store file reference.
-    const file = event.target.files[0];
     fileFields[idx].file = file;
     fileFields[idx].size = file.size;
     fileFields[idx].uploaded = 0;
@@ -115,7 +115,7 @@ class ModalPoi extends ModalBase {
     showGlobalLoading();
 
     let deleteFilesPromiseFn = this.state.filesToRemove.map(o => () => {
-      return fetchJSON(`${config.api}/projects/${this.props.projectId}/scenarios/${this.props.projectId}/files/${o}`, {method: 'DELETE'})
+      return fetchJSON(`${config.api}/projects/${this.props.projectId}/scenarios/${this.props.scenarioId}/files/${o}`, {method: 'DELETE'})
         .then(() => {
           let filesToRemove = _.without(this.state.filesToRemove, o);
           this.setState({filesToRemove});
@@ -144,7 +144,7 @@ class ModalPoi extends ModalBase {
         this.setState({fileFields});
       };
 
-      let { promise } = postFormdata(`${config.api}/projects/${this.props.projectId}/scenarios/${this.props.projectId}/source-data`, formData, onProgress);
+      let { promise } = postFormdata(`${config.api}/projects/${this.props.projectId}/scenarios/${this.props.scenarioId}/source-data`, formData, onProgress);
       // this.xhr = xhr;
       return promise
         .then(res => {
@@ -190,7 +190,7 @@ class ModalPoi extends ModalBase {
               <legend className='form__legend'>{t('File {idx}', {idx: i + 1})}</legend>
             </div>
             <div className='form__inner-actions'>
-              <button type='button' className='fia-trash' title='Delete fieldset' onClick={this.removeUploadedFile.bind(this, fileField.id)}><span>Delete</span></button>
+              <button type='button' className='fia-trash' title='Delete file' onClick={this.removeUploadedFile.bind(this, fileField.id)}><span>Delete</span></button>
             </div>
           </div>
 
@@ -213,7 +213,7 @@ class ModalPoi extends ModalBase {
       <fieldset className='form__fieldset' key={fileField.id}>
         <div className='form__inner-header'>
           <div className='form__inner-headline'>
-            <legend className='form__legend'>{t('New file')}</legend>
+            <legend className='form__legend'>{t('File')}</legend>
           </div>
           <div className='form__inner-actions'>
             <button
@@ -227,20 +227,18 @@ class ModalPoi extends ModalBase {
         </div>
 
         <div className='form__hascol form__hascol--2'>
-          <div className='form__group'>
-            <input
-              type='file'
-              id={`poi-file-${fileField.id}`}
-              name={`poi-file-${fileField.id}`}
-              className='form__control'
-              placeholder={t('Select a poi file')}
-              onChange={this.onFileSelected.bind(this, fileField.id)}
-            />
+          <FileInput
+            id={`poi-file-${fileField.id}`}
+            name={`poi-file-${fileField.id}`}
+            value={fileField.file}
+            placeholder={t('Choose a file')}
+            onFileSelect={this.onFileSelected.bind(this, fileField.id)} >
+
             {fileField.file !== null
               ? <p className='form__help'>{Math.round(fileField.uploaded / (1024 * 1024))}MB / {Math.round(fileField.size / (1024 * 1024))}MB</p>
               : null
             }
-          </div>
+          </FileInput>
           <div className='form__group'>
             <input
               type='text'
@@ -264,7 +262,7 @@ class ModalPoi extends ModalBase {
         {this.state.fileFields.map(this.renderFileFieldset.bind(this))}
 
         <div className='form__extra-actions'>
-          <button type='button' className='fea-plus' title='Add new fieldset' onClick={this.addPoiFileField.bind(this)}><span>New fieldset</span></button>
+          <button type='button' className='fea-plus' title='Add new file' onClick={this.addPoiFileField.bind(this)}><span>New file</span></button>
         </div>
       </div>
     );
@@ -273,7 +271,7 @@ class ModalPoi extends ModalBase {
   renderBody () {
     return (
       <ModalBody>
-        <form className='form'>
+        <form className='form' onSubmit={ e => { e.preventDefault(); this.allowSubmit() && this.onSubmit(); } }>
           <div className='form__group'>
             <label className='form__label'>Source</label>
 
