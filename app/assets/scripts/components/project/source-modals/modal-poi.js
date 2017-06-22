@@ -115,7 +115,7 @@ class ModalPoi extends ModalBase {
     showGlobalLoading();
 
     let deleteFilesPromiseFn = this.state.filesToRemove.map(o => () => {
-      return fetchJSON(`${config.api}/projects/${this.props.projectId}/scenarios/${this.props.projectId}/files/${o}`, {method: 'DELETE'})
+      return fetchJSON(`${config.api}/projects/${this.props.projectId}/scenarios/${this.props.scenarioId}/files/${o}`, {method: 'DELETE'})
         .then(() => {
           let filesToRemove = _.without(this.state.filesToRemove, o);
           this.setState({filesToRemove});
@@ -144,7 +144,7 @@ class ModalPoi extends ModalBase {
         this.setState({fileFields});
       };
 
-      let { promise } = postFormdata(`${config.api}/projects/${this.props.projectId}/scenarios/${this.props.projectId}/source-data`, formData, onProgress);
+      let { promise } = postFormdata(`${config.api}/projects/${this.props.projectId}/scenarios/${this.props.scenarioId}/source-data`, formData, onProgress);
       // this.xhr = xhr;
       return promise
         .then(res => {
