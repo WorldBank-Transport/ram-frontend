@@ -6,7 +6,7 @@ import config from '../../config';
 
 class ResultsMap extends React.Component {
   setupMap () {
-    this.dataAdded = false;
+    this.firstLoad = true;
     mapboxgl.accessToken = config.mbtoken;
     let { bbox } = this.props;
 
@@ -21,20 +21,21 @@ class ResultsMap extends React.Component {
   }
 
   setupData () {
-    if (!this.dataAdded && this.theMap.loaded() && this.props.data.fetched) {
-      this.dataAdded = true;
+    if (this.theMap.loaded() && this.props.data.fetched) {
+      this.firstLoad = false;
+      this.theMap.addSource('etaData', {
+        'type': 'geojson',
+        'data': this.props.data.data.geojson
+      });
       this.theMap.addLayer({
         'id': 'eta',
         'type': 'circle',
-        'source': {
-          type: 'geojson',
-          data: this.props.data.data.geojson
-        },
+        'source': 'etaData',
         'paint': {
           'circle-color': {
             'base': 1,
             'type': 'interval',
-            'property': 'e-0',
+            'property': 'e',
             'stops': [
               [0, '#1a9850'],
               [600, '#91cf60'],
@@ -48,7 +49,7 @@ class ResultsMap extends React.Component {
           'circle-radius': {
             'base': 1,
             'type': 'interval',
-            'property': 'pn-0',
+            'property': 'pn',
             'stops': [
               [{zoom: 0, value: 0}, 2],
               [{zoom: 0, value: 1}, 5],
@@ -72,6 +73,10 @@ class ResultsMap extends React.Component {
     }
   }
 
+  updateSource (newData) {
+    this.theMap.getSource('etaData').setData(newData);
+  }
+
   componentDidMount () {
     if (this.props.bbox) this.setupMap();
   }
@@ -82,8 +87,10 @@ class ResultsMap extends React.Component {
     }
   }
 
-  componentDidUpdate () {
-    this.setupData();
+  componentDidUpdate (prevProps) {
+    if (!this.firstLoad && prevProps.data.receivedAt && prevProps.data.receivedAt !== this.props.data.receivedAt) {
+      this.updateSource(this.props.data.data.geojson);
+    }
   }
 
   render () {
@@ -125,7 +132,8 @@ class ResultsMap extends React.Component {
 
 ResultsMap.propTypes = {
   bbox: T.array,
-  data: T.object
+  data: T.object,
+  receivedAt: T.number
 };
 
 export default ResultsMap;
