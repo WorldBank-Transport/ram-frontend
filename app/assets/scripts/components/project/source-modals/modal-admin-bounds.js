@@ -6,6 +6,7 @@ import config from '../../../config';
 import { t } from '../../../utils/i18n';
 import { postFormdata, fetchJSON } from '../../../actions';
 import { showGlobalLoading, hideGlobalLoading } from '../../global-loading';
+import { FileInput, FileDisplay } from '../../file-input';
 
 import { ModalBody } from '../../modal';
 import ModalBase from './modal-base';
@@ -40,11 +41,10 @@ class ModalAdminBounds extends ModalBase {
     };
   }
 
-  onFileSelected (id, event) {
+  onFileSelected (id, file, event) {
     let fileField = _.clone(this.state.fileField);
 
     // Store file reference.
-    const file = event.target.files[0];
     fileField.file = file;
     fileField.size = file.size;
     fileField.uploaded = 0;
@@ -139,39 +139,28 @@ class ModalAdminBounds extends ModalBase {
     return (
       <ModalBody>
         <form className='form' onSubmit={ e => { e.preventDefault(); this.allowSubmit() && this.onSubmit(); } }>
-        {hasFile ? (
-          <div className='form__group'>
-            <label className='form__label' htmlFor='profile'>{t('Source')}</label>
-            <div className='form__input-group'>
-              <input type='text' id='profile' name='profile' className='form__control' placeholder={fileField.name} readOnly />
-              <div className='form__input-addon'>
-                <button
-                  type='button'
-                  className='button button--danger-plain button--text-hidden'
-                  onClick={this.onFileRemove.bind(this, fileField.id)}
-                  title={t('Remove file')}>
-                  <i className='collecticon-trash-bin'></i><span>{t('Remove file')}</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className='form__group'>
-            <label className='form__label' htmlFor='profile'>{t('Source')}</label>
-            <input
-              type='file'
-              id='profile'
-              name='profile'
-              className='form__control'
-              placeholder={t('Select a profile file')}
-              onChange={this.onFileSelected.bind(this, fileField.id)}
-            />
-            {fileField.file !== null
-              ? <p className='form__help'>{Math.round(fileField.uploaded / (1024 * 1024))}MB / {Math.round(fileField.size / (1024 * 1024))}MB</p>
-              : null
-            }
-          </div>
-        )}
+          {hasFile ? (
+            <FileDisplay
+              id='admin-bounds'
+              name='admin-bounds'
+              label={'Source'}
+              value={fileField.name}
+              onRemoveClick={this.onFileRemove.bind(this, fileField.id)} />
+          ) : (
+            <FileInput
+              id='admin-bounds'
+              name='admin-bounds'
+              label={'Source'}
+              value={fileField.file}
+              placeholder={t('Choose a file')}
+              onFileSelect={this.onFileSelected.bind(this, fileField.id)} >
+
+              {fileField.file !== null
+                ? <p className='form__help'>{Math.round(fileField.uploaded / (1024 * 1024))}MB / {Math.round(fileField.size / (1024 * 1024))}MB</p>
+                : null
+              }
+            </FileInput>
+          )}
         </form>
       </ModalBody>
     );

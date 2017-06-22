@@ -73,7 +73,7 @@ class Playground extends React.Component {
               <label className='form__label' htmlFor='inputText3'>{t('Input file 03')}</label>
               <div className='form__file form__file--remove'>
                 <span className='form__file__text'>my_first_file.json</span>
-                <input type='file' id='inputFile3' name='inputFile3' placeholder={t('Input file')} readonly />
+                <input type='file' id='inputFile3' name='inputFile3' placeholder={t('Input file')} readOnly />
               </div>
             </div>
 

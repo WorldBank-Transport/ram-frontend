@@ -8,6 +8,7 @@ import { limitHelper } from '../../../utils/utils';
 import { t } from '../../../utils/i18n';
 import { postFormdata, fetchJSON } from '../../../actions';
 import { showGlobalLoading, hideGlobalLoading } from '../../global-loading';
+import { FileInput } from '../../file-input';
 
 import { ModalBody } from '../../modal';
 import ModalBase from './modal-base';
@@ -61,12 +62,11 @@ class ModalPoi extends ModalBase {
     this.setState({filesToRemove: this.state.filesToRemove.concat(id)});
   }
 
-  onFileSelected (id, event) {
+  onFileSelected (id, file, event) {
     let fileFields = _.clone(this.state.fileFields);
     const idx = _.findIndex(fileFields, ['id', id]);
 
     // Store file reference.
-    const file = event.target.files[0];
     fileFields[idx].file = file;
     fileFields[idx].size = file.size;
     fileFields[idx].uploaded = 0;
@@ -227,20 +227,18 @@ class ModalPoi extends ModalBase {
         </div>
 
         <div className='form__hascol form__hascol--2'>
-          <div className='form__group'>
-            <input
-              type='file'
-              id={`poi-file-${fileField.id}`}
-              name={`poi-file-${fileField.id}`}
-              className='form__control'
-              placeholder={t('Select a poi file')}
-              onChange={this.onFileSelected.bind(this, fileField.id)}
-            />
+          <FileInput
+            id={`poi-file-${fileField.id}`}
+            name={`poi-file-${fileField.id}`}
+            value={fileField.file}
+            placeholder={t('Choose a file')}
+            onFileSelect={this.onFileSelected.bind(this, fileField.id)} >
+
             {fileField.file !== null
               ? <p className='form__help'>{Math.round(fileField.uploaded / (1024 * 1024))}MB / {Math.round(fileField.size / (1024 * 1024))}MB</p>
               : null
             }
-          </div>
+          </FileInput>
           <div className='form__group'>
             <input
               type='text'
