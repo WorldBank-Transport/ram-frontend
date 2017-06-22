@@ -127,61 +127,58 @@ const ScenarioResults = React.createClass({
     };
 
     return (
-      <section className='analysis-result-section'>
-        <h2 className='inpage__section-title'>Origin level raw data </h2>
+      <article className='card card--analysis-result'>
+        <div className='card__contents'>
+          <header className='card__header'>
+            <h1 className='card__title'>Origin level raw data</h1>
+          </header>
 
-        <div className='card card--analysis-result'>
-          <div className='card__contents'>
-            <header className='card__header visually-hidden'>
-              <h1 className='card__title'>All origins</h1>
-            </header>
-            <div className='card__body'>
-              <div className='table-wrapper'>
-                <table className='table'>
-                  <thead>
-                    <tr>
-                      {renderTh('Origin', 'origin_name')}
-                      {renderTh('Admin area', 'aa_name')}
-                      {renderTh('Population', 'pop_value')}
-                      {renderTh('Poi type', 'poi_type')}
-                      {renderTh('Time to POI', 'time_to_poi')}
+          <div className='card__body'>
+            <div className='table-wrapper'>
+              <table className='table'>
+                <thead>
+                  <tr>
+                    {renderTh('Origin', 'origin_name')}
+                    {renderTh('Admin area', 'aa_name')}
+                    {renderTh('Population', 'pop_value')}
+                    {renderTh('Poi type', 'poi_type')}
+                    {renderTh('Time to POI', 'time_to_poi')}
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.results.map(o => (
+                    <tr key={`${o.origin_id}-${o.poi_type}`}>
+                      <th>{o.origin_name || 'N/A'}</th>
+                      <td>{o.aa_name}</td>
+                      <td>{o.pop_value || 'N/A'}</td>
+                      <td>{o.poi_type}</td>
+                      <td>{toTimeStr(o.time_to_poi)}</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {data.results.map(o => (
-                      <tr key={`${o.origin_id}-${o.poi_type}`}>
-                        <th>{o.origin_name || 'N/A'}</th>
-                        <td>{o.aa_name}</td>
-                        <td>{o.pop_value || 'N/A'}</td>
-                        <td>{o.poi_type}</td>
-                        <td>{toTimeStr(o.time_to_poi)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                  ))}
+                </tbody>
+              </table>
 
-                <div className='pagination-wrapper'>
-                  <ReactPaginate
-                    previousLabel={<span>previous</span>}
-                    nextLabel={<span>next</span>}
-                    breakLabel={<span className='pages__page'>...</span>}
-                    pageCount={Math.ceil(data.meta.found / data.meta.limit)}
-                    forcePage={data.meta.page - 1}
-                    marginPagesDisplayed={2}
-                    pageRangeDisplayed={5}
-                    onPageChange={this.handleRawPageChange}
-                    containerClassName={'pagination'}
-                    subContainerClassName={'pages'}
-                    pageClassName={'pages__wrapper'}
-                    pageLinkClassName={'pages__page'}
-                    activeClassName={'active'} />
-                </div>
-
+              <div className='pagination-wrapper'>
+                <ReactPaginate
+                  previousLabel={<span>previous</span>}
+                  nextLabel={<span>next</span>}
+                  breakLabel={<span className='pages__page'>...</span>}
+                  pageCount={Math.ceil(data.meta.found / data.meta.limit)}
+                  forcePage={data.meta.page - 1}
+                  marginPagesDisplayed={2}
+                  pageRangeDisplayed={5}
+                  onPageChange={this.handleRawPageChange}
+                  containerClassName={'pagination'}
+                  subContainerClassName={'pages'}
+                  pageClassName={'pages__wrapper'}
+                  pageLinkClassName={'pages__page'}
+                  activeClassName={'active'} />
               </div>
+
             </div>
           </div>
         </div>
-      </section>
+      </article>
     );
   },
 
@@ -257,35 +254,32 @@ class AccessibilityTable extends React.PureComponent {
 
     let accessibilityTime = this.props.data;
     return (
-      <section className='analysis-result-section'>
-        <h2 className='inpage__section-title'>Points of interest</h2>
-        {accessibilityTime.map(poi => {
-          return (
-            <div className='card card--analysis-result' key={poi.poi}>
-              <div className='card__contents'>
-                <header className='card__header'>
-                  <h1 className='card__title'>{poi.poi === 'pointOfInterest' ? 'Assorted' : poi.poi}</h1>
-                </header>
-                <div className='card__body'>
-                  <div className='table-wrapper'>
-                    <table className='table'>
-                      <thead>
-                        <tr>
-                          <th>{t('Admin area')}</th>
-                          {poi.analysisMins.map((o, i) => <th key={o}>{t('{min} min', {min: o})}</th>)}
-                        </tr>
-                      </thead>
-                      <tbody>
-                      {poi.adminAreas.map(aa => this.renderAccessibilityTableRow(poi, aa))}
-                      </tbody>
-                    </table>
-                  </div>
+      accessibilityTime.map(poi => {
+        return (
+          <article className='card card--analysis-result' key={poi.poi}>
+            <div className='card__contents'>
+              <header className='card__header'>
+                <h1 className='card__title'>{poi.poi === 'pointOfInterest' ? 'Assorted' : poi.poi}</h1>
+              </header>
+              <div className='card__body'>
+                <div className='table-wrapper'>
+                  <table className='table'>
+                    <thead>
+                      <tr>
+                        <th>{t('Admin area')}</th>
+                        {poi.analysisMins.map((o, i) => <th key={o}>{t('{min} min', {min: o})}</th>)}
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {poi.adminAreas.map(aa => this.renderAccessibilityTableRow(poi, aa))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
-          );
-        })}
-      </section>
+          </article>
+        );
+      })
     );
   }
 }

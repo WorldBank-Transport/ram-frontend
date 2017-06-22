@@ -233,11 +233,11 @@ const ProjectThumb = React.createClass({
     return (
       <figure className='card__media'>
         <Link to={projectUrl} title='View project' className='link-wrapper'>
-          <div className='card__thumbnail'>
+          <div className='card__cover'>
           {bbox ? (
             <div ref='map' className='map-wrapper' />
           ) : (
-            <img alt={t('Project thumbnail')} width='640' height='320' src='/assets/graphics/layout/projects-thumbnail-placeholder.png' />
+            <img alt={t('Project cover')} width='640' height='320' src='/assets/graphics/layout/projects-thumbnail-placeholder.png' />
           )}
           </div>
         </Link>

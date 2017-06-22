@@ -88,38 +88,38 @@ class ResultsMap extends React.Component {
 
   render () {
     return (
-      <section className='analysis-result-section scenario-vis'>
-        <h2 className='inpage__section-title'>ETA Visualization</h2>
+      <article className='card card--analysis-result scenario-vis'>
+        <div className='card__contents'>
+          <header className='card__header'>
+            <h1 className='card__title'>ETA Visualization</h1>
+          </header>
 
-        <div className='card card--analysis-result'>
-          <div className='card__contents'>
-            <figure className='scenario-vis__media'>
-              <div className='scenario-vis__map' ref='map'></div>
+          <figure className='card__media scenario-vis__media'>
+            <div className='card__cover scenario-vis__map' ref='map'></div>
 
-              <figcaption className='scenario-vis__legend'>
-                <h3>Travel time in minutes</h3>
+            <figcaption className='scenario-vis__legend'>
+              <h3>Travel time in minutes</h3>
 
-                <dl>
-                  <dt>Dark green</dt>
-                  <dd className='l1'><span>0</span></dd>
-                  <dt>Soft green</dt>
-                  <dd className='l2'><span>10</span></dd>
-                  <dt>Light green</dt>
-                  <dd className='l3'><span>20</span></dd>
-                  <dt>Yellow</dt>
-                  <dd className='l4'><span>30</span></dd>
-                  <dt>Orange</dt>
-                  <dd className='l5'><span>60</span></dd>
-                  <dt>Red</dt>
-                  <dd className='l6'><span>90</span></dd>
-                  <dt>Brown</dt>
-                  <dd className='l7'><span>120</span></dd>
-                </dl>
-              </figcaption>
-            </figure>
-          </div>
+              <dl>
+                <dt>Dark green</dt>
+                <dd className='l1'><span>0</span></dd>
+                <dt>Soft green</dt>
+                <dd className='l2'><span>10</span></dd>
+                <dt>Light green</dt>
+                <dd className='l3'><span>20</span></dd>
+                <dt>Yellow</dt>
+                <dd className='l4'><span>30</span></dd>
+                <dt>Orange</dt>
+                <dd className='l5'><span>60</span></dd>
+                <dt>Red</dt>
+                <dd className='l6'><span>90</span></dd>
+                <dt>Brown</dt>
+                <dd className='l7'><span>120</span></dd>
+              </dl>
+            </figcaption>
+          </figure>
         </div>
-      </section>
+      </article>
     );
   }
 }

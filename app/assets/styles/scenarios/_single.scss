@@ -46,19 +46,24 @@
 
 /* Results
    ========================================================================== */
-.analysis-result-section {
-  margin-bottom: $global-spacing * 3;
-
-  > *:last-child {
-    margin-bottom: 0;
-  }
-}
 
 .card--analysis-result {
   margin-bottom: $global-spacing * 2;
 
   .card__contents {
     padding: $global-spacing * 2;
+  }
+
+  .card__media {
+    margin: 0 (-$global-spacing * 2) $global-spacing (-$global-spacing * 2);
+
+    &:fist-child {
+      margin-bottom: (-$global-spacing * 2);
+    }
+
+    &:last-child {
+      margin-bottom: (-$global-spacing * 2) !important;
+    }
   }
 
   .table-wrapper {
@@ -94,11 +99,6 @@
 
 /* Results: ETA Vis
    ========================================================================== */
-
-.scenario-vis__media {
-  position: relative;
-  margin: 0 (-$global-spacing * 2);
-}
 
 .scenario-vis__map {
   height: 32rem;
