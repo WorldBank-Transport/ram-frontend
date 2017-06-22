@@ -13,7 +13,7 @@ import {
 } from '../../actions';
 import { round, toTimeStr } from '../../utils/utils';
 import { t } from '../../utils/i18n';
-import { showGlobalLoading, hideGlobalLoading } from '../global-loading';
+import { showGlobalLoadingCounted, hideGlobalLoadingCounted } from '../global-loading';
 
 import ResultsMap from './scenario-results-map';
 import Dropdown from '../dropdown';
@@ -48,16 +48,7 @@ const ScenarioResults = React.createClass({
   },
 
   componentDidMount: function () {
-    showGlobalLoading();
-
-    let filters = {
-      poiType: this.state.activePoiType,
-      popInd: this.state.activePopInd
-    };
-
-    this.props._fetchScenarioResults(this.props.projectId, this.props.scenarioId, filters);
-    this.props._fetchScenarioResultsRaw(this.props.projectId, this.props.scenarioId, 1, filters);
-    this.props._fetchScenarioResultsGeo(this.props.projectId, this.props.scenarioId);
+    this.requestAllResults();
   },
 
   componentWillReceiveProps: function (nextProps) {
@@ -69,12 +60,40 @@ const ScenarioResults = React.createClass({
     let nextGeoJSON = nextProps.geojsonResults;
 
     if ((!currAggregated.fetched && nextAggregated.fetched) || (!currRaw.fetched && nextRaw.fetched) || (!currGeoJSON.fetched && nextGeoJSON.fetched)) {
-      hideGlobalLoading();
+      hideGlobalLoadingCounted();
       let e = nextAggregated.error || nextRaw.error || nextGeoJSON.error;
       if (e) {
         this.props._showAlert('danger', <p>{t('An error occurred while loading the results - {reason}', {reason: e.message})}</p>, true);
       }
     }
+  },
+
+  requestAllResults: function () {
+    // Must load 3 items.
+    showGlobalLoadingCounted(3);
+
+    let filters = {
+      poiType: this.state.activePoiType,
+      popInd: this.state.activePopInd
+    };
+
+    let filtersRaw = Object.assign({}, filters, {
+      sortBy: this.state.rawSort.field,
+      sortDir: this.state.rawSort.asc ? 'asc' : 'desc'
+    });
+
+    this.props._fetchScenarioResults(this.props.projectId, this.props.scenarioId, filters);
+    this.props._fetchScenarioResultsRaw(this.props.projectId, this.props.scenarioId, this.state.rawPage, filtersRaw);
+    this.props._fetchScenarioResultsGeo(this.props.projectId, this.props.scenarioId, filters);
+  },
+
+  requestRawResults: function () {
+    this.props._fetchScenarioResultsRaw(this.props.projectId, this.props.scenarioId, this.state.rawPage, {
+      sortBy: this.state.rawSort.field,
+      sortDir: this.state.rawSort.asc ? 'asc' : 'desc',
+      poiType: this.state.activePoiType,
+      popInd: this.state.activePopInd
+    });
   },
 
   setRawSort: function (field, e) {
@@ -88,206 +107,69 @@ const ScenarioResults = React.createClass({
     }
 
     this.setState({ rawSort: sort, rawPage: 1 }, () => {
+      showGlobalLoadingCounted();
       this.requestRawResults();
     });
   },
 
   handleRawPageChange: function (page) {
     this.setState({ rawPage: page.selected + 1 }, () => {
+      showGlobalLoadingCounted();
       this.requestRawResults();
     });
   },
 
   onFilterChange: function (field, value, event) {
     event.preventDefault();
-    this.setState({
+
+    let state = {
       [field]: value,
       rawSort: {
         field: 'origin_name',
         asc: true
       },
       rawPage: 1
-    }, () => {
-      this.requestRawResults();
-      this.props._fetchScenarioResults(this.props.projectId, this.props.scenarioId, {
-        poiType: this.state.activePoiType,
-        popInd: this.state.activePopInd
-      });
-      this.props._fetchScenarioResultsGeo(this.props.projectId, this.props.scenarioId);
-    });
-  },
-
-  requestRawResults: function () {
-    showGlobalLoading();
-    this.props._fetchScenarioResultsRaw(this.props.projectId, this.props.scenarioId, this.state.rawPage, {
-      sortBy: this.state.rawSort.field,
-      sortDir: this.state.rawSort.asc ? 'asc' : 'desc',
-      poiType: this.state.activePoiType,
-      popInd: this.state.activePopInd
-    });
-  },
-
-  renderRawResultsTable: function () {
-    let { fetched, fetching, error, data, receivedAt } = this.props.rawResults;
-
-    // On subsequent requests do not redraw.
-    if (!receivedAt) {
-      if (!fetched || fetching) {
-        return null;
-      }
-
-      // if (fetching) {
-      //   return <p>Loading results...</p>;
-      // }
-    }
-
-    if (error) {
-      return null;
-    }
-
-    let { field: sortField, asc } = this.state.rawSort;
-
-    const renderTh = (title, field) => {
-      let cl = c('table__sort', {
-        'table__sort--none': sortField !== field,
-        'table__sort--asc': sortField === field && asc,
-        'table__sort--desc': sortField === field && !asc
-      });
-
-      return (
-        <th><a href='#' className={cl} title={t(`Sort by ${title}`)} onClick={this.setRawSort.bind(null, field)}>{title}</a></th>
-      );
     };
 
-    let popLabel = data.results.length ? this.props.popInd.find(o => o.key === data.results[0].pop_key).label : t('Population');
-
-    return (
-      <article className='card card--analysis-result'>
-        <div className='card__contents'>
-          <header className='card__header'>
-            <h1 className='card__title'>Origin level raw data</h1>
-          </header>
-
-          <div className='card__body'>
-            <div className='table-wrapper'>
-              <table className='table'>
-                <thead>
-                  <tr>
-                    {renderTh('Origin', 'origin_name')}
-                    {renderTh('Admin area', 'aa_name')}
-                    {renderTh(popLabel, 'pop_value')}
-                    {renderTh('Time to POI', 'time_to_poi')}
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.results.map(o => (
-                    <tr key={`${o.origin_id}-${o.poi_type}`}>
-                      <th>{o.origin_name || 'N/A'}</th>
-                      <td>{o.aa_name}</td>
-                      <td>{o.pop_value || 'N/A'}</td>
-                      <td>{toTimeStr(o.time_to_poi)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className='pagination-wrapper'>
-              <ReactPaginate
-                previousLabel={<span>previous</span>}
-                nextLabel={<span>next</span>}
-                breakLabel={<span className='pages__page'>...</span>}
-                pageCount={Math.ceil(data.meta.found / data.meta.limit)}
-                forcePage={data.meta.page - 1}
-                marginPagesDisplayed={2}
-                pageRangeDisplayed={5}
-                onPageChange={this.handleRawPageChange}
-                containerClassName={'pagination'}
-                subContainerClassName={'pages'}
-                pageClassName={'pages__wrapper'}
-                pageLinkClassName={'pages__page'}
-                activeClassName={'active'} />
-            </div>
-          </div>
-        </div>
-      </article>
-    );
-  },
-
-  renderFilters: function () {
-    let activePopIndLabel = this.props.popInd.find(o => o.key === this.state.activePopInd).label;
-    let activePoiTypeLabel = this.props.poiTypes.find(o => o.key === this.state.activePoiType).label;
-
-    return (
-      <nav className='inpage__sec-nav'>
-        <dl className='filters-menu'>
-          <dt>{t('Population')}</dt>
-          <dd>
-            <Dropdown
-              triggerClassName='button button--achromic drop__toggle--caret'
-              triggerActiveClassName='button--active'
-              triggerText={activePopIndLabel}
-              triggerTitle={t('Change Population')}
-              direction='down'
-              alignment='left' >
-                <ul className='drop__menu drop__menu--select' role='menu'>
-                  {this.props.popInd.map(o => (
-                    <li key={o.key}>
-                      <a
-                        href='#'
-                        title={t('Select Population')}
-                        className={c('drop__menu-item', {'drop__menu-item--active': o.key === this.state.activePopInd})}
-                        onClick={this.onFilterChange.bind(this, 'activePopInd', o.key)} >
-                        <span>{o.label}</span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-            </Dropdown>
-          </dd>
-          <dt>{t('Point of Interest')}</dt>
-          <dd>
-            <Dropdown
-              triggerClassName='button button--achromic drop__toggle--caret'
-              triggerActiveClassName='button--active'
-              triggerText={activePoiTypeLabel}
-              triggerTitle={t('Change Point of Interest')}
-              direction='down'
-              alignment='left' >
-                <ul className='drop__menu drop__menu--select' role='menu'>
-                  {this.props.poiTypes.map(o => (
-                    <li key={o.key}>
-                      <a
-                        href='#'
-                        title={t('Select Point of Interest')}
-                        className={c('drop__menu-item', {'drop__menu-item--active': o.key === this.state.activePoiType})}
-                        onClick={this.onFilterChange.bind(this, 'activePoiType', o.key)} >
-                        <span>{o.label}</span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-            </Dropdown>
-          </dd>
-        </dl>
-      </nav>
-    );
+    this.setState(state, () => { this.requestAllResults(); });
   },
 
   render: function () {
     return (
       <div className='rwrapper'>
-        {this.renderFilters()}
+
+        <FiltersBar
+          onFilterChange={this.onFilterChange}
+          activePopInd={this.state.activePopInd}
+          activePoiType={this.state.activePoiType}
+          popInd={this.props.popInd}
+          poiTypes={this.props.poiTypes}
+        />
+
         <ResultsMap
           data={this.props.geojsonResults}
           bbox={this.props.bbox}
         />
+
         <AccessibilityTable
           fetched={this.props.aggregatedResults.fetched}
           fetching={this.props.aggregatedResults.fetching}
+          receivedAt={this.props.aggregatedResults.receivedAt}
           data={this.props.aggregatedResults.data.accessibilityTime}
           error={this.props.aggregatedResults.error}
         />
-        {this.renderRawResultsTable()}
+
+        <RawResultsTable
+          fetched={this.props.rawResults.fetched}
+          fetching={this.props.rawResults.fetching}
+          receivedAt={this.props.rawResults.receivedAt}
+          data={this.props.rawResults.data}
+          error={this.props.rawResults.error}
+          popInd={this.props.popInd}
+          sort={this.state.rawSort}
+          handleRawPageChange={this.handleRawPageChange}
+          setRawSort={this.setRawSort}
+        />
       </div>
     );
   }
@@ -320,6 +202,10 @@ function dispatcher (dispatch) {
 
 module.exports = connect(selector, dispatcher)(ScenarioResults);
 
+// ////////////////////////////////////////////////////////////////////////// //
+//                        Accessibility Table                                 //
+// ////////////////////////////////////////////////////////////////////////// //
+
 class AccessibilityTable extends React.PureComponent {
   renderAccessibilityTableRow (poi, aa) {
     if (!aa.data.length) {
@@ -339,14 +225,12 @@ class AccessibilityTable extends React.PureComponent {
     );
   }
 
-  render (poi) {
-    if (!this.props.fetched || this.props.fetching) {
-      return null;
+  render () {
+    if (!this.props.receivedAt) {
+      if (!this.props.fetched || this.props.fetching) {
+        return null;
+      }
     }
-
-    // if (this.props.fetching) {
-    //   return <p>Loading results...</p>;
-    // }
 
     if (this.props.error) {
       return null;
@@ -384,6 +268,183 @@ class AccessibilityTable extends React.PureComponent {
 AccessibilityTable.propTypes = {
   fetched: T.bool,
   fetching: T.bool,
+  receivedAt: T.number,
   data: T.object,
   error: T.object
+};
+
+// ////////////////////////////////////////////////////////////////////////// //
+//                              Filters Bar                                   //
+// ////////////////////////////////////////////////////////////////////////// //
+
+class FiltersBar extends React.PureComponent {
+  render () {
+    let activePopIndLabel = this.props.popInd.find(o => o.key === this.props.activePopInd).label;
+    let activePoiTypeLabel = this.props.poiTypes.find(o => o.key === this.props.activePoiType).label;
+
+    return (
+      <nav className='inpage__sec-nav'>
+        <dl className='filters-menu'>
+          <dt>{t('Population')}</dt>
+          <dd>
+            <Dropdown
+              triggerClassName='button button--achromic drop__toggle--caret'
+              triggerActiveClassName='button--active'
+              triggerText={activePopIndLabel}
+              triggerTitle={t('Change Population')}
+              direction='down'
+              alignment='left' >
+                <ul className='drop__menu drop__menu--select' role='menu'>
+                  {this.props.popInd.map(o => (
+                    <li key={o.key}>
+                      <a
+                        href='#'
+                        title={t('Select Population')}
+                        className={c('drop__menu-item', {'drop__menu-item--active': o.key === this.props.activePopInd})}
+                        onClick={e => this.props.onFilterChange('activePopInd', o.key, e)} >
+                        <span>{o.label}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+            </Dropdown>
+          </dd>
+          <dt>{t('Point of Interest')}</dt>
+          <dd>
+            <Dropdown
+              triggerClassName='button button--achromic drop__toggle--caret'
+              triggerActiveClassName='button--active'
+              triggerText={activePoiTypeLabel}
+              triggerTitle={t('Change Point of Interest')}
+              direction='down'
+              alignment='left' >
+                <ul className='drop__menu drop__menu--select' role='menu'>
+                  {this.props.poiTypes.map(o => (
+                    <li key={o.key}>
+                      <a
+                        href='#'
+                        title={t('Select Point of Interest')}
+                        className={c('drop__menu-item', {'drop__menu-item--active': o.key === this.props.activePoiType})}
+                        onClick={e => this.props.onFilterChange('activePoiType', o.key, e)} >
+                        <span>{o.label}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+            </Dropdown>
+          </dd>
+        </dl>
+      </nav>
+    );
+  }
+}
+
+FiltersBar.propTypes = {
+  onFilterChange: T.func,
+  activePopInd: T.string,
+  activePoiType: T.string,
+  popInd: T.array,
+  poiTypes: T.array
+};
+
+// ////////////////////////////////////////////////////////////////////////// //
+//                           Raw Results Table                                //
+// ////////////////////////////////////////////////////////////////////////// //
+
+class RawResultsTable extends React.PureComponent {
+  render () {
+    let { fetched, fetching, error, data, receivedAt } = this.props;
+
+    // On subsequent requests do not redraw.
+    if (!receivedAt) {
+      if (!fetched || fetching) {
+        return null;
+      }
+    }
+
+    if (error) {
+      return null;
+    }
+
+    let { field: sortField, asc } = this.props.sort;
+
+    const renderTh = (title, field) => {
+      let cl = c('table__sort', {
+        'table__sort--none': sortField !== field,
+        'table__sort--asc': sortField === field && asc,
+        'table__sort--desc': sortField === field && !asc
+      });
+
+      return (
+        <th><a href='#' className={cl} title={t(`Sort by ${title}`)} onClick={e => this.props.setRawSort(field, e)}>{title}</a></th>
+      );
+    };
+
+    let popLabel = data.results.length ? this.props.popInd.find(o => o.key === data.results[0].pop_key).label : t('Population');
+
+    return (
+      <article className='card card--analysis-result'>
+        <div className='card__contents'>
+          <header className='card__header'>
+            <h1 className='card__title'>Origin level raw data</h1>
+          </header>
+
+          <div className='card__body'>
+            <div className='table-wrapper'>
+              <table className='table'>
+                <thead>
+                  <tr>
+                    {renderTh('Origin', 'origin_name')}
+                    {renderTh('Admin area', 'aa_name')}
+                    {renderTh(popLabel, 'pop_value')}
+                    {renderTh('Time to POI', 'time_to_poi')}
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.results.map(o => (
+                    <tr key={`${o.origin_id}-${o.poi_type}`}>
+                      <th>{o.origin_name || 'N/A'}</th>
+                      <td>{o.aa_name}</td>
+                      <td>{o.pop_value || 'N/A'}</td>
+                      <td>{toTimeStr(o.time_to_poi)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className='pagination-wrapper'>
+              <ReactPaginate
+                previousLabel={<span>previous</span>}
+                nextLabel={<span>next</span>}
+                breakLabel={<span className='pages__page'>...</span>}
+                pageCount={Math.ceil(data.meta.found / data.meta.limit)}
+                forcePage={data.meta.page - 1}
+                marginPagesDisplayed={2}
+                pageRangeDisplayed={5}
+                onPageChange={this.props.handleRawPageChange}
+                containerClassName={'pagination'}
+                subContainerClassName={'pages'}
+                pageClassName={'pages__wrapper'}
+                pageLinkClassName={'pages__page'}
+                activeClassName={'active'} />
+            </div>
+
+          </div>
+        </div>
+      </article>
+    );
+  }
+}
+
+RawResultsTable.propTypes = {
+  fetched: T.bool,
+  fetching: T.bool,
+  receivedAt: T.number,
+  data: T.object,
+  error: T.object,
+  popInd: T.array,
+  sort: T.object,
+  setRawSort: T.func,
+  handleRawPageChange: T.func
 };
