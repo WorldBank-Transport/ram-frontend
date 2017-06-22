@@ -13,8 +13,10 @@ import {
 } from '../../actions';
 import { round, toTimeStr } from '../../utils/utils';
 import { t } from '../../utils/i18n';
-import ResultsMap from './scenario-results-map';
 import { showGlobalLoading, hideGlobalLoading } from '../global-loading';
+
+import ResultsMap from './scenario-results-map';
+import Dropdown from '../dropdown';
 
 const ScenarioResults = React.createClass({
 
@@ -195,6 +197,41 @@ const ScenarioResults = React.createClass({
   render: function () {
     return (
       <div className='rwrapper'>
+        <nav className='inpage__sec-nav'>
+          <dl className='filters-menu'>
+            <dt>Population</dt>
+            <dd>
+              <Dropdown
+                triggerClassName='button button--achromic drop__toggle--caret'
+                triggerActiveClassName='button--active'
+                triggerText={t('Women')}
+                triggerTitle={t('Change Population')}
+                direction='down'
+                alignment='left' >
+                  <ul className='drop__menu drop__menu--select' role='menu'>
+                    <li><a href='#' title={t('Select Population')} className='drop__menu-item drop__menu-item--active'><span>Population name 1</span></a></li>
+                    <li><a href='#' title={t('Select Population')} className='drop__menu-item'><span>Population name 2</span></a></li>
+                  </ul>
+              </Dropdown>
+            </dd>
+            <dt>Point of Interest</dt>
+            <dd>
+              <Dropdown
+                triggerClassName='button button--achromic drop__toggle--caret'
+                triggerActiveClassName='button--active'
+                triggerText={t('Hospitals')}
+                triggerTitle={t('Change Point of Interest')}
+                direction='down'
+                alignment='left' >
+                  <ul className='drop__menu drop__menu--select' role='menu'>
+                    <li><a href='#' title={t('Select Point of Interest')} className='drop__menu-item drop__menu-item--active'><span>POI name 1</span></a></li>
+                    <li><a href='#' title={t('Select Point of Interest')} className='drop__menu-item'><span>POI name 2</span></a></li>
+                  </ul>
+              </Dropdown>
+            </dd>
+          </dl>
+        </nav>
+
         <ResultsMap
           data={this.props.geojsonResults}
           bbox={this.props.bbox}

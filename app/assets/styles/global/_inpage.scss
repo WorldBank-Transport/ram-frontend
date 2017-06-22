@@ -103,7 +103,7 @@
   }
 
   &__body {
-    padding: ($global-spacing * 3) 0;
+    padding: ($global-spacing * 2) 0;
 
     /* Animation */
     animation: reveal 0.64s ease 0s 1;
@@ -194,5 +194,47 @@
 
   &::before {
     @extend %collecticon-sm-xmark;
+  }
+}
+
+
+/* Inpage Secondary Nav
+   ========================================================================== */
+
+.inpage__sec-nav {
+  @extend .antialiased;
+  background: $link-color;
+  color: #fff;
+  box-shadow: 0 4px 16px 2px rgba($base-color, 0.08);   // Elevation Index: 2
+  border-radius: $base-border-radius;
+  padding: $global-spacing;
+  margin: 0 0 ($global-spacing * 2) 0;
+
+  * {
+    vertical-align: top;
+  }
+
+  .filters-menu {
+    padding: 0;
+    margin: (-$global-spacing / 2) 0;
+    font-size: 0;
+
+    dt,
+    dd {
+      display: inline-block;
+    }
+
+    dt {
+      text-transform: uppercase;
+      font-weight: $base-font-regular;
+      color: rgba(#fff, 0.8);
+      font-size: 0.875rem;
+      line-height: 2rem;
+      margin: 0 ($global-spacing / 4) 0 0;
+    }
+
+    dd {
+      margin: 0 $global-spacing 0 0;
+    }
   }
 }
