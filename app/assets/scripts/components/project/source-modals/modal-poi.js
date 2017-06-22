@@ -190,7 +190,7 @@ class ModalPoi extends ModalBase {
               <legend className='form__legend'>{t('File {idx}', {idx: i + 1})}</legend>
             </div>
             <div className='form__inner-actions'>
-              <button type='button' className='fia-trash' title='Delete fieldset' onClick={this.removeUploadedFile.bind(this, fileField.id)}><span>Delete</span></button>
+              <button type='button' className='fia-trash' title='Delete file' onClick={this.removeUploadedFile.bind(this, fileField.id)}><span>Delete</span></button>
             </div>
           </div>
 
@@ -213,7 +213,7 @@ class ModalPoi extends ModalBase {
       <fieldset className='form__fieldset' key={fileField.id}>
         <div className='form__inner-header'>
           <div className='form__inner-headline'>
-            <legend className='form__legend'>{t('New file')}</legend>
+            <legend className='form__legend'>{t('File')}</legend>
           </div>
           <div className='form__inner-actions'>
             <button
@@ -264,7 +264,7 @@ class ModalPoi extends ModalBase {
         {this.state.fileFields.map(this.renderFileFieldset.bind(this))}
 
         <div className='form__extra-actions'>
-          <button type='button' className='fea-plus' title='Add new fieldset' onClick={this.addPoiFileField.bind(this)}><span>New fieldset</span></button>
+          <button type='button' className='fea-plus' title='Add new file' onClick={this.addPoiFileField.bind(this)}><span>New file</span></button>
         </div>
       </div>
     );
