@@ -242,7 +242,7 @@ class AccessibilityTable extends React.PureComponent {
       <article className='card card--analysis-result' key={accessibilityTime.poi}>
         <div className='card__contents'>
           <header className='card__header'>
-            <h1 className='card__title'>{accessibilityTime.poi === 'pointOfInterest' ? 'Assorted' : accessibilityTime.poi}</h1>
+            <h1 className='card__title'>{accessibilityTime.poi}</h1>
           </header>
           <div className='card__body'>
             <div className='table-wrapper'>

@@ -81,6 +81,7 @@
   }
 
   .table {
+    table-layout: fixed; 
     th:first-child,
     td:first-child {
       padding-left: $global-spacing * 2;
