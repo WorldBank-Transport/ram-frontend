@@ -301,7 +301,7 @@ const ProjectPagePending = React.createClass({
         <StickyHeader className='inpage__header'>
           <div className='inpage__headline'>
             {this.renderBreadcrumb()}
-            <h1 className='inpage__title' title={data.name}>{data.name}</h1>
+            <h1 className='inpage__title' title={data.name}>{data.name} <span className='label label--light label--danger'>Draft</span></h1>
             {data.description ? (
               <p className='inpage__description'>{data.description}</p>
             ) : null}
@@ -313,7 +313,6 @@ const ProjectPagePending = React.createClass({
         </StickyHeader>
         <div className='inpage__body'>
           <div className='inner'>
-            <h2 className='inpage__section-title'>{t('Project setup')}</h2>
             <Log
               data={data.finish_setup}
               receivedAt={this.props.project.receivedAt}

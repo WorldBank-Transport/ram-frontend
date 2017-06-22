@@ -338,7 +338,7 @@ const ProjectPageActive = React.createClass({
         <StickyHeader className='inpage__header'>
           <div className='inpage__headline'>
             {this.renderBreadcrumb()}
-            <h1 className='inpage__title' title={dataProject.name}>{dataProject.name}</h1>
+            <h1 className='inpage__title' title={dataProject.name}>{dataProject.name} <span className='label label--light label--success'>Active</span></h1>
             {dataProject.description ? (
               <p className='inpage__description'>{dataProject.description}</p>
             ) : null}

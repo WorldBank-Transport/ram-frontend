@@ -99,7 +99,6 @@ class ResultsMap extends React.Component {
 
             <figcaption className='scenario-vis__legend'>
               <h3>Travel time in minutes</h3>
-
               <dl>
                 <dt>Dark green</dt>
                 <dd className='l1'><span>0</span></dd>
