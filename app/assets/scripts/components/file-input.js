@@ -72,7 +72,7 @@ export class FileDisplay extends React.PureComponent {
         <div className={c('form__file form__file--remove', {'form__control--focus': this.state.focused})} onClick={this.props.onRemoveClick}>
           <span className='form__file__text'>{this.props.value}</span>
           <input
-            type='file'
+            type='text'
             id={this.props.id}
             name={this.props.name}
             value={this.props.value}
