@@ -18,8 +18,8 @@ export class FileInput extends React.PureComponent {
   render () {
     let fieldVal = this.props.value ? this.props.value.name : this.props.placeholder;
     return (
-      <div className='form__group'>
-        {this.props.label ? <label className='form__label' htmlFor={this.props.id}>{this.props.label}</label> : null}
+      <div className={this.props.wrapperClass}>
+        {this.props.label ? <label className={c('form__label', {'visually-hidden': this.props.hideLabel})} htmlFor={this.props.id}>{this.props.label}</label> : null}
         <div className={c('form__file', {'form__control--focus': this.state.focused})} onClick={() => { this.refs.file.click(); }}>
           <span className='form__file__text'>{fieldVal}</span>
           <input
@@ -40,13 +40,20 @@ export class FileInput extends React.PureComponent {
 }
 
 FileInput.propTypes = {
+  wrapperClass: T.string,
   id: T.string,
   name: T.string,
   label: T.string,
+  hideLabel: T.bool,
   value: T.oneOfType([T.string, T.object]),
   placeholder: T.string,
   onFileSelect: T.func,
   children: T.object
+};
+
+FileInput.defaultProps = {
+  hideLabel: false,
+  wrapperClass: 'form__group'
 };
 
 export class FileDisplay extends React.PureComponent {
@@ -60,8 +67,8 @@ export class FileDisplay extends React.PureComponent {
 
   render () {
     return (
-      <div className='form__group'>
-        {this.props.label ? <label className='form__label' htmlFor={this.props.id}>{this.props.label}</label> : null}
+      <div className={this.props.wrapperClass}>
+        {this.props.label ? <label className={c('form__label', {'visually-hidden': this.props.hideLabel})} htmlFor={this.props.id}>{this.props.label}</label> : null}
         <div className={c('form__file form__file--remove', {'form__control--focus': this.state.focused})} onClick={this.props.onRemoveClick}>
           <span className='form__file__text'>{this.props.value}</span>
           <input
@@ -81,12 +88,18 @@ export class FileDisplay extends React.PureComponent {
 }
 
 FileDisplay.propTypes = {
+  wrapperClass: T.string,
   id: T.string,
   name: T.string,
   label: T.string,
+  hideLabel: T.bool,
   value: T.oneOfType([T.string, T.object]),
   placeholder: T.string,
   onRemoveClick: T.func,
   children: T.object
 };
 
+FileDisplay.defaultProps = {
+  hideLabel: false,
+  wrapperClass: 'form__group'
+};

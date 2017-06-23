@@ -10,6 +10,7 @@ import { limitHelper } from '../../utils/utils';
 import { postFormdata } from '../../actions';
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '../modal';
+import { FileInput } from '../file-input';
 
 var nameLimit = limitHelper(80);
 var descLimit = limitHelper(140);
@@ -94,9 +95,8 @@ const ScenarioCreateModal = React.createClass({
     this.props.onCloseClick();
   },
 
-  onFileSelected: function (event) {
-    // Store file reference
-    const file = event.target.files[0];
+  onFileSelected: function (file) {
+    // Store file reference.
     let roadNetworkSourceFile = {
       file,
       size: file.size,
@@ -210,6 +210,7 @@ const ScenarioCreateModal = React.createClass({
           placeholder={t('Untitled scenario')}
           value={this.state.data.name}
           onChange={this.onFieldChange.bind(null, 'name')}
+          autoFocus
         />
 
         {this.state.errors.name ? <p className='form__error'>{t('A scenario name is required.')}</p> : null }
@@ -275,7 +276,7 @@ const ScenarioCreateModal = React.createClass({
                 <span className='form__option__ui'></span>
               </label>
               <label className='form__option form__option--inline form__option--custom-radio disabled'>
-                <input type='radio' name='road-network' id='road-network-osm' value='osm' onChange={this.onFieldChange.bind(null, 'roadNetworkSource')} checked={this.state.data.roadNetworkSource === 'osm'}/>
+                <input type='radio' name='road-network' id='road-network-osm' value='osm' onChange={this.onFieldChange.bind(null, 'roadNetworkSource')} checked={this.state.data.roadNetworkSource === 'osm'} disabled />
                 <span className='form__option__text'>{t('OSM data')}</span>
                 <span className='form__option__ui'></span>
               </label>
@@ -291,15 +292,21 @@ const ScenarioCreateModal = React.createClass({
             ) : null}
 
             {this.state.data.roadNetworkSource === 'new' ? (
-            <div className='form__group form__group--attached'>
-              <label className='form__label visually-hidden' htmlFor='road-network-new-file'>{t('New road network')}</label>
-              <input type='file' name='road-network-new-file' id='road-network-new-file' className='form__control--upload' ref='file' onChange={this.onFileSelected} />
-              {this.state.errors.roadNetworkSource ? <p className='form__error'>{t('A file is required.')}</p> : null }
+            <FileInput
+              wrapperClass='form__group form__group--attached'
+              id='road-network-new-file'
+              name='road-network-new-file'
+              label={'New road network'}
+              hideLabel
+              value={this.state.data.roadNetworkSourceFile.file}
+              placeholder={t('Choose a file')}
+              onFileSelect={this.onFileSelected} >
+
               {this.state.data.roadNetworkSourceFile.file !== null
-              ? <p className='form__help'>{Math.round(this.state.data.roadNetworkSourceFile.uploaded / (1024 * 1024))}MB / {Math.round(this.state.data.roadNetworkSourceFile.size / (1024 * 1024))}MB</p>
-              : null
-             }
-            </div>
+                ? <p className='form__help'>{Math.round(this.state.data.roadNetworkSourceFile.uploaded / (1024 * 1024))}MB / {Math.round(this.state.data.roadNetworkSourceFile.size / (1024 * 1024))}MB</p>
+                : null
+              }
+            </FileInput>
             ) : null}
 
           </form>

@@ -180,7 +180,7 @@ class ModalRoadNetwork extends ModalBase {
             </label>
 
             <label className='form__option form__option--inline form__option--custom-radio disabled'>
-              <input type='radio' name='source-type' id='osm' checked={this.state.source === 'osm'} />
+              <input type='radio' name='source-type' id='osm' checked={this.state.source === 'osm'} disabled />
               <span className='form__option__text'>OSM data</span>
               <span className='form__option__ui'></span>
             </label>

@@ -231,6 +231,8 @@ class ModalPoi extends ModalBase {
             id={`poi-file-${fileField.id}`}
             name={`poi-file-${fileField.id}`}
             value={fileField.file}
+            label={t('Source')}
+            hideLabel
             placeholder={t('Choose a file')}
             onFileSelect={this.onFileSelected.bind(this, fileField.id)} >
 
@@ -282,7 +284,7 @@ class ModalPoi extends ModalBase {
             </label>
 
             <label className='form__option form__option--inline form__option--custom-radio disabled'>
-              <input type='radio' name='source-type' id='osm' checked={this.state.source === 'osm'} />
+              <input type='radio' name='source-type' id='osm' checked={this.state.source === 'osm'} disabled />
               <span className='form__option__text'>OSM data</span>
               <span className='form__option__ui'></span>
             </label>
