@@ -5,7 +5,7 @@
 /* Page
    ========================================================================== */
 
-@include keyframes(reveal) {
+@keyframes reveal {
   0% {
     opacity: 0;
   }

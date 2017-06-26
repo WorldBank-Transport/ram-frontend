@@ -6,6 +6,7 @@ import { Router, Route, IndexRoute, Redirect, hashHistory, applyRouterMiddleware
 import { useScroll } from 'react-router-scroll';
 import { syncHistoryWithStore } from 'react-router-redux';
 
+import config from './config';
 import store from './utils/store';
 import { isValidLanguage, setLanguage } from './utils/i18n';
 
@@ -17,6 +18,7 @@ import ProjectPageActive from './views/project-page-active';
 import ProjectPagePending from './views/project-page-pending';
 import ScenarioPage from './views/scenario-page';
 import Help from './views/help';
+import Playground from './views/playground';
 
 const history = syncHistoryWithStore(hashHistory, store);
 
@@ -36,6 +38,12 @@ function validateLanguage (nextState, replace) {
   }
 }
 
+function playgroundAccess (nextState, replace) {
+  if (config.environment !== 'development') {
+    replace('/en/404');
+  }
+}
+
 render((
   <Provider store={store}>
     <Router history={history} render={applyRouterMiddleware(scrollerMiddleware)}>
@@ -45,6 +53,7 @@ render((
         <Route path="projects/:projectId" component={ProjectPageActive}/>
         <Route path="projects/:projectId/scenarios/:scenarioId" component={ScenarioPage}/>
         <Route path="help" component={Help}/>
+        <Route path="playground" component={Playground} onEnter={playgroundAccess} />
         <IndexRoute component={Home} pageClass='page--homepage' />
         <Redirect from='/:lang/projects/:projectId/scenarios' to='/:lang/projects/:projectId' />
         <Redirect from='/:lang/projects' to='/:lang' />

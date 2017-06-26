@@ -17,9 +17,10 @@ import {
   // Fetch scenario without indication of loading.
   fetchScenarioItemSilent,
   fetchScenarioResults,
-  showAlert
+  showAlert,
+  abortGenerateResults
 } from '../actions';
-import { fetchStatus } from '../utils/utils';
+import { fetchStatus, scenarioHasResults } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
 import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
 
@@ -32,8 +33,9 @@ import Alert from '../components/alert';
 import LogBase from '../components/log-base';
 import ScenarioResults from '../components/scenario/scenario-results';
 import StickyHeader from '../components/sticky-header';
+import FatalError from '../components/fatal-error';
 
-var ScenarioPage = React.createClass({
+const ScenarioPage = React.createClass({
   propTypes: {
     params: T.object,
     _invalidateProjectItem: T.func,
@@ -48,6 +50,7 @@ var ScenarioPage = React.createClass({
     _fetchScenarioItemSilent: T.func,
     _fetchScenarioResults: T.func,
     _showAlert: T.func,
+    _abortGenerateResults: T.func,
 
     scenario: T.object,
     project: T.object,
@@ -206,6 +209,10 @@ var ScenarioPage = React.createClass({
         this.showLoading();
         this.props._deleteScenario(this.props.params.projectId, this.props.params.scenarioId);
         break;
+      case 'abort':
+        this.showLoading();
+        this.props._abortGenerateResults(this.props.params.projectId, this.props.params.scenarioId, () => this.hideLoading());
+        break;
       default:
         throw new Error(`Project action not implemented: ${what}`);
     }
@@ -257,9 +264,8 @@ var ScenarioPage = React.createClass({
     let scenario = this.props.scenario.data;
     let isGenerating = scenario.gen_analysis && scenario.gen_analysis.status === 'running';
     let isPending = scenario.scen_create && scenario.scen_create.status === 'running';
-    let hasResults = scenario.files.some(o => o.type === 'results');
 
-    if (isGenerating || isPending || hasResults) {
+    if (isGenerating || isPending || scenarioHasResults(scenario)) {
       return null;
     }
 
@@ -286,15 +292,8 @@ var ScenarioPage = React.createClass({
     }
 
     if (error) {
-      return (
-        <Alert type='danger'>
-          <h6>An error occurred</h6>
-          <p>{error.message}</p>
-        </Alert>
-      );
+      return <FatalError />;
     }
-
-    let resultsFile = dataScenario.files.find(f => f.type === 'results-all');
 
     return (
       <section className='inpage inpage--hub'>
@@ -329,13 +328,7 @@ var ScenarioPage = React.createClass({
 
             {this.renderEmptyState()}
 
-            {resultsFile ? (
-              <ScenarioResults
-                projectId={dataScenario.project_id}
-                scenarioId={dataScenario.id}
-                resultFileId={resultsFile.id}
-              />
-            ) : null}
+            {scenarioHasResults(dataScenario) ? <ScenarioResults /> : null}
 
           </div>
         </div>
@@ -407,7 +400,8 @@ function dispatcher (dispatch) {
 
     _fetchScenarioItemSilent: (...args) => dispatch(fetchScenarioItemSilent(...args)),
     _fetchScenarioResults: (...args) => dispatch(fetchScenarioResults(...args)),
-    _showAlert: (...args) => dispatch(showAlert(...args))
+    _showAlert: (...args) => dispatch(showAlert(...args)),
+    _abortGenerateResults: (...args) => dispatch(abortGenerateResults(...args))
   };
 }
 
@@ -446,7 +440,6 @@ class LogGen extends LogBase {
           </Alert>
         );
       case 'routing':
-      case 'routing:area':
         if (log.data.message.match(/started/)) {
           return (
             <Alert type='info'>
@@ -462,6 +455,13 @@ class LogGen extends LogBase {
             </Alert>
           );
         }
+      case 'routing:area':
+        return (
+          <Alert type='info'>
+            <h6>Generating results 4/5 <TimeAgo datetime={log.created_at} /></h6>
+            <p>{log.data.remaining} admin areas remaining. Last processed - {log.data.adminArea}</p>
+          </Alert>
+        );
       case 'results:bucket':
       case 'results:files':
         return (

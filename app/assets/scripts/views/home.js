@@ -14,19 +14,15 @@ import {
   resetProjectFrom,
   showAlert
 } from '../actions';
-import { prettyPrint } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
 import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
+import { projectStatusMatrix } from '../utils/constants';
 
 import StickyHeader from '../components/sticky-header';
 import ProjectFormModal from '../components/project/project-form-modal';
+import FatalError from '../components/fatal-error';
 
-const projectStatusMatrix = {
-  active: 'Active',
-  pending: 'Draft'
-};
-
-var Home = React.createClass({
+const Home = React.createClass({
   displayName: 'Home',
 
   propTypes: {
@@ -119,14 +115,10 @@ var Home = React.createClass({
   },
 
   renderProjectList: function () {
-    let { fetched, fetching, error, data } = this.props.projects;
+    let { fetched, fetching, data } = this.props.projects;
 
     if (!fetched && !fetching || !fetched && fetching) {
       return null;
-    }
-
-    if (error) {
-      return <div>Error: {prettyPrint(error)}</div>;
     }
 
     return (
@@ -140,6 +132,12 @@ var Home = React.createClass({
   },
 
   render: function () {
+    let { fetched, fetching, error } = this.props.projects;
+
+    if (fetched && !fetching && error) {
+      return <FatalError />;
+    }
+
     return (
       <section className='inpage inpage--hub'>
         <StickyHeader className='inpage__header'>
@@ -208,7 +206,8 @@ const ProjectThumb = React.createClass({
     this.theMap = new mapboxgl.Map({
       container: this.refs.map,
       style: 'mapbox://styles/mapbox/streets-v10',
-      interactive: false
+      interactive: false,
+      attributionControl: false
     });
 
     this.theMap.fitBounds(bbox);
@@ -230,11 +229,11 @@ const ProjectThumb = React.createClass({
     return (
       <figure className='card__media'>
         <Link to={projectUrl} title='View project' className='link-wrapper'>
-          <div className='card__thumbnail'>
+          <div className='card__cover'>
           {bbox ? (
             <div ref='map' className='map-wrapper' />
           ) : (
-            <img alt={t('Project thumbnail')} width='640' height='320' src='/assets/graphics/layout/projects-thumbnail-placeholder.png' />
+            <img alt={t('Project cover')} width='640' height='320' src='/assets/graphics/layout/projects-thumbnail-placeholder.png' />
           )}
           </div>
         </Link>

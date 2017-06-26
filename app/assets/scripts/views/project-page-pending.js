@@ -18,24 +18,26 @@ import {
   resetScenarioFrom,
   // Fetch project without indication of loading.
   fetchProjectItemSilent,
+  fetchScenarioItemSilent,
   showAlert
 } from '../actions';
+
 import { prettyPrint } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
-import { fileTypesMatrix } from '../utils/constants';
 import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
+import { projectStatusMatrix } from '../utils/constants';
 
 import StickyHeader from '../components/sticky-header';
 import Breadcrumb from '../components/breadcrumb';
-import ProjectFileInput from '../components/project/project-file-input';
-import ProjectFileCard from '../components/project/project-file-card';
 import ProjectFormModal from '../components/project/project-form-modal';
 import ProjectHeaderActions from '../components/project/project-header-actions';
 import ScenarioEditModal from '../components/scenario/scenario-edit-modal';
 import Alert from '../components/alert';
 import LogBase from '../components/log-base';
+import FatalError from '../components/fatal-error';
+import PorjectSourceData from '../components/project/project-source';
 
-var ProjectPagePending = React.createClass({
+const ProjectPagePending = React.createClass({
   displayName: 'ProjectPagePending',
 
   propTypes: {
@@ -51,6 +53,7 @@ var ProjectPagePending = React.createClass({
     _resetProjectFrom: T.func,
     _resetScenarioFrom: T.func,
     _fetchProjectItemSilent: T.func,
+    _fetchScenarioItemSilent: T.func,
     _showAlert: T.func,
 
     params: T.object,
@@ -111,16 +114,11 @@ var ProjectPagePending = React.createClass({
     }
   },
 
-  onFileUploadComplete: function () {
-    this.props._fetchProjectItem(this.props.params.projectId);
-    this.props._fetchScenarioItem(this.props.params.projectId, 0);
-  },
-
   onFileDeleteComplete: function (file) {
     switch (file.type) {
       case 'profile':
       case 'admin-bounds':
-      case 'villages':
+      case 'origins':
         this.props._removeProjectItemFile(file.id);
         break;
       case 'poi':
@@ -211,7 +209,7 @@ var ProjectPagePending = React.createClass({
     }
   },
 
-  renderFileUploadSection: function () {
+  renderSourceDataSection: function () {
     let { fetched, fetching, error, data, receivedAt } = this.props.scenario;
 
     // Do not render files if the project is finishing setup.
@@ -220,9 +218,9 @@ var ProjectPagePending = React.createClass({
     }
 
     let filesBLock = [
-      this.renderFile('profile', this.props.project.data.files),
-      this.renderFile('admin-bounds', this.props.project.data.files),
-      this.renderFile('villages', this.props.project.data.files)
+      this.renderSourceData('profile', this.props.project.data.sourceData.profile),
+      this.renderSourceData('admin-bounds', this.props.project.data.sourceData['admin-bounds']),
+      this.renderSourceData('origins', this.props.project.data.sourceData.origins)
     ];
 
     if (!fetched && !receivedAt && fetching) {
@@ -231,56 +229,43 @@ var ProjectPagePending = React.createClass({
     } else if (fetched && error) {
       filesBLock.push(<div key='error'>Error: {prettyPrint(error)}</div>);
     } else if (fetched) {
-      filesBLock.push(this.renderFile('road-network', data.files));
-      filesBLock.push(this.renderFile('poi', data.files));
+      filesBLock.push(this.renderSourceData('road-network', data.sourceData['road-network']));
+      filesBLock.push(this.renderSourceData('poi', data.sourceData.poi));
     }
 
     return (
-      <div>
+      <div className='psb-grid'>
         {filesBLock}
       </div>
     );
   },
 
-  renderFile: function (key, files) {
-    // Check if the file exists in the project.
-    const file = files.find(f => f.type === key);
+  renderSourceData: function (key, data) {
+    let complete;
+    if (data.type === 'osm') {
+      complete = true;
+    } else if (data.type === 'file') {
+      complete = data.files.length >= 1;
+    }
+    const projectId = this.props.project.data.id;
+    const scenarioId = this.props.scenario.data.id;
 
-    return file
-      ? this.renderFileCard(file)
-      : this.renderFileInput(key);
-  },
+    const refreshData = () => {
+      this.props._fetchProjectItemSilent(this.props.params.projectId);
+      this.props._fetchScenarioItemSilent(this.props.params.projectId, 0);
+    };
 
-  renderFileInput: function (key) {
-    let { display, description } = fileTypesMatrix[key];
-    let projectId = this.props.project.data.id;
-    let scenarioId = this.props.scenario.data.id;
     return (
-      <ProjectFileInput
+      <PorjectSourceData
         key={key}
-        name={display}
-        description={description}
         type={key}
         projectId={projectId}
         scenarioId={scenarioId}
-        onFileUploadComplete={this.onFileUploadComplete} />
-    );
-  },
-
-  renderFileCard: function (file) {
-    let { display, description } = fileTypesMatrix[file.type];
-    let projectId = this.props.project.data.id;
-    let scenarioId = this.props.scenario.data.id;
-    return (
-      <ProjectFileCard
-        key={file.type}
-        fileId={file.id}
-        name={display}
-        description={description}
-        type={file.type}
-        projectId={projectId}
-        scenarioId={scenarioId}
-        onFileDeleteComplete={this.onFileDeleteComplete.bind(null, file)} />
+        complete={complete}
+        sourceData={data}
+        refreshData={refreshData}
+        _showAlert={this.props._showAlert}
+      />
     );
   },
 
@@ -298,7 +283,7 @@ var ProjectPagePending = React.createClass({
   },
 
   render: function () {
-    let { fetched, fetching, error, data, receivedAt } = this.props.project;
+    let { fetched, fetching, error, data } = this.props.project;
 
     if (!fetched && !fetching || !fetched && fetching) {
       return (
@@ -309,12 +294,7 @@ var ProjectPagePending = React.createClass({
     }
 
     if (error) {
-      return (
-        <Alert type='danger'>
-          <h6>An error occurred</h6>
-          <p>{error.message}</p>
-        </Alert>
-      );
+      return <FatalError />;
     }
 
     return (
@@ -322,7 +302,7 @@ var ProjectPagePending = React.createClass({
         <StickyHeader className='inpage__header'>
           <div className='inpage__headline'>
             {this.renderBreadcrumb()}
-            <h1 className='inpage__title' title={data.name}>{data.name}</h1>
+            <h1 className='inpage__title' title={data.name}>{data.name} <span className='label label--light label--danger'>{projectStatusMatrix[data.status]}</span></h1>
             {data.description ? (
               <p className='inpage__description'>{data.description}</p>
             ) : null}
@@ -334,10 +314,6 @@ var ProjectPagePending = React.createClass({
         </StickyHeader>
         <div className='inpage__body'>
           <div className='inner'>
-            <h2 className='inpage__section-title'>{t('Project setup')}</h2>
-            <p className='inpage__section-description'>
-              {t('Upload these files before running analysis. See the {link} for more information about the requirements of each file.', {link: <Link to={`/${getLanguage()}/help`} title={t('Visit help page')} target='_blank'>{t('help section')}</Link>})}
-            </p>
             <Log
               data={data.finish_setup}
               receivedAt={this.props.project.receivedAt}
@@ -345,7 +321,8 @@ var ProjectPagePending = React.createClass({
               update={this.props._fetchProjectItemSilent.bind(null, this.props.params.projectId)}
             />
 
-            {this.renderFileUploadSection()}
+            {this.renderSourceDataSection()}
+
           </div>
         </div>
 
@@ -374,7 +351,6 @@ var ProjectPagePending = React.createClass({
           saveScenario={this.props._finishProjectSetup}
           resetForm={this.props._resetScenarioFrom}
         />
-
       </section>
     );
   }
@@ -407,6 +383,7 @@ function dispatcher (dispatch) {
     _resetScenarioFrom: (...args) => dispatch(resetScenarioFrom(...args)),
 
     _fetchProjectItemSilent: (...args) => dispatch(fetchProjectItemSilent(...args)),
+    _fetchScenarioItemSilent: (...args) => dispatch(fetchScenarioItemSilent(...args)),
     _showAlert: (...args) => dispatch(showAlert(...args))
   };
 }

@@ -152,6 +152,7 @@ const ProjectFormModal = React.createClass({
           placeholder={t('Untitled project')}
           value={this.state.data.name}
           onChange={this.onFieldChange.bind(null, 'name')}
+          autoFocus
         />
 
         {this.state.errors.name ? <p className='form__error'>{t('A project name is required.')}</p> : null }

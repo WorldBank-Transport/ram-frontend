@@ -8,7 +8,6 @@
   display: inline-block;
   vertical-align: top;
   border-radius: $full-border-radius;
-  background-color: rgba($base-color, 0.08);
   padding: 0 0.75rem;
   overflow: hidden;
   white-space: nowrap;
@@ -17,6 +16,16 @@
   text-transform: uppercase;
   font-weight: $base-font-regular;
   color: rgba($base-color, 0.48);
+  background: rgba($base-color, 0.08);
+}
+
+
+/* Label theme modifiers
+   ========================================================================== */
+
+.label--light {
+  color: #fff;
+  background: rgba(#fff, 0.16);
 }
 
 
@@ -38,6 +47,7 @@
     content: '';
     border-radius: $full-border-radius;
     transform: translate(0, -50%);
+    box-shadow: 0 0 0 1px rgba(#fff, 0.64);
   }
 }
 

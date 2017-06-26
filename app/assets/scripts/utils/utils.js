@@ -63,25 +63,36 @@ export function limitHelper (charLimit) {
 }
 
 export function toTimeStr (value) {
+  if (isNaN(value) || value === null) {
+    return 'n/a';
+  }
+
   let remainder = value;
   let hours = Math.floor(remainder / 3600);
   remainder %= 3600;
-  let minutes = Math.floor(remainder / 60);
-  remainder %= 60;
-  let seconds = Math.round(remainder);
+  let minutes = Math.round(remainder / 60);
+  // remainder %= 60;
+  // let seconds = Math.round(remainder);
 
   let pieces = [];
   if (hours) {
     pieces.push(hours < 10 ? `0${hours}H` : `${hours}H`);
-  }
-
-  if (minutes) {
     pieces.push(minutes < 10 ? `0${minutes}M` : `${minutes}M`);
+  } else if (minutes) {
+    pieces.push(minutes < 10 ? `0${minutes}M` : `${minutes}M`);
+  } else {
+    return '<1M';
   }
 
-  if (seconds) {
-    pieces.push(seconds < 10 ? `0${seconds}S` : `${seconds}S`);
-  }
+  // if (seconds) {
+  //   pieces.push(seconds < 10 ? `0${seconds}S` : `${seconds}S`);
+  // }
 
   return pieces.join(' ');
+}
+
+export function scenarioHasResults (scenario) {
+  return scenario.gen_analysis &&
+    scenario.gen_analysis.status === 'complete' &&
+    _.last(scenario.gen_analysis.logs).code === 'success';
 }

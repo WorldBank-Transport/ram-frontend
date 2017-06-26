@@ -9,6 +9,8 @@ Every project needs 5 different inputs to calculate accessibility for a region:
 
 These files need to be compatible with each other. This means - for example - that the population data, road network and POI all need to fit within the administrative boundaries, or that the OSRM profile specifies travel speeds for road types that in the road network file.
 
+----
+
 ### Administrative Boundaries
 The administrative boundaries are the units of analysis for which RRA generates the results. The backend expects a geojson with one or more polygons, which can overlap. The latter is useful to benchmark results for, for example, municipalities against the results of the bigger province.
 

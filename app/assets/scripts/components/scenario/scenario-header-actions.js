@@ -6,6 +6,8 @@ import ReactTooltip from 'react-tooltip';
 import config from '../../config';
 import Dropdown from '../dropdown';
 import { t } from '../../utils/i18n';
+import { scenarioHasResults } from '../../utils/utils';
+import { showConfirm } from '../confirmation-prompt';
 
 import ScenarioDeleteAction from './scenario-delete-action';
 
@@ -16,8 +18,21 @@ const ScenarioHeaderActions = React.createClass({
     scenario: T.object
   },
 
-  onGenerateClick: function (isActive, e) {
-    isActive && this.props.onAction('generate', e);
+  onGenerateClick: function (e) {
+    this.props.onAction('generate', e);
+  },
+
+  onAbortClick: function (e) {
+    showConfirm({
+      title: t('Abort analysis'),
+      body: (
+        <div>
+          <p>{t('Are you sure you want to abort the analysis?')}</p>
+        </div>
+      )
+    }, () => {
+      this.props.onAction('abort', e);
+    });
   },
 
   onEditClick: function (isActive, e) {
@@ -41,12 +56,39 @@ const ScenarioHeaderActions = React.createClass({
     );
   },
 
+  renderGenerateAbort: function (isGenerating, isPending) {
+    if (isGenerating) {
+      return (
+        <button
+          data-tip-disable={true}
+          title={t('Abort analysis')}
+          className='ipa-cancel'
+          type='button'
+          onClick={this.onAbortClick}>
+          <span>{t('Analysis')}</span>
+        </button>
+      );
+    }
+
+    return (
+      <button
+       data-tip
+       data-for='tip-disable-reason'
+       title={t('Generate analysis')}
+       className={c('ipa-arrow-loop ipa-main', {'visually-disabled': isPending})}
+       type='button'
+       onClick={this.onGenerateClick}>
+       <span>{t('Analysis')}</span>
+      </button>
+    );
+  },
+
   render: function () {
     let isGenerating = this.props.scenario.gen_analysis && this.props.scenario.gen_analysis.status === 'running';
     let isMaster = this.props.scenario.master;
     let isPending = this.props.scenario.status === 'pending';
 
-    let hasResults = this.props.scenario.files.some(f => f.type === 'results');
+    let hasResults = scenarioHasResults(this.props.scenario);
     let resultsUrl = `${config.api}/projects/${this.props.scenario.project_id}/scenarios/${this.props.scenario.id}/results?download=true`;
 
     return (
@@ -73,15 +115,28 @@ const ScenarioHeaderActions = React.createClass({
         <button data-tip={t('Coming soon')} data-effect='solid' title={t('Edit network')} className='ipa-pencil visually-disabled' type='button' ><span>{t('Network')}</span></button>
         <ReactTooltip />
 
-        <a href={resultsUrl} data-tip data-for='tip-no-results' title={t('Download data')} className={c('ipa-download', {'visually-disabled': !hasResults})} onClick={(e) => !hasResults && e.preventDefault()}><span>{t('Data')}</span></a>
-
-        <button data-tip data-for='tip-disable-reason' title={t('Generate analysis')} className={c('ipa-arrow-loop ipa-main', {'visually-disabled': isGenerating || isPending})} type='button' onClick={this.onGenerateClick.bind(null, !isGenerating)}><span>{t('Analysis')}</span></button>
-
-        {this.renderDisableReasonTip(isGenerating, isPending)}
+        <Dropdown
+          onChange={(open) => open ? ReactTooltip.rebuild() : ReactTooltip.hide()}
+          className={c({'visually-disabled': !hasResults})}
+          triggerClassName='ipa-download'
+          triggerActiveClassName='button--active'
+          triggerText={t('Data')}
+          triggerTitle={t('Download data')}
+          direction='down'
+          alignment='center' >
+            <ul className='drop__menu' role='menu'>
+              <li><a href={`${resultsUrl}&type=csv`} data-tip data-for='tip-no-results' title={t('Download data in CSV format')} className='drop__menu-item csv' onClick={(e) => !hasResults && e.preventDefault()}><span>{t('CSV format')}</span></a></li>
+              <li><a href={`${resultsUrl}&type=geojson`} data-tip data-for='tip-no-results' title={t('Download data in GeoJSON format')} className='drop__menu-item geojson' onClick={(e) => !hasResults && e.preventDefault()}><span>{t('GeoJSON format')}</span></a></li>
+            </ul>
+        </Dropdown>
 
         <ReactTooltip id='tip-no-results' effect='solid' disable={hasResults}>
           {t('No results were generated yet')}
         </ReactTooltip>
+
+        {this.renderGenerateAbort(isGenerating, isPending)}
+
+        {this.renderDisableReasonTip(isGenerating, isPending)}
 
       </div>
     );

@@ -6,11 +6,11 @@
   &__header {
     @extend .antialiased;
     position: relative;
-    z-index: 2;
+    z-index: 3;
     background: $accent-color;
     color: #fff;
     padding: ($global-spacing * 1.5) 0;
-    box-shadow: 0 14px 16px 0 rgba($base-color, 0.08);
+    box-shadow: 0 16px 20px 0 rgba($base-color, 0.08);
     min-height: 5rem;
 
     > .inner {
@@ -24,7 +24,7 @@
     @include column(6/12);
 
     /* Animation */
-    @include animation(reveal 0.24s ease 0s 1);
+    animation: reveal 0.24s ease 0s 1;
 
     > *:last-child {
       margin-bottom: 0;
@@ -36,6 +36,11 @@
     @extend .truncated;
     max-width: 100%;
     margin: 0;
+
+    .label {
+      position: relative;
+      transform: translate(0, 0.5em);
+    }
   }
 
   .inpage__description {
@@ -86,7 +91,7 @@
     font-size: 0;
 
     /* Animation */
-    @include animation(reveal 0.48s ease 0s 1);
+    animation: reveal 0.48s ease 0s 1;
 
     > * {
       vertical-align: top;
@@ -98,10 +103,10 @@
   }
 
   &__body {
-    padding: ($global-spacing * 3) 0;
+    padding: ($global-spacing * 2) 0;
 
     /* Animation */
-    @include animation(reveal 0.64s ease 0s 1);
+    animation: reveal 0.64s ease 0s 1;
 
     > .inner {
       @extend .row, .row--centered;
@@ -120,6 +125,16 @@
 
   &__section-description {
     margin-bottom: $global-spacing * 2;
+  }
+}
+
+
+/* Inpage modifiers
+   ========================================================================== */
+
+.inpage--single {
+  .prose--responsive {
+    @include column(8/12, $offset: 2/12);
   }
 }
 
@@ -172,4 +187,54 @@
 
 .ipa-arrow-loop::before {
   @extend %collecticon-arrow-loop;
+}
+
+.ipa-cancel {
+  @extend .button--danger-raised-light;
+
+  &::before {
+    @extend %collecticon-sm-xmark;
+  }
+}
+
+
+/* Inpage Secondary Nav
+   ========================================================================== */
+
+.inpage__sec-nav {
+  @extend .antialiased;
+  background: $link-color;
+  color: #fff;
+  box-shadow: 0 4px 16px 2px rgba($base-color, 0.08);   // Elevation Index: 2
+  border-radius: $base-border-radius;
+  padding: $global-spacing;
+  margin: 0 0 ($global-spacing * 2) 0;
+
+  * {
+    vertical-align: top;
+  }
+
+  .filters-menu {
+    padding: 0;
+    margin: (-$global-spacing / 2) 0;
+    font-size: 0;
+
+    dt,
+    dd {
+      display: inline-block;
+    }
+
+    dt {
+      text-transform: uppercase;
+      font-weight: $base-font-regular;
+      color: rgba(#fff, 0.8);
+      font-size: 0.875rem;
+      line-height: 2rem;
+      margin: 0 ($global-spacing / 4) 0 0;
+    }
+
+    dd {
+      margin: 0 $global-spacing 0 0;
+    }
+  }
 }

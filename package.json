@@ -1,7 +1,7 @@
 {
-  "name": "rural-road-accessibility",
-  "version": "0.2.0-alpha1",
-  "description": "Rural Road Accessibility",
+  "name": "rural-road-accessibility--frontend",
+  "version": "0.3.0",
+  "description": "World Bank project to assess rural road accessibility",
   "repository": {
     "type": "git",
     "url": "https://github.com/WorldBank-Transport/rra-frontend"
@@ -14,7 +14,7 @@
   "bugs": {
     "url": "https://github.com/WorldBank-Transport/rra-frontend/issues"
   },
-  "homepage": "",
+  "homepage": "https://github.com/WorldBank-Transport/rra-frontend",
   "scripts": {
     "postinstall": "[ -f app/assets/scripts/config/local.js ] || echo 'module.exports = {};' > app/assets/scripts/config/local.js",
     "serve": "DS_ENV=development gulp collecticons && gulp serve",
@@ -67,7 +67,7 @@
     "gulp-sass": "^3.1.0",
     "gulp-size": "^2.1.0",
     "gulp-sourcemaps": "^2.4.1",
-    "gulp-uglify": "^2.0.1",
+    "gulp-uglify": "^3.0.0",
     "gulp-useref": "^3.1.2",
     "gulp-util": "^3.0.8",
     "jeet": "7.1.0",
@@ -84,11 +84,13 @@
     "classnames": "^2.2.5",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.17.4",
-    "mapbox-gl": "^0.36.0",
+    "mapbox-gl": "^0.38.0",
+    "qs": "^6.4.0",
     "react": "^15.4.2",
     "react-addons-create-fragment": "^15.4.2",
     "react-addons-css-transition-group": "^15.4.2",
     "react-dom": "^15.4.2",
+    "react-paginate": "^4.4.2",
     "react-redux": "^5.0.2",
     "react-router": "^3.0.2",
     "react-router-redux": "^4.0.8",

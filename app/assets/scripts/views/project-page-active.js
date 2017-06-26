@@ -3,6 +3,7 @@ import React, { PropTypes as T } from 'react';
 import { hashHistory, Link } from 'react-router';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
+import _ from 'lodash';
 
 import {
   invalidateProjectItem,
@@ -12,16 +13,16 @@ import {
   fetchProjectScenarios,
   resetProjectFrom,
   resetScenarioFrom,
-  postScenario,
   duplicateScenario,
   deleteScenario,
-  showAlert
+  showAlert,
+  startSubmitScenario,
+  finishSubmitScenario
 } from '../actions';
 import { fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
-import { fileTypesMatrix } from '../utils/constants';
-import config from '../config';
 import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
+import { projectStatusMatrix } from '../utils/constants';
 
 import StickyHeader from '../components/sticky-header';
 import Breadcrumb from '../components/breadcrumb';
@@ -30,9 +31,10 @@ import ProjectFormModal from '../components/project/project-form-modal';
 import ProjectHeaderActions from '../components/project/project-header-actions';
 import ScenarioCreateModal from '../components/scenario/scenario-create-modal';
 import ScenarioDeleteAction from '../components/scenario/scenario-delete-action';
-import Alert from '../components/alert';
+import FatalError from '../components/fatal-error';
+import PorjectSourceData from '../components/project/project-source';
 
-var ProjectPageActive = React.createClass({
+const ProjectPageActive = React.createClass({
 
   propTypes: {
     _invalidateProjectItem: T.func,
@@ -43,9 +45,10 @@ var ProjectPageActive = React.createClass({
     _resetScenarioFrom: T.func,
     _fetchProjectScenarios: T.func,
     _deleteScenario: T.func,
-    _postScenario: T.func,
     _duplicateScenario: T.func,
     _showAlert: T.func,
+    _startSubmitScenario: T.func,
+    _finishSubmitScenario: T.func,
 
     params: T.object,
     project: T.object,
@@ -212,24 +215,16 @@ var ProjectPageActive = React.createClass({
     }
   },
 
-  renderFiles: function () {
-    let projectFiles = this.props.project.data.files;
-    let projectId = this.props.project.data.id;
-    return (
-      <ul className='project-details-list'>
-        {projectFiles.map(file => ([
-          <li>
-            <div className={`project-detail ${file.type}`}>
-              <h3 className='project-detail__title' key={`${file.name}-label`}>{fileTypesMatrix[file.type].display}</h3>
-              <p className='action-wrapper'><a href={`${config.api}/projects/${projectId}/files/${file.id}`} title={t('Download file')} className='detail-download'><span>{t('Download')}</span></a></p>
-              <p key={`${file.name}-desc`}>{fileTypesMatrix[file.type].description}</p>
-            </div>
-          </li>
-        ]))}
-      </ul>
-    );
-
-    return 
+  renderSourceData: function () {
+    const projectId = this.props.project.data.id;
+    return _.map(this.props.project.data.sourceData, (o, key) => (
+      <PorjectSourceData
+        key={key}
+        type={key}
+        projectId={projectId}
+        sourceData={o}
+        editable={false} />
+    ));
   },
 
   renderScenarioCard: function (scenario) {
@@ -239,7 +234,9 @@ var ProjectPageActive = React.createClass({
 
     if (scenario.scen_create && scenario.scen_create.status === 'running') {
       scenarioSubtitle = t('Creating scenario');
-    } else if (scenario.data.res_gen_at !== 0) {
+
+    // Checking against the string 0, because normally it's a date string.
+    } else if (scenario.data.res_gen_at !== '0') {
       scenarioSubtitle = t('Analysis complete');
 
       if (scenario.data.rn_updated_at > scenario.data.res_gen_at) {
@@ -334,12 +331,7 @@ var ProjectPageActive = React.createClass({
     }
 
     if (error) {
-      return (
-        <Alert type='danger'>
-          <h6>An error occurred</h6>
-          <p>{error.message}</p>
-        </Alert>
-      );
+      return <FatalError />;
     }
 
     return (
@@ -347,7 +339,7 @@ var ProjectPageActive = React.createClass({
         <StickyHeader className='inpage__header'>
           <div className='inpage__headline'>
             {this.renderBreadcrumb()}
-            <h1 className='inpage__title' title={dataProject.name}>{dataProject.name}</h1>
+            <h1 className='inpage__title' title={dataProject.name}>{dataProject.name} <span className='label label--light label--success'>{projectStatusMatrix[dataProject.status]}</span></h1>
             {dataProject.description ? (
               <p className='inpage__description'>{dataProject.description}</p>
             ) : null}
@@ -360,16 +352,14 @@ var ProjectPageActive = React.createClass({
         <div className='inpage__body'>
           <div className='inner'>
 
-            <section className='diptych diptych--info'>
+            <section className='diptych'>
               <h2 className='inpage__section-title'>{t('Details')}</h2>
-              <div className='card'>
-                <div className='card__contents'>
-                  {this.renderFiles()}
-                </div>
+              <div className='psb-group'>
+                {this.renderSourceData()}
               </div>
             </section>
 
-            <section className='diptych diptych--scenarios'>
+            <section className='diptych'>
               <h2 className='inpage__section-title'>{t('Scenarios')}</h2>
               {this.renderScenariosList()}
             </section>
@@ -399,7 +389,8 @@ var ProjectPageActive = React.createClass({
           scenarioForm={this.props.scenarioForm}
           scenarioList={this.props.scenarios.data.results}
           projectId={this.props.params.projectId}
-          saveScenario={this.props._postScenario}
+          startSubmitScenario={this.props._startSubmitScenario}
+          finishSubmitScenario={this.props._finishSubmitScenario}
           resetForm={this.props._resetScenarioFrom}
         />
 
@@ -430,9 +421,10 @@ function dispatcher (dispatch) {
     _resetProjectFrom: (...args) => dispatch(resetProjectFrom(...args)),
     _resetScenarioFrom: (...args) => dispatch(resetScenarioFrom(...args)),
     _deleteScenario: (...args) => dispatch(deleteScenario(...args)),
-    _postScenario: (...args) => dispatch(postScenario(...args)),
     _duplicateScenario: (...args) => dispatch(duplicateScenario(...args)),
-    _showAlert: (...args) => dispatch(showAlert(...args))
+    _showAlert: (...args) => dispatch(showAlert(...args)),
+    _startSubmitScenario: (...args) => dispatch(startSubmitScenario(...args)),
+    _finishSubmitScenario: (...args) => dispatch(finishSubmitScenario(...args))
   };
 }
 

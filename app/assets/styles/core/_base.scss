@@ -149,7 +149,16 @@ main {
  * Style selection appearance (via ::selection pseudo-element).
  */
 
-@include selection {
+::selection {
   background-color: rgba($base-color, 0.64);
   color: #fff;
+}
+
+
+/**
+ * Remove margin-bottom on the last 'rwrapper' child.
+ */
+
+.rwrapper > *:last-child {
+  margin-bottom: 0;
 }

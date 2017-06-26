@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch';
+import { stringify as buildAPIQS } from 'qs';
 
 import config from '../config';
 
@@ -38,9 +39,19 @@ export const FINISH_DELETE_SCENARIO = 'FINISH_DELETE_PROJECT';
 export const REQUEST_GENERATE_RESULTS = 'REQUEST_GENERATE_RESULTS';
 export const RECEIVE_GENERATE_RESULTS = 'RECEIVE_GENERATE_RESULTS';
 
+export const REQUEST_ABORT_GENERATE_RESULTS = 'REQUEST_ABORT_GENERATE_RESULTS';
+export const RECEIVE_ABORT_GENERATE_RESULTS = 'RECEIVE_ABORT_GENERATE_RESULTS';
+
 export const REQUEST_SCENARIO_RESULTS = 'REQUEST_SCENARIO_RESULTS';
 export const RECEIVE_SCENARIO_RESULTS = 'RECEIVE_SCENARIO_RESULTS';
 export const INVALIDATE_SCENARIO_RESULTS = 'INVALIDATE_SCENARIO_RESULTS';
+
+export const REQUEST_SCENARIO_RESULTS_RAW = 'REQUEST_SCENARIO_RESULTS_RAW';
+export const RECEIVE_SCENARIO_RESULTS_RAW = 'RECEIVE_SCENARIO_RESULTS_RAW';
+export const INVALIDATE_SCENARIO_RESULTS_RAW = 'INVALIDATE_SCENARIO_RESULTS_RAW';
+
+export const REQUEST_SCENARIO_RESULTS_GEO = 'REQUEST_SCENARIO_RESULTS_GEO';
+export const RECEIVE_SCENARIO_RESULTS_GEO = 'RECEIVE_SCENARIO_RESULTS_GEO';
 
 // Projects
 
@@ -222,11 +233,42 @@ export function receiveGenerateResults (data, error = null) {
   return { type: RECEIVE_GENERATE_RESULTS, data: data, error, receivedAt: Date.now() };
 }
 
-export function startGenerateResults (projectId, scenarioId) {
-  return postAndDispatch(`${config.api}/projects/${projectId}/scenarios/${scenarioId}/generate`, null, requestGenerateResults, receiveGenerateResults);
+export function startGenerateResults (projectId, scenarioId, cb = () => {}) {
+  // See abortGenerateResults()
+  let receiveComposed = (data, error = null) => {
+    cb(error, data);
+    return receiveGenerateResults(data, error);
+  };
+  return postAndDispatch(`${config.api}/projects/${projectId}/scenarios/${scenarioId}/generate`, null, requestGenerateResults, receiveComposed);
 }
 
-// Project Scenarios
+// Abort Generate results
+
+export function requestAbortGenerateResults () {
+  return { type: REQUEST_ABORT_GENERATE_RESULTS };
+}
+
+export function receiveAbortGenerateResults (data, error = null) {
+  return { type: RECEIVE_ABORT_GENERATE_RESULTS, data: data, error, receivedAt: Date.now() };
+}
+
+// Special function with callbacks.
+export function abortGenerateResults (projectId, scenarioId, cb) {
+  // OMG what's going on here?
+  // Glad you ask!
+  // The abortGenerateResults only issues a request, but we need to show
+  // and hide a loading indicator. To still use actions we compose the action
+  // to trigger the callback.
+  // Alternatively we'd have needed to create a new reducer and store the state,
+  // but to only manage a loading it would be overkill.
+  let receiveComposed = (data, error = null) => {
+    cb(error, data);
+    return receiveAbortGenerateResults(data, error);
+  };
+  return deleteAndDispatch(`${config.api}/projects/${projectId}/scenarios/${scenarioId}/generate`, requestAbortGenerateResults, receiveComposed);
+}
+
+// Scenario Analysis results
 
 export function invalidateScenarioResults () {
   return { type: INVALIDATE_SCENARIO_RESULTS };
@@ -240,8 +282,50 @@ export function receiveScenarioResults (scenarios, error = null) {
   return { type: RECEIVE_SCENARIO_RESULTS, data: scenarios, error, receivedAt: Date.now() };
 }
 
-export function fetchScenarioResults (projectId, scenarioId, fileId) {
-  return getAndDispatch(`${config.api}/projects/${projectId}/scenarios/${scenarioId}/files/${fileId}?download=true`, requestScenarioResults, receiveScenarioResults);
+export function fetchScenarioResults (projectId, scenarioId, filters = {}) {
+  let f = buildAPIQS(filters);
+
+  let url = `${config.api}/projects/${projectId}/scenarios/${scenarioId}/results/analysis?${f}`;
+  return getAndDispatch(url, requestScenarioResults, receiveScenarioResults);
+}
+
+// Scenario Raw Results
+
+export function invalidateScenarioResultsRaw () {
+  return { type: INVALIDATE_SCENARIO_RESULTS_RAW };
+}
+
+export function requestScenarioResultsRaw () {
+  return { type: REQUEST_SCENARIO_RESULTS_RAW };
+}
+
+export function receiveScenarioResultsRaw (scenarios, error = null) {
+  return { type: RECEIVE_SCENARIO_RESULTS_RAW, data: scenarios, error, receivedAt: Date.now() };
+}
+
+export function fetchScenarioResultsRaw (projectId, scenarioId, page = 1, filters = {}) {
+  filters.page = page;
+  filters.limit = 30;
+  let f = buildAPIQS(filters);
+
+  let url = `${config.api}/projects/${projectId}/scenarios/${scenarioId}/results/raw?${f}`;
+  return getAndDispatch(url, requestScenarioResultsRaw, receiveScenarioResultsRaw);
+}
+
+// Fetches the minified results
+
+export function requestScenarioResultsGeo () {
+  return { type: REQUEST_SCENARIO_RESULTS_GEO };
+}
+
+export function receiveScenarioResultsGeo (resultsGeo, error = null) {
+  return { type: RECEIVE_SCENARIO_RESULTS_GEO, data: resultsGeo, error, receivedAt: Date.now() };
+}
+
+export function fetchScenarioResultsGeo (projectId, scenarioId, filters = {}) {
+  let f = buildAPIQS(filters);
+  let url = `${config.api}/projects/${projectId}/scenarios/${scenarioId}/results/geo?${f}`;
+  return getAndDispatch(url, requestScenarioResultsGeo, receiveScenarioResultsGeo);
 }
 
 // Fetcher function
@@ -309,4 +393,47 @@ export function fetchJSON (url, options) {
         error: err.message
       });
     });
+}
+
+export function postFormdata (url, data, progressCb) {
+  let xhr = new window.XMLHttpRequest();
+  let promise = new Promise((resolve, reject) => {
+    xhr.upload.addEventListener('progress', (evt) => {
+      if (evt.lengthComputable) {
+        progressCb(evt.loaded);
+      }
+    }, false);
+
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        if (xhr.status === 0) {
+          return reject({error: 'Failed to reach server'});
+        }
+
+        let json;
+        try {
+          json = JSON.parse(xhr.responseText);
+        } catch (e) {
+          console.log('json parse error', e);
+          return reject({
+            error: e.message,
+            body: xhr.responseText
+          });
+        }
+        return xhr.status >= 400
+          ? reject(json)
+          : resolve(json);
+      }
+    };
+
+    xhr.onerror = () => {
+      return reject({error: 'Failed to reach server'});
+    };
+
+    // Start upload.
+    xhr.open('POST', url, true);
+    xhr.send(data);
+  });
+
+  return {xhr, promise};
 }
