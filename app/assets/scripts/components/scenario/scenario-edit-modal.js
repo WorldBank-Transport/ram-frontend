@@ -156,6 +156,7 @@ const ScenarioEditModal = React.createClass({
           className={limit.c('form__control form__control--medium')}
           placeholder={t('Untitled scenario')}
           value={this.state.data.name}
+          autoFocus
           onChange={this.onFieldChange.bind(null, 'name')}
         />
 
