@@ -53,6 +53,10 @@ class ModalRoadNetwork extends ModalBase {
     this.setState({ fileField });
   }
 
+  onSourceChange (event) {
+    this.setState({ source: event.target.value });
+  }
+
   onFileRemove (id, event) {
     let fileField = {
       file: null,
@@ -67,6 +71,10 @@ class ModalRoadNetwork extends ModalBase {
   }
 
   allowSubmit () {
+    if (this.state.source === 'osm') {
+      return true;
+    }
+
     // All files need a subtype and a file.
     return this.state.fileToRemove || this.state.fileField.file;
   }
@@ -92,7 +100,7 @@ class ModalRoadNetwork extends ModalBase {
 
     // Data to submit.
     let newFilesPromiseFn = () => Promise.resolve();
-    if (this.state.fileField.file) {
+    if (this.state.source === 'file' && this.state.fileField.file) {
       newFilesPromiseFn = () => {
         let formData = new FormData();
         formData.append('source-type', 'file');
@@ -115,6 +123,23 @@ class ModalRoadNetwork extends ModalBase {
           })
           .catch(err => {
             this.props._showAlert('danger', <p>An error occurred while uploading the road network file: {err.message}</p>, true);
+            // Rethrow to stop chain.
+            throw err;
+          });
+      };
+    }
+
+    if (this.state.source === 'osm') {
+      newFilesPromiseFn = () => {
+        let formData = new FormData();
+        formData.append('source-type', 'osm');
+        formData.append('source-name', 'road-network');
+
+        let { promise } = postFormdata(`${config.api}/projects/${this.props.projectId}/scenarios/${this.props.scenarioId}/source-data`, formData, () => {});
+        // this.xhr = xhr;
+        return promise
+          .catch(err => {
+            this.props._showAlert('danger', <p>An error occurred while saving the road network source: {err.message}</p>, true);
             // Rethrow to stop chain.
             throw err;
           });
@@ -174,18 +199,19 @@ class ModalRoadNetwork extends ModalBase {
             <label className='form__label'>Source</label>
 
             <label className='form__option form__option--inline form__option--custom-radio'>
-              <input type='radio' name='source-type' id='file' checked={this.state.source === 'file'} />
+              <input type='radio' name='source-type' id='file' value='file' checked={this.state.source === 'file'} onChange={this.onSourceChange.bind(this)} />
               <span className='form__option__text'>File upload</span>
               <span className='form__option__ui'></span>
             </label>
 
-            <label className='form__option form__option--inline form__option--custom-radio disabled'>
-              <input type='radio' name='source-type' id='osm' checked={this.state.source === 'osm'} disabled />
+            <label className='form__option form__option--inline form__option--custom-radio'>
+              <input type='radio' name='source-type' id='osm' value='osm' checked={this.state.source === 'osm'} onChange={this.onSourceChange.bind(this)} />
               <span className='form__option__text'>OSM data</span>
               <span className='form__option__ui'></span>
             </label>
           </div>
           {this.state.source === 'file' ? this.renderSourceFile() : null}
+          {this.state.source === 'osm' && <p>Data will be imported form OSM using [attributes]. For something more specific upload a road network.</p>}
         </form>
       </ModalBody>
     );
