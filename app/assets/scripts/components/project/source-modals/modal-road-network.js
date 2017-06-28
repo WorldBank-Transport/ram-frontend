@@ -211,7 +211,7 @@ class ModalRoadNetwork extends ModalBase {
             </label>
           </div>
           {this.state.source === 'file' ? this.renderSourceFile() : null}
-          {this.state.source === 'osm' && <p>Data will be imported form OSM using [attributes]. For something more specific upload a road network.</p>}
+          {this.state.source === 'osm' && <p>Data will be imported form OSM for the project's Administrative areas using [attributes]. For something more specific upload a road network.</p>}
         </form>
       </ModalBody>
     );

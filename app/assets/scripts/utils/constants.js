@@ -33,3 +33,18 @@ export const projectStatusMatrix = {
   active: t('Active'),
   pending: t('Draft')
 };
+
+export const poiOsmTypes = [
+  {
+    key: 'health',
+    value: t('Health facilities')
+  },
+  {
+    key: 'education',
+    value: t('Education facilities')
+  },
+  {
+    key: 'money',
+    value: t('Banks')
+  }
+];
