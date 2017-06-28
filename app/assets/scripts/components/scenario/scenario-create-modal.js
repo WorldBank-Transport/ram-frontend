@@ -132,6 +132,8 @@ const ScenarioCreateModal = React.createClass({
 
     if (this.state.data.description.length > 0 && !descLimit(this.state.data.description.length).isOk()) return false;
 
+    if (this.state.data.roadNetworkSource === 'new' && !this.state.data.roadNetworkSourceFile.file) return false;
+
     return true;
   },
 
@@ -275,8 +277,8 @@ const ScenarioCreateModal = React.createClass({
                 <span className='form__option__text'>{t('Upload new')}</span>
                 <span className='form__option__ui'></span>
               </label>
-              <label className='form__option form__option--inline form__option--custom-radio disabled'>
-                <input type='radio' name='road-network' id='road-network-osm' value='osm' onChange={this.onFieldChange.bind(null, 'roadNetworkSource')} checked={this.state.data.roadNetworkSource === 'osm'} disabled />
+              <label className='form__option form__option--inline form__option--custom-radio'>
+                <input type='radio' name='road-network' id='road-network-osm' value='osm' onChange={this.onFieldChange.bind(null, 'roadNetworkSource')} checked={this.state.data.roadNetworkSource === 'osm'} />
                 <span className='form__option__text'>{t('OSM data')}</span>
                 <span className='form__option__ui'></span>
               </label>
@@ -308,6 +310,8 @@ const ScenarioCreateModal = React.createClass({
               }
             </FileInput>
             ) : null}
+
+            {this.state.data.roadNetworkSource === 'osm' && <p>Data will be imported form OSM for the project's Administrative areas using [attributes]. For something more specific upload a road network.</p>}
 
           </form>
         </ModalBody>
