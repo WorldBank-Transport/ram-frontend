@@ -44,7 +44,7 @@ export const poiOsmTypes = [
     value: t('Education facilities')
   },
   {
-    key: 'money',
-    value: t('Banks')
+    key: 'financial',
+    value: t('Financial institutions')
   }
 ];
