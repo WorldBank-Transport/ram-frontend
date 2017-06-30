@@ -287,6 +287,14 @@ const ProjectPageActive = React.createClass({
                 )}
               </div>
             </div>
+            { isMaster && (
+            <footer className='card__footer'>
+              <dl className='card__system-details'>
+                <dt>Type</dt>
+                <dd className='detail detail--type-master' data-tip={t('This is the primary scenario. It can\'t be deleted.')} data-effect='solid'>Primary</dd>
+              </dl>
+            </footer>
+            ) }
           </div>
         </article>
       </li>
@@ -393,6 +401,8 @@ const ProjectPageActive = React.createClass({
           finishSubmitScenario={this.props._finishSubmitScenario}
           resetForm={this.props._resetScenarioFrom}
         />
+
+        <ReactTooltip />
 
       </section>
     );

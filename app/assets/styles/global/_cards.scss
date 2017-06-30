@@ -184,7 +184,7 @@ a.card__contents {
     margin: 0;
   }
 
-  .updated {
+  .detail {
     @extend .heading-alt;
     position: relative;
     float: left;
@@ -198,12 +198,19 @@ a.card__contents {
     }
 
     &::before {
-      @extend %collecticon-clock;
       position: absolute;
       top: 0.125rem;
       left: 0;
       font-size: 1rem;
     }
+  }
+
+  .detail--updated::before {
+    @extend %collecticon-clock;
+  }
+
+  .detail--type-master::before {
+    @extend %collecticon-star-full;
   }
 
   .status {

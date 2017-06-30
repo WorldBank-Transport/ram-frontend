@@ -103,7 +103,7 @@ const Home = React.createClass({
             <footer className='card__footer'>
               <dl className='card__system-details'>
                 <dt>Updated</dt>
-                <dd className='updated'><TimeAgo datetime={project.updated_at} /></dd>
+                <dd className='detail detail--updated'><TimeAgo datetime={project.updated_at} /></dd>
                 <dt>Status</dt>
                 <dd className='status'><span className={c('label', {'label--success': project.status === 'active', 'label--danger': project.status === 'pending'})}>{projectStatusMatrix[project.status]}</span></dd>
               </dl>

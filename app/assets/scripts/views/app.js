@@ -59,7 +59,7 @@ var App = React.createClass({
         <SysAlerts/>
 
         <ReactTooltip id='tip-no-delete' effect='solid'>
-          {t('The project\'s master scenario can\'t be deleted')}
+          {t('The project\'s primary scenario can\'t be deleted')}
         </ReactTooltip>
       </div>
     );
