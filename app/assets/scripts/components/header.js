@@ -4,6 +4,7 @@ import { Link } from 'react-router';
 import c from 'classnames';
 
 import { t, getLanguage, getLanguageName, getAvailableLanguages } from '../utils/i18n';
+import config from '../config';
 
 import NavGlobalMenu from '../components/nav-global-menu';
 import Dropdown from '../components/dropdown';
@@ -11,10 +12,15 @@ import Dropdown from '../components/dropdown';
 const Header = React.createClass({
 
   propTypes: {
-    pathname: T.string
+    pathname: T.string,
+    isAuthenticated: T.bool
   },
 
   render: function () {
+    let showAuth = false;
+    if (config.auth) {
+      showAuth = true;
+    }
     return (
       <header className='page__header' role='banner'>
         <div className='inner'>
@@ -49,8 +55,7 @@ const Header = React.createClass({
               </ul>
           </Dropdown>
         </div>
-
-            <NavGlobalMenu />
+            <NavGlobalMenu showAuth={showAuth} isAuthenticated={this.props.isAuthenticated}/>
           </nav>
         </div>
       </header>

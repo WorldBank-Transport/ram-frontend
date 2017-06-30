@@ -81,6 +81,7 @@
     "watchify": "^3.9.0"
   },
   "dependencies": {
+    "auth0-js": "^8.8.0",
     "classnames": "^2.2.5",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.17.4",

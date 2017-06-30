@@ -20,7 +20,8 @@ var App = React.createClass({
   propTypes: {
     routes: T.array,
     location: T.object,
-    children: T.object
+    children: T.object,
+    isAuthenticated: T.bool
   },
 
   goToAnchor: function (hash) {
@@ -47,7 +48,7 @@ var App = React.createClass({
     return (
       <div className={c('page', pageClass)}>
         <GlobalLoading />
-        <Header pathname={this.props.location.pathname} />
+        <Header pathname={this.props.location.pathname} isAuthenticated={this.props.isAuthenticated}/>
         <main className='page__body' role='main'>
           <StickyContainer>
           {this.props.children}
@@ -71,6 +72,7 @@ var App = React.createClass({
 
 function selector (state) {
   return {
+    isAuthenticated: state.auth.isAuthenticated
   };
 }
 

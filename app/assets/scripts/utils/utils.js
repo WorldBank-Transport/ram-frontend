@@ -96,3 +96,21 @@ export function scenarioHasResults (scenario) {
     scenario.gen_analysis.status === 'complete' &&
     _.last(scenario.gen_analysis.logs).code === 'success';
 }
+
+export function storePrevPath (location) {
+  let qs = location.search.slice(1);
+  let params = {};
+  qs.split('&').forEach((query) => {
+    let kv = query.split('=');
+    params[kv[0]] = kv[1];
+  });
+
+  let prevPath = params['return'] || '/';
+  localStorage.setItem('prev_path', prevPath);
+}
+
+export function popPrevPath () {
+  let prevPath = localStorage.getItem('prev_path');
+  localStorage.removeItem('prev_path');
+  return prevPath;
+}

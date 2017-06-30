@@ -44,9 +44,41 @@ function playgroundAccess (nextState, replace) {
   }
 }
 
+import Auth from './utils/auth-service';
+import { loginSuccess } from './actions';
+import { storePrevPath, popPrevPath } from './utils/utils';
+let auth = new Auth(store);
+
+function parseAuthHash (nextState, replace) {
+  let hash = nextState.location.pathname.slice(1);
+  auth.parseHash(hash, function (err) {
+    if (err) {
+      // Handle auth error
+      console.log('err', err);
+    } else {
+      store.dispatch(loginSuccess());
+      replace(popPrevPath());
+    }
+  });
+}
+
+function login (nextState) {
+  storePrevPath(nextState.location);
+  auth.login();
+}
+
+function logout (nextState, replace) {
+  storePrevPath(nextState.location);
+  auth.logout();
+  replace(popPrevPath());
+}
+
 render((
   <Provider store={store}>
     <Router history={history} render={applyRouterMiddleware(scrollerMiddleware)}>
+      <Route path="/access_token=:access_token" onEnter={parseAuthHash} />
+      <Route path="/login" onEnter={login} />
+      <Route path="/logout" onEnter={logout} />
       <Route path='/:lang' component={App} onEnter={validateLanguage}>
         <Route path="404" component={UhOh}/>
         <Route path="projects/:projectId/setup" component={ProjectPagePending}/>
@@ -59,6 +91,7 @@ render((
         <Redirect from='/:lang/projects' to='/:lang' />
         <Route path="*" component={UhOh}/>
       </Route>
+
       <Redirect from='/' to='/en' />
     </Router>
   </Provider>
