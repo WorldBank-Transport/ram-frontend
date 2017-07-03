@@ -168,7 +168,6 @@ class ModalRoadNetwork extends ModalBase {
         <FileDisplay
           id='road-network'
           name='road-network'
-          label={'Source'}
           value={fileField.name}
           onRemoveClick={this.onFileRemove.bind(this, fileField.id)} />
       );
@@ -177,7 +176,6 @@ class ModalRoadNetwork extends ModalBase {
         <FileInput
           id='road-network'
           name='road-network'
-          label={'Source'}
           value={fileField.file}
           placeholder={t('Choose a file')}
           onFileSelect={this.onFileSelected.bind(this, fileField.id)} >
@@ -211,7 +209,7 @@ class ModalRoadNetwork extends ModalBase {
             </label>
           </div>
           {this.state.source === 'file' ? this.renderSourceFile() : null}
-          {this.state.source === 'osm' && <p>Data will be imported form OSM for the project's Administrative areas using [attributes]. For something more specific upload a road network.</p>}
+          {this.state.source === 'osm' && <p>{t('Import road network data for the project\'s Administrative Boundaries from OpenStreetMap. For more fine-grained control, upload a file with custom road network data.')}</p>}
         </form>
       </ModalBody>
     );

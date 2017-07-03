@@ -12,12 +12,12 @@ These files need to be compatible with each other. This means - for example - th
 ----
 
 ### Administrative Boundaries
-The administrative boundaries are the units of analysis for which RRA generates the results. The backend expects a geojson with one or more polygons, which can overlap. The latter is useful to benchmark results for, for example, municipalities against the results of the bigger province.
+The administrative boundaries are the units of analysis for which RRA generates the results. The backend expects a GeoJSON with one or more polygons, which can overlap. The latter is useful to benchmark results for, for example, municipalities against the results of the bigger province.
 
 __File requirements__:
 
-  - a geojson file with administrative boundaries
-  - features need to be a polygon. Anything that's not a polygon, gets discarded in the current version
+  - a GeoJSON file with administrative boundaries
+  - features need to be a polygon
   - each feature needs a property `name` (string)
 
 The administrative boundaries are defined on project level and are available across all its scenarios.
@@ -27,7 +27,7 @@ The population data is used as the origin in the analysis. These are typically p
 
 __File requirements__:
 
-  - a geosjon file with village and population data
+  - a GeoJSON file with village and population data
   - features need to be points
   - each feature needs the following properties:
     - `name` (string)
@@ -36,12 +36,37 @@ __File requirements__:
 The origins are defined on a project level. Each scenario uses the same set of origins.
 
 ### Points of interest
-The Points of Interest are used as the destination in the analysis.
+Points of Interest are used as the destination in the analysis. When multiple POI categories (eg. schools and clinics) are added to a project, the application will calculate an ETA per category for each origin. POI data can be added by uploading a GeoJSON file, or importing it from OpenStreetMap.
+
+If the POI data contains lines or polygons, they will be converted to a point.
+
+#### OSM import
+This option imports POI data from OpenStreetMap for the selected categories. It is not possible to customize the OSM tags that get imported for each category. The file upload allows for a more fine-grained control over the POI data.
+
+<dl class="dl-horizontal">
+  <dt>Education</dt>
+    <dd>amenity=school</dd>
+    <dd>amenity=kindergarten</dd>
+    <dd>amenity=college</dd>
+    <dd>amenity=university</dd>
+  <dt>Health</dt>
+    <dd>amenity=clinic</dd>
+    <dd>amenity=doctors</dd>
+    <dd>amenity=hospital</dd>
+  <dt>Finance</dt>
+    <dd>amenity=atm</dd>
+    <dd>amenity=bank</dd>
+    <dd>amenity=bureau_de_change</dd>
+    <dd>amenity=money_transfer</dd>
+    <dd>amenity=payment_center</dd>
+</dl>
+
+#### File upload
+For each POI category, a separate GeoJSON file needs to be uploaded. All the POI data in the file gets labeled as a single category.
 
 __File requirements__:
 
-  - a single geosjon file with points of interest
-  - features need to be points
+  - a single GeoJSON for each POI category
 
 POI are defined on a project level. Each scenario uses the same set of POI.
 
