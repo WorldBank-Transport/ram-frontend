@@ -5,13 +5,15 @@ import _ from 'lodash';
 import c from 'classnames';
 import ReactTooltip from 'react-tooltip';
 import { StickyContainer } from 'react-sticky';
+
+import config from '../config';
 import { t } from '../utils/i18n';
 
 import Header from '../components/header';
 import Footer from '../components/footer';
 import GlobalLoading from '../components/global-loading';
 import ConfirmationPrompt from '../components/confirmation-prompt';
-
+import NotLoggedError from '../components/not-logged-error';
 import SysAlerts from '../components/system-alerts';
 
 var App = React.createClass({
@@ -43,15 +45,20 @@ var App = React.createClass({
   },
 
   render: function () {
+    let showAuth = false;
+    if (config.auth && config.auth.clientID) {
+      showAuth = true;
+    }
+
     const pageClass = _.get(_.last(this.props.routes), 'pageClass', '');
 
     return (
       <div className={c('page', pageClass)}>
         <GlobalLoading />
-        <Header pathname={this.props.location.pathname} isAuthenticated={this.props.isAuthenticated}/>
+        <Header pathname={this.props.location.pathname} showAuth={showAuth} isAuthenticated={this.props.isAuthenticated}/>
         <main className='page__body' role='main'>
           <StickyContainer>
-          {this.props.children}
+          {showAuth && !this.props.isAuthenticated ? <NotLoggedError /> : this.props.children}
           </StickyContainer>
         </main>
         <Footer />

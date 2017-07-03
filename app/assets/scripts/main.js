@@ -9,6 +9,9 @@ import { syncHistoryWithStore } from 'react-router-redux';
 import config from './config';
 import store from './utils/store';
 import { isValidLanguage, setLanguage } from './utils/i18n';
+import Auth from './utils/auth-service';
+import { loginSuccess } from './actions';
+import { storePrevPath, popPrevPath } from './utils/utils';
 
 // Views.
 import App from './views/app';
@@ -21,6 +24,8 @@ import Help from './views/help';
 import Playground from './views/playground';
 
 const history = syncHistoryWithStore(hashHistory, store);
+
+const auth = new Auth(store);
 
 const scrollerMiddleware = useScroll((prevRouterProps, currRouterProps) => {
   // When a hash is set do not scroll to the top.
@@ -44,10 +49,9 @@ function playgroundAccess (nextState, replace) {
   }
 }
 
-import Auth from './utils/auth-service';
-import { loginSuccess } from './actions';
-import { storePrevPath, popPrevPath } from './utils/utils';
-let auth = new Auth(store);
+if (config.auth && config.auth.clientID && auth.isAuthenticated()) {
+  store.dispatch(loginSuccess());
+}
 
 function parseAuthHash (nextState, replace) {
   let hash = nextState.location.pathname.slice(1);
