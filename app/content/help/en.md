@@ -17,7 +17,7 @@ The administrative boundaries are the units of analysis for which RRA generates 
 __File requirements__:
 
   - a GeoJSON file with administrative boundaries
-  - features need to be a polygon
+  - features need to be a polygon or multi-polygon
   - each feature needs a property `name` (string)
 
 The administrative boundaries are defined on project level and are available across all its scenarios.
@@ -29,9 +29,8 @@ __File requirements__:
 
   - a GeoJSON file with village and population data
   - features need to be points
-  - each feature needs the following properties:
-    - `name` (string)
-    - `population`. This needs to be an integer, or a string that can be parsed into an integer.
+  - each feature needs a property `name` (string)
+  - at least one property that can be used as a population estimate. This property needs to be an integer, or a string that can be cast to an integer and needs to be present on all features.
 
 The origins are defined on a project level. Each scenario uses the same set of origins.
 
