@@ -44,16 +44,16 @@ If the POI data contains lines or polygons, they will be converted to a point.
 This option imports POI data from OpenStreetMap for the selected categories. It is not possible to customize the OSM tags that get imported for each category. The file upload allows for a more fine-grained control over the POI data.
 
 <dl class="dl-horizontal">
-  <dt>Education Facilities</dt>
-    <dd>`amenity=school`</dd>
-    <dd>`amenity=kindergarten`</dd>
-    <dd>`amenity=college`</dd>
-    <dd>`amenity=university`</dd>
-  <dt>Health Facilities</dt>
-    <dd>`amenity=clinic`</dd>
-    <dd>`amenity=doctors`</dd>
-    <dd>`amenity=hospital`</dd>
-  <dt>Financial institutions</dt>
+  <dt>Education</dt>
+    <dd>amenity=school</dd>
+    <dd>amenity=kindergarten</dd>
+    <dd>amenity=college</dd>
+    <dd>amenity=university</dd>
+  <dt>Health</dt>
+    <dd>amenity=clinic</dd>
+    <dd>amenity=doctors</dd>
+    <dd>amenity=hospital</dd>
+  <dt>Finance</dt>
     <dd>amenity=atm</dd>
     <dd>amenity=bank</dd>
     <dd>amenity=bureau_de_change</dd>

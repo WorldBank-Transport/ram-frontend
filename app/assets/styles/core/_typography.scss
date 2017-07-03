@@ -133,6 +133,13 @@ dd {
       line-height: 1.5;
     }
   }
+  > dl.dl-horizontal dt {
+    @include media(medium-up) {
+      padding: 0 0 0.5rem 0;
+      font-size: inherit;
+      line-height: inherit;
+    }
+  }
 }
 
 
@@ -153,6 +160,21 @@ blockquote {
     }
   }
 }
+
+
+/* Code
+   ========================================================================== */
+
+.prose--responsive {
+  code {
+    background-color: $base-alpha-color;
+    font-size: 0.875rem;
+    @include media(medium-up) {
+      font-size: $base-font-size;
+    }
+  }
+}
+
 
 
 /* Dividers
