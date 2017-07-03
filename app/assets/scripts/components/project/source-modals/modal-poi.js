@@ -347,7 +347,7 @@ class ModalPoi extends ModalBase {
           ))}
         </div>
 
-        <p>POIs will be imported form OSM for the project's Administrative areas using the selected types. For something more specific upload your own files.</p>
+        <p>Import POI data from OpenStreetMap. See the documentation for an overview of the tags that are included in each POI type.</p>
 
       </div>
     );

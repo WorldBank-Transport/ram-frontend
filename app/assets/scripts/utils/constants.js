@@ -4,22 +4,22 @@ import { t } from '../utils/i18n';
 export const fileTypesMatrix = {
   'admin-bounds': {
     display: t('Administrative Boundaries'),
-    description: t('A GeoJSON containing polygons with the administrative boundaries.'),
+    description: t('Boundaries for the administrative areas for which analysis is generated.'),
     helpPath: '/help#administrative-boundaries'
   },
   origins: {
     display: t('Population data'),
-    description: t('A GeoJSON with population point data. This will be used as the Origin in the analysis.'),
+    description: t('Population point data that will be used as origins.'),
     helpPath: '/help#population-data'
   },
   poi: {
     display: t('Points of Interest'),
-    description: t('GeoJSON for the Points of Interest (eg. banks or hospitals). These are the destinations in the analysis.'),
+    description: t('The POI used as destinations. Each scenario supports multiple types.'),
     helpPath: '/help#points-of-interest'
   },
   'road-network': {
     display: t('Road Network'),
-    description: t('The underlying road network in OSM XML format.'),
+    description: t('The road network data used for routing.'),
     helpPath: '/help#road-network'
   },
   profile: {
