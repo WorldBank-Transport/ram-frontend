@@ -209,7 +209,7 @@ class ModalRoadNetwork extends ModalBase {
             </label>
           </div>
           {this.state.source === 'file' ? this.renderSourceFile() : null}
-          {this.state.source === 'osm' && <p>Import road network data for the project's Administrative Boundaries from OpenStreetMap. For more fine-grained control, upload a file with custom road network data.</p>}
+          {this.state.source === 'osm' && <p>{t('Import road network data for the project\'s Administrative Boundaries from OpenStreetMap. For more fine-grained control, upload a file with custom road network data.')}</p>}
         </form>
       </ModalBody>
     );

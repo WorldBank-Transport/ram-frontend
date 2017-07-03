@@ -311,7 +311,7 @@ const ScenarioCreateModal = React.createClass({
             </FileInput>
             ) : null}
 
-            {this.state.data.roadNetworkSource === 'osm' && <p>Import road network data from OpenStreetMap.</p>}
+            {this.state.data.roadNetworkSource === 'osm' && <p>{t('Import road network data from OpenStreetMap.')}</p>}
 
           </form>
         </ModalBody>
