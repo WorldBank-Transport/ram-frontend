@@ -97,7 +97,6 @@ class ModalPoi extends ModalBase {
     } else if (what === 'all') {
       this.setState({ selectedPoiTypes: poiOsmTypes.map(o => o.key) });
     }
-    this.setState({ selectedPoiTypes: poiOsmTypes.map(o => o.key) });
   }
 
   onOsmPoiChange (e) {
