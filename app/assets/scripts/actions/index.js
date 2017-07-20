@@ -378,7 +378,7 @@ export function fetchJSON (url, options) {
         } catch (e) {
           console.log('json parse error', e);
           return Promise.reject({
-            error: e.message,
+            message: e.message,
             body
           });
         }
@@ -390,7 +390,7 @@ export function fetchJSON (url, options) {
     }, err => {
       console.log('fetchJSON error', err);
       return Promise.reject({
-        error: err.message
+        message: err.message
       });
     });
 }
