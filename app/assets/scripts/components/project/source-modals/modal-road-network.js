@@ -1,6 +1,7 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
 import _ from 'lodash';
+import ReactTooltip from 'react-tooltip';
 
 import config from '../../../config';
 import { t } from '../../../utils/i18n';
@@ -202,8 +203,8 @@ class ModalRoadNetwork extends ModalBase {
               <span className='form__option__ui'></span>
             </label>
 
-            <label className='form__option form__option--inline form__option--custom-radio'>
-              <input type='radio' name='source-type' id='osm' value='osm' checked={this.state.source === 'osm'} onChange={this.onSourceChange.bind(this)} />
+            <label data-tip={t('Coming soon')} data-effect='solid' className='form__option form__option--inline form__option--custom-radio visually-disabled'>
+              <input type='radio' name='source-type' id='osm' value='osm' checked={this.state.source === 'osm'} onChange={this.onSourceChange.bind(this)} disabled />
               <span className='form__option__text'>OSM data</span>
               <span className='form__option__ui'></span>
             </label>
@@ -211,6 +212,8 @@ class ModalRoadNetwork extends ModalBase {
           {this.state.source === 'file' ? this.renderSourceFile() : null}
           {this.state.source === 'osm' && <p>{t('Import road network data for the project\'s Administrative Boundaries from OpenStreetMap. For more fine-grained control, upload a file with custom road network data.')}</p>}
         </form>
+
+        <ReactTooltip />
       </ModalBody>
     );
   }
