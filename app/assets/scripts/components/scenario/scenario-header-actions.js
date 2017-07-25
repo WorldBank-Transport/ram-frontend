@@ -103,8 +103,8 @@ const ScenarioHeaderActions = React.createClass({
           direction='down'
           alignment='center' >
             <ul className='drop__menu drop__menu--iconified' role='menu'>
-              <li><a href='#' title={t('Edit metadata')} className='drop__menu-item dmi-pencil' data-hook='dropdown:close' onClick={this.props.onAction.bind(null, 'edit-metadata')}>{t('Edit metadata')}</a></li>
-              <li><a href='#' title={t('Duplicate scenario')} className='drop__menu-item dmi-copy' data-hook='dropdown:close' onClick={this.props.onAction.bind(null, 'duplicate')}>{t('Duplicate scenario')}</a></li>
+              <li><a href='#' title={t('Edit metadata')} className={c('drop__menu-item dmi-pencil', {'visually-disabled': isPending})} data-hook='dropdown:close' onClick={this.props.onAction.bind(null, 'edit-metadata')}>{t('Edit metadata')}</a></li>
+              <li><a href='#' title={t('Duplicate scenario')} className={c('drop__menu-item dmi-copy', {'visually-disabled': isPending})} data-hook='dropdown:close' onClick={this.props.onAction.bind(null, 'duplicate')}>{t('Duplicate scenario')}</a></li>
             </ul>
             <ul className='drop__menu drop__menu--iconified' role='menu'>
               <li><ScenarioDeleteAction isMaster={isMaster} name={this.props.scenario.name} onDeleteConfirm={this.props.onAction.bind(null, 'delete')}/></li>
@@ -115,6 +115,9 @@ const ScenarioHeaderActions = React.createClass({
         <button data-tip={t('Coming soon')} data-effect='solid' title={t('Edit network')} className='ipa-pencil visually-disabled' type='button' ><span>{t('Network')}</span></button>
         <ReactTooltip />
 
+        {isPending ? (
+          <button data-tip={t('Scenario still being created')} data-effect='solid' title={t('Download data')} className='ipa-download visually-disabled' type='button' ><span>{t('Data')}</span></button>
+        ) : (
         <Dropdown
           onChange={(open) => open ? ReactTooltip.rebuild() : ReactTooltip.hide()}
           className={c({'visually-disabled': !hasResults})}
@@ -129,6 +132,7 @@ const ScenarioHeaderActions = React.createClass({
               <li><a href={`${resultsUrl}&type=geojson`} data-tip data-for='tip-no-results' title={t('Download data in GeoJSON format')} className='drop__menu-item geojson' onClick={(e) => !hasResults && e.preventDefault()}><span>{t('GeoJSON format')}</span></a></li>
             </ul>
         </Dropdown>
+        )}
 
         <ReactTooltip id='tip-no-results' effect='solid' disable={hasResults}>
           {t('No results were generated yet')}

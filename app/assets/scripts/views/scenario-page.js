@@ -263,7 +263,7 @@ const ScenarioPage = React.createClass({
   renderEmptyState: function () {
     let scenario = this.props.scenario.data;
     let isGenerating = scenario.gen_analysis && scenario.gen_analysis.status === 'running';
-    let isPending = scenario.scen_create && scenario.scen_create.status === 'running';
+    let isPending = scenario.status === 'pending';
 
     if (isGenerating || isPending || scenarioHasResults(scenario)) {
       return null;

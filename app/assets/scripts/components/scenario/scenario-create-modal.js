@@ -3,6 +3,7 @@ import React, { PropTypes as T } from 'react';
 import c from 'classnames';
 import _ from 'lodash';
 import { hashHistory } from 'react-router';
+import ReactTooltip from 'react-tooltip';
 
 import config from '../../config';
 import { t, getLanguage } from '../../utils/i18n';
@@ -131,6 +132,8 @@ const ScenarioCreateModal = React.createClass({
     if (this.state.data.name.length === 0 || !nameLimit(this.state.data.name.length).isOk()) return false;
 
     if (this.state.data.description.length > 0 && !descLimit(this.state.data.description.length).isOk()) return false;
+
+    if (this.state.data.roadNetworkSource === 'new' && !this.state.data.roadNetworkSourceFile.file) return false;
 
     return true;
   },
@@ -275,7 +278,7 @@ const ScenarioCreateModal = React.createClass({
                 <span className='form__option__text'>{t('Upload new')}</span>
                 <span className='form__option__ui'></span>
               </label>
-              <label className='form__option form__option--inline form__option--custom-radio disabled'>
+              <label data-tip={t('Coming soon')} data-effect='solid' className='form__option form__option--inline form__option--custom-radio visually-disabled'>
                 <input type='radio' name='road-network' id='road-network-osm' value='osm' onChange={this.onFieldChange.bind(null, 'roadNetworkSource')} checked={this.state.data.roadNetworkSource === 'osm'} disabled />
                 <span className='form__option__text'>{t('OSM data')}</span>
                 <span className='form__option__ui'></span>
@@ -309,6 +312,9 @@ const ScenarioCreateModal = React.createClass({
             </FileInput>
             ) : null}
 
+            {this.state.data.roadNetworkSource === 'osm' && <p>{t('Import road network data from OpenStreetMap.')}</p>}
+
+            <ReactTooltip />
           </form>
         </ModalBody>
         <ModalFooter>
