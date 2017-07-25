@@ -1,10 +1,9 @@
-<h1 align="center">RRA Data Frontend</h1>
+<h1 align="center">RAM Frontend</h1>
 
-RRA Frontend is part of the Rural Roads Accessibility project, a tool that allows one to assess the accessibility of rural populations in relation to critical services. For more information and an overview of related repositories, please see the [RRA Server](https://github.com/WorldBank-Transport/Rural-Road-Accessibility).
+This repository contains the user interface of the Rural Accessibility Map, a tool that allows one to assess the accessibility of rural populations in relation to critical services. For more information and an overview of related repositories, please see [RAM Backend](https://github.com/WorldBank-Transport/ram-backend).
 
 ## Installation and Usage
-
-The steps below will walk you through setting up your own instance of the Rural Road Accessibility
+The steps below will walk you through setting up a development environment for the frontend.
 
 ### Install Project Dependencies
 To set up the development environment for this website, you'll need to install the following on your system:

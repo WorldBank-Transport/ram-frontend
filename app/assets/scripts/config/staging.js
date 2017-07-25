@@ -4,5 +4,5 @@
  */
 module.exports = {
   environment: 'staging',
-  api: 'http://34.207.194.24'
+  api: 'http://api.ram.tf'
 };
