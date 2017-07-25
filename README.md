@@ -49,6 +49,19 @@ module.exports = {
 };
 ```
 
+#### Authentication with Auth0
+For authentication using Auth0, you must setup a client on Auth0 and get your client key. The API must also be setup as in the API section on Auth0.
+
+The config should have the `auth` key with the following settings:
+```
+auth: {
+  domain: '<Auth0 namespace>.auth0.com',
+  clientID: <Auth0 client ID>
+  redirectUri: 'http://localhost:3000/', # Or your deployment URL at the root
+  audience: <API audience>
+}
+```
+
 #### Starting the app
 
 ```

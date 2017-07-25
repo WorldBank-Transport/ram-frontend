@@ -11,7 +11,9 @@ import Dropdown from '../components/dropdown';
 const Header = React.createClass({
 
   propTypes: {
-    pathname: T.string
+    pathname: T.string,
+    showAuth: T.bool,
+    isAuthenticated: T.bool
   },
 
   render: function () {
@@ -23,34 +25,33 @@ const Header = React.createClass({
           </div>
           <nav className='page__prime-nav' role='navigation'>
 
-        <div className='nav-language-switcher'>
-          <Dropdown
-            id='lang-switcher'
-            triggerClassName='drop__toggle--caret'
-            triggerActiveClassName='active'
-            triggerText={getLanguageName()}
-            triggerTitle={t('Change language')}
-            triggerElement='a'
-            direction='down'
-            alignment='left' >
-              <h6 className='drop__title'>{t('Change language')}</h6>
-              <ul className='drop__menu drop__menu--select' role='menu'>
-                {getAvailableLanguages().map(l => {
-                  let cl = c('drop__menu-item', {
-                    'drop__menu-item--active': l.key === getLanguage()
-                  });
-                  let url = this.props.pathname.replace(`/${getLanguage()}`, `/${l.key}`);
-                  return (
-                    <li key={l.key}>
-                      <Link to={url} title={t('Select language')} className={cl} data-hook='dropdown:close'>{l.name}</Link>
-                    </li>
-                  );
-                })}
-              </ul>
-          </Dropdown>
-        </div>
-
-            <NavGlobalMenu />
+          <div className='nav-language-switcher'>
+            <Dropdown
+              id='lang-switcher'
+              triggerClassName='drop__toggle--caret'
+              triggerActiveClassName='active'
+              triggerText={getLanguageName()}
+              triggerTitle={t('Change language')}
+              triggerElement='a'
+              direction='down'
+              alignment='left' >
+                <h6 className='drop__title'>{t('Change language')}</h6>
+                <ul className='drop__menu drop__menu--select' role='menu'>
+                  {getAvailableLanguages().map(l => {
+                    let cl = c('drop__menu-item', {
+                      'drop__menu-item--active': l.key === getLanguage()
+                    });
+                    let url = this.props.pathname.replace(`/${getLanguage()}`, `/${l.key}`);
+                    return (
+                      <li key={l.key}>
+                        <Link to={url} title={t('Select language')} className={cl} data-hook='dropdown:close'>{l.name}</Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+            </Dropdown>
+          </div>
+          <NavGlobalMenu showAuth={this.props.showAuth} isAuthenticated={this.props.isAuthenticated}/>
           </nav>
         </div>
       </header>

@@ -53,6 +53,19 @@ export const INVALIDATE_SCENARIO_RESULTS_RAW = 'INVALIDATE_SCENARIO_RESULTS_RAW'
 export const REQUEST_SCENARIO_RESULTS_GEO = 'REQUEST_SCENARIO_RESULTS_GEO';
 export const RECEIVE_SCENARIO_RESULTS_GEO = 'RECEIVE_SCENARIO_RESULTS_GEO';
 
+export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
+export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
+
+// Auth
+
+export function loginSuccess () {
+  return { type: LOGIN_SUCCESS };
+}
+
+export function logoutSuccess () {
+  return { type: LOGOUT_SUCCESS };
+}
+
 // Projects
 
 export function invalidateProjects () {
@@ -367,6 +380,18 @@ function fetchDispatchFactory (url, options, requestFn, receiveFn) {
 }
 
 export function fetchJSON (url, options) {
+  if (config.auth) {
+    // Get the access token from storage
+    const accessToken = localStorage.getItem('access_token');
+    if (!accessToken) {
+      // Handle authentication error
+      throw new Error('no access token found');
+    }
+    options = options || {};
+    options.headers = options.headers || {};
+    options.headers['Authorization'] = 'Bearer ' + accessToken;
+  }
+
   return fetch(url, options)
     .then(response => {
       return response.text()
