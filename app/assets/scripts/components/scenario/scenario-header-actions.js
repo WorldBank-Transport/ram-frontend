@@ -11,6 +11,12 @@ import { showConfirm } from '../confirmation-prompt';
 
 import ScenarioDeleteAction from './scenario-delete-action';
 
+const tipTexts = {
+  rnNotAllowed: t('Road network is too big and can\'t be edited.'),
+  generating: t('Generation is in progress.'),
+  pending: t('Scenario still being created.')
+};
+
 const ScenarioHeaderActions = React.createClass({
 
   propTypes: {
@@ -39,46 +45,61 @@ const ScenarioHeaderActions = React.createClass({
     isActive && this.props.onAction('edit-network', e);
   },
 
-  renderDisableReasonTip: function (isGenerating, isPending) {
-    let disable = !isGenerating && !isPending;
+  renderRNButton: function (isGenerating, isPending, isRnAllowed) {
+    let disable = !isGenerating && !isPending && isRnAllowed;
     let txt;
 
-    if (isGenerating) {
-      txt = t('Generation is in progress.');
+    if (!isRnAllowed) {
+      txt = tipTexts.rnNotAllowed;
+    } else if (isGenerating) {
+      txt = tipTexts.generating;
     } else if (isPending) {
-      txt = t('Scenario still being created.');
-    }
-
-    return (
-      <ReactTooltip id='tip-disable-reason' effect='solid' disable={disable}>
-        {txt}
-      </ReactTooltip>
-    );
-  },
-
-  renderGenerateAbort: function (isGenerating, isPending) {
-    if (isGenerating) {
-      return (
-        <button
-          data-tip-disable={true}
-          title={t('Abort analysis')}
-          className='ipa-cancel'
-          type='button'
-          onClick={this.onAbortClick}>
-          <span>{t('Analysis')}</span>
-        </button>
-      );
+      txt = tipTexts.pending;
     }
 
     return (
       <button
-       data-tip
-       data-for='tip-disable-reason'
-       title={t('Generate analysis')}
-       className={c('ipa-arrow-loop ipa-main', {'visually-disabled': isPending})}
-       type='button'
-       onClick={this.onGenerateClick}>
-       <span>{t('Analysis')}</span>
+        data-tip={txt}
+        data-tip-disable={disable}
+        data-effect='solid'
+        title={t('Edit network')}
+        className={c('ipa-pencil', {'visually-disabled': isGenerating || isPending || !isRnAllowed})}
+        type='button'
+        onClick={this.onEditClick.bind(null, !isGenerating)}>
+          <span>{t('Network')}</span>
+      </button>
+    );
+
+    /* <button data-tip={t('Coming soon')} data-effect='solid' title={t('Edit network')} className='ipa-pencil visually-disabled' type='button' ><span>{t('Network')}</span></button> */
+  },
+
+  renderGenerateAbort: function (isGenerating, isPending) {
+    let disable = !isPending;
+    let txt;
+
+    if (isPending) {
+      txt = tipTexts.pending;
+    }
+
+    return isGenerating ? (
+      <button
+        data-tip-disable={true}
+        title={t('Abort analysis')}
+        className='ipa-cancel'
+        type='button'
+        onClick={this.onAbortClick}>
+        <span>{t('Analysis')}</span>
+      </button>
+    ) : (
+      <button
+        data-tip={txt}
+        data-tip-disable={disable}
+        data-effect='solid'
+        title={t('Generate analysis')}
+        className={c('ipa-arrow-loop ipa-main', {'visually-disabled': isPending})}
+        type='button'
+        onClick={this.onGenerateClick}>
+        <span>{t('Analysis')}</span>
       </button>
     );
   },
@@ -87,6 +108,7 @@ const ScenarioHeaderActions = React.createClass({
     let isGenerating = this.props.scenario.gen_analysis && this.props.scenario.gen_analysis.status === 'running';
     let isMaster = this.props.scenario.master;
     let isPending = this.props.scenario.status === 'pending';
+    let isRnAllowed = !!this.props.scenario.data.rn_active_editing;
 
     let hasResults = scenarioHasResults(this.props.scenario);
     let resultsUrl = `${config.api}/projects/${this.props.scenario.project_id}/scenarios/${this.props.scenario.id}/results?download=true`;
@@ -110,10 +132,8 @@ const ScenarioHeaderActions = React.createClass({
               <li><ScenarioDeleteAction isMaster={isMaster} name={this.props.scenario.name} onDeleteConfirm={this.props.onAction.bind(null, 'delete')}/></li>
             </ul>
         </Dropdown>
-        { /* <button data-tip data-for='tip-disable-reason' title={t('Edit network')} className={c('ipa-pencil', {'visually-disabled': isGenerating || isPending})} type='button' onClick={this.onEditClick.bind(null, !isGenerating)}><span>{t('Network')}</span></button> */ }
 
-        <button data-tip={t('Coming soon')} data-effect='solid' title={t('Edit network')} className='ipa-pencil visually-disabled' type='button' ><span>{t('Network')}</span></button>
-        <ReactTooltip />
+        {this.renderRNButton(isGenerating, isPending, isRnAllowed)}
 
         {isPending ? (
           <button data-tip={t('Scenario still being created')} data-effect='solid' title={t('Download data')} className='ipa-download visually-disabled' type='button' ><span>{t('Data')}</span></button>
@@ -134,13 +154,13 @@ const ScenarioHeaderActions = React.createClass({
         </Dropdown>
         )}
 
+        <ReactTooltip />
+
         <ReactTooltip id='tip-no-results' effect='solid' disable={hasResults}>
           {t('No results were generated yet')}
         </ReactTooltip>
 
         {this.renderGenerateAbort(isGenerating, isPending)}
-
-        {this.renderDisableReasonTip(isGenerating, isPending)}
 
       </div>
     );

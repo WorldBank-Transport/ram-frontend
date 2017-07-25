@@ -1,6 +1,10 @@
 'use strict';
 import { t } from '../utils/i18n';
 
+let rnEditThresholdVal = 100; // MB
+export const rnEditThreshold = rnEditThresholdVal * Math.pow(1024, 2); // bytes
+export const rnEditThresholdDisplay = `${rnEditThresholdVal}MB`;
+
 export const fileTypesMatrix = {
   'admin-bounds': {
     display: t('Administrative Boundaries'),

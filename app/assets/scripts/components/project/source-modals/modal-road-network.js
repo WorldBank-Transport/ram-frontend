@@ -5,6 +5,7 @@ import ReactTooltip from 'react-tooltip';
 
 import config from '../../../config';
 import { t } from '../../../utils/i18n';
+import { rnEditThreshold, rnEditThresholdDisplay } from '../../../utils/constants';
 import { postFormdata, fetchJSON } from '../../../actions';
 import { showGlobalLoading, hideGlobalLoading } from '../../global-loading';
 
@@ -52,6 +53,10 @@ class ModalRoadNetwork extends ModalBase {
     fileField.uploaded = 0;
 
     this.setState({ fileField });
+
+    if (file.size >= rnEditThreshold) {
+      this.props._showAlert('warning', <p>File size is above {rnEditThresholdDisplay}. Road network editing will be disabled.</p>, true);
+    }
   }
 
   onSourceChange (event) {
@@ -211,6 +216,7 @@ class ModalRoadNetwork extends ModalBase {
           </div>
           {this.state.source === 'file' ? this.renderSourceFile() : null}
           {this.state.source === 'osm' && <p>{t('Import road network data for the project\'s Administrative Boundaries from OpenStreetMap. For more fine-grained control, upload a file with custom road network data.')}</p>}
+          {this.state.source === 'osm' && <p>{t('When the resulting import is over {max} the road network editing will be disabled.', {max: rnEditThresholdDisplay})}</p>}
         </form>
 
         <ReactTooltip />
