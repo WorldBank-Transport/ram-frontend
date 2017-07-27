@@ -1,4 +1,4 @@
-import { REQUEST_SCENARIO_RESULTS_GEO, RECEIVE_SCENARIO_RESULTS_GEO } from '../actions';
+import { REQUEST_SCENARIO_RESULTS_GEO, RECEIVE_SCENARIO_RESULTS_GEO, INVALIDATE_SCENARIO_RESULTS_GEO } from '../actions';
 
 const initialState = {
   fetching: false,
@@ -9,6 +9,8 @@ const initialState = {
 
 export default function reducer (state = initialState, action) {
   switch (action.type) {
+    case INVALIDATE_SCENARIO_RESULTS_GEO:
+      return Object.assign({}, state, initialState);
     case REQUEST_SCENARIO_RESULTS_GEO:
       return Object.assign({}, state, { error: null, fetching: true, fetched: false });
     case RECEIVE_SCENARIO_RESULTS_GEO:

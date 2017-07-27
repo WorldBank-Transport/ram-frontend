@@ -9,6 +9,8 @@ import {
   fetchScenarioResults,
   fetchScenarioResultsRaw,
   fetchScenarioResultsGeo,
+  invalidateScenarioResultsRaw,
+  invalidateScenarioResultsGeo,
   showAlert
 } from '../../actions';
 import { round, toTimeStr } from '../../utils/utils';
@@ -33,6 +35,8 @@ const ScenarioResults = React.createClass({
     _fetchScenarioResults: T.func,
     _fetchScenarioResultsRaw: T.func,
     _fetchScenarioResultsGeo: T.func,
+    _invalidateScenarioResultsRaw: T.func,
+    _invalidateScenarioResultsGeo: T.func,
     _showAlert: T.func
   },
 
@@ -50,6 +54,11 @@ const ScenarioResults = React.createClass({
 
   componentDidMount: function () {
     this.requestAllResults();
+  },
+
+  componentWillUnmount: function () {
+    this.props._invalidateScenarioResultsRaw();
+    this.props._invalidateScenarioResultsGeo();
   },
 
   componentWillReceiveProps: function (nextProps) {
@@ -212,6 +221,8 @@ function dispatcher (dispatch) {
     _fetchScenarioResults: (...args) => dispatch(fetchScenarioResults(...args)),
     _fetchScenarioResultsRaw: (...args) => dispatch(fetchScenarioResultsRaw(...args)),
     _fetchScenarioResultsGeo: (...args) => dispatch(fetchScenarioResultsGeo(...args)),
+    _invalidateScenarioResultsRaw: (...args) => dispatch(invalidateScenarioResultsRaw(...args)),
+    _invalidateScenarioResultsGeo: (...args) => dispatch(invalidateScenarioResultsGeo(...args)),
     _showAlert: (...args) => dispatch(showAlert(...args))
   };
 }

@@ -52,6 +52,7 @@ export const INVALIDATE_SCENARIO_RESULTS_RAW = 'INVALIDATE_SCENARIO_RESULTS_RAW'
 
 export const REQUEST_SCENARIO_RESULTS_GEO = 'REQUEST_SCENARIO_RESULTS_GEO';
 export const RECEIVE_SCENARIO_RESULTS_GEO = 'RECEIVE_SCENARIO_RESULTS_GEO';
+export const INVALIDATE_SCENARIO_RESULTS_GEO = 'INVALIDATE_SCENARIO_RESULTS_GEO';
 
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
@@ -326,6 +327,10 @@ export function fetchScenarioResultsRaw (projectId, scenarioId, page = 1, filter
 }
 
 // Fetches the minified results
+
+export function invalidateScenarioResultsGeo () {
+  return { type: INVALIDATE_SCENARIO_RESULTS_GEO };
+}
 
 export function requestScenarioResultsGeo () {
   return { type: REQUEST_SCENARIO_RESULTS_GEO };
