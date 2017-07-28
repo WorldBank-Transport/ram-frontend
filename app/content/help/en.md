@@ -12,7 +12,7 @@ These files need to be compatible with each other. This means - for example - th
 ----
 
 ### Administrative Boundaries
-The administrative boundaries are the units of analysis for which RRA generates the results. The backend expects a GeoJSON with one or more polygons, which can overlap. The latter is useful to benchmark results for, for example, municipalities against the results of the bigger province.
+The administrative boundaries are the units of analysis for which RAM generates the results. The backend expects a GeoJSON with one or more polygons, which can overlap. The latter is useful to benchmark results for, for example, municipalities against the results of the bigger province.
 
 __File requirements__:
 
