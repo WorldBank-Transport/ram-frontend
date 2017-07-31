@@ -106,10 +106,10 @@ class ResultsMap extends React.Component {
 
   componentDidUpdate (prevProps) {
     if (this.ready) {
-      if (prevProps.data.fetched) {
+      if (this.props.data.fetched && this.props.data.receivedAt !== prevProps.data.receivedAt) {
         this.theMap.getSource('etaData').setData(clone(this.props.data.data.geojson));
       }
-      if (prevProps.poi.fetched) {
+      if (this.props.poi.fetched && this.props.poi.receivedAt !== prevProps.poi.receivedAt) {
         this.theMap.getSource('poiData').setData(clone(this.props.poi.data.geojson));
       }
     }
