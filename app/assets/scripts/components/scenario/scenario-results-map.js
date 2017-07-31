@@ -4,6 +4,8 @@ import mapboxgl from 'mapbox-gl';
 
 import config from '../../config';
 
+const clone = data => JSON.parse(JSON.stringify(data));
+
 class ResultsMap extends React.Component {
   setupMap () {
     this.ready = false;
@@ -28,12 +30,12 @@ class ResultsMap extends React.Component {
 
     this.theMap.addSource('etaData', {
       'type': 'geojson',
-      'data': this.props.data.fetched ? this.props.data.data.geojson : empty
+      'data': this.props.data.fetched ? clone(this.props.data.data.geojson) : empty
     });
 
     this.theMap.addSource('poiData', {
       type: 'geojson',
-      data: this.props.poi.fetched ? this.props.poi.data.geojson : empty
+      data: this.props.poi.fetched ? clone(this.props.poi.data.geojson) : empty
     });
 
     this.theMap.addLayer({
@@ -104,11 +106,11 @@ class ResultsMap extends React.Component {
 
   componentDidUpdate (prevProps) {
     if (this.ready) {
-      if (prevProps.data.fetched && prevProps.data.receivedAt !== this.props.data.receivedAt) {
-        this.theMap.getSource('etaData').setData(this.props.data.data.geojson);
+      if (prevProps.data.fetched) {
+        this.theMap.getSource('etaData').setData(clone(this.props.data.data.geojson));
       }
-      if (prevProps.poi.fetched && prevProps.poi.receivedAt !== this.props.poi.receivedAt) {
-        this.theMap.getSource('poiData').setData(this.props.poi.data.geojson);
+      if (prevProps.poi.fetched) {
+        this.theMap.getSource('poiData').setData(clone(this.props.poi.data.geojson));
       }
     }
   }
@@ -153,8 +155,7 @@ class ResultsMap extends React.Component {
 ResultsMap.propTypes = {
   bbox: T.array,
   data: T.object,
-  poi: T.object,
-  receivedAt: T.number
+  poi: T.object
 };
 
 export default ResultsMap;
