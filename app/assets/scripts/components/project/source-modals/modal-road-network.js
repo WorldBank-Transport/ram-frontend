@@ -208,8 +208,8 @@ class ModalRoadNetwork extends ModalBase {
               <span className='form__option__ui'></span>
             </label>
 
-            <label data-tip={t('Coming soon')} data-effect='solid' className='form__option form__option--inline form__option--custom-radio visually-disabled'>
-              <input type='radio' name='source-type' id='osm' value='osm' checked={this.state.source === 'osm'} onChange={this.onSourceChange.bind(this)} disabled />
+            <label className='form__option form__option--inline form__option--custom-radio'>
+              <input type='radio' name='source-type' id='osm' value='osm' checked={this.state.source === 'osm'} onChange={this.onSourceChange.bind(this)} />
               <span className='form__option__text'>OSM data</span>
               <span className='form__option__ui'></span>
             </label>
