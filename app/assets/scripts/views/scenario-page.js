@@ -246,9 +246,9 @@ const ScenarioPage = React.createClass({
     }
 
     let genAt = scenario.data.res_gen_at;
-    genAt === 0 ? genAt : (new Date(genAt)).getTime();
+    genAt = genAt === 0 ? genAt : (new Date(genAt)).getTime();
     let rnUpdatedAt = scenario.data.rn_updated_at;
-    rnUpdatedAt === 0 ? rnUpdatedAt : (new Date(rnUpdatedAt)).getTime();
+    rnUpdatedAt = rnUpdatedAt === 0 ? rnUpdatedAt : (new Date(rnUpdatedAt)).getTime();
 
     if (rnUpdatedAt > genAt) {
       return (
