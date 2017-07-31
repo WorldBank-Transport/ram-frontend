@@ -1,7 +1,7 @@
 'use strict';
 import { t } from '../utils/i18n';
 
-let rnEditThresholdVal = 150; // MB
+let rnEditThresholdVal = 20; // MB
 export const rnEditThreshold = rnEditThresholdVal * Math.pow(1024, 2); // bytes
 export const rnEditThresholdDisplay = `${rnEditThresholdVal}MB`;
 
