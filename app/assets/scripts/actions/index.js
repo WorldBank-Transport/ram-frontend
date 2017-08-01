@@ -374,7 +374,7 @@ export function fetchScenarioResultsGeo (projectId, scenarioId, filters = {}) {
 // Fetcher function
 
 function getAndDispatch (url, requestFn, receiveFn) {
-  return fetchDispatchFactory(url, null, requestFn, receiveFn);
+  return fetchDispatchFactory(url, {}, requestFn, receiveFn);
 }
 
 function postAndDispatch (url, data, requestFn, receiveFn) {
