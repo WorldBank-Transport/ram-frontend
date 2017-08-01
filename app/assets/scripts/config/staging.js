@@ -4,5 +4,5 @@
  */
 module.exports = {
   environment: 'staging',
-  api: 'http://api.ram.tf'
+  api: 'http://api.ruralaccess.info'
 };
