@@ -54,6 +54,10 @@ export const REQUEST_SCENARIO_RESULTS_GEO = 'REQUEST_SCENARIO_RESULTS_GEO';
 export const RECEIVE_SCENARIO_RESULTS_GEO = 'RECEIVE_SCENARIO_RESULTS_GEO';
 export const INVALIDATE_SCENARIO_RESULTS_GEO = 'INVALIDATE_SCENARIO_RESULTS_GEO';
 
+export const REQUEST_SCENARIO_POI = 'REQUEST_SCENARIO_POI';
+export const RECEIVE_SCENARIO_POI = 'RECEIVE_SCENARIO_POI';
+export const INVALIDATE_SCENARIO_POI = 'INVALIDATE_SCENARIO_POI';
+
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
 
@@ -324,6 +328,27 @@ export function fetchScenarioResultsRaw (projectId, scenarioId, page = 1, filter
 
   let url = `${config.api}/projects/${projectId}/scenarios/${scenarioId}/results/raw?${f}`;
   return getAndDispatch(url, requestScenarioResultsRaw, receiveScenarioResultsRaw);
+}
+
+// Scenario Poi
+
+export function invalidateScenarioPoi () {
+  return { type: INVALIDATE_SCENARIO_POI };
+}
+
+export function requestScenarioPoi () {
+  return { type: REQUEST_SCENARIO_POI };
+}
+
+export function receiveScenarioPoi (poi, error = null) {
+  return { type: RECEIVE_SCENARIO_POI, data: poi, error, receivedAt: Date.now() };
+}
+
+export function fetchScenarioPoi (projectId, scenarioId, filters = {}) {
+  let f = buildAPIQS(filters);
+
+  let url = `${config.api}/projects/${projectId}/scenarios/${scenarioId}/poi?${f}`;
+  return getAndDispatch(url, requestScenarioPoi, receiveScenarioPoi);
 }
 
 // Fetches the minified results
