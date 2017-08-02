@@ -70,10 +70,11 @@ class ModalOrigins extends ModalBase {
     // File contents.
     readFileAsJSON(file)
       .then(res => {
-        // Every feature must have a name attribute.
-        let hasName = res.features.every(f => !!f.properties.name);
-        if (!hasName) {
-          throw new Error('Invalid file selected: All features must have a \'name\' property');
+        let totalFeats = res.features.length;
+        let noNameFeats = res.features.reduce((acc, v) => acc + (v.properties.name ? 0 : 1), 0);
+
+        if (noNameFeats) {
+          this.props._showAlert('warning', <p>{noNameFeats} out of {totalFeats} origins don't have a name. "N/A" will be used.</p>, true);
         }
 
         // Get the indicator common to every feature. Number indicators only.
