@@ -7,6 +7,7 @@ import ReactTooltip from 'react-tooltip';
 
 import config from '../../config';
 import { t, getLanguage } from '../../utils/i18n';
+import { rnEditThreshold, rnEditThresholdDisplay } from '../../utils/constants';
 import { limitHelper } from '../../utils/utils';
 import { postFormdata } from '../../actions';
 
@@ -106,6 +107,10 @@ const ScenarioCreateModal = React.createClass({
 
     let data = Object.assign({}, this.state.data, {roadNetworkSourceFile});
     this.setState({data});
+
+    if (file.size >= rnEditThreshold) {
+      this.props._showAlert('warning', <p>File size is above {rnEditThresholdDisplay}. Road network editing will be disabled.</p>, true);
+    }
   },
 
   checkErrors: function () {
@@ -313,6 +318,7 @@ const ScenarioCreateModal = React.createClass({
             ) : null}
 
             {this.state.data.roadNetworkSource === 'osm' && <p>{t('Import road network data from OpenStreetMap.')}</p>}
+            {this.state.data.roadNetworkSource === 'osm' && <p>{t('When the resulting import is over {max} the road network editing will be disabled.', {max: rnEditThresholdDisplay})}</p>}
 
             <ReactTooltip />
           </form>
