@@ -1,10 +1,9 @@
-<h1 align="center">RRA Data Frontend</h1>
+<h1 align="center">RAM Frontend</h1>
 
-RRA Frontend is part of the Rural Roads Accessibility project, a tool that allows one to assess the accessibility of rural populations in relation to critical services. For more information and an overview of related repositories, please see the [RRA Server](https://github.com/WorldBank-Transport/Rural-Road-Accessibility).
+This repository contains the user interface of the Rural Accessibility Map, a tool that allows one to assess the accessibility of rural populations in relation to critical services. For more information and an overview of related repositories, please see [RAM Backend](https://github.com/WorldBank-Transport/ram-backend).
 
 ## Installation and Usage
-
-The steps below will walk you through setting up your own instance of the Rural Road Accessibility
+The steps below will walk you through setting up a development environment for the frontend.
 
 ### Install Project Dependencies
 To set up the development environment for this website, you'll need to install the following on your system:
@@ -47,6 +46,19 @@ Example:
 module.exports = {
   api: 'http://localhost:4000'
 };
+```
+
+#### Authentication with Auth0
+For authentication using Auth0, you must setup a client on Auth0 and get your client key. The API must also be setup as in the API section on Auth0.
+
+The config should have the `auth` key with the following settings:
+```
+auth: {
+  domain: '<Auth0 namespace>.auth0.com',
+  clientID: <Auth0 client ID>
+  redirectUri: 'http://localhost:3000/', # Or your deployment URL at the root
+  audience: <API audience>
+}
 ```
 
 #### Starting the app

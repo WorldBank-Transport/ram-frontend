@@ -9,10 +9,15 @@ import {
   fetchScenarioResults,
   fetchScenarioResultsRaw,
   fetchScenarioResultsGeo,
+  fetchScenarioPoi,
+  invalidateScenarioPoi,
+  invalidateScenarioResultsRaw,
+  invalidateScenarioResultsGeo,
   showAlert
 } from '../../actions';
 import { round, toTimeStr } from '../../utils/utils';
 import { t } from '../../utils/i18n';
+import { poiOsmTypes } from '../../utils/constants';
 import { showGlobalLoadingCounted, hideGlobalLoadingCounted } from '../global-loading';
 
 import ResultsMap from './scenario-results-map';
@@ -27,11 +32,16 @@ const ScenarioResults = React.createClass({
     aggregatedResults: T.object,
     rawResults: T.object,
     geojsonResults: T.object,
+    scenarioPoi: T.object,
     poiTypes: T.array,
     popInd: T.array,
     _fetchScenarioResults: T.func,
     _fetchScenarioResultsRaw: T.func,
     _fetchScenarioResultsGeo: T.func,
+    _fetchScenarioPoi: T.func,
+    _invalidateScenarioResultsRaw: T.func,
+    _invalidateScenarioResultsGeo: T.func,
+    _invalidateScenarioPoi: T.func,
     _showAlert: T.func
   },
 
@@ -51,6 +61,12 @@ const ScenarioResults = React.createClass({
     this.requestAllResults();
   },
 
+  componentWillUnmount: function () {
+    this.props._invalidateScenarioResultsRaw();
+    this.props._invalidateScenarioResultsGeo();
+    this.props._invalidateScenarioPoi();
+  },
+
   componentWillReceiveProps: function (nextProps) {
     let currAggregated = this.props.aggregatedResults;
     let nextAggregated = nextProps.aggregatedResults;
@@ -58,10 +74,15 @@ const ScenarioResults = React.createClass({
     let nextRaw = nextProps.rawResults;
     let currGeoJSON = this.props.geojsonResults;
     let nextGeoJSON = nextProps.geojsonResults;
+    let currPoi = this.props.scenarioPoi;
+    let nextPoi = nextProps.scenarioPoi;
 
-    if ((!currAggregated.fetched && nextAggregated.fetched) || (!currRaw.fetched && nextRaw.fetched) || (!currGeoJSON.fetched && nextGeoJSON.fetched)) {
+    if ((!currAggregated.fetched && nextAggregated.fetched) ||
+        (!currRaw.fetched && nextRaw.fetched) ||
+        (!currGeoJSON.fetched && nextGeoJSON.fetched) ||
+        (!currPoi.fetched && nextPoi.fetched)) {
       hideGlobalLoadingCounted();
-      let e = nextAggregated.error || nextRaw.error || nextGeoJSON.error;
+      let e = nextAggregated.error || nextRaw.error || nextGeoJSON.error || nextPoi.error;
       if (e) {
         this.props._showAlert('danger', <p>{t('An error occurred while loading the results - {reason}', {reason: e.message})}</p>, true);
       }
@@ -69,8 +90,8 @@ const ScenarioResults = React.createClass({
   },
 
   requestAllResults: function () {
-    // Must load 3 items.
-    showGlobalLoadingCounted(3);
+    // Must load 4 items.
+    showGlobalLoadingCounted(4);
 
     let filters = {
       poiType: this.state.activePoiType,
@@ -85,6 +106,7 @@ const ScenarioResults = React.createClass({
     this.props._fetchScenarioResults(this.props.projectId, this.props.scenarioId, filters);
     this.props._fetchScenarioResultsRaw(this.props.projectId, this.props.scenarioId, this.state.rawPage, filtersRaw);
     this.props._fetchScenarioResultsGeo(this.props.projectId, this.props.scenarioId, filters);
+    this.props._fetchScenarioPoi(this.props.projectId, this.props.scenarioId, {type: this.state.activePoiType});
   },
 
   requestRawResults: function () {
@@ -135,6 +157,8 @@ const ScenarioResults = React.createClass({
   },
 
   render: function () {
+    let poiName = this.props.poiTypes.find(o => o.key === this.state.activePoiType).label;
+
     return (
       <div className='rwrapper'>
 
@@ -148,6 +172,7 @@ const ScenarioResults = React.createClass({
 
         <ResultsMap
           data={this.props.geojsonResults}
+          poi={this.props.scenarioPoi}
           bbox={this.props.bbox}
         />
 
@@ -156,6 +181,7 @@ const ScenarioResults = React.createClass({
           fetching={this.props.aggregatedResults.fetching}
           receivedAt={this.props.aggregatedResults.receivedAt}
           data={this.props.aggregatedResults.data.accessibilityTime}
+          poiName={poiName}
           error={this.props.aggregatedResults.error}
         />
 
@@ -169,6 +195,7 @@ const ScenarioResults = React.createClass({
           sort={this.state.rawSort}
           handleRawPageChange={this.handleRawPageChange}
           setRawSort={this.setRawSort}
+          poiName={poiName}
         />
       </div>
     );
@@ -177,7 +204,18 @@ const ScenarioResults = React.createClass({
 
 function selector (state) {
   let popInd = state.projectItem.data.sourceData.origins.files[0].data.indicators;
-  let poiTypes = state.scenarioItem.data.sourceData.poi.files.map(o => ({key: o.subtype, label: o.subtype}));
+
+  let poiSource = state.scenarioItem.data.sourceData.poi;
+  let poiTypes;
+  if (poiSource.type === 'file') {
+    poiTypes = poiSource.files.map(o => ({key: o.subtype, label: o.subtype}));
+  } else if (poiSource.type === 'osm') {
+    // When the POI come from osm we can use the labels defined in constants.js
+    poiTypes = poiSource.osmOptions.osmPoiTypes.map(o => ({
+      key: o,
+      label: poiOsmTypes.find(poi => poi.key === o).value
+    }));
+  }
 
   return {
     projectId: state.projectItem.data.id,
@@ -187,7 +225,8 @@ function selector (state) {
     poiTypes,
     aggregatedResults: state.scenarioResults,
     rawResults: state.scenarioResultsRaw,
-    geojsonResults: state.scenarioResultsGeo
+    geojsonResults: state.scenarioResultsGeo,
+    scenarioPoi: state.scenarioPoi
   };
 }
 
@@ -196,6 +235,10 @@ function dispatcher (dispatch) {
     _fetchScenarioResults: (...args) => dispatch(fetchScenarioResults(...args)),
     _fetchScenarioResultsRaw: (...args) => dispatch(fetchScenarioResultsRaw(...args)),
     _fetchScenarioResultsGeo: (...args) => dispatch(fetchScenarioResultsGeo(...args)),
+    _fetchScenarioPoi: (...args) => dispatch(fetchScenarioPoi(...args)),
+    _invalidateScenarioResultsRaw: (...args) => dispatch(invalidateScenarioResultsRaw(...args)),
+    _invalidateScenarioResultsGeo: (...args) => dispatch(invalidateScenarioResultsGeo(...args)),
+    _invalidateScenarioPoi: (...args) => dispatch(invalidateScenarioPoi(...args)),
     _showAlert: (...args) => dispatch(showAlert(...args))
   };
 }
@@ -242,7 +285,7 @@ class AccessibilityTable extends React.PureComponent {
       <article className='card card--analysis-result' key={accessibilityTime.poi}>
         <div className='card__contents'>
           <header className='card__header'>
-            <h1 className='card__title'>{accessibilityTime.poi}</h1>
+            <h1 className='card__title'>{this.props.poiName}</h1>
           </header>
           <div className='card__body'>
             <div className='table-wrapper'>
@@ -270,6 +313,7 @@ AccessibilityTable.propTypes = {
   fetching: T.bool,
   receivedAt: T.number,
   data: T.object,
+  poiName: T.string,
   error: T.object
 };
 
@@ -386,7 +430,7 @@ class RawResultsTable extends React.PureComponent {
       <article className='card card--analysis-result'>
         <div className='card__contents'>
           <header className='card__header'>
-            <h1 className='card__title'>Origin level raw data</h1>
+            <h1 className='card__title'>Origin level raw data for {this.props.poiName}</h1>
           </header>
 
           <div className='card__body'>
@@ -446,5 +490,6 @@ RawResultsTable.propTypes = {
   popInd: T.array,
   sort: T.object,
   setRawSort: T.func,
-  handleRawPageChange: T.func
+  handleRawPageChange: T.func,
+  poiName: T.string
 };

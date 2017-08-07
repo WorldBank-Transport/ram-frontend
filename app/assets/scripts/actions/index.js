@@ -52,6 +52,24 @@ export const INVALIDATE_SCENARIO_RESULTS_RAW = 'INVALIDATE_SCENARIO_RESULTS_RAW'
 
 export const REQUEST_SCENARIO_RESULTS_GEO = 'REQUEST_SCENARIO_RESULTS_GEO';
 export const RECEIVE_SCENARIO_RESULTS_GEO = 'RECEIVE_SCENARIO_RESULTS_GEO';
+export const INVALIDATE_SCENARIO_RESULTS_GEO = 'INVALIDATE_SCENARIO_RESULTS_GEO';
+
+export const REQUEST_SCENARIO_POI = 'REQUEST_SCENARIO_POI';
+export const RECEIVE_SCENARIO_POI = 'RECEIVE_SCENARIO_POI';
+export const INVALIDATE_SCENARIO_POI = 'INVALIDATE_SCENARIO_POI';
+
+export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
+export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
+
+// Auth
+
+export function loginSuccess () {
+  return { type: LOGIN_SUCCESS };
+}
+
+export function logoutSuccess () {
+  return { type: LOGOUT_SUCCESS };
+}
 
 // Projects
 
@@ -312,7 +330,32 @@ export function fetchScenarioResultsRaw (projectId, scenarioId, page = 1, filter
   return getAndDispatch(url, requestScenarioResultsRaw, receiveScenarioResultsRaw);
 }
 
+// Scenario Poi
+
+export function invalidateScenarioPoi () {
+  return { type: INVALIDATE_SCENARIO_POI };
+}
+
+export function requestScenarioPoi () {
+  return { type: REQUEST_SCENARIO_POI };
+}
+
+export function receiveScenarioPoi (poi, error = null) {
+  return { type: RECEIVE_SCENARIO_POI, data: poi, error, receivedAt: Date.now() };
+}
+
+export function fetchScenarioPoi (projectId, scenarioId, filters = {}) {
+  let f = buildAPIQS(filters);
+
+  let url = `${config.api}/projects/${projectId}/scenarios/${scenarioId}/poi?${f}`;
+  return getAndDispatch(url, requestScenarioPoi, receiveScenarioPoi);
+}
+
 // Fetches the minified results
+
+export function invalidateScenarioResultsGeo () {
+  return { type: INVALIDATE_SCENARIO_RESULTS_GEO };
+}
 
 export function requestScenarioResultsGeo () {
   return { type: REQUEST_SCENARIO_RESULTS_GEO };
@@ -331,7 +374,7 @@ export function fetchScenarioResultsGeo (projectId, scenarioId, filters = {}) {
 // Fetcher function
 
 function getAndDispatch (url, requestFn, receiveFn) {
-  return fetchDispatchFactory(url, null, requestFn, receiveFn);
+  return fetchDispatchFactory(url, {}, requestFn, receiveFn);
 }
 
 function postAndDispatch (url, data, requestFn, receiveFn) {
@@ -367,6 +410,18 @@ function fetchDispatchFactory (url, options, requestFn, receiveFn) {
 }
 
 export function fetchJSON (url, options) {
+  if (config.auth) {
+    // Get the access token from storage
+    const accessToken = localStorage.getItem('access_token');
+    if (!accessToken) {
+      // Handle authentication error
+      throw new Error('no access token found');
+    }
+    options = options || {};
+    options.headers = options.headers || {};
+    options.headers['Authorization'] = 'Bearer ' + accessToken;
+  }
+
   return fetch(url, options)
     .then(response => {
       return response.text()
@@ -378,7 +433,7 @@ export function fetchJSON (url, options) {
         } catch (e) {
           console.log('json parse error', e);
           return Promise.reject({
-            error: e.message,
+            message: e.message,
             body
           });
         }
@@ -390,7 +445,7 @@ export function fetchJSON (url, options) {
     }, err => {
       console.log('fetchJSON error', err);
       return Promise.reject({
-        error: err.message
+        message: err.message
       });
     });
 }

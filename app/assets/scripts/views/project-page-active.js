@@ -234,16 +234,14 @@ const ProjectPageActive = React.createClass({
 
     if (scenario.scen_create && scenario.scen_create.status === 'running') {
       scenarioSubtitle = t('Creating scenario');
-
-    // Checking against the string 0, because normally it's a date string.
-    } else if (scenario.data.res_gen_at !== '0') {
+    } else if (scenario.gen_analysis && scenario.gen_analysis.status === 'running') {
+      scenarioSubtitle = t('Analysis running');
+    } else if (scenario.data.res_gen_at !== 0) {
       scenarioSubtitle = t('Analysis complete');
 
       if (scenario.data.rn_updated_at > scenario.data.res_gen_at) {
         scenarioSubtitle = t('Analysis outdated');
       }
-    } else if (scenario.gen_analysis && scenario.gen_analysis.status === 'running') {
-      scenarioSubtitle = t('Analysis running');
     } else {
       scenarioSubtitle = t('No analysis yet');
     }
@@ -287,6 +285,14 @@ const ProjectPageActive = React.createClass({
                 )}
               </div>
             </div>
+            { isMaster && (
+            <footer className='card__footer'>
+              <dl className='card__system-details'>
+                <dt>Type</dt>
+                <dd className='detail detail--type-master' data-tip={t('This is the primary scenario. It can\'t be deleted.')} data-effect='solid'>Primary</dd>
+              </dl>
+            </footer>
+            ) }
           </div>
         </article>
       </li>
@@ -393,6 +399,8 @@ const ProjectPageActive = React.createClass({
           finishSubmitScenario={this.props._finishSubmitScenario}
           resetForm={this.props._resetScenarioFrom}
         />
+
+        <ReactTooltip />
 
       </section>
     );

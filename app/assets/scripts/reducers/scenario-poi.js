@@ -1,4 +1,4 @@
-import { REQUEST_SCENARIO_RESULTS_GEO, RECEIVE_SCENARIO_RESULTS_GEO, INVALIDATE_SCENARIO_RESULTS_GEO } from '../actions';
+import { REQUEST_SCENARIO_POI, RECEIVE_SCENARIO_POI, INVALIDATE_SCENARIO_POI } from '../actions';
 
 const initialState = {
   fetching: false,
@@ -9,11 +9,11 @@ const initialState = {
 
 export default function reducer (state = initialState, action) {
   switch (action.type) {
-    case INVALIDATE_SCENARIO_RESULTS_GEO:
+    case INVALIDATE_SCENARIO_POI:
       return Object.assign({}, state, initialState);
-    case REQUEST_SCENARIO_RESULTS_GEO:
+    case REQUEST_SCENARIO_POI:
       return Object.assign({}, state, { error: null, fetching: true, fetched: false });
-    case RECEIVE_SCENARIO_RESULTS_GEO:
+    case RECEIVE_SCENARIO_POI:
       state = Object.assign({}, state, { fetching: false, fetched: true, receivedAt: action.receivedAt });
       if (action.error) {
         state.error = action.error;

@@ -3,9 +3,11 @@ import React, { PropTypes as T } from 'react';
 import c from 'classnames';
 import _ from 'lodash';
 import { hashHistory } from 'react-router';
+import ReactTooltip from 'react-tooltip';
 
 import config from '../../config';
 import { t, getLanguage } from '../../utils/i18n';
+import { rnEditThreshold, rnEditThresholdDisplay } from '../../utils/constants';
 import { limitHelper } from '../../utils/utils';
 import { postFormdata } from '../../actions';
 
@@ -105,6 +107,10 @@ const ScenarioCreateModal = React.createClass({
 
     let data = Object.assign({}, this.state.data, {roadNetworkSourceFile});
     this.setState({data});
+
+    if (file.size >= rnEditThreshold) {
+      this.props._showAlert('warning', <p>File size is above {rnEditThresholdDisplay}. Road network editing will be disabled.</p>, true);
+    }
   },
 
   checkErrors: function () {
@@ -131,6 +137,8 @@ const ScenarioCreateModal = React.createClass({
     if (this.state.data.name.length === 0 || !nameLimit(this.state.data.name.length).isOk()) return false;
 
     if (this.state.data.description.length > 0 && !descLimit(this.state.data.description.length).isOk()) return false;
+
+    if (this.state.data.roadNetworkSource === 'new' && !this.state.data.roadNetworkSourceFile.file) return false;
 
     return true;
   },
@@ -275,8 +283,8 @@ const ScenarioCreateModal = React.createClass({
                 <span className='form__option__text'>{t('Upload new')}</span>
                 <span className='form__option__ui'></span>
               </label>
-              <label className='form__option form__option--inline form__option--custom-radio disabled'>
-                <input type='radio' name='road-network' id='road-network-osm' value='osm' onChange={this.onFieldChange.bind(null, 'roadNetworkSource')} checked={this.state.data.roadNetworkSource === 'osm'} disabled />
+              <label className='form__option form__option--inline form__option--custom-radio'>
+                <input type='radio' name='road-network' id='road-network-osm' value='osm' onChange={this.onFieldChange.bind(null, 'roadNetworkSource')} checked={this.state.data.roadNetworkSource === 'osm'} />
                 <span className='form__option__text'>{t('OSM data')}</span>
                 <span className='form__option__ui'></span>
               </label>
@@ -309,6 +317,10 @@ const ScenarioCreateModal = React.createClass({
             </FileInput>
             ) : null}
 
+            {this.state.data.roadNetworkSource === 'osm' && <p>{t('Import road network data from OpenStreetMap.')}</p>}
+            {this.state.data.roadNetworkSource === 'osm' && <p>{t('When the resulting import is over {max} the road network editing will be disabled.', {max: rnEditThresholdDisplay})}</p>}
+
+            <ReactTooltip />
           </form>
         </ModalBody>
         <ModalFooter>

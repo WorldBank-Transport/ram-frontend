@@ -246,9 +246,9 @@ const ScenarioPage = React.createClass({
     }
 
     let genAt = scenario.data.res_gen_at;
-    genAt === 0 ? genAt : (new Date(genAt)).getTime();
+    genAt = genAt === 0 ? genAt : (new Date(genAt)).getTime();
     let rnUpdatedAt = scenario.data.rn_updated_at;
-    rnUpdatedAt === 0 ? rnUpdatedAt : (new Date(rnUpdatedAt)).getTime();
+    rnUpdatedAt = rnUpdatedAt === 0 ? rnUpdatedAt : (new Date(rnUpdatedAt)).getTime();
 
     if (rnUpdatedAt > genAt) {
       return (
@@ -263,7 +263,7 @@ const ScenarioPage = React.createClass({
   renderEmptyState: function () {
     let scenario = this.props.scenario.data;
     let isGenerating = scenario.gen_analysis && scenario.gen_analysis.status === 'running';
-    let isPending = scenario.scen_create && scenario.scen_create.status === 'running';
+    let isPending = scenario.status === 'pending';
 
     if (isGenerating || isPending || scenarioHasResults(scenario)) {
       return null;

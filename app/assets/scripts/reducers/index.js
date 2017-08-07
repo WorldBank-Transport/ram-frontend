@@ -9,9 +9,11 @@ import projectForm from './project-form';
 import scenarios from './scenarios';
 import scenarioForm from './scenario-form';
 import scenarioResults from './scenario-results';
+import scenarioPoi from './scenario-poi';
 import scenarioResultsRaw from './scenario-results-raw';
 import scenarioResultsGeo from './scenario-results-geo';
 import { systemAlertsReducer } from '../components/system-alerts';
+import auth from './auth';
 
 export const reducers = {
   projects,
@@ -23,7 +25,9 @@ export const reducers = {
   scenarioResults,
   scenarioResultsRaw,
   scenarioResultsGeo,
-  systemAlertsReducer
+  scenarioPoi,
+  systemAlertsReducer,
+  auth
 };
 
 export default combineReducers(Object.assign({}, reducers, {

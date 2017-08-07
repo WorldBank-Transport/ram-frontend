@@ -1,10 +1,10 @@
 {
-  "name": "rural-road-accessibility--frontend",
-  "version": "0.3.0",
-  "description": "World Bank project to assess rural road accessibility",
+  "name": "ram-frontend",
+  "version": "0.4.0",
+  "description": "World Bank project to assess rural accessibility",
   "repository": {
     "type": "git",
-    "url": "https://github.com/WorldBank-Transport/rra-frontend"
+    "url": "https://github.com/WorldBank-Transport/ram-frontend"
   },
   "author": {
     "name": "Development Seed",
@@ -12,9 +12,9 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/WorldBank-Transport/rra-frontend/issues"
+    "url": "https://github.com/WorldBank-Transport/ram-frontend/issues"
   },
-  "homepage": "https://github.com/WorldBank-Transport/rra-frontend",
+  "homepage": "https://github.com/WorldBank-Transport/ram-frontend",
   "scripts": {
     "postinstall": "[ -f app/assets/scripts/config/local.js ] || echo 'module.exports = {};' > app/assets/scripts/config/local.js",
     "serve": "DS_ENV=development gulp collecticons && gulp serve",
@@ -81,6 +81,8 @@
     "watchify": "^3.9.0"
   },
   "dependencies": {
+    "auth0-js": "^8.8.0",
+    "babel-polyfill": "^6.23.0",
     "classnames": "^2.2.5",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.17.4",
