@@ -4,5 +4,6 @@
  */
 module.exports = {
   environment: 'staging',
-  api: 'http://api.ruralaccess.info'
+  api: 'http://api.ruralaccess.info',
+  iDEditor: 'http://id.ruralaccess.info'
 };
