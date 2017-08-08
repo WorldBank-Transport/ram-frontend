@@ -284,6 +284,10 @@ a.card__contents {
   @extend %collecticon-pencil;
 }
 
+.ca-search::before {
+  @extend %collecticon-magnifier-left;
+}
+
 
 /* Card button
    ========================================================================== */
