@@ -8,7 +8,6 @@ const clone = data => JSON.parse(JSON.stringify(data));
 
 class ResultsMap extends React.Component {
   setupMap () {
-    this.ready = false;
     mapboxgl.accessToken = config.mbtoken;
     let { bbox } = this.props;
 
@@ -23,75 +22,79 @@ class ResultsMap extends React.Component {
   }
 
   setupData () {
-    let empty = {
-      type: 'FeatureCollection',
-      features: []
-    };
+    if (this.props.data.fetched) {
+      if (this.theMap.getSource('etaData')) {
+        return;
+      }
 
-    this.theMap.addSource('etaData', {
-      'type': 'geojson',
-      'data': this.props.data.fetched ? clone(this.props.data.data.geojson) : empty
-    });
+      this.theMap.addSource('etaData', {
+        'type': 'geojson',
+        'data': clone(this.props.data.data.geojson)
+      });
 
-    this.theMap.addSource('poiData', {
-      type: 'geojson',
-      data: this.props.poi.fetched ? clone(this.props.poi.data.geojson) : empty
-    });
-
-    this.theMap.addLayer({
-      'id': 'eta',
-      'type': 'circle',
-      'source': 'etaData',
-      'paint': {
-        'circle-color': {
-          'base': 1,
-          'type': 'interval',
-          'property': 'e',
-          'stops': [
-            [0, '#1a9850'],
-            [600, '#91cf60'],
-            [1200, '#d9ef8b'],
-            [1800, '#fee08b'],
-            [3600, '#fc8d59'],
-            [5400, '#d73027'],
-            [7200, '#4d4d4d']
-          ]
-        },
-        'circle-radius': {
-          'base': 1,
-          'type': 'interval',
-          'property': 'pn',
-          'stops': [
-            [{zoom: 0, value: 0}, 2],
-            [{zoom: 0, value: 1}, 5],
-            [{zoom: 6, value: 0}, 5],
-            [{zoom: 6, value: 1}, 25],
-            [{zoom: 14, value: 0}, 15],
-            [{zoom: 14, value: 1}, 45]
-          ]
-        },
-        'circle-blur': 0.5,
-        'circle-opacity': {
-          'stops': [
-            [0, 0.1],
-            [6, 0.5],
-            [12, 0.75],
-            [16, 0.9]
-          ]
+      this.theMap.addLayer({
+        'id': 'eta',
+        'type': 'circle',
+        'source': 'etaData',
+        'paint': {
+          'circle-color': {
+            'base': 1,
+            'type': 'interval',
+            'property': 'e',
+            'stops': [
+              [0, '#1a9850'],
+              [600, '#91cf60'],
+              [1200, '#d9ef8b'],
+              [1800, '#fee08b'],
+              [3600, '#fc8d59'],
+              [5400, '#d73027'],
+              [7200, '#4d4d4d']
+            ]
+          },
+          'circle-radius': {
+            'base': 1,
+            'type': 'interval',
+            'property': 'pn',
+            'stops': [
+              [{zoom: 0, value: 0}, 2],
+              [{zoom: 0, value: 1}, 5],
+              [{zoom: 6, value: 0}, 5],
+              [{zoom: 6, value: 1}, 25],
+              [{zoom: 14, value: 0}, 15],
+              [{zoom: 14, value: 1}, 45]
+            ]
+          },
+          'circle-blur': 0.5,
+          'circle-opacity': {
+            'stops': [
+              [0, 0.1],
+              [6, 0.5],
+              [12, 0.75],
+              [16, 0.9]
+            ]
+          }
         }
-      }
-    }, 'poi');
+      }, 'poi');
+    }
 
-    this.theMap.addLayer({
-      id: 'poi',
-      type: 'symbol',
-      source: 'poiData',
-      layout: {
-        'icon-image': 'marker-15'
+    if (this.props.poi.fetched) {
+      if (this.theMap.getSource('poiData')) {
+        return;
       }
-    });
 
-    this.ready = true;
+      this.theMap.addSource('poiData', {
+        type: 'geojson',
+        data: clone(this.props.poi.data.geojson)
+      });
+      this.theMap.addLayer({
+        id: 'poi',
+        type: 'symbol',
+        source: 'poiData',
+        layout: {
+          'icon-image': 'marker-15'
+        }
+      });
+    }
   }
 
   componentDidMount () {
@@ -105,12 +108,21 @@ class ResultsMap extends React.Component {
   }
 
   componentDidUpdate (prevProps) {
-    if (this.ready) {
-      if (this.props.data.fetched && this.props.data.receivedAt !== prevProps.data.receivedAt) {
-        this.theMap.getSource('etaData').setData(clone(this.props.data.data.geojson));
+    if (this.props.data.fetched && this.props.data.receivedAt !== prevProps.data.receivedAt) {
+      let source = this.theMap.getSource('etaData');
+      if (source) {
+        source.setData(clone(this.props.data.data.geojson));
+      } else {
+        this.setupData();
       }
-      if (this.props.poi.fetched && this.props.poi.receivedAt !== prevProps.poi.receivedAt) {
-        this.theMap.getSource('poiData').setData(clone(this.props.poi.data.geojson));
+    }
+
+    if (this.props.poi.fetched && this.props.poi.receivedAt !== prevProps.poi.receivedAt) {
+      let source = this.theMap.getSource('poiData');
+      if (source) {
+        source.setData(clone(this.props.poi.data.geojson));
+      } else {
+        this.setupData();
       }
     }
   }
