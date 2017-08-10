@@ -1,13 +1,17 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
+import { render } from 'react-dom';
 import mapboxgl from 'mapbox-gl';
 
 import config from '../../config';
+import { toTimeStr } from '../../utils/utils';
 
 const clone = data => JSON.parse(JSON.stringify(data));
 
 class ResultsMap extends React.Component {
   setupMap () {
+    this.popover = null;
+
     mapboxgl.accessToken = config.mbtoken;
     let { bbox } = this.props;
 
@@ -19,6 +23,31 @@ class ResultsMap extends React.Component {
     this.theMap.scrollZoom.disable();
     this.theMap.fitBounds(bbox);
     this.theMap.on('load', this.setupData.bind(this));
+
+    this.theMap.on('click', 'eta', e => {
+      this.showPopover(e.features[0]);
+    });
+  }
+
+  showPopover (feature) {
+    let popoverContent = document.createElement('div');
+    render(<MapPopover
+            name={feature.properties.n}
+            pop={feature.properties.p}
+            popIndName={this.props.popIndName}
+            eta={feature.properties.e}
+            poiName={this.props.poiName} />, popoverContent);
+
+    // Populate the popup and set its coordinates
+    // based on the feature found.
+    if (this.popover != null) {
+      this.popover.remove();
+    }
+
+    this.popover = new mapboxgl.Popup({closeButton: false})
+      .setLngLat(feature.geometry.coordinates)
+      .setDOMContent(popoverContent)
+      .addTo(this.theMap);
   }
 
   getPopStops (geojson) {
@@ -189,7 +218,35 @@ class ResultsMap extends React.Component {
 ResultsMap.propTypes = {
   bbox: T.array,
   data: T.object,
-  poi: T.object
+  poi: T.object,
+  poiName: T.string,
+  popIndName: T.string
 };
 
 export default ResultsMap;
+
+class MapPopover extends React.Component {
+  render () {
+    return (
+      <article className='popover'>
+        <div className='popover__contents'>
+          <header className='popover__header'>
+            <h1 className='popover__title'>{this.props.name}</h1>
+          </header>
+          <div className='popover__body'>
+            <p>{this.props.popIndName}: {this.props.pop}</p>
+            <p>{toTimeStr(this.props.eta)} to reach nearest poi {this.props.poiName}</p>
+          </div>
+        </div>
+      </article>
+    );
+  }
+}
+
+MapPopover.propTypes = {
+  name: T.string,
+  pop: T.number,
+  popIndName: T.string,
+  eta: T.number,
+  poiName: T.string
+};
