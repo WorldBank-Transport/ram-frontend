@@ -21,6 +21,39 @@ class ResultsMap extends React.Component {
     this.theMap.on('load', this.setupData.bind(this));
   }
 
+  getPopStops (geojson) {
+    let feats = geojson.features;
+    let buckets = [1, 2, 3, 4, 5];
+    let bucketSize = Math.floor(feats.length / buckets.length);
+    let pop = feats.map(f => f.properties.p).sort((a, b) => a - b);
+
+    // Get the pop value to build the buckets. All buckets have the same
+    // amount of values.
+    buckets = buckets.map(b => pop[b * bucketSize - 1]);
+
+    let stops = buckets.map((b, idx) => ([{zoom: 6, value: b}, (idx + 1) * 5]));
+    stops.unshift([{zoom: 6, value: 0}, 1]);
+
+    return stops;
+  }
+
+  getCircleRadiusPaintProp (data) {
+    return {
+      'base': 1,
+      'type': 'interval',
+      'property': 'p',
+      'stops': this.getPopStops(data)
+      // 'stops': [
+      //   [{zoom: 0, value: 0}, 2],
+      //   [{zoom: 0, value: 1}, 5],
+      //   [{zoom: 6, value: 0}, 5],
+      //   [{zoom: 6, value: 1}, 25],
+      //   [{zoom: 14, value: 0}, 15],
+      //   [{zoom: 14, value: 1}, 45]
+      // ]
+    };
+  }
+
   setupData () {
     if (this.props.data.fetched) {
       if (this.theMap.getSource('etaData')) {
@@ -51,19 +84,7 @@ class ResultsMap extends React.Component {
               [7200, '#4d4d4d']
             ]
           },
-          'circle-radius': {
-            'base': 1,
-            'type': 'interval',
-            'property': 'pn',
-            'stops': [
-              [{zoom: 0, value: 0}, 2],
-              [{zoom: 0, value: 1}, 5],
-              [{zoom: 6, value: 0}, 5],
-              [{zoom: 6, value: 1}, 25],
-              [{zoom: 14, value: 0}, 15],
-              [{zoom: 14, value: 1}, 45]
-            ]
-          },
+          'circle-radius': this.getCircleRadiusPaintProp(this.props.data.data.geojson),
           'circle-blur': 0.5,
           'circle-opacity': {
             'stops': [
@@ -112,6 +133,7 @@ class ResultsMap extends React.Component {
       let source = this.theMap.getSource('etaData');
       if (source) {
         source.setData(clone(this.props.data.data.geojson));
+        this.theMap.setPaintProperty('eta', 'circle-radius', this.getCircleRadiusPaintProp(this.props.data.data.geojson));
       } else {
         this.setupData();
       }
