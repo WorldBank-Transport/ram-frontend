@@ -445,6 +445,11 @@ class RawResultsTable extends React.PureComponent {
           </header>
 
           <div className='card__body'>
+
+            <div className='card__status card__status--empty'>
+              <p>No results found.</p>
+            </div>
+
             <div className='table-wrapper'>
               <table className='table'>
                 <thead>
