@@ -232,9 +232,9 @@ a.card__contents {
     vertical-align: top;
   }
 
-  > *:last-child {
-    margin-right: -$global-spacing / 4;
-  }
+  // > *:last-child {
+  //   margin-right: -$global-spacing / 4;
+  // }
 }
 
 .actions__menu {
@@ -256,6 +256,12 @@ a.card__contents {
   > li:not(:last-child) {
     margin-right: $global-spacing / 4;
   }
+}
+
+.card__search-block {
+  max-width: 12rem;
+  display: inline-block;
+  margin-bottom: 0;
 }
 
 

@@ -434,9 +434,9 @@ class RawResultsTable extends React.PureComponent {
               <h1 className='card__title'>Origin level raw data for {this.props.poiName}</h1>
             </div>
             <div className='card__actions'>
-              <div className='form__group'>
+              <div className='form__group card__search-block'>
                 <label className='form__label visually-hidden' htmlFor='search-villages'>{t('Search villages')}</label>
-                <div className='form__input-group'>
+                <div className='form__input-group form__input-group--small'>
                   <div className='form__input-addon'><button type='button' className='button button--primary-plain button--text-hidden' title='Search villages'><i className='collecticon-magnifier-left'></i><span>Search</span></button></div>
                   <input type='text' id='search-villages' name='search-villages' className='form__control' placeholder={t('Villages')} />
                 </div>
