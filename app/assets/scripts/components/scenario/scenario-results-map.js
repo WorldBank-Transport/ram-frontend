@@ -29,14 +29,20 @@ class ResultsMap extends React.Component {
     });
   }
 
+  onPopoverCloseClick () {
+    this.popover.remove();
+  }
+
   showPopover (feature) {
     let popoverContent = document.createElement('div');
+
     render(<MapPopover
             name={feature.properties.n}
             pop={feature.properties.p}
             popIndName={this.props.popIndName}
             eta={feature.properties.e}
-            poiName={this.props.poiName} />, popoverContent);
+            poiName={this.props.poiName}
+            onCloseClick={this.onPopoverCloseClick.bind(this)} />, popoverContent);
 
     // Populate the popup and set its coordinates
     // based on the feature found.
@@ -236,7 +242,7 @@ class MapPopover extends React.Component {
             </div>
             <div className='popover__actions actions'>
               <ul className='actions__menu'>
-                <li><button type='button' className='actions__menu-item poa-xmark' title='Close popover'><span>Dismiss</span></button></li>
+                <li><button type='button' className='actions__menu-item poa-xmark' title='Close popover' onClick={this.props.onCloseClick}><span>Dismiss</span></button></li>
               </ul>
             </div>
           </header>
@@ -259,5 +265,6 @@ MapPopover.propTypes = {
   pop: T.number,
   popIndName: T.string,
   eta: T.number,
-  poiName: T.string
+  poiName: T.string,
+  onCloseClick: T.func
 };
