@@ -263,6 +263,9 @@ a.mapboxgl-ctrl-logo {
     display: flex;
     will-change: transform;
     pointer-events: none;
+
+    /* Animation */
+    animation: reveal 0.24s ease 0s 1;
 }
 
 .mapboxgl-popup-anchor-top,

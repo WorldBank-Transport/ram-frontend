@@ -183,7 +183,7 @@ class ResultsMap extends React.Component {
       <article className='card card--analysis-result scenario-vis'>
         <div className='card__contents'>
           <header className='card__header'>
-            <h1 className='card__title'>ETA Visualization</h1>
+            <h1 className='card__title'>ETA visualization</h1>
           </header>
 
           <figure className='card__media scenario-vis__media'>
