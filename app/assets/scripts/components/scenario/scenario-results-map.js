@@ -231,11 +231,22 @@ class MapPopover extends React.Component {
       <article className='popover'>
         <div className='popover__contents'>
           <header className='popover__header'>
-            <h1 className='popover__title'>{this.props.name}</h1>
+            <div className='popover__headline'>
+              <h1 className='popover__title'>{this.props.name}</h1>
+            </div>
+            <div className='popover__actions actions'>
+              <ul className='actions__menu'>
+                <li><button type='button' className='actions__menu-item poa-xmark' title='Close popover'><span>Dismiss</span></button></li>
+              </ul>
+            </div>
           </header>
           <div className='popover__body'>
-            <p>{this.props.popIndName}: {this.props.pop}</p>
-            <p>{toTimeStr(this.props.eta)} to reach nearest poi {this.props.poiName}</p>
+            <dl className='dl-horizontal popover__details'>
+              <dt>{this.props.popIndName}</dt>
+              <dd>{this.props.pop}</dd>
+              <dt>Nearest {this.props.poiName}</dt>
+              <dd>{toTimeStr(this.props.eta)}</dd>
+            </dl>
           </div>
         </div>
       </article>

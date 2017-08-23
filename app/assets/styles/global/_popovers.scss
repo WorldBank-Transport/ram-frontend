@@ -7,6 +7,7 @@
   text-align: initial;
   font-size: 1rem;
   line-height: 1.5;
+  min-width: 16rem;
 }
 
 .popover__contents {
@@ -50,19 +51,12 @@ a.popover__contents {
 }
 
 .popover__title {
-  @include heading(1.25rem);
+  @include heading(1rem);
   margin: 0;
 
   a.popover__contents & {
     color: $link-color;
   }
-}
-
-.popover__subtitle {
-  @extend .heading-alt;
-  font-size: 0.75rem;
-  line-height: 1rem;
-  margin-top: $global-spacing / 4;
 }
 
 
@@ -84,6 +78,24 @@ a.popover__contents {
 
   > *:last-child {
     margin-bottom: 0;
+  }
+}
+
+.popover__details {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+
+  dt {
+    width: 68%;
+  }
+
+  dd {
+    width: 32%;
+    margin-bottom: $global-spacing / 4;
+  }
+  
+  dd + dd {
+    margin-left: 68%;
   }
 }
 
@@ -115,7 +127,6 @@ a.popover__contents {
   }
 }
 
-
 /**
  * "poa-" prefix stands for "popover action"
  */
@@ -125,18 +136,6 @@ a.popover__contents {
   @extend .button, .button--small, .button--primary-plain, .button--text-hidden;
 }
 
-.poa-ellipsis::before {
-  @extend %collecticon-ellipsis-vertical;
-}
-
-.poa-download::before {
-  @extend %collecticon-download-3;
-}
-
-.poa-question::before {
-  @extend %collecticon-circle-question;
-}
-
-.poa-pencil::before {
-  @extend %collecticon-pencil;
+.poa-xmark::before {
+  @extend %collecticon-sm-xmark;
 }
