@@ -66,7 +66,7 @@ class ResultsMap extends React.Component {
     // amount of values.
     buckets = buckets.map(b => pop[b * bucketSize - 1]);
 
-    let stops = buckets.map((b, idx) => ([{zoom: 6, value: b}, (idx + 1) * 5]));
+    let stops = buckets.map((b, idx) => ([{zoom: 6, value: b}, (idx + 1) * 4]));
     stops.unshift([{zoom: 6, value: 0}, 1]);
 
     return stops;
@@ -194,25 +194,41 @@ class ResultsMap extends React.Component {
 
           <figure className='card__media scenario-vis__media'>
             <div className='card__cover scenario-vis__map' ref='map'></div>
-
-            <figcaption className='scenario-vis__legend'>
-              <h3>Travel time in minutes</h3>
-              <dl>
-                <dt>Dark green</dt>
-                <dd className='l1'><span>0</span></dd>
-                <dt>Soft green</dt>
-                <dd className='l2'><span>10</span></dd>
-                <dt>Light green</dt>
-                <dd className='l3'><span>20</span></dd>
-                <dt>Yellow</dt>
-                <dd className='l4'><span>30</span></dd>
-                <dt>Orange</dt>
-                <dd className='l5'><span>60</span></dd>
-                <dt>Red</dt>
-                <dd className='l6'><span>90</span></dd>
-                <dt>Brown</dt>
-                <dd className='l7'><span>120</span></dd>
-              </dl>
+            <figcaption className='scenario-vis__legend legend'>
+              <div className='legend__block'>
+                <h3 className='legend__title'>Population density</h3>
+                <dl className='legend__dl legend__dl--radius'>
+                  <dt>4px radius</dt>
+                  <dd>0-50</dd>
+                  <dt>8px radius</dt>
+                  <dd>50-100</dd>
+                  <dt>12px radius</dt>
+                  <dd>100-150</dd>
+                  <dt>16px radius</dt>
+                  <dd>150-200</dd>
+                  <dt>20px radius</dt>
+                  <dd>200-250</dd>
+                </dl>
+              </div>
+              <div className='legend__block'>
+                <h3 className='legend__title'>Time to POI (minutes)</h3>
+                <dl className='legend__dl legend__dl--colors'>
+                  <dt>Dark green</dt>
+                  <dd>0</dd>
+                  <dt>Soft green</dt>
+                  <dd>10</dd>
+                  <dt>Light green</dt>
+                  <dd>20</dd>
+                  <dt>Yellow</dt>
+                  <dd>30</dd>
+                  <dt>Orange</dt>
+                  <dd>60</dd>
+                  <dt>Red</dt>
+                  <dd>90</dd>
+                  <dt>Brown</dt>
+                  <dd>120</dd>
+                </dl>
+              </div>
             </figcaption>
           </figure>
         </div>
@@ -250,7 +266,7 @@ class MapPopover extends React.Component {
             <dl className='dl-horizontal popover__details'>
               <dt>{this.props.popIndName}</dt>
               <dd>{this.props.pop}</dd>
-              <dt>Nearest {this.props.poiName}</dt>
+              <dt>Nearest POI</dt>
               <dd>{toTimeStr(this.props.eta)}</dd>
             </dl>
           </div>

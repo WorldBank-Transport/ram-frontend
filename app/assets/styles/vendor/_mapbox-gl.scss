@@ -76,22 +76,22 @@
 }
 
 .mapboxgl-ctrl-top-left .mapboxgl-ctrl {
-    margin: 10px 0 0 10px;
+    margin: $global-spacing 0 0 $global-spacing;
     float: left;
 }
 
 .mapboxgl-ctrl-top-right .mapboxgl-ctrl {
-    margin: 10px 10px 0 0;
+    margin: $global-spacing $global-spacing 0 0;
     float: right;
 }
 
 .mapboxgl-ctrl-bottom-left .mapboxgl-ctrl {
-    margin: 0 0 10px 10px;
+    margin: 0 0 $global-spacing $global-spacing;
     float: left;
 }
 
 .mapboxgl-ctrl-bottom-right .mapboxgl-ctrl {
-    margin: 0 10px 10px 0;
+    margin: 0 $global-spacing $global-spacing 0;
     float: right;
 }
 
