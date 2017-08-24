@@ -51,48 +51,28 @@
 }
 
 .mapboxgl-ctrl-top-left {
-    top: 0;
-    left: 0;
+    top: $global-spacing;
+    left: $global-spacing;
 }
 
 .mapboxgl-ctrl-top-right {
-    top: 0;
-    right: 0;
+    top: $global-spacing;
+    right: $global-spacing;
 }
 
 .mapboxgl-ctrl-bottom-left {
-    bottom: 0;
-    left: 0;
+    bottom: $global-spacing;
+    left: $global-spacing;
 }
 
 .mapboxgl-ctrl-bottom-right {
-    right: 0;
-    bottom: 0;
+    right: $global-spacing;
+    bottom: $global-spacing;
 }
 
 .mapboxgl-ctrl {
     clear: both;
     pointer-events: auto
-}
-
-.mapboxgl-ctrl-top-left .mapboxgl-ctrl {
-    margin: $global-spacing 0 0 $global-spacing;
-    float: left;
-}
-
-.mapboxgl-ctrl-top-right .mapboxgl-ctrl {
-    margin: $global-spacing $global-spacing 0 0;
-    float: right;
-}
-
-.mapboxgl-ctrl-bottom-left .mapboxgl-ctrl {
-    margin: 0 0 $global-spacing $global-spacing;
-    float: left;
-}
-
-.mapboxgl-ctrl-bottom-right .mapboxgl-ctrl {
-    margin: 0 $global-spacing $global-spacing 0;
-    float: right;
 }
 
 .mapboxgl-ctrl-group {
@@ -191,10 +171,17 @@ a.mapboxgl-ctrl-logo {
 .mapboxgl-ctrl.mapboxgl-ctrl-attrib {
     padding: 0 5px;
     background-color: rgba(255, 255, 255, .5);
-    margin: 0;
     font-size: 0.75rem;
     line-height: 1.25rem;
-    border-radius: $base-border-radius 0 $base-border-radius 0;
+    border-radius: $base-border-radius;
+
+    .mapboxgl-ctrl-bottom-left & {
+        margin: 0 0 (-$global-spacing) (-$global-spacing);
+        border-top-left-radius: 0;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+
+    }
 }
 
 .mapboxgl-ctrl-attrib.mapboxgl-compact {
