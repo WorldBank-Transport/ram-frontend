@@ -56,28 +56,37 @@ class ResultsMap extends React.Component {
       .addTo(this.theMap);
   }
 
-  getPopStops (geojson) {
-    let feats = geojson.features;
-    let buckets = [1, 2, 3, 4, 5];
-    let bucketSize = Math.floor(feats.length / buckets.length);
-    let pop = feats.map(f => f.properties.p).sort((a, b) => a - b);
+  getPopBuckets (geojson) {
+    const feats = geojson.features;
+    const totalBuckets = 5;
+    // We want 5 buckets in total, so we divide by totalBuckets - 1.
+    const bucketSize = Math.floor(feats.length / (totalBuckets - 1));
+    const pop = feats.map(f => f.properties.p).sort((a, b) => a - b);
 
+    // Prepare the buckets array.
     // Get the pop value to build the buckets. All buckets have the same
     // amount of values.
-    buckets = buckets.map(b => pop[b * bucketSize - 1]);
+    let buckets = Array.apply(null, Array(totalBuckets - 1)).map((_, i) => pop[(i + 1) * bucketSize - 1]);
 
-    let stops = buckets.map((b, idx) => ([{zoom: 6, value: b}, (idx + 1) * 4]));
-    stops.unshift([{zoom: 6, value: 0}, 1]);
+    // Add first and last values as well.
+    buckets.unshift(0);
+    buckets.push(pop[pop.length - 1]);
 
-    return stops;
+    return buckets;
   }
 
   getCircleRadiusPaintProp (data) {
+    let buckets = this.getPopBuckets(data);
+    // Last value is not needed.
+    buckets.pop();
+
+    let stops = buckets.map((b, idx) => ([{zoom: 6, value: b}, (idx + 1) * 4]));
+
     return {
       'base': 1,
       'type': 'interval',
       'property': 'p',
-      'stops': this.getPopStops(data)
+      'stops': stops
       // 'stops': [
       //   [{zoom: 0, value: 0}, 2],
       //   [{zoom: 0, value: 1}, 5],
@@ -184,6 +193,71 @@ class ResultsMap extends React.Component {
     }
   }
 
+  renderPopLegend () {
+    const data = this.props.data.data.geojson;
+    if (!data) {
+      return null;
+    }
+
+    const shorten = (num) => {
+      if (num >= 1e6) {
+        return Math.floor(num / 1e6) + 'M';
+      } else if (num >= 1e3) {
+        return Math.floor(num / 1e3) + 'K';
+      } else {
+        return num;
+      }
+    };
+
+    let stops = this.getPopBuckets(data);
+    // Build the legend
+    let legend = [];
+    stops.forEach((s, idx, all) => {
+      // Skip idx 0.
+      if (idx) {
+        const from = shorten(all[idx - 1]);
+        const to = shorten(all[idx]);
+        const r = idx * 4;
+
+        legend.push(<dt key={`dt-${r}`}>{r}px radius</dt>);
+        legend.push(<dd key={`dd-${r}`}>{from}-{to}</dd>);
+      }
+    });
+
+    return (
+      <div className='legend__block'>
+        <h3 className='legend__title'>Population density</h3>
+        <dl className='legend__dl legend__dl--radius'>
+          {legend}
+        </dl>
+      </div>
+    );
+  }
+
+  renderTimeLegend () {
+    return (
+      <div className='legend__block'>
+        <h3 className='legend__title'>Time to POI (minutes)</h3>
+        <dl className='legend__dl legend__dl--colors'>
+          <dt>Dark green</dt>
+          <dd>0</dd>
+          <dt>Soft green</dt>
+          <dd>10</dd>
+          <dt>Light green</dt>
+          <dd>20</dd>
+          <dt>Yellow</dt>
+          <dd>30</dd>
+          <dt>Orange</dt>
+          <dd>60</dd>
+          <dt>Red</dt>
+          <dd>90</dd>
+          <dt>Brown</dt>
+          <dd>120</dd>
+        </dl>
+      </div>
+    );
+  }
+
   render () {
     return (
       <article className='card card--analysis-result scenario-vis'>
@@ -195,40 +269,8 @@ class ResultsMap extends React.Component {
           <figure className='card__media scenario-vis__media'>
             <div className='card__cover scenario-vis__map' ref='map'></div>
             <figcaption className='scenario-vis__legend legend'>
-              <div className='legend__block'>
-                <h3 className='legend__title'>Population density</h3>
-                <dl className='legend__dl legend__dl--radius'>
-                  <dt>4px radius</dt>
-                  <dd>0-50</dd>
-                  <dt>8px radius</dt>
-                  <dd>50-100</dd>
-                  <dt>12px radius</dt>
-                  <dd>100-150</dd>
-                  <dt>16px radius</dt>
-                  <dd>150-200</dd>
-                  <dt>20px radius</dt>
-                  <dd>200-250</dd>
-                </dl>
-              </div>
-              <div className='legend__block'>
-                <h3 className='legend__title'>Time to POI (minutes)</h3>
-                <dl className='legend__dl legend__dl--colors'>
-                  <dt>Dark green</dt>
-                  <dd>0</dd>
-                  <dt>Soft green</dt>
-                  <dd>10</dd>
-                  <dt>Light green</dt>
-                  <dd>20</dd>
-                  <dt>Yellow</dt>
-                  <dd>30</dd>
-                  <dt>Orange</dt>
-                  <dd>60</dd>
-                  <dt>Red</dt>
-                  <dd>90</dd>
-                  <dt>Brown</dt>
-                  <dd>120</dd>
-                </dl>
-              </div>
+              {this.renderPopLegend()}
+              {this.renderTimeLegend()}
             </figcaption>
           </figure>
         </div>
