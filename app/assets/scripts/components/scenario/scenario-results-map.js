@@ -217,12 +217,12 @@ class ResultsMap extends React.Component {
     stops.forEach((s, idx, all) => {
       // Skip idx 0.
       if (idx) {
-        const from = shorten(all[idx - 1]);
-        const to = shorten(all[idx]);
+        const from = all[idx - 1];
+        const to = all[idx];
         const r = idx * 4;
 
-        legend.push(<dt key={`dt-${r}`}>{r}px radius</dt>);
-        legend.push(<dd key={`dd-${r}`}>{from}-{to}</dd>);
+        legend.push(<dt key={`dt-${r}`} title={`${from} - ${to}`}>{r}px radius</dt>);
+        legend.push(<dd key={`dd-${r}`} title={`${from} - ${to}`}>{shorten(from)}-{shorten(to)}</dd>);
       }
     });
 
@@ -242,19 +242,19 @@ class ResultsMap extends React.Component {
         <h3 className='legend__title'>Time to POI (minutes)</h3>
         <dl className='legend__dl legend__dl--colors'>
           <dt>Dark green</dt>
-          <dd>0</dd>
+          <dd>0-10</dd>
           <dt>Soft green</dt>
-          <dd>10</dd>
+          <dd>10-20</dd>
           <dt>Light green</dt>
-          <dd>20</dd>
+          <dd>20-30</dd>
           <dt>Yellow</dt>
-          <dd>30</dd>
+          <dd>30-60</dd>
           <dt>Orange</dt>
-          <dd>60</dd>
+          <dd>60-90</dd>
           <dt>Red</dt>
-          <dd>90</dd>
+          <dd>90-120</dd>
           <dt>Brown</dt>
-          <dd>120</dd>
+          <dd>+120</dd>
         </dl>
       </div>
     );
