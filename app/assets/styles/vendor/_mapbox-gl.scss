@@ -179,8 +179,12 @@ a.mapboxgl-ctrl-logo {
         margin: 0 0 (-$global-spacing) (-$global-spacing);
         border-top-left-radius: 0;
         border-bottom-right-radius: 0;
-        border-bottom-left-radius: 0;
+    }
 
+    .mapboxgl-ctrl-bottom-right & {
+        margin: 0 (-$global-spacing) (-$global-spacing) 0;
+        border-top-right-radius: 0;
+        border-bottom-left-radius: 0;
     }
 }
 

@@ -125,7 +125,7 @@
 
 .scenario-vis__legend {
   position: absolute;
-  bottom: $global-spacing;
+  top: $global-spacing;
   right: $global-spacing;
   background: rgba(#fff, 0.80);
   padding: $global-spacing;
@@ -156,10 +156,6 @@
   font-size: 0.75rem;
   line-height: 1rem;
   margin-bottom: $global-spacing / 2;
-
-  small {
-    
-  }
 }
 
 .legend__dl {

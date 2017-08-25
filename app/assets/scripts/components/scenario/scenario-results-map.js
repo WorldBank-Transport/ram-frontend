@@ -21,7 +21,7 @@ class ResultsMap extends React.Component {
       attributionControl: false
     });
     this.theMap.addControl(new mapboxgl.NavigationControl(), 'top-left');
-    this.theMap.addControl(new mapboxgl.AttributionControl(), 'bottom-left');
+    this.theMap.addControl(new mapboxgl.AttributionControl(), 'bottom-right');
     this.theMap.scrollZoom.disable();
     this.theMap.fitBounds(bbox);
     this.theMap.on('load', this.setupData.bind(this));
