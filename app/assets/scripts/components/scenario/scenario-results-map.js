@@ -228,8 +228,8 @@ class ResultsMap extends React.Component {
 
     return (
       <div className='legend__block'>
-        <h3 className='legend__title'>Population density</h3>
-        <dl className='legend__dl legend__dl--radius'>
+        <h3 className='legend__title'>Population size</h3>
+        <dl className='legend__dl legend__dl--size'>
           {legend}
         </dl>
       </div>
@@ -239,7 +239,7 @@ class ResultsMap extends React.Component {
   renderTimeLegend () {
     return (
       <div className='legend__block'>
-        <h3 className='legend__title'>Time to POI (minutes)</h3>
+        <h3 className='legend__title'>Time to POI <small>(minutes)</small></h3>
         <dl className='legend__dl legend__dl--colors'>
           <dt>Dark green</dt>
           <dd>0-10</dd>

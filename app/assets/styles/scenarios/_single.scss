@@ -156,6 +156,10 @@
   font-size: 0.75rem;
   line-height: 1rem;
   margin-bottom: $global-spacing / 2;
+
+  small {
+    
+  }
 }
 
 .legend__dl {
@@ -192,7 +196,7 @@
   }
 }
 
-.legend__dl--radius {
+.legend__dl--size {
   dt {
     background: $base-alpha-color;
     border-radius: $full-border-radius;
