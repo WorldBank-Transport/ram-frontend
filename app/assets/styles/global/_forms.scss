@@ -523,32 +523,36 @@ label[for] {
 
   .form__option__ui {
     margin: 0.25rem 0;
-    width: 1.75rem;
+    width: 2rem;
     height: 1rem;
-    background: tint($base-color, 64%);
     border-radius: $full-border-radius;
+    background: rgba($base-color, 0.16);
 
     &::before {
+      @extend .button--base-raised-light;
       position: absolute;
       top: 50%;
       left: 0;
       transform: translate(0, -50%);
       content: '';
-      height: 0.75rem;
-      width: 0.75rem;
+      height: 1.25rem;
+      width: 1.25rem;
       border-radius: $full-border-radius;
-      background: #fff;
-      margin: 0 0.125rem;
-      transition: all 0.32s ease 0s;
+      transition: all 0.24s ease 0s;
     }
+  }
+
+  &:hover .form__option__ui {
+    @extend .button--hover;
   }
 
   &.form__option--checked .form__option__ui,
   input:checked ~ .form__option__ui {
-    background: $accent-color;
+    background: $link-color;
 
     &::before {
-      transform: translate(100%, -50%);
+      left: 100%;
+      transform: translate(-100%, -50%);
     }
   }
 }
