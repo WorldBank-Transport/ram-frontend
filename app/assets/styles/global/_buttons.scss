@@ -39,9 +39,10 @@
 
   /* Icon handling */
   &::before, &::after,
-  [class^="collecticons-"], [class*=" collecticons-"] {
+  [class^="collecticon-"], [class*=" collecticon-"] {
     font-size: 1rem;
   }
+
   &::before { margin-right: 0.375rem; }
   &::after { margin-left: 0.375rem; }
 

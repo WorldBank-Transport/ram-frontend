@@ -1,6 +1,7 @@
 'use strict';
 import React from 'react';
 
+import Dropdown from '../components/dropdown';
 import { t } from '../utils/i18n';
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '../components/modal';
@@ -107,7 +108,7 @@ class Playground extends React.Component {
                 <span className='form__option__ui'></span>
               </label>
 
-              <label htmlFor='switch3' className='form__option form__option--switch' title='Toggle on/off'>
+              <label htmlFor='switch3' className='form__option form__option--switch option fos-io' title='Toggle on/off'>
                 <input type='checkbox' name='switch3' id='switch3' value='on' />
                 <span className='form__option__ui'></span>
                 <span className='form__option__text'>Switch 03</span>
@@ -243,6 +244,22 @@ class Playground extends React.Component {
         <div className='inpage__body'>
           <div className='inner'>
             {this.renderPlaygroundContent()}
+
+            <div>
+              <Dropdown
+                className='scenario-meta-menu'
+                triggerClassName='button button--primary-raised-light'
+                triggerActiveClassName='button--active'
+                triggerText={t('Map overlays')}
+                triggerTitle={t('Toggle map overlays')}
+                direction='down'
+                alignment='left' >
+                  <ul className='drop__menu drop__menu--iconified' role='menu'>
+                    <li>Lorem ipsum</li>
+                  </ul>
+              </Dropdown>
+            </div>
+
             {this.renderModal()}
           </div>
         </div>
