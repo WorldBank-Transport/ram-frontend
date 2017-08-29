@@ -391,31 +391,37 @@ label[for] {
    ========================================================================== */
 
 .form__option {
-  position: relative;
-  display: inline-block;
-  margin-top: $global-spacing / 2;
+  display: flex;
+  align-items: flex-start;
   font-size: 1rem;
   line-height: 1.5;
   cursor: pointer;
-  padding-left: $global-spacing * 1.25;
+  margin-top: $global-spacing / 2;
 
   input {
-    position: absolute;
-    top: $global-spacing / 4;
-    left: 0;
+    flex: none;
+    margin-top: 0.3125rem; // 5pxh
   }
 }
 
 .form__option__text {
-  max-width: 100%;
-  display: inline-block;
-  vertical-align: top;
+  padding: 0 0 0 ($global-spacing / 2);
+
+  &:not(:last-child) {
+    padding: 0 ($global-spacing / 2) 0 0;
+  }
+}
+
+.form__option__ui {
+  flex: none;
+  position: relative;
+  transition: all 0.16s ease 0s;
 }
 
 /* Form option inline modifier */
 
 .form__option--inline {
-  display: inline-block;
+  display: inline-flex;
 }
 
 .form__option--inline + .form__option--inline {
@@ -428,21 +434,17 @@ label[for] {
 
 .form__option--custom-radio,
 .form__option--custom-checkbox {
-  padding-left: $global-spacing * 1.75;
 
   input {
     @extend .visually-hidden;
   }
 
   .form__option__ui {
-    position: absolute;
-    top: 0.125rem;
-    left: 0;
+    margin: 0.125rem 0;
     height: 1.25rem;
     width: 1.25rem;
     box-shadow: inset 0 0 0 1px rgba($base-color, 0.16);
     background: transparent;
-    transition: all 0.16s ease 0s;
 
     &::before {
       position: absolute;
@@ -463,6 +465,7 @@ label[for] {
     box-shadow: inset 0 0 0 2px $link-color;
   }
 
+  &.form__option--checked .form__option__ui,
   input:checked ~ .form__option__ui {
     box-shadow: inset 0 0 0 2px $link-color;
 
@@ -505,19 +508,13 @@ label[for] {
    ========================================================================== */
 
 .form__option--switch {
-  position: relative;
-  padding: 0;
 
-  input,
-  .form__option__text {
+  input {
     @extend .visually-hidden;
   }
 
-  transition: all 0.16s ease 0s;
-
   .form__option__ui {
-    position: relative;
-    display: block;
+    margin: 0.25rem 0;
     width: 1.75rem;
     height: 1rem;
     background: tint($base-color, 64%);
@@ -538,6 +535,7 @@ label[for] {
     }
   }
 
+  &.form__option--checked .form__option__ui,
   input:checked ~ .form__option__ui {
     background: $accent-color;
 
@@ -546,6 +544,7 @@ label[for] {
     }
   }
 }
+
 
 /* Form misc
    ========================================================================== */
