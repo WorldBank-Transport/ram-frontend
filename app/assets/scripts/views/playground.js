@@ -112,6 +112,12 @@ class Playground extends React.Component {
                 <span className='form__option__ui'></span>
                 <span className='form__option__text'>Switch 03</span>
               </label>
+
+              <label htmlFor='switch4' className='form__option form__option--text-hidden form__option--switch' title='Toggle on/off'>
+                <input type='checkbox' name='switch4' id='switch4' value='on' />
+                <span className='form__option__ui'></span>
+                <span className='form__option__text'>Switch 04</span>
+              </label>
             </div>
 
             <div className='form__group'>

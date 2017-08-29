@@ -428,6 +428,14 @@ label[for] {
   margin-left: $global-spacing;
 }
 
+/* Form option text-hidden modifier */
+
+.form__option--text-hidden {
+  .form__option__text {
+    @extend .visually-hidden;
+  }
+}
+
 
 /* Form custom options modifiers (radios and checkboxes)
    ========================================================================== */
