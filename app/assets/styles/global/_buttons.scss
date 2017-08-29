@@ -39,7 +39,6 @@
 
   /* Icon handling */
   &::before, &::after,
-  [class^="openaq-ds-icon-"], [class*=" openaq-ds-icon-"],
   [class^="collecticons-"], [class*=" collecticons-"] {
     font-size: 1rem;
   }
