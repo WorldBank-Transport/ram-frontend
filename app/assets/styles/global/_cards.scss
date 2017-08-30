@@ -162,6 +162,19 @@ a.card__contents {
   }
 }
 
+.card__status {
+  text-align: center;
+  font-weight: $base-font-regular;
+  color: rgba($base-font-color, 0.48);
+  font-style: italic;
+  padding: ($global-spacing * 2) $global-spacing;
+  margin-bottom: $global-spacing;
+
+  > *:last-child {
+    margin-bottom: 0;
+  } 
+}
+
 
 /* Card footer
    ========================================================================== */
@@ -232,9 +245,9 @@ a.card__contents {
     vertical-align: top;
   }
 
-  > *:last-child {
-    margin-right: -$global-spacing / 4;
-  }
+  // > *:last-child {
+  //   margin-right: -$global-spacing / 4;
+  // }
 }
 
 .actions__menu {
@@ -256,6 +269,12 @@ a.card__contents {
   > li:not(:last-child) {
     margin-right: $global-spacing / 4;
   }
+}
+
+.card__search-block {
+  max-width: 12rem;
+  display: inline-block;
+  margin-bottom: 0;
 }
 
 
@@ -282,6 +301,10 @@ a.card__contents {
 
 .ca-pencil::before {
   @extend %collecticon-pencil;
+}
+
+.ca-search::before {
+  @extend %collecticon-magnifier-left;
 }
 
 

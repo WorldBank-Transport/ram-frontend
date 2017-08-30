@@ -257,6 +257,7 @@ textarea.form__control {
   }
 }
 
+
 /* Form addon label size modifiers
    ========================================================================== */
 
@@ -268,6 +269,14 @@ textarea.form__control {
   font-size: 0.875rem;
   padding: 0.125rem 0.5rem;
   min-width: 1.75rem;
+}
+
+.form__input-group--small .button {
+  @extend .button--small;
+}
+
+.form__input-group--small .form__control {
+  @extend .form__control--small;
 }
 
 /* Medium (32px)
@@ -282,6 +291,14 @@ textarea.form__control {
   min-width: 2rem;
 }
 
+.form__input-group--medium .button {
+  @extend .button--medium;
+}
+
+.form__input-group--medium .form__control {
+  @extend .form__control--medium;
+}
+
 /* Large (40px) */
 
 .form__input-group--large .form__addon-label,
@@ -292,6 +309,14 @@ textarea.form__control {
   min-width: 2.5rem;
 }
 
+.form__input-group--large .button {
+  @extend .button--large;
+}
+
+.form__input-group--large .form__control {
+  @extend .form__control--large;
+}
+
 /* XLarge (48px) */
 
 .form__input-group--xlarge .form__addon-label,
@@ -300,6 +325,14 @@ textarea.form__control {
   font-size: 1.25rem;
   padding: 0.5rem 1rem;
   min-width: 3rem;
+}
+
+.form__input-group--xlarge .button {
+  @extend .button--xlarge;
+}
+
+.form__input-group--xlarge .form__control {
+  @extend .form__control--xlarge;
 }
 
 
