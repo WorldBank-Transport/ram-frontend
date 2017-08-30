@@ -61,8 +61,7 @@ class ResultsMap extends React.Component {
   getPopBuckets (geojson) {
     const feats = geojson.features;
     const totalBuckets = 5;
-    // We want 5 buckets in total, so we divide by totalBuckets - 1.
-    const bucketSize = Math.floor(feats.length / (totalBuckets - 1));
+    const bucketSize = Math.floor(feats.length / totalBuckets);
     const pop = feats.map(f => f.properties.p).sort((a, b) => a - b);
 
     // Prepare the buckets array.
@@ -73,7 +72,6 @@ class ResultsMap extends React.Component {
     // Add first and last values as well.
     buckets.unshift(0);
     buckets.push(pop[pop.length - 1]);
-
     return buckets;
   }
 
