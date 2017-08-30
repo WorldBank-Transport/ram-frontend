@@ -3,6 +3,7 @@
 import React, { PropTypes as T } from 'react';
 import { connect } from 'react-redux';
 import c from 'classnames';
+import _ from 'lodash';
 import ReactPaginate from 'react-paginate';
 
 import {
@@ -51,6 +52,10 @@ const ScenarioResults = React.createClass({
         field: 'origin_name',
         asc: true
       },
+      rawFilter: {
+        field: 'origin_name',
+        value: ''
+      },
       rawPage: 1,
       activePoiType: this.props.poiTypes[0].key,
       activePopInd: this.props.popInd[0].key
@@ -58,6 +63,7 @@ const ScenarioResults = React.createClass({
   },
 
   componentDidMount: function () {
+    this.requestRawResultsDebounced = _.debounce(this.requestRawResults, 300);
     this.requestAllResults();
   },
 
@@ -109,13 +115,22 @@ const ScenarioResults = React.createClass({
     this.props._fetchScenarioPoi(this.props.projectId, this.props.scenarioId, {type: this.state.activePoiType});
   },
 
+  // Debounced in componentDidMount.
+  // requestRawResultsDebounced
+
   requestRawResults: function () {
-    this.props._fetchScenarioResultsRaw(this.props.projectId, this.props.scenarioId, this.state.rawPage, {
+    let query = {
       sortBy: this.state.rawSort.field,
       sortDir: this.state.rawSort.asc ? 'asc' : 'desc',
       poiType: this.state.activePoiType,
       popInd: this.state.activePopInd
-    });
+    };
+
+    if (this.state.rawFilter.value) {
+      query[this.state.rawFilter.field] = this.state.rawFilter.value;
+    }
+
+    this.props._fetchScenarioResultsRaw(this.props.projectId, this.props.scenarioId, this.state.rawPage, query);
   },
 
   setRawSort: function (field, e) {
@@ -139,6 +154,26 @@ const ScenarioResults = React.createClass({
       showGlobalLoadingCounted();
       this.requestRawResults();
     });
+  },
+
+  onRawResultsFilter: function (field, val) {
+    let state = {
+      // Reset sort.
+      rawSort: {
+        field: 'origin_name',
+        asc: true
+      },
+      // Reset page.
+      rawPage: 1,
+      rawFilter: {
+        field,
+        value: val
+      }
+    };
+
+    this.setState(state);
+
+    this.requestRawResultsDebounced();
   },
 
   onFilterChange: function (field, value, event) {
@@ -199,6 +234,8 @@ const ScenarioResults = React.createClass({
           handleRawPageChange={this.handleRawPageChange}
           setRawSort={this.setRawSort}
           poiName={poiName}
+          filter={this.state.rawFilter}
+          onFilter={this.onRawResultsFilter}
         />
       </div>
     );
@@ -399,6 +436,10 @@ FiltersBar.propTypes = {
 // ////////////////////////////////////////////////////////////////////////// //
 
 class RawResultsTable extends React.PureComponent {
+  onSearchChange (event) {
+    this.props.onFilter('origin_name', event.target.value);
+  }
+
   render () {
     let { fetched, fetching, error, data, receivedAt } = this.props;
 
@@ -433,49 +474,71 @@ class RawResultsTable extends React.PureComponent {
       <article className='card card--analysis-result'>
         <div className='card__contents'>
           <header className='card__header'>
-            <h1 className='card__title'>Origin level raw data for {this.props.poiName}</h1>
+            <div className='card__headline'>
+              <h1 className='card__title'>Origin level raw data for {this.props.poiName}</h1>
+            </div>
+            <div className='card__actions'>
+              <div className='form__group card__search-block'>
+                <label className='form__label visually-hidden' htmlFor='search-villages'>{t('Search villages')}</label>
+                <div className='form__input-group form__input-group--small'>
+                  <div className='form__input-addon'><button type='button' className='button button--primary-plain button--text-hidden' title='Search villages'><i className='collecticon-magnifier-left'></i><span>Search</span></button></div>
+                  <input type='text' id='search-villages' name='search-villages' className='form__control' placeholder={t('Villages')} value={this.props.filter.value} onChange={this.onSearchChange.bind(this)} />
+                </div>
+              </div>
+            </div>
           </header>
 
           <div className='card__body'>
-            <div className='table-wrapper'>
-              <table className='table'>
-                <thead>
-                  <tr>
-                    {renderTh('Origin', 'origin_name')}
-                    {renderTh('Admin area', 'aa_name')}
-                    {renderTh(popLabel, 'pop_value')}
-                    {renderTh('Time to POI', 'time_to_poi')}
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.results.map(o => (
-                    <tr key={`${o.origin_id}-${o.poi_type}`}>
-                      <th>{o.origin_name || 'N/A'}</th>
-                      <td>{o.aa_name}</td>
-                      <td>{o.pop_value || 'N/A'}</td>
-                      <td>{toTimeStr(o.time_to_poi)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
 
-            <div className='pagination-wrapper'>
-              <ReactPaginate
-                previousLabel={<span>previous</span>}
-                nextLabel={<span>next</span>}
-                breakLabel={<span className='pages__page'>...</span>}
-                pageCount={Math.ceil(data.meta.found / data.meta.limit)}
-                forcePage={data.meta.page - 1}
-                marginPagesDisplayed={2}
-                pageRangeDisplayed={5}
-                onPageChange={this.props.handleRawPageChange}
-                containerClassName={'pagination'}
-                subContainerClassName={'pages'}
-                pageClassName={'pages__wrapper'}
-                pageLinkClassName={'pages__page'}
-                activeClassName={'active'} />
-            </div>
+            {data.results.length === 0 && (
+              <div className='card__status card__status--empty'>
+                <p>No results found.</p>
+              </div>
+            )}
+
+            {data.results.length !== 0 && (
+              <div className='table-wrapper'>
+                <table className='table'>
+                  <thead>
+                    <tr>
+                      {renderTh('Origin', 'origin_name')}
+                      {renderTh('Admin area', 'aa_name')}
+                      {renderTh(popLabel, 'pop_value')}
+                      {renderTh('Time to POI', 'time_to_poi')}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.results.map(o => (
+                      <tr key={`${o.origin_id}-${o.poi_type}`}>
+                        <th>{o.origin_name || 'N/A'}</th>
+                        <td>{o.aa_name}</td>
+                        <td>{o.pop_value || 'N/A'}</td>
+                        <td>{toTimeStr(o.time_to_poi)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {data.results.length !== 0 && (
+              <div className='pagination-wrapper'>
+                <ReactPaginate
+                  previousLabel={<span>previous</span>}
+                  nextLabel={<span>next</span>}
+                  breakLabel={<span className='pages__page'>...</span>}
+                  pageCount={Math.ceil(data.meta.found / data.meta.limit)}
+                  forcePage={data.meta.page - 1}
+                  marginPagesDisplayed={2}
+                  pageRangeDisplayed={5}
+                  onPageChange={this.props.handleRawPageChange}
+                  containerClassName={'pagination'}
+                  subContainerClassName={'pages'}
+                  pageClassName={'pages__wrapper'}
+                  pageLinkClassName={'pages__page'}
+                  activeClassName={'active'} />
+              </div>
+            )}
 
           </div>
         </div>
@@ -491,8 +554,16 @@ RawResultsTable.propTypes = {
   data: T.object,
   error: T.object,
   popInd: T.array,
-  sort: T.object,
+  sort: T.shape({
+    field: T.string,
+    asc: T.bool
+  }),
   setRawSort: T.func,
   handleRawPageChange: T.func,
-  poiName: T.string
+  poiName: T.string,
+  filter: T.shape({
+    field: T.string,
+    value: T.string
+  }),
+  onFilter: T.func
 };

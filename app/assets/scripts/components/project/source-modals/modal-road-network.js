@@ -1,7 +1,6 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
 import _ from 'lodash';
-import ReactTooltip from 'react-tooltip';
 
 import config from '../../../config';
 import { t } from '../../../utils/i18n';
@@ -217,8 +216,6 @@ class ModalRoadNetwork extends ModalBase {
           {this.state.source === 'file' ? this.renderSourceFile() : null}
           {this.state.source === 'osm' && <div className='form__note'><p>{t('Import road network data for the project\'s Administrative Boundaries from OpenStreetMap. For more fine-grained control, upload a file with custom road network data.')}</p><p>{t('When the resulting import is over {max} the road network editing will be disabled.', {max: rnEditThresholdDisplay})}</p></div>}
         </form>
-
-        <ReactTooltip />
       </ModalBody>
     );
   }
