@@ -242,7 +242,7 @@ const ProjectPagePending = React.createClass({
 
   renderSourceData: function (key, data) {
     let complete;
-    if (data.type === 'osm') {
+    if (data.type === 'osm' || data.type === 'default') {
       complete = true;
     } else if (data.type === 'file') {
       complete = data.files.length >= 1;
