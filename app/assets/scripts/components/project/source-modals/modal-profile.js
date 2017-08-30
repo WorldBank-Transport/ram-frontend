@@ -36,7 +36,7 @@ class ModalProfile extends ModalBase {
     }
 
     this.state = {
-      source: props.sourceData.type || 'file',
+      source: props.sourceData.type || 'default',
       fileField,
       fileToRemove: null
     };
@@ -168,7 +168,6 @@ class ModalProfile extends ModalBase {
         <FileDisplay
           id='profile'
           name='profile'
-          label={'Source'}
           value={fileField.name}
           onRemoveClick={this.onFileRemove.bind(this, fileField.id)} />
       );
@@ -177,7 +176,6 @@ class ModalProfile extends ModalBase {
         <FileInput
           id='profile'
           name='profile'
-          label={'Source'}
           value={fileField.file}
           placeholder={t('Choose a file')}
           onFileSelect={this.onFileSelected.bind(this, fileField.id)} >
@@ -199,19 +197,20 @@ class ModalProfile extends ModalBase {
             <label className='form__label'>Source</label>
 
             <label className='form__option form__option--inline form__option--custom-radio'>
-              <input type='radio' name='source-type' id='file' value='file' checked={this.state.source === 'file'} onChange={this.onSourceChange.bind(this)} />
-              <span className='form__option__text'>{t('File upload')}</span>
-              <span className='form__option__ui'></span>
-            </label>
-
-            <label className='form__option form__option--inline form__option--custom-radio'>
               <input type='radio' name='source-type' id='default' value='default' checked={this.state.source === 'default'} onChange={this.onSourceChange.bind(this)} />
               <span className='form__option__text'>{t('Default profile')}</span>
               <span className='form__option__ui'></span>
             </label>
+
+            <label className='form__option form__option--inline form__option--custom-radio'>
+              <input type='radio' name='source-type' id='file' value='file' checked={this.state.source === 'file'} onChange={this.onSourceChange.bind(this)} />
+              <span className='form__option__text'>{t('Custom upload')}</span>
+              <span className='form__option__ui'></span>
+            </label>
+
           </div>
           {this.state.source === 'file' ? this.renderSourceFile() : null}
-          {this.state.source === 'default' && <p>{t('If specific changes are needed you can download the {link} file and upload it again.', {link: <a href={`${config.api}/files/source-data/default.profile.lua`} title={t('Download default profile.lua file')} target='_blank'>{t('default profile')}</a>})}</p>}
+          {this.state.source === 'default' && <p>{t('The default OSRM profile assumes OSM-style road network data. For a customized profile, download the {link} and upload it.', {link: <a href={`${config.api}/files/source-data/default.profile.lua`} title={t('Download default profile.lua file')} target='_blank'>{t('default file')}</a>})}</p>}
         </form>
       </ModalBody>
     );
