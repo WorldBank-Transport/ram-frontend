@@ -247,16 +247,34 @@ class Playground extends React.Component {
 
             <div>
               <Dropdown
-                className='scenario-meta-menu'
-                triggerClassName='button button--primary-raised-light'
+                className='eta-vis__overlays-menu'
+                triggerClassName='etavb-overlays'
                 triggerActiveClassName='button--active'
                 triggerText={t('Map overlays')}
                 triggerTitle={t('Toggle map overlays')}
                 direction='down'
                 alignment='left' >
-                  <ul className='drop__menu drop__menu--iconified' role='menu'>
-                    <li>Lorem ipsum</li>
-                  </ul>
+                  <h6 className='drop__title'>Toggle overlays</h6>
+                  <label htmlFor='switch1' className='form__option form__option--switch' title='Toggle on/off'>
+                    <input type='checkbox' name='switch1' id='switch1' value='on' />
+                    <span className='form__option__text'>Origins</span>
+                    <span className='form__option__ui'></span>
+                  </label>
+                  <label htmlFor='switch2' className='form__option form__option--switch' title='Toggle on/off'>
+                    <input type='checkbox' name='switch2' id='switch2' value='on' />
+                    <span className='form__option__text'>Destinations</span>
+                    <span className='form__option__ui'></span>
+                  </label>
+                  <label htmlFor='switch3' className='form__option form__option--switch' title='Toggle on/off'>
+                    <input type='checkbox' name='switch3' id='switch3' value='on' />
+                    <span className='form__option__text'>Admin boundaries</span>
+                    <span className='form__option__ui'></span>
+                  </label>
+                  <label htmlFor='switch4' className='form__option form__option--switch' title='Toggle on/off'>
+                    <input type='checkbox' name='switch4' id='switch4' value='on' />
+                    <span className='form__option__text'>Road network</span>
+                    <span className='form__option__ui'></span>
+                  </label>
               </Dropdown>
             </div>
 

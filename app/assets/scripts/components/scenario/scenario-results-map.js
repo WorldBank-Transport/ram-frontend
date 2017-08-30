@@ -262,15 +262,15 @@ class ResultsMap extends React.Component {
 
   render () {
     return (
-      <article className='card card--analysis-result scenario-vis'>
+      <article className='card card--analysis-result eta-vis'>
         <div className='card__contents'>
           <header className='card__header'>
             <h1 className='card__title'>ETA visualization</h1>
           </header>
 
-          <figure className='card__media scenario-vis__media'>
-            <div className='card__cover scenario-vis__map' ref='map'></div>
-            <figcaption className='scenario-vis__legend legend'>
+          <figure className='card__media eta-vis__media'>
+            <div className='card__cover eta-vis__map' ref='map'></div>
+            <figcaption className='eta-vis__legend legend'>
               {this.renderPopLegend()}
               {this.renderTimeLegend()}
             </figcaption>

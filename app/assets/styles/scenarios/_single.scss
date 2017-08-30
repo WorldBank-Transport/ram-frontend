@@ -119,11 +119,11 @@
 /* Results: ETA Vis
    ========================================================================== */
 
-.scenario-vis__map {
+.eta-vis__map {
   height: 32rem;
 }
 
-.scenario-vis__legend {
+.eta-vis__legend {
   position: absolute;
   top: $global-spacing;
   right: $global-spacing;
@@ -264,4 +264,31 @@
   dt:nth-of-type(7)::before {
     background: #4d4d4d;
   }
+}
+
+.eta-vis__overlays-menu {
+  .form__option {
+    margin: 0 0 0.5rem 0;
+  }
+
+  .form__option__text {
+    width: 12rem;
+  }
+
+  > *:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/**
+ * "etavb-" prefix stands for "eta vis button"
+ */
+
+[class^="etavb-"],
+[class*=" etavb-"] {
+  @extend .button, .button--primary-raised-light, .button--text-hidden;
+}
+
+.etavb-overlays::before {
+  @extend %collecticon-iso-stack;
 }
