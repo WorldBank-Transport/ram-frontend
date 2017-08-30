@@ -346,7 +346,7 @@ class ModalPoi extends ModalBase {
           ))}
         </div>
 
-        <p>{t('Import POI data from OpenStreetMap. See the documentation for an overview of the tags that are included in each POI type.')}</p>
+        <div className='form__note'><p>{t('Import POI data from OpenStreetMap. See the documentation for an overview of the tags that are included in each POI type.')}</p></div>
 
       </div>
     );

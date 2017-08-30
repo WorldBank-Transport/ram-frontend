@@ -523,7 +523,7 @@ label[for] {
 
   .form__option__ui {
     margin: 0.25rem 0;
-    width: 2.5rem;
+    width: 2.75rem;
     height: 1.25rem;
     border-radius: $full-border-radius;
     background: rgba($base-color, 0.16);
@@ -548,11 +548,15 @@ label[for] {
     &::after {
       position: absolute;
       top: 50%;
-      right: 0;
+      right: 12%;
       z-index: 1;
       font-size: 1rem;
+      line-height: 1;
+      height: 1rem;
+      width: 1rem;
+      text-align: center;
       color: #fff;
-      transform: translate(-0.25rem, -50%);
+      transform: translate(0, -50%);
       transition: all 0.24s ease 0s;
     }
   }
@@ -574,8 +578,8 @@ label[for] {
     [class^="collecticon-"],
     [class*=" collecticon-"],
     &::after {
-      right: 100%;
-      transform: translate(calc(100% + 0.25rem), -50%);
+      right: 88%;
+      transform: translate(100%, -50%);
     }
   }
 }
@@ -604,6 +608,20 @@ label[for] {
   line-height: 1.25rem;
   color: rgba($base-font-color, 0.48);
   margin-top: $global-spacing / 2;
+
+  > *:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.form__note {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: rgba($base-font-color, 0.64);
+  background: rgba($base-color, 0.04);
+  border-radius: $base-border-radius;
+  padding: $global-spacing;
+  margin-bottom: $global-spacing;
 
   > *:last-child {
     margin-bottom: 0;
