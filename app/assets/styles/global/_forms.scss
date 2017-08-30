@@ -424,35 +424,49 @@ label[for] {
    ========================================================================== */
 
 .form__option {
-  position: relative;
-  display: inline-block;
-  margin-top: $global-spacing / 2;
+  display: flex;
+  align-items: flex-start;
   font-size: 1rem;
   line-height: 1.5;
   cursor: pointer;
-  padding-left: $global-spacing * 1.25;
+  margin-top: $global-spacing / 2;
 
   input {
-    position: absolute;
-    top: $global-spacing / 4;
-    left: 0;
+    flex: none;
+    margin-top: 0.3125rem; // 5pxh
   }
 }
 
 .form__option__text {
-  max-width: 100%;
-  display: inline-block;
-  vertical-align: top;
+  padding: 0 0 0 ($global-spacing / 2);
+
+  &:not(:last-child) {
+    padding: 0 ($global-spacing / 2) 0 0;
+  }
+}
+
+.form__option__ui {
+  flex: none;
+  position: relative;
+  transition: all 0.16s ease 0s;
 }
 
 /* Form option inline modifier */
 
 .form__option--inline {
-  display: inline-block;
+  display: inline-flex;
 }
 
 .form__option--inline + .form__option--inline {
   margin-left: $global-spacing;
+}
+
+/* Form option text-hidden modifier */
+
+.form__option--text-hidden {
+  .form__option__text {
+    @extend .visually-hidden;
+  }
 }
 
 
@@ -461,21 +475,17 @@ label[for] {
 
 .form__option--custom-radio,
 .form__option--custom-checkbox {
-  padding-left: $global-spacing * 1.75;
 
   input {
     @extend .visually-hidden;
   }
 
   .form__option__ui {
-    position: absolute;
-    top: 0.125rem;
-    left: 0;
+    margin: 0.125rem 0;
     height: 1.25rem;
     width: 1.25rem;
     box-shadow: inset 0 0 0 1px rgba($base-color, 0.16);
     background: transparent;
-    transition: all 0.16s ease 0s;
 
     &::before {
       position: absolute;
@@ -496,6 +506,7 @@ label[for] {
     box-shadow: inset 0 0 0 2px $link-color;
   }
 
+  &.form__option--checked .form__option__ui,
   input:checked ~ .form__option__ui {
     box-shadow: inset 0 0 0 2px $link-color;
 
@@ -538,47 +549,88 @@ label[for] {
    ========================================================================== */
 
 .form__option--switch {
-  position: relative;
-  padding: 0;
 
-  input,
-  .form__option__text {
+  input {
     @extend .visually-hidden;
   }
 
-  transition: all 0.16s ease 0s;
-
   .form__option__ui {
-    position: relative;
-    display: block;
-    width: 1.75rem;
-    height: 1rem;
-    background: tint($base-color, 64%);
+    margin: 0.125rem 0;
+    width: 2.75rem;
+    height: 1.25rem;
     border-radius: $full-border-radius;
+    background: rgba($base-color, 0.16);
 
     &::before {
+      @extend .button--base-raised-light;
       position: absolute;
       top: 50%;
       left: 0;
-      transform: translate(0, -50%);
+      z-index: 2;
       content: '';
-      height: 0.75rem;
-      width: 0.75rem;
+      height: 1.25rem;
+      width: 1.25rem;
       border-radius: $full-border-radius;
-      background: #fff;
-      margin: 0 0.125rem;
-      transition: all 0.32s ease 0s;
+      transform: translate(0, -50%);
+      transition: all 0.24s ease 0s;
+    }
+
+    /* Icon handling */
+    [class^="collecticon-"],
+    [class*=" collecticon-"],
+    &::after {
+      position: absolute;
+      top: 50%;
+      right: 12%;
+      z-index: 1;
+      font-size: 1rem;
+      line-height: 1;
+      height: 1rem;
+      width: 1rem;
+      text-align: center;
+      color: #fff;
+      transform: translate(0, -50%);
+      transition: all 0.24s ease 0s;
     }
   }
 
+  &:hover .form__option__ui {
+    @extend .button--hover;
+  }
+
+  &.form__option--checked .form__option__ui,
   input:checked ~ .form__option__ui {
-    background: $accent-color;
+    background: $link-color;
 
     &::before {
+      left: 100%;
+      transform: translate(-100%, -50%);
+    }
+
+    /* Icon handling */
+    [class^="collecticon-"],
+    [class*=" collecticon-"],
+    &::after {
+      right: 88%;
       transform: translate(100%, -50%);
     }
   }
 }
+
+/* Iconified cases */
+
+.form__option.fos-io {
+
+  .form__option__ui::after {
+    @extend %collecticon-sm-xmark;
+  }
+
+  &.form__option--checked .form__option__ui::after,
+  input:checked ~ .form__option__ui::after {
+    @extend %collecticon-sm-tick;
+  }
+}
+
 
 /* Form misc
    ========================================================================== */
@@ -589,6 +641,20 @@ label[for] {
   line-height: 1.25rem;
   color: rgba($base-font-color, 0.48);
   margin-top: $global-spacing / 2;
+
+  > *:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.form__note {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: rgba($base-font-color, 0.64);
+  background: rgba($base-color, 0.04);
+  border-radius: $base-border-radius;
+  padding: $global-spacing;
+  margin-bottom: $global-spacing;
 
   > *:last-child {
     margin-bottom: 0;

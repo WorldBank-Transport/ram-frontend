@@ -105,18 +105,22 @@ dd {
 
 .dl-horizontal {
   @extend .clearfix;
+
   dt, dd {
     float: left;
   }
+
   dt {
     width: 32%;
     clear: left;
     padding-right: $global-spacing / 2;
   }
+
   dd {
     width: 68%;
     padding-left: $global-spacing / 2;
   }
+  
   dd + dd {
     margin-left: 32%;
   }

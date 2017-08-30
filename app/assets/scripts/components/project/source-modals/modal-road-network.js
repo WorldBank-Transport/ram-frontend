@@ -203,19 +203,18 @@ class ModalRoadNetwork extends ModalBase {
 
             <label className='form__option form__option--inline form__option--custom-radio'>
               <input type='radio' name='source-type' id='file' value='file' checked={this.state.source === 'file'} onChange={this.onSourceChange.bind(this)} />
-              <span className='form__option__text'>File upload</span>
               <span className='form__option__ui'></span>
+              <span className='form__option__text'>File upload</span>
             </label>
 
             <label className='form__option form__option--inline form__option--custom-radio'>
               <input type='radio' name='source-type' id='osm' value='osm' checked={this.state.source === 'osm'} onChange={this.onSourceChange.bind(this)} />
-              <span className='form__option__text'>OSM data</span>
               <span className='form__option__ui'></span>
+              <span className='form__option__text'>OSM data</span>
             </label>
           </div>
           {this.state.source === 'file' ? this.renderSourceFile() : null}
-          {this.state.source === 'osm' && <p>{t('Import road network data for the project\'s Administrative Boundaries from OpenStreetMap. For more fine-grained control, upload a file with custom road network data.')}</p>}
-          {this.state.source === 'osm' && <p>{t('When the resulting import is over {max} the road network editing will be disabled.', {max: rnEditThresholdDisplay})}</p>}
+          {this.state.source === 'osm' && <div className='form__note'><p>{t('Import road network data for the project\'s Administrative Boundaries from OpenStreetMap. For more fine-grained control, upload a file with custom road network data.')}</p><p>{t('When the resulting import is over {max} the road network editing will be disabled.', {max: rnEditThresholdDisplay})}</p></div>}
         </form>
       </ModalBody>
     );

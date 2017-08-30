@@ -193,6 +193,7 @@ const ScenarioResults = React.createClass({
 
   render: function () {
     let poiName = this.props.poiTypes.find(o => o.key === this.state.activePoiType).label;
+    let popIndName = this.props.popInd.find(o => o.key === this.state.activePopInd).label;
 
     return (
       <div className='rwrapper'>
@@ -209,6 +210,8 @@ const ScenarioResults = React.createClass({
           data={this.props.geojsonResults}
           poi={this.props.scenarioPoi}
           bbox={this.props.bbox}
+          poiName={poiName}
+          popIndName={popIndName}
         />
 
         <AccessibilityTable

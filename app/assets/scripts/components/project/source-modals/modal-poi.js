@@ -340,13 +340,13 @@ class ModalPoi extends ModalBase {
           {poiOsmTypes.map(o => (
             <label key={o.key} className='form__option form__option--custom-checkbox' title={o.value}>
               <input type='checkbox' name={o.key} value={o.key} onChange={this.onOsmPoiChange.bind(this)} checked={this.state.selectedPoiTypes.indexOf(o.key) !== -1} />
-              <span className='form__option__text'>{o.value}</span>
               <span className='form__option__ui'></span>
+              <span className='form__option__text'>{o.value}</span>
             </label>
           ))}
         </div>
 
-        <p>{t('Import POI data from OpenStreetMap. See the documentation for an overview of the tags that are included in each POI type.')}</p>
+        <div className='form__note'><p>{t('Import POI data from OpenStreetMap. See the documentation for an overview of the tags that are included in each POI type.')}</p></div>
 
       </div>
     );
@@ -361,14 +361,14 @@ class ModalPoi extends ModalBase {
 
             <label className='form__option form__option--inline form__option--custom-radio'>
               <input type='radio' name='source-type' id='file' value='file' checked={this.state.source === 'file'} onChange={this.onSourceChange.bind(this)} />
-              <span className='form__option__text'>File upload</span>
               <span className='form__option__ui'></span>
+              <span className='form__option__text'>File upload</span>
             </label>
 
             <label className='form__option form__option--inline form__option--custom-radio'>
               <input type='radio' name='source-type' id='osm' value='osm' checked={this.state.source === 'osm'} onChange={this.onSourceChange.bind(this)} />
-              <span className='form__option__text'>OSM data</span>
               <span className='form__option__ui'></span>
+              <span className='form__option__text'>OSM data</span>
             </label>
           </div>
           {this.state.source === 'file' ? this.renderSourceFile() : null}

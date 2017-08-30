@@ -358,14 +358,14 @@ const ProjectPageActive = React.createClass({
         <div className='inpage__body'>
           <div className='inner'>
 
-            <section className='diptych'>
+            <section className='diptych diptych--col4'>
               <h2 className='inpage__section-title'>{t('Details')}</h2>
               <div className='psb-group'>
                 {this.renderSourceData()}
               </div>
             </section>
 
-            <section className='diptych'>
+            <section className='diptych diptych--col8'>
               <h2 className='inpage__section-title'>{t('Scenarios')}</h2>
               {this.renderScenariosList()}
             </section>

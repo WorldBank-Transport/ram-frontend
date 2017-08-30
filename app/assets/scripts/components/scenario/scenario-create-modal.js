@@ -275,18 +275,18 @@ const ScenarioCreateModal = React.createClass({
 
               <label className='form__option form__option--inline form__option--custom-radio'>
                 <input type='radio' name='road-network' id='road-network-clone' value='clone' onChange={this.onFieldChange.bind(null, 'roadNetworkSource')} checked={this.state.data.roadNetworkSource === 'clone'}/>
-                <span className='form__option__text'>{t('Clone from scenario')}</span>
                 <span className='form__option__ui'></span>
+                <span className='form__option__text'>{t('Clone from scenario')}</span>
               </label>
               <label className='form__option form__option--inline form__option--custom-radio'>
                 <input type='radio' name='road-network' id='road-network-new' value='new' onChange={this.onFieldChange.bind(null, 'roadNetworkSource')} checked={this.state.data.roadNetworkSource === 'new'}/>
-                <span className='form__option__text'>{t('Upload new')}</span>
                 <span className='form__option__ui'></span>
+                <span className='form__option__text'>{t('Upload new')}</span>
               </label>
               <label className='form__option form__option--inline form__option--custom-radio'>
                 <input type='radio' name='road-network' id='road-network-osm' value='osm' onChange={this.onFieldChange.bind(null, 'roadNetworkSource')} checked={this.state.data.roadNetworkSource === 'osm'} />
-                <span className='form__option__text'>{t('OSM data')}</span>
                 <span className='form__option__ui'></span>
+                <span className='form__option__text'>{t('OSM data')}</span>
               </label>
             </div>
 
@@ -316,9 +316,8 @@ const ScenarioCreateModal = React.createClass({
               }
             </FileInput>
             ) : null}
-
-            {this.state.data.roadNetworkSource === 'osm' && <p>{t('Import road network data from OpenStreetMap.')}</p>}
-            {this.state.data.roadNetworkSource === 'osm' && <p>{t('When the resulting import is over {max} the road network editing will be disabled.', {max: rnEditThresholdDisplay})}</p>}
+            
+            {this.state.data.roadNetworkSource === 'osm' && <div className='form__note'><p>{t('Import road network data from OpenStreetMap.')}</p><p>{t('When the resulting import is over {max} the road network editing will be disabled.', {max: rnEditThresholdDisplay})}</p></div>}
 
             <ReactTooltip />
           </form>

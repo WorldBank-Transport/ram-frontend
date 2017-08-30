@@ -1,6 +1,7 @@
 'use strict';
 import React from 'react';
 
+import Dropdown from '../components/dropdown';
 import { t } from '../utils/i18n';
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '../components/modal';
@@ -93,18 +94,55 @@ class Playground extends React.Component {
             </div>
 
             <div className='form__group'>
+              <label className='form__label' htmlFor='Toggles'>{t('Toggles')}</label>
+
+              <label htmlFor='switch1' className='form__option form__option--switch' title='Toggle on/off'>
+                <input type='checkbox' name='switch1' id='switch1' value='on' />
+                <span className='form__option__text'>Switch 01</span>
+                <span className='form__option__ui'></span>
+              </label>
+
+              <label htmlFor='switch2' className='form__option form__option--checked form__option--switch' title='Toggle on/off'>
+                <input type='checkbox' name='switch2' id='switch2' value='on' checked />
+                <span className='form__option__text'>Switch 02</span>
+                <span className='form__option__ui'></span>
+              </label>
+
+              <label htmlFor='switch3' className='form__option form__option--switch option fos-io' title='Toggle on/off'>
+                <input type='checkbox' name='switch3' id='switch3' value='on' />
+                <span className='form__option__ui'></span>
+                <span className='form__option__text'>Switch 03</span>
+              </label>
+
+              <label htmlFor='switch4' className='form__option form__option--text-hidden form__option--switch' title='Toggle on/off'>
+                <input type='checkbox' name='switch4' id='switch4' value='on' />
+                <span className='form__option__ui'></span>
+                <span className='form__option__text'>Switch 04</span>
+              </label>
+            </div>
+
+            <div className='form__group'>
+              <label className='form__label'>Basic checkboxes</label>
+
+              <label className='form__option' title='This is a title'>
+                <input type='checkbox' name='checkbox-basic1' />
+                <span className='form__option__text'>Checkbox 01</span>
+              </label>
+            </div>
+
+            <div className='form__group'>
               <label className='form__label'>Road network</label>
 
               <label className='form__option form__option--inline form__option--custom-radio'>
                 <input type='radio' name='radio1' id='radio1a' />
-                <span className='form__option__text'>Radio 01</span>
                 <span className='form__option__ui'></span>
+                <span className='form__option__text'>Radio 01</span>
               </label>
 
               <label className='form__option form__option--inline form__option--custom-radio'>
                 <input type='radio' name='radio1' id='radio1b' />
-                <span className='form__option__text'>Radio 02</span>
                 <span className='form__option__ui'></span>
+                <span className='form__option__text'>Radio 02</span>
               </label>
             </div>
 
@@ -126,28 +164,28 @@ class Playground extends React.Component {
 
                 <label className='form__option form__option--custom-checkbox' title='This is a title'>
                   <input type='checkbox' name='checkbox1' />
-                  <span className='form__option__text'>Checkbox 01</span>
                   <span className='form__option__ui'></span>
+                  <span className='form__option__text'>Checkbox 01</span>
                 </label>
                 <label className='form__option form__option--custom-checkbox' title='This is a title'>
                   <input type='checkbox' name='checkbox2' />
-                  <span className='form__option__text'>Checkbox 02</span>
                   <span className='form__option__ui'></span>
+                  <span className='form__option__text'>Checkbox 02</span>
                 </label>
                 <label className='form__option form__option--custom-checkbox' title='This is a title'>
                   <input type='checkbox' name='checkbox3' />
-                  <span className='form__option__text'>Checkbox 03</span>
                   <span className='form__option__ui'></span>
+                  <span className='form__option__text'>Checkbox 03</span>
                 </label>
                 <label className='form__option form__option--custom-checkbox' title='This is a title'>
                   <input type='checkbox' name='checkbox4' />
-                  <span className='form__option__text'>Checkbox 04</span>
                   <span className='form__option__ui'></span>
+                  <span className='form__option__text'>Checkbox 04</span>
                 </label>
                 <label className='form__option form__option--custom-checkbox' title='This is a title'>
                   <input type='checkbox' name='checkbox5' />
-                  <span className='form__option__text'>Checkbox 05</span>
                   <span className='form__option__ui'></span>
+                  <span className='form__option__text'>Checkbox 05</span>
                 </label>
 
               </div>
@@ -206,6 +244,40 @@ class Playground extends React.Component {
         <div className='inpage__body'>
           <div className='inner'>
             {this.renderPlaygroundContent()}
+
+            <div>
+              <Dropdown
+                className='eta-vis__overlays-menu'
+                triggerClassName='etavb-overlays'
+                triggerActiveClassName='button--active'
+                triggerText={t('Map overlays')}
+                triggerTitle={t('Toggle map overlays')}
+                direction='down'
+                alignment='left' >
+                  <h6 className='drop__title'>Toggle overlays</h6>
+                  <label htmlFor='switch1' className='form__option form__option--switch' title='Toggle on/off'>
+                    <input type='checkbox' name='switch1' id='switch1' value='on' />
+                    <span className='form__option__text'>Origins</span>
+                    <span className='form__option__ui'></span>
+                  </label>
+                  <label htmlFor='switch2' className='form__option form__option--switch' title='Toggle on/off'>
+                    <input type='checkbox' name='switch2' id='switch2' value='on' />
+                    <span className='form__option__text'>Destinations</span>
+                    <span className='form__option__ui'></span>
+                  </label>
+                  <label htmlFor='switch3' className='form__option form__option--switch' title='Toggle on/off'>
+                    <input type='checkbox' name='switch3' id='switch3' value='on' />
+                    <span className='form__option__text'>Admin boundaries</span>
+                    <span className='form__option__ui'></span>
+                  </label>
+                  <label htmlFor='switch4' className='form__option form__option--switch' title='Toggle on/off'>
+                    <input type='checkbox' name='switch4' id='switch4' value='on' />
+                    <span className='form__option__text'>Road network</span>
+                    <span className='form__option__ui'></span>
+                  </label>
+              </Dropdown>
+            </div>
+
             {this.renderModal()}
           </div>
         </div>
