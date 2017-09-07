@@ -73,7 +73,7 @@ class LayerControlDropdown extends React.Component {
             <span className='form__option__text'>{t('Destinations')}</span>
             <span className='form__option__ui'></span>
           </label>
-          <label htmlFor='switch3' className='form__option form__option--switch' title={t('Toggle on/off')}>
+          { /* <label htmlFor='switch3' className='form__option form__option--switch' title={t('Toggle on/off')}>
             <input type='checkbox' name='switch3' id='switch3' value='on' checked={this.state['admin-bounds']} onChange={this.toggleLayer.bind(this, 'admin-bounds')}/>
             <span className='form__option__text'>{t('Admin boundaries')}</span>
             <span className='form__option__ui'></span>
@@ -82,7 +82,7 @@ class LayerControlDropdown extends React.Component {
             <input type='checkbox' name='switch4' id='switch4' value='on' checked={this.state['road-network']} onChange={this.toggleLayer.bind(this, 'road-network')}/>
             <span className='form__option__text'>{t('Road network')}</span>
             <span className='form__option__ui'></span>
-          </label>
+          </label> */ }
       </Dropdown>
     );
   }
