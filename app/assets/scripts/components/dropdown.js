@@ -38,13 +38,13 @@ const Dropdown = React.createClass({
     // This code handles this case. No idea why this is happening.
     // TODO: Unveil whatever black magic is at work here.
     if (theSelf.tagName === 'SPAN' &&
-        theSelf.parentNode === this.refs.trigger &&
+        theSelf.parentNode === this.triggerRef &&
         theSelf.parentNode.getAttribute('data-hook') === 'dropdown:btn') {
       return;
     }
 
     if (theSelf && theSelf.getAttribute('data-hook') === 'dropdown:btn') {
-      if (theSelf !== this.refs.trigger) {
+      if (theSelf !== this.triggerRef) {
         this.close();
       }
       return;
@@ -57,7 +57,7 @@ const Dropdown = React.createClass({
       theSelf = theSelf.parentNode;
     } while (theSelf && theSelf.tagName !== 'BODY' && theSelf.tagName !== 'HTML');
 
-    if (theSelf !== this.refs.dropdown) {
+    if (theSelf !== this.dropdownRef) {
       this.close();
     }
   },
@@ -118,7 +118,7 @@ const Dropdown = React.createClass({
     let triggerProps = {
       onClick: this._toggleDropdown,
       'data-hook': 'dropdown:btn',
-      ref: 'trigger'
+      ref: el => { this.triggerRef = el; }
     };
 
     if (triggerClassName) {
@@ -157,7 +157,7 @@ const Dropdown = React.createClass({
     // Base and additional classes for the trigger and the content.
     let klasses = ['drop__content', 'drop__content--react', `drop-trans--${direction}`];
     let dropdownContentProps = {
-      ref: 'dropdown',
+      ref: el => { this.dropdownRef = el; },
       'data-hook': 'dropdown:content'
     };
 
