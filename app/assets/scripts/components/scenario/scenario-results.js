@@ -207,6 +207,8 @@ const ScenarioResults = React.createClass({
         />
 
         <ResultsMap
+          projectId={this.props.projectId}
+          scenarioId={this.props.scenarioId}
           data={this.props.geojsonResults}
           poi={this.props.scenarioPoi}
           bbox={this.props.bbox}

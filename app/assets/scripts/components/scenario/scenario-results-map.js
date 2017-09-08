@@ -113,6 +113,27 @@ class ResultsMap extends React.Component {
   }
 
   setupData () {
+    if (!this.theMap.getSource('admin-bounds')) {
+      this.theMap.addSource('admin-bounds', {
+        type: 'vector',
+        tiles: [`${config.api}/projects/${this.props.projectId}/tiles/admin-bounds/{z}/{x}/{y}`]
+      });
+      this.theMap.addLayer({
+        id: 'admin-bounds',
+        type: 'line',
+        source: 'admin-bounds',
+        'source-layer': 'bounds',
+        layout: {
+          visibility: 'none'
+        },
+        paint: {
+          'line-color': '#526980',
+          'line-width': 2,
+          'line-opacity': 0.48
+        }
+      });
+    }
+
     if (this.props.data.fetched) {
       if (this.theMap.getSource('etaData')) {
         return;
@@ -294,6 +315,8 @@ class ResultsMap extends React.Component {
 }
 
 ResultsMap.propTypes = {
+  projectId: T.number,
+  scenarioId: T.number,
   bbox: T.array,
   data: T.object,
   poi: T.object,
