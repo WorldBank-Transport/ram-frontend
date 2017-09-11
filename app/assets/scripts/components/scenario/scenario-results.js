@@ -305,7 +305,7 @@ class AccessibilityTable extends React.PureComponent {
     return (
       <tr key={aa.name}>
         <th>{aa.name}</th>
-        {aa.data.map((o, i) => <td key={i}>{round(o)}%</td>)}
+        {aa.data.map((o, i) => <td key={i}><small className='pchange pchange--up'>(increase)</small> {round(o)}%</td>)}
       </tr>
     );
   }
