@@ -14,7 +14,8 @@ import {
   invalidateScenarioPoi,
   invalidateScenarioResultsRaw,
   invalidateScenarioResultsGeo,
-  showAlert
+  showAlert,
+  fetchProjectScenarios
 } from '../../actions';
 import { round, toTimeStr } from '../../utils/utils';
 import { t } from '../../utils/i18n';
@@ -36,6 +37,7 @@ const ScenarioResults = React.createClass({
     scenarioPoi: T.object,
     poiTypes: T.array,
     popInd: T.array,
+    scenarios: T.object,
     _fetchScenarioResults: T.func,
     _fetchScenarioResultsRaw: T.func,
     _fetchScenarioResultsGeo: T.func,
@@ -43,6 +45,7 @@ const ScenarioResults = React.createClass({
     _invalidateScenarioResultsRaw: T.func,
     _invalidateScenarioResultsGeo: T.func,
     _invalidateScenarioPoi: T.func,
+    _fetchProjectScenarios: T.func,
     _showAlert: T.func
   },
 
@@ -58,12 +61,17 @@ const ScenarioResults = React.createClass({
       },
       rawPage: 1,
       activePoiType: this.props.poiTypes[0].key,
-      activePopInd: this.props.popInd[0].key
+      activePopInd: this.props.popInd[0].key,
+      compare: null
     };
   },
 
   componentDidMount: function () {
     this.requestRawResultsDebounced = _.debounce(this.requestRawResults, 300);
+
+    showGlobalLoadingCounted();
+    this.props._fetchProjectScenarios(this.props.projectId);
+
     this.requestAllResults();
   },
 
@@ -74,31 +82,24 @@ const ScenarioResults = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
-    let currAggregated = this.props.aggregatedResults;
-    let nextAggregated = nextProps.aggregatedResults;
-    let currRaw = this.props.rawResults;
-    let nextRaw = nextProps.rawResults;
-    let currGeoJSON = this.props.geojsonResults;
-    let nextGeoJSON = nextProps.geojsonResults;
-    let currPoi = this.props.scenarioPoi;
-    let nextPoi = nextProps.scenarioPoi;
-
-    if ((!currAggregated.fetched && nextAggregated.fetched) ||
-        (!currRaw.fetched && nextRaw.fetched) ||
-        (!currGeoJSON.fetched && nextGeoJSON.fetched) ||
-        (!currPoi.fetched && nextPoi.fetched)) {
-      hideGlobalLoadingCounted();
-      let e = nextAggregated.error || nextRaw.error || nextGeoJSON.error || nextPoi.error;
-      if (e) {
-        this.props._showAlert('danger', <p>{t('An error occurred while loading the results - {reason}', {reason: e.message})}</p>, true);
+    // Check if resource is loaded and show error if it happened.
+    const checkLoaded = (curr, next) => {
+      if (!curr.fetched && next.fetched) {
+        hideGlobalLoadingCounted();
+        if (next.error) {
+          this.props._showAlert('danger', <p>{t('An error occurred while loading the results - {reason}', {reason: next.error.message})}</p>, true);
+        }
       }
-    }
+    };
+
+    checkLoaded(this.props.aggregatedResults, nextProps.aggregatedResults);
+    checkLoaded(this.props.rawResults, nextProps.rawResults);
+    checkLoaded(this.props.geojsonResults, nextProps.geojsonResults);
+    checkLoaded(this.props.scenarioPoi, nextProps.scenarioPoi);
+    checkLoaded(this.props.scenarios, nextProps.scenarios);
   },
 
   requestAllResults: function () {
-    // Must load 4 items.
-    showGlobalLoadingCounted(4);
-
     let filters = {
       poiType: this.state.activePoiType,
       popInd: this.state.activePopInd
@@ -109,9 +110,14 @@ const ScenarioResults = React.createClass({
       sortDir: this.state.rawSort.asc ? 'asc' : 'desc'
     });
 
+    // A loading is needed for each resource.
+    showGlobalLoadingCounted();
     this.props._fetchScenarioResults(this.props.projectId, this.props.scenarioId, filters);
+    showGlobalLoadingCounted();
     this.props._fetchScenarioResultsRaw(this.props.projectId, this.props.scenarioId, this.state.rawPage, filtersRaw);
+    showGlobalLoadingCounted();
     this.props._fetchScenarioResultsGeo(this.props.projectId, this.props.scenarioId, filters);
+    showGlobalLoadingCounted();
     this.props._fetchScenarioPoi(this.props.projectId, this.props.scenarioId, {type: this.state.activePoiType});
   },
 
@@ -176,6 +182,11 @@ const ScenarioResults = React.createClass({
     this.requestRawResultsDebounced();
   },
 
+  onCompareChange: function (id, event) {
+    event.preventDefault();
+    this.setState({compare: id});
+  },
+
   onFilterChange: function (field, value, event) {
     event.preventDefault();
 
@@ -195,15 +206,23 @@ const ScenarioResults = React.createClass({
     let poiName = this.props.poiTypes.find(o => o.key === this.state.activePoiType).label;
     let popIndName = this.props.popInd.find(o => o.key === this.state.activePopInd).label;
 
+    let scenarios = this.props.scenarios.data.results
+      // Can't compare to itself.
+      .filter(o => o.id !== this.props.scenarioId)
+      .map(o => ({id: o.id, name: o.name}));
+
     return (
       <div className='rwrapper'>
 
         <FiltersBar
           onFilterChange={this.onFilterChange}
+          onCompareChange={this.onCompareChange}
           activePopInd={this.state.activePopInd}
           activePoiType={this.state.activePoiType}
           popInd={this.props.popInd}
           poiTypes={this.props.poiTypes}
+          scenarios={scenarios}
+          compareScenarioId={this.state.compare}
         />
 
         <ResultsMap
@@ -268,7 +287,8 @@ function selector (state) {
     aggregatedResults: state.scenarioResults,
     rawResults: state.scenarioResultsRaw,
     geojsonResults: state.scenarioResultsGeo,
-    scenarioPoi: state.scenarioPoi
+    scenarioPoi: state.scenarioPoi,
+    scenarios: state.scenarios
   };
 }
 
@@ -281,6 +301,7 @@ function dispatcher (dispatch) {
     _invalidateScenarioResultsRaw: (...args) => dispatch(invalidateScenarioResultsRaw(...args)),
     _invalidateScenarioResultsGeo: (...args) => dispatch(invalidateScenarioResultsGeo(...args)),
     _invalidateScenarioPoi: (...args) => dispatch(invalidateScenarioPoi(...args)),
+    _fetchProjectScenarios: (...args) => dispatch(fetchProjectScenarios(...args)),
     _showAlert: (...args) => dispatch(showAlert(...args))
   };
 }
@@ -367,6 +388,8 @@ class FiltersBar extends React.PureComponent {
   render () {
     let activePopIndLabel = this.props.popInd.find(o => o.key === this.props.activePopInd).label;
     let activePoiTypeLabel = this.props.poiTypes.find(o => o.key === this.props.activePoiType).label;
+    let activeScenarioName = this.props.scenarios.find(o => o.id === this.props.compareScenarioId);
+    activeScenarioName = activeScenarioName ? activeScenarioName.name : 'None';
 
     return (
       <nav className='inpage__sec-nav'>
@@ -426,19 +449,28 @@ class FiltersBar extends React.PureComponent {
             <Dropdown
               triggerClassName='button button--achromic drop__toggle--caret'
               triggerActiveClassName='button--active'
-              triggerText={activePoiTypeLabel}
-              triggerTitle={t('Change Point of Interest')}
+              triggerText={activeScenarioName}
+              triggerTitle={t('Change scenario to compare')}
               direction='down'
               alignment='left' >
                 <ul className='drop__menu drop__menu--select' role='menu'>
-                  {this.props.poiTypes.map(o => (
-                    <li key={o.key}>
+                  <li><a
+                    href='#'
+                    title={t('Select scenario')}
+                    className={c('drop__menu-item', {'drop__menu-item--active': this.props.compareScenarioId === null})}
+                    data-hook='dropdown:close'
+                    onClick={e => this.props.onCompareChange(null, e)} >
+                    <span>None</span>
+                  </a></li>
+                  {this.props.scenarios.map(o => (
+                    <li key={o.id}>
                       <a
                         href='#'
-                        title={t('Select Point of Interest')}
-                        className={c('drop__menu-item', {'drop__menu-item--active': o.key === this.props.activePoiType})}
-                        onClick={e => this.props.onFilterChange('activePoiType', o.key, e)} >
-                        <span>{o.label}</span>
+                        title={t('Select scenario')}
+                        className={c('drop__menu-item', {'drop__menu-item--active': o.id === this.props.compareScenarioId})}
+                        data-hook='dropdown:close'
+                        onClick={e => this.props.onCompareChange(o.id, e)} >
+                        <span>{o.name}</span>
                       </a>
                     </li>
                   ))}
@@ -453,10 +485,13 @@ class FiltersBar extends React.PureComponent {
 
 FiltersBar.propTypes = {
   onFilterChange: T.func,
+  onCompareChange: T.func,
   activePopInd: T.string,
   activePoiType: T.string,
   popInd: T.array,
-  poiTypes: T.array
+  poiTypes: T.array,
+  scenarios: T.array,
+  compareScenarioId: T.number
 };
 
 // ////////////////////////////////////////////////////////////////////////// //
