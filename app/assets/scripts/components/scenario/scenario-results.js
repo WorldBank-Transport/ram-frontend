@@ -401,6 +401,32 @@ class FiltersBar extends React.PureComponent {
               triggerClassName='button button--achromic drop__toggle--caret'
               triggerActiveClassName='button--active'
               triggerText={activePoiTypeLabel}
+              triggerTitle={t('Choose a scenario to compare')}
+              direction='down'
+              alignment='left' >
+                <ul className='drop__menu drop__menu--select' role='menu'>
+                  {this.props.poiTypes.map(o => (
+                    <li key={o.key}>
+                      <a
+                        href='#'
+                        title={t('Select Point of Interest')}
+                        className={c('drop__menu-item', {'drop__menu-item--active': o.key === this.props.activePoiType})}
+                        onClick={e => this.props.onFilterChange('activePoiType', o.key, e)} >
+                        <span>{o.label}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+            </Dropdown>
+          </dd>
+        </dl>
+        <dl className='filters-menu'>
+          <dt>{t('Compare to')}</dt>
+          <dd>
+            <Dropdown
+              triggerClassName='button button--achromic drop__toggle--caret'
+              triggerActiveClassName='button--active'
+              triggerText={activePoiTypeLabel}
               triggerTitle={t('Change Point of Interest')}
               direction='down'
               alignment='left' >
