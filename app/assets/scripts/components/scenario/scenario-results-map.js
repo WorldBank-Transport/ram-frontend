@@ -134,11 +134,7 @@ class ResultsMap extends React.Component {
       });
     }
 
-    if (this.props.data.fetched) {
-      if (this.theMap.getSource('etaData')) {
-        return;
-      }
-
+    if (this.props.data.fetched && !this.theMap.getSource('etaData')) {
       this.theMap.addSource('etaData', {
         'type': 'geojson',
         'data': clone(this.props.data.data.geojson)
@@ -177,11 +173,7 @@ class ResultsMap extends React.Component {
       }, 'poi');
     }
 
-    if (this.props.poi.fetched) {
-      if (this.theMap.getSource('poiData')) {
-        return;
-      }
-
+    if (this.props.poi.fetched && !this.theMap.getSource('poiData')) {
       this.theMap.addSource('poiData', {
         type: 'geojson',
         data: clone(this.props.poi.data.geojson)
