@@ -78,14 +78,20 @@ class ResultsMap extends React.Component {
     const bucketSize = Math.floor(feats.length / totalBuckets);
     const pop = feats.map(f => f.properties.p).sort((a, b) => a - b);
 
-    // Prepare the buckets array.
-    // Get the pop value to build the buckets. All buckets have the same
-    // amount of values.
-    let buckets = Array.apply(null, Array(totalBuckets - 1)).map((_, i) => pop[(i + 1) * bucketSize - 1]);
+    let buckets;
+    if (pop.length < 5) {
+      buckets = [0].concat(pop);
+    } else {
+      // Prepare the buckets array.
+      // Get the pop value to build the buckets. All buckets have the same
+      // amount of values.
+      buckets = Array.apply(null, Array(totalBuckets - 1)).map((_, i) => pop[(i + 1) * bucketSize - 1]);
 
-    // Add first and last values as well.
-    buckets.unshift(0);
-    buckets.push(pop[pop.length - 1]);
+      // Add first and last values as well.
+      buckets.unshift(0);
+      buckets.push(pop[pop.length - 1]);
+    }
+
     return buckets;
   }
 
@@ -93,8 +99,12 @@ class ResultsMap extends React.Component {
     let buckets = this.getPopBuckets(data);
     // Last value is not needed.
     buckets.pop();
+    // Start from the last to account for less than 5 buckets.
+    buckets.reverse();
 
-    let stops = buckets.map((b, idx) => ([{zoom: 6, value: b}, (idx + 1) * 4]));
+    let stops = buckets.map((b, idx) => ([{zoom: 6, value: b}, (5 - idx) * 4]));
+    // Reverse to ensure ascending order.
+    stops.reverse();
 
     return {
       'base': 1,
@@ -246,7 +256,13 @@ class ResultsMap extends React.Component {
         const to = all[idx];
         const r = idx * 4;
 
-        legend.push(<dt key={`dt-${r}`} title={`${from} - ${to}`}>{r}px radius</dt>);
+        let scale = ['xs', 's', 'm', 'l', 'xl'];
+        if (stops.length < 6) {
+          // Cut the scale when it's not big enough.
+          scale = scale.slice(scale.length - stops.length + 1);
+        }
+
+        legend.push(<dt key={`dt-${r}`} className={`bucket bucket--${scale[idx - 1]}`} title={`${from} - ${to}`}>{r}px radius</dt>);
         legend.push(<dd key={`dd-${r}`} title={`${from} - ${to}`}>{shorten(from)}-{shorten(to)}</dd>);
       }
     });
