@@ -6,6 +6,7 @@ import { t } from '../utils/i18n';
 
 import Dropdown from './dropdown';
 
+// Mapbox Control class.
 export default class LayerControl {
   onAdd (map) {
     this.theMap = map;
@@ -38,6 +39,9 @@ export default class LayerControl {
   }
 }
 
+// React component for the layer control.
+// It is disconnected from the global state because it needs to be included
+// via the mapbox code.
 class LayerControlDropdown extends React.Component {
   constructor (props) {
     super(props);
