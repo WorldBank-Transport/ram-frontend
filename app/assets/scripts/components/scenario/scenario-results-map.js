@@ -6,6 +6,8 @@ import mapboxgl from 'mapbox-gl';
 import config from '../../config';
 import { toTimeStr } from '../../utils/utils';
 
+import LayerControl from '../map-layer-control';
+
 const clone = data => JSON.parse(JSON.stringify(data));
 
 class ResultsMap extends React.Component {
@@ -20,7 +22,6 @@ class ResultsMap extends React.Component {
       style: 'mapbox://styles/mapbox/light-v9',
       attributionControl: false
     });
-    this.theMap.addControl(new mapboxgl.NavigationControl(), 'top-left');
     this.theMap.addControl(new mapboxgl.AttributionControl(), 'bottom-right');
     this.theMap.scrollZoom.disable();
     this.theMap.fitBounds(bbox);
@@ -29,6 +30,19 @@ class ResultsMap extends React.Component {
     this.theMap.on('click', 'eta', e => {
       this.showPopover(e.features[0]);
     });
+
+    this.theMap.addControl(new mapboxgl.NavigationControl(), 'top-left');
+
+    // Disable map rotation using right click + drag.
+    this.theMap.dragRotate.disable();
+
+    // Disable map rotation using touch rotation gesture.
+    this.theMap.touchZoomRotate.disableRotation();
+
+    // Remove compass.
+    document.querySelector('.mapboxgl-ctrl .mapboxgl-ctrl-compass').remove();
+
+    this.theMap.addControl(new LayerControl(), 'top-left');
   }
 
   onPopoverCloseClick () {
