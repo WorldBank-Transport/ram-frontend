@@ -137,12 +137,12 @@
 
 .pchange--up::before {
   @extend %collecticon-sm-chevron-up;
-  background: $danger-color;
+  background: $success-color;
 }
 
 .pchange--up2x::before {
   @extend %collecticon-sm-chevron-up-trail;
-  background: shade($danger-color, 32%);
+  background: shade($success-color, 32%);
 }
 
 .pchange--equal::before {
@@ -151,12 +151,12 @@
 
 .pchange--down::before {
   @extend %collecticon-sm-chevron-down;
-  background: $success-color;
+  background: $danger-color;
 }
 
 .pchange--down2x::before {
   @extend %collecticon-sm-chevron-down-trail;
-  background: shade($success-color, 32%);
+  background: shade($danger-color, 32%);
 }
 
 /* Results: ETA Vis
