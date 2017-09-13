@@ -61,6 +61,10 @@ export const INVALIDATE_SCENARIO_POI = 'INVALIDATE_SCENARIO_POI';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
 
+export const REQUEST_SCENARIO_COMPARE = 'REQUEST_SCENARIO_COMPARE';
+export const RECEIVE_SCENARIO_COMPARE = 'RECEIVE_SCENARIO_COMPARE';
+export const INVALIDATE_SCENARIO_COMPARE = 'INVALIDATE_SCENARIO_COMPARE';
+
 // Auth
 
 export function loginSuccess () {
@@ -369,6 +373,41 @@ export function fetchScenarioResultsGeo (projectId, scenarioId, filters = {}) {
   let f = buildAPIQS(filters);
   let url = `${config.api}/projects/${projectId}/scenarios/${scenarioId}/results/geo?${f}`;
   return getAndDispatch(url, requestScenarioResultsGeo, receiveScenarioResultsGeo);
+}
+
+// Scenario compare
+
+export function invalidateScenarioCompare () {
+  return { type: INVALIDATE_SCENARIO_COMPARE };
+}
+
+export function requestScenarioCompare () {
+  return { type: REQUEST_SCENARIO_COMPARE };
+}
+
+export function receiveScenarioCompare (data, error = null) {
+  return { type: RECEIVE_SCENARIO_COMPARE, data, error, receivedAt: Date.now() };
+}
+
+export function fetchScenarioCompare (projectId, scenarioId, filters) {
+  let geoUrl = `${config.api}/projects/${projectId}/scenarios/${scenarioId}/results/geo?${buildAPIQS(filters)}`;
+  let resUrl = `${config.api}/projects/${projectId}/scenarios/${scenarioId}/results/analysis?${buildAPIQS(filters)}`;
+
+  return function (dispatch, getState) {
+    dispatch(requestScenarioCompare());
+
+    return Promise.all([
+      fetchJSON(geoUrl, {}),
+      fetchJSON(resUrl, {})
+    ])
+    .then(results => {
+      let [geo, analysis] = results;
+      return dispatch(receiveScenarioCompare({
+        analysis,
+        geo
+      }));
+    }, err => dispatch(receiveScenarioCompare(null, err)));
+  };
 }
 
 // Fetcher function
