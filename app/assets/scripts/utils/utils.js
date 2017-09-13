@@ -114,3 +114,7 @@ export function popPrevPath () {
   localStorage.removeItem('prev_path');
   return prevPath;
 }
+
+export function clone (o) {
+  return JSON.parse(JSON.stringify(o));
+}

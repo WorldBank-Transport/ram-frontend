@@ -15,15 +15,18 @@ import {
   invalidateScenarioResultsRaw,
   invalidateScenarioResultsGeo,
   showAlert,
-  fetchProjectScenarios
+  fetchProjectScenarios,
+  fetchScenarioCompare,
+  invalidateScenarioCompare
 } from '../../actions';
-import { round, toTimeStr } from '../../utils/utils';
+import { round, toTimeStr, clone } from '../../utils/utils';
 import { t } from '../../utils/i18n';
 import { poiOsmTypes } from '../../utils/constants';
 import { showGlobalLoadingCounted, hideGlobalLoadingCounted } from '../global-loading';
 
 import ResultsMap from './scenario-results-map';
 import Dropdown from '../dropdown';
+import Alert from '../alert';
 
 const ScenarioResults = React.createClass({
 
@@ -38,6 +41,7 @@ const ScenarioResults = React.createClass({
     poiTypes: T.array,
     popInd: T.array,
     scenarios: T.object,
+    scenarioResCompare: T.object,
     _fetchScenarioResults: T.func,
     _fetchScenarioResultsRaw: T.func,
     _fetchScenarioResultsGeo: T.func,
@@ -46,6 +50,8 @@ const ScenarioResults = React.createClass({
     _invalidateScenarioResultsGeo: T.func,
     _invalidateScenarioPoi: T.func,
     _fetchProjectScenarios: T.func,
+    _fetchScenarioCompare: T.func,
+    _invalidateScenarioCompare: T.func,
     _showAlert: T.func
   },
 
@@ -62,7 +68,8 @@ const ScenarioResults = React.createClass({
       rawPage: 1,
       activePoiType: this.props.poiTypes[0].key,
       activePopInd: this.props.popInd[0].key,
-      compare: null
+      compare: null,
+      showCompareAlert: true
     };
   },
 
@@ -79,6 +86,7 @@ const ScenarioResults = React.createClass({
     this.props._invalidateScenarioResultsRaw();
     this.props._invalidateScenarioResultsGeo();
     this.props._invalidateScenarioPoi();
+    this.props._invalidateScenarioCompare();
   },
 
   componentWillReceiveProps: function (nextProps) {
@@ -97,6 +105,8 @@ const ScenarioResults = React.createClass({
     checkLoaded(this.props.geojsonResults, nextProps.geojsonResults);
     checkLoaded(this.props.scenarioPoi, nextProps.scenarioPoi);
     checkLoaded(this.props.scenarios, nextProps.scenarios);
+
+    checkLoaded(this.props.scenarioResCompare, nextProps.scenarioResCompare);
   },
 
   requestAllResults: function () {
@@ -184,7 +194,19 @@ const ScenarioResults = React.createClass({
 
   onCompareChange: function (id, event) {
     event.preventDefault();
-    this.setState({compare: id});
+
+    // On compare change, re-enable the compare alert in case it was dismissed.
+    this.setState({compare: id, showCompareAlert: true}, () => {
+      if (id !== null) {
+        showGlobalLoadingCounted();
+        this.props._fetchScenarioCompare(this.props.projectId, id, {
+          poiType: this.state.activePoiType,
+          popInd: this.state.activePopInd
+        });
+      } else {
+        this.props._invalidateScenarioCompare();
+      }
+    });
   },
 
   onFilterChange: function (field, value, event) {
@@ -202,14 +224,105 @@ const ScenarioResults = React.createClass({
     this.setState(state, () => { this.requestAllResults(); });
   },
 
-  render: function () {
-    let poiName = this.props.poiTypes.find(o => o.key === this.state.activePoiType).label;
-    let popIndName = this.props.popInd.find(o => o.key === this.state.activePopInd).label;
+  getCompareStatus: function () {
+    // Use the results to check what's the compare status.
+    // Return values:
+    // @return null - not comparing or data not loaded.
+    // @return 1 - perfect compare. All data is available both sides
+    // @return 0 - partial compare. Some data omitted.
+    // @return -1 - impossible to compare. There's no common data.
 
-    let scenarios = this.props.scenarios.data.results
+    // Are we comparing?
+    if (this.state.compare !== null) {
+      // Do we have data?
+      if (this.props.scenarioResCompare.fetched) {
+        // Get the features form the base scenario that are also present in the
+        // one we're comparing to.
+        let baseAA = this.props.aggregatedResults.data.accessibilityTime.adminAreas;
+        let comparingAA = this.props.scenarioResCompare.data.analysis.accessibilityTime.adminAreas;
+        let commonAA = baseAA.reduce((acc, aa) => {
+          return comparingAA.find(o => o.id === aa.id) ? acc.concat(aa.id) : acc;
+        }, []);
+
+        if (commonAA.length === baseAA.length) {
+          return 1;
+        } else if (commonAA.length === 0) {
+          return -1;
+        } else if (commonAA.length < baseAA.length) {
+          return 0;
+        }
+      }
+    }
+
+    return null;
+  },
+
+  renderCompareAlert: function (compareSatus) {
+    if (!this.state.compare || !this.state.showCompareAlert) {
+      return null;
+    }
+    let type;
+    let title;
+    let message;
+
+    if (compareSatus === 0) {
+      type = 'info';
+      title = t('Results Incomplete');
+      message = t('Only the results present in both scenarios are being shown.');
+    } else if (compareSatus === -1) {
+      type = 'danger';
+      title = t('Impossible to Compare');
+      message = t('There are no common results between the selected scenario.');
+    } else {
+      return null;
+    }
+
+    return (
+      <Alert type={type} dismissable onDismiss={() => this.setState({showCompareAlert: false})}>
+        <h6>{title}</h6>
+        <p>{message}</p>
+      </Alert>
+    );
+  },
+
+  render: function () {
+    const poiName = this.props.poiTypes.find(o => o.key === this.state.activePoiType).label;
+    const popIndName = this.props.popInd.find(o => o.key === this.state.activePopInd).label;
+
+    // Are we comparing?
+    const comparing = this.state.compare !== null;
+    const compareSatus = this.getCompareStatus();
+
+    const scenarios = this.props.scenarios.data.results
       // Can't compare to itself.
       .filter(o => o.id !== this.props.scenarioId)
       .map(o => ({id: o.id, name: o.name}));
+
+    let accessibilityTableData = this.props.aggregatedResults.data.accessibilityTime;
+    // Are we comparing?
+    if (comparing) {
+      // Do we have data?
+      if (this.props.scenarioResCompare.fetched) {
+
+        // Get the features form the base scenario that are also present in the
+        // one we're comparing to.
+        let baseAA = this.props.aggregatedResults.data.accessibilityTime.adminAreas;
+        let comparingAA = this.props.scenarioResCompare.data.analysis.accessibilityTime.adminAreas;
+        let commonAA = baseAA.reduce((acc, aa) => {
+          let cmpAA = comparingAA.find(o => o.id === aa.id);
+          if (cmpAA) {
+            aa = clone(aa);
+            aa.dataCompare = cmpAA.data;
+            return acc.concat(aa);
+          }
+          return acc;
+        }, []);
+
+        // Replace Admin Areas.
+        accessibilityTableData = clone(this.props.aggregatedResults.data.accessibilityTime);
+        accessibilityTableData.adminAreas = commonAA;
+      }
+    }
 
     return (
       <div className='rwrapper'>
@@ -225,7 +338,9 @@ const ScenarioResults = React.createClass({
           compareScenarioId={this.state.compare}
         />
 
-        <ResultsMap
+        {this.renderCompareAlert(compareSatus)}
+
+        {compareSatus !== -1 ? <ResultsMap
           projectId={this.props.projectId}
           scenarioId={this.props.scenarioId}
           data={this.props.geojsonResults}
@@ -233,18 +348,19 @@ const ScenarioResults = React.createClass({
           bbox={this.props.bbox}
           poiName={poiName}
           popIndName={popIndName}
-        />
+        /> : null}
 
-        <AccessibilityTable
+        {compareSatus !== -1 ? <AccessibilityTable
           fetched={this.props.aggregatedResults.fetched}
           fetching={this.props.aggregatedResults.fetching}
           receivedAt={this.props.aggregatedResults.receivedAt}
-          data={this.props.aggregatedResults.data.accessibilityTime}
+          data={accessibilityTableData}
           poiName={poiName}
           error={this.props.aggregatedResults.error}
-        />
+          comparing={comparing}
+        /> : null}
 
-        <RawResultsTable
+        {!comparing ? <RawResultsTable
           fetched={this.props.rawResults.fetched}
           fetching={this.props.rawResults.fetching}
           receivedAt={this.props.rawResults.receivedAt}
@@ -257,7 +373,7 @@ const ScenarioResults = React.createClass({
           poiName={poiName}
           filter={this.state.rawFilter}
           onFilter={this.onRawResultsFilter}
-        />
+        /> : null}
       </div>
     );
   }
@@ -288,7 +404,8 @@ function selector (state) {
     rawResults: state.scenarioResultsRaw,
     geojsonResults: state.scenarioResultsGeo,
     scenarioPoi: state.scenarioPoi,
-    scenarios: state.scenarios
+    scenarios: state.scenarios,
+    scenarioResCompare: state.scenarioResultsCompare
   };
 }
 
@@ -302,6 +419,8 @@ function dispatcher (dispatch) {
     _invalidateScenarioResultsGeo: (...args) => dispatch(invalidateScenarioResultsGeo(...args)),
     _invalidateScenarioPoi: (...args) => dispatch(invalidateScenarioPoi(...args)),
     _fetchProjectScenarios: (...args) => dispatch(fetchProjectScenarios(...args)),
+    _fetchScenarioCompare: (...args) => dispatch(fetchScenarioCompare(...args)),
+    _invalidateScenarioCompare: (...args) => dispatch(invalidateScenarioCompare(...args)),
     _showAlert: (...args) => dispatch(showAlert(...args))
   };
 }
@@ -326,7 +445,28 @@ class AccessibilityTable extends React.PureComponent {
     return (
       <tr key={aa.name}>
         <th>{aa.name}</th>
-        {aa.data.map((o, i) => <td key={i}><small className='pchange pchange--up'>(increase)</small> {round(o)}%</td>)}
+        {aa.data.map((o, i) => {
+          let perChange = null;
+
+          if (this.props.comparing && aa.dataCompare) {
+            let diff = o - aa.dataCompare[i];
+            let cName = 'pchange--equal';
+            if (diff <= -25) {
+              cName = 'pchange--down2x';
+            } else if (diff < 0) {
+              cName = 'pchange--down';
+            } else if (diff >= 25) {
+              cName = 'pchange--up2x';
+            } else if (diff > 0) {
+              cName = 'pchange--up';
+            }
+            perChange = <small className={`pchange ${cName}`}>(increase)</small>;
+          }
+
+          return (
+            <td key={i}>{perChange} {round(o)}%</td>
+          );
+        })}
       </tr>
     );
   }
@@ -377,7 +517,8 @@ AccessibilityTable.propTypes = {
   receivedAt: T.number,
   data: T.object,
   poiName: T.string,
-  error: T.object
+  error: T.object,
+  comparing: T.bool
 };
 
 // ////////////////////////////////////////////////////////////////////////// //
@@ -630,3 +771,34 @@ RawResultsTable.propTypes = {
   }),
   onFilter: T.func
 };
+
+
+
+
+
+    // // Are we comparing?
+    // if (this.state.compare !== null) {
+    //   // Do we have data?
+    //   if (this.props.scenarioResCompare.fetched) {
+    //     console.log('this.scenarioResCompare', this.props.scenarioResCompare);
+    //     console.log('this.geojsonResults', this.props.geojsonResults);
+
+    //     // Get the features form the base scenario that are also present in the
+    //     // one we're comparing to.
+    //     let baseFeatures = this.props.geojsonResults.data.geojson.features;
+    //     let comparingFeatures = this.props.scenarioResCompare.data.geo.features;
+    //     let commonFeat = baseFeatures.reduce((acc, feat) => {
+    //       let cmpfeat = comparingFeatures.find(f => f.properties.i === feat.properties.i);
+    //       if (cmpfeat) {
+    //         feat = clone(feat);
+    //         feat.properties.e2 = cmpfeat.properties.e;
+    //         feat.properties.eDelta = feat.properties.e - feat.properties.e2;
+
+    //         acc.push(feat);
+    //       }
+    //       return acc;
+    //     }, []);
+
+    //     console.log('commonFeat', commonFeat);
+    //   }
+    // }
