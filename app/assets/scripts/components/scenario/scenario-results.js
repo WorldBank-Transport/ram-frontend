@@ -221,7 +221,16 @@ const ScenarioResults = React.createClass({
       rawPage: 1
     };
 
-    this.setState(state, () => { this.requestAllResults(); });
+    this.setState(state, () => {
+      this.requestAllResults();
+      if (this.state.compare !== null) {
+        showGlobalLoadingCounted();
+        this.props._fetchScenarioCompare(this.props.projectId, this.state.compare, {
+          poiType: this.state.activePoiType,
+          popInd: this.state.activePopInd
+        });
+      }
+    });
   },
 
   getCompareStatus: function () {
@@ -303,11 +312,11 @@ const ScenarioResults = React.createClass({
     if (comparing) {
       // Do we have data?
       if (this.props.scenarioResCompare.fetched) {
-
         // Get the features form the base scenario that are also present in the
         // one we're comparing to.
         let baseAA = this.props.aggregatedResults.data.accessibilityTime.adminAreas;
         let comparingAA = this.props.scenarioResCompare.data.analysis.accessibilityTime.adminAreas;
+
         let commonAA = baseAA.reduce((acc, aa) => {
           let cmpAA = comparingAA.find(o => o.id === aa.id);
           if (cmpAA) {
@@ -551,6 +560,7 @@ class FiltersBar extends React.PureComponent {
                         href='#'
                         title={t('Select Population')}
                         className={c('drop__menu-item', {'drop__menu-item--active': o.key === this.props.activePopInd})}
+                        data-hook='dropdown:close'
                         onClick={e => this.props.onFilterChange('activePopInd', o.key, e)} >
                         <span>{o.label}</span>
                       </a>
@@ -575,6 +585,7 @@ class FiltersBar extends React.PureComponent {
                         href='#'
                         title={t('Select Point of Interest')}
                         className={c('drop__menu-item', {'drop__menu-item--active': o.key === this.props.activePoiType})}
+                        data-hook='dropdown:close'
                         onClick={e => this.props.onFilterChange('activePoiType', o.key, e)} >
                         <span>{o.label}</span>
                       </a>
@@ -771,10 +782,6 @@ RawResultsTable.propTypes = {
   }),
   onFilter: T.func
 };
-
-
-
-
 
     // // Are we comparing?
     // if (this.state.compare !== null) {
