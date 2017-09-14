@@ -159,6 +159,10 @@
   background: shade($danger-color, 32%);
 }
 
+.value-wrapper {
+  display: inline-block;
+}
+
 /* Results: ETA Vis
    ========================================================================== */
 

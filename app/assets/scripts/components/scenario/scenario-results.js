@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import c from 'classnames';
 import _ from 'lodash';
 import ReactPaginate from 'react-paginate';
+import ReactTooltip from 'react-tooltip';
 
 import {
   fetchScenarioResults,
@@ -455,7 +456,7 @@ class AccessibilityTable extends React.PureComponent {
       <tr key={aa.name}>
         <th>{aa.name}</th>
         {aa.data.map((o, i) => {
-          let perChange = null;
+          let content = null;
 
           if (this.props.comparing && aa.dataCompare) {
             let diff = o - aa.dataCompare[i];
@@ -469,11 +470,18 @@ class AccessibilityTable extends React.PureComponent {
             } else if (diff > 0) {
               cName = 'pchange--up';
             }
-            perChange = <small className={`pchange ${cName}`}>(increase)</small>;
+            content = (
+              <span className='value-wrapper' data-tip={`Comparing to ${round(aa.dataCompare[i])}%`} data-effect='solid'>
+                <small className={`pchange ${cName}`}>(increase)</small> {round(o)}%
+                <ReactTooltip />
+              </span>
+            );
+          } else {
+            content = `${round(o)}%`;
           }
 
           return (
-            <td key={i}>{perChange} {round(o)}%</td>
+            <td key={i}>{content}</td>
           );
         })}
       </tr>
