@@ -288,7 +288,7 @@ class ResultsMap extends React.Component {
           scale = scale.slice(scale.length - stops.length + 1);
         }
 
-        legend.push(<dt key={`dt-${r}`} className={`bucket bucket--${scale[idx - 1]}`} title={`${from} - ${to}`}>{r}px radius</dt>);
+        legend.push(<dt key={`dt-${r}`} className={`radius radius--${scale[idx - 1]}`} title={`${from} - ${to}`}>{r}px radius</dt>);
         legend.push(<dd key={`dd-${r}`} title={`${from} - ${to}`}>{shorten(from)}-{shorten(to)}</dd>);
       }
     });

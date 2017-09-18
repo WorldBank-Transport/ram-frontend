@@ -240,7 +240,7 @@
 }
 
 .legend__dl--size {
-  .bucket {
+  .radius {
     background: $base-alpha-color;
     border-radius: $full-border-radius;
 
@@ -249,27 +249,27 @@
     }
   }
 
-  .bucket--xs::before {
+  .radius--xs::before {
     height: 0.25rem;
     width: 0.25rem;
   }
 
-  .bucket--s::before {
+  .radius--s::before {
     height: 0.5rem;
     width: 0.5rem;
   }
 
-  .bucket--m::before {
+  .radius--m::before {
     height: 0.75rem;
     width: 0.75rem;
   }
 
-  .bucket--l::before {
+  .radius--l::before {
     height: 1rem;
     width: 1rem;
   }
 
-  .bucket--xl::before {
+  .radius--xl::before {
     height: 1.25rem;
     width: 1.25rem;
   }
