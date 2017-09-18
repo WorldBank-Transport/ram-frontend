@@ -19,10 +19,8 @@ export default function reducer (state = initialState, action) {
         state.error = action.error;
       } else {
         state.data = {
-          'geojson': {
-            'type': 'FeatureCollection',
-            'features': generateGeoJSON(action.data)
-          }
+          'type': 'FeatureCollection',
+          'features': generateGeoJSON(action.data)
         };
       }
       break;
