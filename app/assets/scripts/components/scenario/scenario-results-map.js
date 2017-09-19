@@ -306,40 +306,44 @@ class ResultsMap extends React.Component {
   renderTimeLegend () {
     return (
       <div className='legend__block'>
-        <h3 className='legend__title'>Time to POI <small>(minutes)</small></h3>
+        {this.props.comparing ? (
+          <h3 className='legend__title'>Difference <small>(minutes)</small></h3>
+        ) : (
+          <h3 className='legend__title'>Time to POI <small>(minutes)</small></h3>
+        )}
         {this.props.comparing ? (
           <dl className='legend__dl legend__dl--colors'>
             <dt className='color color--alpha'>Dark green</dt>
-            <dd>-∞ - -30</dd>
+            <dd>-30 or less</dd>
             <dt className='color color--beta'>Soft green</dt>
-            <dd>-30 - -10</dd>
+            <dd>-30 to -10</dd>
             <dt className='color color--gama'>Light green</dt>
-            <dd>-10 - 0</dd>
+            <dd>-10 to 0</dd>
             <dt className='color color--eta'>Brown</dt>
-            <dd>0</dd>
+            <dd>No change</dd>
             <dt className='color color--delta'>Yellow</dt>
-            <dd>0 - 10</dd>
+            <dd>0 to 10</dd>
             <dt className='color color--epsilon'>Orange</dt>
-            <dd>10 - 30</dd>
+            <dd>10 to 30</dd>
             <dt className='color color--zeta'>Red</dt>
-            <dd>30 - ∞</dd>
+            <dd>30 or more</dd>
           </dl>
         ) : (
           <dl className='legend__dl legend__dl--colors'>
             <dt className='color color--alpha'>Dark green</dt>
-            <dd>0-10</dd>
+            <dd>0 to 10</dd>
             <dt className='color color--beta'>Soft green</dt>
-            <dd>10-20</dd>
+            <dd>10 to 20</dd>
             <dt className='color color--gama'>Light green</dt>
-            <dd>20-30</dd>
+            <dd>20 to 30</dd>
             <dt className='color color--delta'>Yellow</dt>
-            <dd>30-60</dd>
+            <dd>30 to 60</dd>
             <dt className='color color--epsilon'>Orange</dt>
-            <dd>60-90</dd>
+            <dd>60 to 90</dd>
             <dt className='color color--zeta'>Red</dt>
-            <dd>90-120</dd>
+            <dd>90 to 120</dd>
             <dt className='color color--eta'>Brown</dt>
-            <dd>+120</dd>
+            <dd>120 or more</dd>
           </dl>
         )}
       </div>
