@@ -129,19 +129,24 @@ class ResultsMap extends React.Component {
         tiles: [`${config.api}/projects/${this.props.projectId}/tiles/admin-bounds/{z}/{x}/{y}`]
       });
       this.theMap.addLayer({
-        id: 'admin-bounds',
-        type: 'line',
-        source: 'admin-bounds',
+        'id': 'admin-bounds',
+        'type': 'line',
+        'source': 'admin-bounds',
         'source-layer': 'bounds',
-        layout: {
-          visibility: 'none'
+        'layout': {
+          'visibility': 'none'
         },
-        paint: {
+        'paint': {
           'line-color': '#526980',
-          'line-width': 2,
+          'line-width': {
+            'stops': [
+              [4, 1],
+              [14, 2]
+            ]
+          },
           'line-opacity': 0.48
         }
-      });
+      }, 'eta');
     }
 
     if (this.props.data.fetched && !this.theMap.getSource('etaData')) {
