@@ -118,3 +118,11 @@ export function popPrevPath () {
 export function clone (o) {
   return JSON.parse(JSON.stringify(o));
 }
+
+export function getPropInsensitive (object, prop) {
+  // prop can be written in caps or any variant.
+  // prop, PROP, Prop, PrOp
+  // Search for the first match an return it.
+  // If not found return prop.
+  return Object.keys(object).find(k => k.toLowerCase() === prop) || prop;
+}
