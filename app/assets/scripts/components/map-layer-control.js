@@ -6,6 +6,7 @@ import { t } from '../utils/i18n';
 
 import Dropdown from './dropdown';
 
+// Mapbox Control class.
 export default class LayerControl {
   onAdd (map) {
     this.theMap = map;
@@ -31,10 +32,16 @@ export default class LayerControl {
       case 'origins':
         this.theMap.setLayoutProperty('eta', 'visibility', active ? 'visible' : 'none');
         break;
+      case 'admin-bounds':
+        this.theMap.setLayoutProperty('admin-bounds', 'visibility', active ? 'visible' : 'none');
+        break;
     }
   }
 }
 
+// React component for the layer control.
+// It is disconnected from the global state because it needs to be included
+// via the mapbox code.
 class LayerControlDropdown extends React.Component {
   constructor (props) {
     super(props);
@@ -73,12 +80,12 @@ class LayerControlDropdown extends React.Component {
             <span className='form__option__text'>{t('Destinations')}</span>
             <span className='form__option__ui'></span>
           </label>
-          { /* <label htmlFor='switch3' className='form__option form__option--switch' title={t('Toggle on/off')}>
+          <label htmlFor='switch3' className='form__option form__option--switch' title={t('Toggle on/off')}>
             <input type='checkbox' name='switch3' id='switch3' value='on' checked={this.state['admin-bounds']} onChange={this.toggleLayer.bind(this, 'admin-bounds')}/>
             <span className='form__option__text'>{t('Admin boundaries')}</span>
             <span className='form__option__ui'></span>
           </label>
-          <label htmlFor='switch4' className='form__option form__option--switch' title={t('Toggle on/off')}>
+          { /* <label htmlFor='switch4' className='form__option form__option--switch' title={t('Toggle on/off')}>
             <input type='checkbox' name='switch4' id='switch4' value='on' checked={this.state['road-network']} onChange={this.toggleLayer.bind(this, 'road-network')}/>
             <span className='form__option__text'>{t('Road network')}</span>
             <span className='form__option__ui'></span>
