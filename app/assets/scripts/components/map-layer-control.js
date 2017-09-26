@@ -35,6 +35,9 @@ export default class LayerControl {
       case 'admin-bounds':
         this.theMap.setLayoutProperty('admin-bounds', 'visibility', active ? 'visible' : 'none');
         break;
+      case 'road-network':
+        this.theMap.setLayoutProperty('road-network', 'visibility', active ? 'visible' : 'none');
+        break;
     }
   }
 }
@@ -85,11 +88,11 @@ class LayerControlDropdown extends React.Component {
             <span className='form__option__text'>{t('Admin boundaries')}</span>
             <span className='form__option__ui'></span>
           </label>
-          { /* <label htmlFor='switch4' className='form__option form__option--switch' title={t('Toggle on/off')}>
+          <label htmlFor='switch4' className='form__option form__option--switch' title={t('Toggle on/off')}>
             <input type='checkbox' name='switch4' id='switch4' value='on' checked={this.state['road-network']} onChange={this.toggleLayer.bind(this, 'road-network')}/>
             <span className='form__option__text'>{t('Road network')}</span>
             <span className='form__option__ui'></span>
-          </label> */ }
+          </label>
       </Dropdown>
     );
   }
