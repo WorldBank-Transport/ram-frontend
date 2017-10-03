@@ -328,7 +328,7 @@ const ScenarioResults = React.createClass({
     return accessibilityTableData;
   },
 
-  renderCompareAlert: function (compareSatus) {
+  renderCompareAlert: function (compareStatus) {
     if (!this.state.compare || !this.state.showCompareAlert) {
       return null;
     }
@@ -336,11 +336,11 @@ const ScenarioResults = React.createClass({
     let title;
     let message;
 
-    if (compareSatus === 0) {
+    if (compareStatus === 0) {
       type = 'info';
       title = t('Results Incomplete');
       message = t('Only the results present in both scenarios are being shown.');
-    } else if (compareSatus === -1) {
+    } else if (compareStatus === -1) {
       type = 'danger';
       title = t('Impossible to Compare');
       message = t('There are no common results between the selected scenario.');
@@ -362,7 +362,8 @@ const ScenarioResults = React.createClass({
 
     // Are we comparing?
     const comparing = this.state.compare !== null;
-    const compareSatus = this.getCompareStatus();
+    const compareStatus = this.getCompareStatus();
+    const scenarioCompareName = this.state.compare ? this.props.scenarios.data.results.find(o => o.id === this.state.compare).name : null
 
     const scenarios = this.props.scenarios.data.results
       // Can't compare to itself.
@@ -386,9 +387,9 @@ const ScenarioResults = React.createClass({
           compareScenarioId={this.state.compare}
         />
 
-        {this.renderCompareAlert(compareSatus)}
+        {this.renderCompareAlert(compareStatus)}
 
-        {compareSatus !== -1 ? <ResultsMap
+        {compareStatus !== -1 ? <ResultsMap
           projectId={this.props.projectId}
           scenarioId={this.props.scenarioId}
           data={mapData}
@@ -397,9 +398,10 @@ const ScenarioResults = React.createClass({
           poiName={poiName}
           popIndName={popIndName}
           comparing={comparing}
+          compareScenarioName={scenarioCompareName}
         /> : null}
 
-        {compareSatus !== -1 ? <AccessibilityTable
+        {compareStatus !== -1 ? <AccessibilityTable
           fetched={this.props.aggregatedResults.fetched}
           fetching={this.props.aggregatedResults.fetching}
           receivedAt={this.props.aggregatedResults.receivedAt}
@@ -407,6 +409,7 @@ const ScenarioResults = React.createClass({
           poiName={poiName}
           error={this.props.aggregatedResults.error}
           comparing={comparing}
+          compareScenarioName={scenarioCompareName}
         /> : null}
 
         {!comparing ? <RawResultsTable
@@ -490,7 +493,6 @@ class AccessibilityTable extends React.PureComponent {
         </tr>
       );
     }
-
     return (
       <tr key={aa.name}>
         <th>{aa.name}</th>
@@ -510,7 +512,7 @@ class AccessibilityTable extends React.PureComponent {
               cName = 'pchange--up';
             }
             content = (
-              <span className='value-wrapper' data-tip={`Comparing to ${round(aa.dataCompare[i])}%`} data-effect='solid'>
+              <span className='value-wrapper' data-tip={`${this.props.compareScenarioName}: ${round(aa.dataCompare[i])}%`} data-effect='solid'>
                 <small className={`pchange ${cName}`}>(increase)</small> {round(o)}%
                 <ReactTooltip />
               </span>
@@ -544,7 +546,7 @@ class AccessibilityTable extends React.PureComponent {
       <article className='card card--analysis-result' key={accessibilityTime.poi}>
         <div className='card__contents'>
           <header className='card__header'>
-            <h1 className='card__title'>{this.props.poiName}</h1>
+            <h1 className='card__title'>Percentage of population with access to {this.props.poiName}</h1>
           </header>
           <div className='card__body'>
             <div className='table-wrapper'>
@@ -574,7 +576,8 @@ AccessibilityTable.propTypes = {
   data: T.object,
   poiName: T.string,
   error: T.object,
-  comparing: T.bool
+  comparing: T.bool,
+  compareScenarioName: T.string
 };
 
 // ////////////////////////////////////////////////////////////////////////// //
@@ -737,14 +740,14 @@ class RawResultsTable extends React.PureComponent {
         <div className='card__contents'>
           <header className='card__header'>
             <div className='card__headline'>
-              <h1 className='card__title'>Origin level raw data for {this.props.poiName}</h1>
+              <h1 className='card__title'>Travel times to {this.props.poiName} by origin</h1>
             </div>
             <div className='card__actions'>
               <div className='form__group card__search-block'>
-                <label className='form__label visually-hidden' htmlFor='search-villages'>{t('Search villages')}</label>
+                <label className='form__label visually-hidden' htmlFor='search-origins'>{t('Search origins')}</label>
                 <div className='form__input-group form__input-group--small'>
-                  <div className='form__input-addon'><button type='button' className='button button--primary-plain button--text-hidden' title='Search villages'><i className='collecticon-magnifier-left'></i><span>Search</span></button></div>
-                  <input type='text' id='search-villages' name='search-villages' className='form__control' placeholder={t('Villages')} value={this.props.filter.value} onChange={this.onSearchChange.bind(this)} />
+                  <div className='form__input-addon'><button type='button' className='button button--primary-plain button--text-hidden' title='Search origins'><i className='collecticon-magnifier-left'></i><span>Search</span></button></div>
+                  <input type='text' id='search-origins' name='search-origins' className='form__control' placeholder={t('Origins')} value={this.props.filter.value} onChange={this.onSearchChange.bind(this)} />
                 </div>
               </div>
             </div>

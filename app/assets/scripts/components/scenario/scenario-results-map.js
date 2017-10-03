@@ -58,6 +58,7 @@ class ResultsMap extends React.Component {
             popIndName={this.props.popIndName}
             time={this.props.comparing ? feature.properties.eDelta : feature.properties.e}
             comparing={this.props.comparing}
+            compareScenarioName={this.props.compareScenarioName}
             poiName={this.props.poiName}
             onCloseClick={this.onPopoverCloseClick.bind(this)} />, popoverContent);
 
@@ -387,7 +388,7 @@ class ResultsMap extends React.Component {
       <article className='card card--analysis-result eta-vis'>
         <div className='card__contents'>
           <header className='card__header'>
-            <h1 className='card__title'>ETA visualization</h1>
+            <h1 className='card__title'>{this.props.comparing ? ('Difference in travel time') : ('Travel time')}</h1>
           </header>
 
           <figure className='card__media eta-vis__media'>
@@ -411,22 +412,21 @@ ResultsMap.propTypes = {
   poi: T.object,
   poiName: T.string,
   popIndName: T.string,
-  comparing: T.bool
+  comparing: T.bool,
+  compareScenarioName: T.string
 };
 
 export default ResultsMap;
 
 class MapPopover extends React.Component {
   render () {
-    let label = this.props.comparing ? 'Difference' : 'Nearest POI';
+    let label = this.props.comparing ? `Compared to ${this.props.compareScenarioName}` : 'Nearest POI';
     let time;
     if (this.props.comparing) {
-      let mark = time < 0 ? '-' : '';
-      time = mark + (this.props.time === 0 ? 0 : toTimeStr(Math.abs(this.props.time)));
+      time = this.props.time === 0 ? 'no difference' : `${toTimeStr(Math.abs(this.props.time))} ${this.props.time < 0 ? 'faster' : 'slower'}`;
     } else {
       time = toTimeStr(this.props.time);
     }
-
     return (
       <article className='popover'>
         <div className='popover__contents'>
@@ -461,5 +461,6 @@ MapPopover.propTypes = {
   time: T.number,
   poiName: T.string,
   comparing: T.bool,
+  compareScenarioName: T.string,
   onCloseClick: T.func
 };
