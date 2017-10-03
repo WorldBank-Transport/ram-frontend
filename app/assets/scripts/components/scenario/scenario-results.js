@@ -546,7 +546,7 @@ class AccessibilityTable extends React.PureComponent {
       <article className='card card--analysis-result' key={accessibilityTime.poi}>
         <div className='card__contents'>
           <header className='card__header'>
-            <h1 className='card__title'>{this.props.poiName}</h1>
+            <h1 className='card__title'>Percentage of population with access to {this.props.poiName}</h1>
           </header>
           <div className='card__body'>
             <div className='table-wrapper'>
@@ -740,14 +740,14 @@ class RawResultsTable extends React.PureComponent {
         <div className='card__contents'>
           <header className='card__header'>
             <div className='card__headline'>
-              <h1 className='card__title'>Origin level raw data for {this.props.poiName}</h1>
+              <h1 className='card__title'>Travel times to {this.props.poiName} by origin</h1>
             </div>
             <div className='card__actions'>
               <div className='form__group card__search-block'>
-                <label className='form__label visually-hidden' htmlFor='search-villages'>{t('Search villages')}</label>
+                <label className='form__label visually-hidden' htmlFor='search-origins'>{t('Search origins')}</label>
                 <div className='form__input-group form__input-group--small'>
-                  <div className='form__input-addon'><button type='button' className='button button--primary-plain button--text-hidden' title='Search villages'><i className='collecticon-magnifier-left'></i><span>Search</span></button></div>
-                  <input type='text' id='search-villages' name='search-villages' className='form__control' placeholder={t('Villages')} value={this.props.filter.value} onChange={this.onSearchChange.bind(this)} />
+                  <div className='form__input-addon'><button type='button' className='button button--primary-plain button--text-hidden' title='Search origins'><i className='collecticon-magnifier-left'></i><span>Search</span></button></div>
+                  <input type='text' id='search-origins' name='search-origins' className='form__control' placeholder={t('Origins')} value={this.props.filter.value} onChange={this.onSearchChange.bind(this)} />
                 </div>
               </div>
             </div>
