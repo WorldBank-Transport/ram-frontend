@@ -183,6 +183,38 @@ class ResultsMap extends React.Component {
       }, 'eta');
     }
 
+    if (!this.theMap.getSource('road-network')) {
+      this.theMap.addSource('road-network', {
+        type: 'vector',
+        tiles: [`${config.api}/projects/${this.props.projectId}/scenarios/${this.props.scenarioId}/tiles/road-network/{z}/{x}/{y}`]
+      });
+      this.theMap.addLayer({
+        'id': 'road-network',
+        'type': 'line',
+        'source': 'road-network',
+        'source-layer': 'road-network',
+        'layout': {
+          'visibility': 'none'
+        },
+        'paint': {
+          'line-color': '#75584E',
+          'line-width': 2
+        },
+        'filter': [
+          'all',
+          [
+            '==',
+            '$type',
+            'LineString'
+          ],
+          [
+            'has',
+            'highway'
+          ]
+        ]
+      }, 'place-neighbourhood');
+    }
+
     if (this.props.data.fetched && !this.theMap.getSource('etaData')) {
       this.theMap.addSource('etaData', {
         'type': 'geojson',
