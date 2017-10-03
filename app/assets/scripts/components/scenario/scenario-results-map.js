@@ -25,7 +25,7 @@ class ResultsMap extends React.Component {
     this.theMap.addControl(new mapboxgl.AttributionControl(), 'bottom-right');
     this.theMap.scrollZoom.disable();
     this.theMap.fitBounds(bbox);
-    this.theMap.on('load', this.setupData.bind(this));
+    this.theMap.on('style.load', this.setupData.bind(this));
 
     this.theMap.on('click', 'eta', e => {
       this.showPopover(e.features[0]);
@@ -56,7 +56,9 @@ class ResultsMap extends React.Component {
             name={feature.properties.n}
             pop={feature.properties.p}
             popIndName={this.props.popIndName}
-            eta={feature.properties.e}
+            time={this.props.comparing ? feature.properties.eDelta : feature.properties.e}
+            comparing={this.props.comparing}
+            compareScenarioName={this.props.compareScenarioName}
             poiName={this.props.poiName}
             onCloseClick={this.onPopoverCloseClick.bind(this)} />, popoverContent);
 
@@ -72,8 +74,8 @@ class ResultsMap extends React.Component {
       .addTo(this.theMap);
   }
 
-  getPopBuckets (geojson) {
-    const feats = geojson.features;
+  getPopBuckets (featColl) {
+    const feats = featColl.features;
     const totalBuckets = 5;
     const bucketSize = Math.floor(feats.length / totalBuckets);
     const pop = feats.map(f => f.properties.p).sort((a, b) => a - b);
@@ -95,8 +97,8 @@ class ResultsMap extends React.Component {
     return buckets;
   }
 
-  getCircleRadiusPaintProp (data) {
-    let buckets = this.getPopBuckets(data);
+  getCircleRadiusPaintProp (featColl) {
+    let buckets = this.getPopBuckets(featColl);
     // Last value is not needed.
     buckets.pop();
     // Start from the last to account for less than 5 buckets.
@@ -120,6 +122,38 @@ class ResultsMap extends React.Component {
       //   [{zoom: 14, value: 1}, 45]
       // ]
     };
+  }
+
+  getCircleColorPaintProp (comparing) {
+    return comparing
+      ? {
+        'base': 1,
+        'type': 'interval',
+        'property': 'eDelta',
+        'stops': [
+          [-1860, '#1a9850'], // -31
+          [-1800, '#91cf60'], // -30
+          [-600, '#d9ef8b'], // -10
+          [0, '#4d4d4d'], // 0
+          [1, '#fee08b'],
+          [600, '#fc8d59'], // 10
+          [1800, '#d73027'] // 30
+        ]
+      }
+      : {
+        'base': 1,
+        'type': 'interval',
+        'property': 'e',
+        'stops': [
+          [0, '#1a9850'],
+          [600, '#91cf60'],
+          [1200, '#d9ef8b'],
+          [1800, '#fee08b'],
+          [3600, '#fc8d59'],
+          [5400, '#d73027'],
+          [7200, '#4d4d4d']
+        ]
+      };
   }
 
   setupData () {
@@ -152,7 +186,7 @@ class ResultsMap extends React.Component {
     if (this.props.data.fetched && !this.theMap.getSource('etaData')) {
       this.theMap.addSource('etaData', {
         'type': 'geojson',
-        'data': clone(this.props.data.data.geojson)
+        'data': clone(this.props.data.data)
       });
 
       this.theMap.addLayer({
@@ -160,21 +194,8 @@ class ResultsMap extends React.Component {
         'type': 'circle',
         'source': 'etaData',
         'paint': {
-          'circle-color': {
-            'base': 1,
-            'type': 'interval',
-            'property': 'e',
-            'stops': [
-              [0, '#1a9850'],
-              [600, '#91cf60'],
-              [1200, '#d9ef8b'],
-              [1800, '#fee08b'],
-              [3600, '#fc8d59'],
-              [5400, '#d73027'],
-              [7200, '#4d4d4d']
-            ]
-          },
-          'circle-radius': this.getCircleRadiusPaintProp(this.props.data.data.geojson),
+          'circle-color': this.getCircleColorPaintProp(this.props.comparing),
+          'circle-radius': this.getCircleRadiusPaintProp(this.props.data.data),
           'circle-blur': 0.5,
           'circle-opacity': {
             'stops': [
@@ -191,7 +212,7 @@ class ResultsMap extends React.Component {
     if (this.props.poi.fetched && !this.theMap.getSource('poiData')) {
       this.theMap.addSource('poiData', {
         type: 'geojson',
-        data: clone(this.props.poi.data.geojson)
+        data: clone(this.props.poi.data)
       });
       this.theMap.addLayer({
         id: 'poi',
@@ -218,8 +239,9 @@ class ResultsMap extends React.Component {
     if (this.props.data.fetched && this.props.data.receivedAt !== prevProps.data.receivedAt) {
       let source = this.theMap.getSource('etaData');
       if (source) {
-        source.setData(clone(this.props.data.data.geojson));
-        this.theMap.setPaintProperty('eta', 'circle-radius', this.getCircleRadiusPaintProp(this.props.data.data.geojson));
+        source.setData(clone(this.props.data.data));
+        this.theMap.setPaintProperty('eta', 'circle-radius', this.getCircleRadiusPaintProp(this.props.data.data));
+        this.theMap.setPaintProperty('eta', 'circle-color', this.getCircleColorPaintProp(this.props.comparing));
       } else {
         this.setupData();
       }
@@ -228,7 +250,7 @@ class ResultsMap extends React.Component {
     if (this.props.poi.fetched && this.props.poi.receivedAt !== prevProps.poi.receivedAt) {
       let source = this.theMap.getSource('poiData');
       if (source) {
-        source.setData(clone(this.props.poi.data.geojson));
+        source.setData(clone(this.props.poi.data));
       } else {
         this.setupData();
       }
@@ -236,8 +258,8 @@ class ResultsMap extends React.Component {
   }
 
   renderPopLegend () {
-    const data = this.props.data.data.geojson;
-    if (!data) {
+    const data = this.props.data.data;
+    if (!data.features) {
       return null;
     }
 
@@ -267,7 +289,7 @@ class ResultsMap extends React.Component {
           scale = scale.slice(scale.length - stops.length + 1);
         }
 
-        legend.push(<dt key={`dt-${r}`} className={`bucket bucket--${scale[idx - 1]}`} title={`${from} - ${to}`}>{r}px radius</dt>);
+        legend.push(<dt key={`dt-${r}`} className={`radius radius--${scale[idx - 1]}`} title={`${from} - ${to}`}>{r}px radius</dt>);
         legend.push(<dd key={`dd-${r}`} title={`${from} - ${to}`}>{shorten(from)}-{shorten(to)}</dd>);
       }
     });
@@ -285,23 +307,46 @@ class ResultsMap extends React.Component {
   renderTimeLegend () {
     return (
       <div className='legend__block'>
-        <h3 className='legend__title'>Time to POI <small>(minutes)</small></h3>
-        <dl className='legend__dl legend__dl--colors'>
-          <dt>Dark green</dt>
-          <dd>0-10</dd>
-          <dt>Soft green</dt>
-          <dd>10-20</dd>
-          <dt>Light green</dt>
-          <dd>20-30</dd>
-          <dt>Yellow</dt>
-          <dd>30-60</dd>
-          <dt>Orange</dt>
-          <dd>60-90</dd>
-          <dt>Red</dt>
-          <dd>90-120</dd>
-          <dt>Brown</dt>
-          <dd>+120</dd>
-        </dl>
+        {this.props.comparing ? (
+          <h3 className='legend__title'>Difference <small>(minutes)</small></h3>
+        ) : (
+          <h3 className='legend__title'>Time to POI <small>(minutes)</small></h3>
+        )}
+        {this.props.comparing ? (
+          <dl className='legend__dl legend__dl--colors'>
+            <dt className='color color--alpha'>Dark green</dt>
+            <dd>-30 or less</dd>
+            <dt className='color color--beta'>Soft green</dt>
+            <dd>-30 to -10</dd>
+            <dt className='color color--gama'>Light green</dt>
+            <dd>-10 to 0</dd>
+            <dt className='color color--eta'>Brown</dt>
+            <dd>No change</dd>
+            <dt className='color color--delta'>Yellow</dt>
+            <dd>0 to 10</dd>
+            <dt className='color color--epsilon'>Orange</dt>
+            <dd>10 to 30</dd>
+            <dt className='color color--zeta'>Red</dt>
+            <dd>30 or more</dd>
+          </dl>
+        ) : (
+          <dl className='legend__dl legend__dl--colors'>
+            <dt className='color color--alpha'>Dark green</dt>
+            <dd>0 to 10</dd>
+            <dt className='color color--beta'>Soft green</dt>
+            <dd>10 to 20</dd>
+            <dt className='color color--gama'>Light green</dt>
+            <dd>20 to 30</dd>
+            <dt className='color color--delta'>Yellow</dt>
+            <dd>30 to 60</dd>
+            <dt className='color color--epsilon'>Orange</dt>
+            <dd>60 to 90</dd>
+            <dt className='color color--zeta'>Red</dt>
+            <dd>90 to 120</dd>
+            <dt className='color color--eta'>Brown</dt>
+            <dd>120 or more</dd>
+          </dl>
+        )}
       </div>
     );
   }
@@ -311,7 +356,7 @@ class ResultsMap extends React.Component {
       <article className='card card--analysis-result eta-vis'>
         <div className='card__contents'>
           <header className='card__header'>
-            <h1 className='card__title'>ETA visualization</h1>
+            <h1 className='card__title'>{this.props.comparing ? ('Difference in travel time') : ('Travel time')}</h1>
           </header>
 
           <figure className='card__media eta-vis__media'>
@@ -334,13 +379,22 @@ ResultsMap.propTypes = {
   data: T.object,
   poi: T.object,
   poiName: T.string,
-  popIndName: T.string
+  popIndName: T.string,
+  comparing: T.bool,
+  compareScenarioName: T.string
 };
 
 export default ResultsMap;
 
 class MapPopover extends React.Component {
   render () {
+    let label = this.props.comparing ? `Compared to ${this.props.compareScenarioName}` : 'Nearest POI';
+    let time;
+    if (this.props.comparing) {
+      time = this.props.time === 0 ? 'no difference' : `${toTimeStr(Math.abs(this.props.time))} ${this.props.time < 0 ? 'faster' : 'slower'}`;
+    } else {
+      time = toTimeStr(this.props.time);
+    }
     return (
       <article className='popover'>
         <div className='popover__contents'>
@@ -358,8 +412,8 @@ class MapPopover extends React.Component {
             <dl className='dl-horizontal popover__details'>
               <dt>{this.props.popIndName}</dt>
               <dd>{this.props.pop}</dd>
-              <dt>Nearest POI</dt>
-              <dd>{toTimeStr(this.props.eta)}</dd>
+              <dt>{label}</dt>
+              <dd>{time}</dd>
             </dl>
           </div>
         </div>
@@ -372,7 +426,9 @@ MapPopover.propTypes = {
   name: T.string,
   pop: T.number,
   popIndName: T.string,
-  eta: T.number,
+  time: T.number,
   poiName: T.string,
+  comparing: T.bool,
+  compareScenarioName: T.string,
   onCloseClick: T.func
 };

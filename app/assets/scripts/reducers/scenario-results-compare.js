@@ -1,4 +1,4 @@
-import { REQUEST_SCENARIO_RESULTS_GEO, RECEIVE_SCENARIO_RESULTS_GEO, INVALIDATE_SCENARIO_RESULTS_GEO } from '../actions';
+import { INVALIDATE_SCENARIO_COMPARE, REQUEST_SCENARIO_COMPARE, RECEIVE_SCENARIO_COMPARE } from '../actions';
 
 const initialState = {
   fetching: false,
@@ -9,18 +9,21 @@ const initialState = {
 
 export default function reducer (state = initialState, action) {
   switch (action.type) {
-    case INVALIDATE_SCENARIO_RESULTS_GEO:
+    case INVALIDATE_SCENARIO_COMPARE:
       return Object.assign({}, state, initialState);
-    case REQUEST_SCENARIO_RESULTS_GEO:
+    case REQUEST_SCENARIO_COMPARE:
       return Object.assign({}, state, { error: null, fetching: true, fetched: false });
-    case RECEIVE_SCENARIO_RESULTS_GEO:
+    case RECEIVE_SCENARIO_COMPARE:
       state = Object.assign({}, state, { fetching: false, fetched: true, receivedAt: action.receivedAt });
       if (action.error) {
         state.error = action.error;
       } else {
         state.data = {
-          'type': 'FeatureCollection',
-          'features': generateGeoJSON(action.data)
+          geo: {
+            'type': 'FeatureCollection',
+            'features': generateGeoJSON(action.data.geo)
+          },
+          analysis: action.data.analysis
         };
       }
       break;

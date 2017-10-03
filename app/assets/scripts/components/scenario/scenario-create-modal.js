@@ -316,7 +316,7 @@ const ScenarioCreateModal = React.createClass({
               }
             </FileInput>
             ) : null}
-            
+
             {this.state.data.roadNetworkSource === 'osm' && <div className='form__note'><p>{t('Import road network data from OpenStreetMap.')}</p><p>{t('When the resulting import is over {max} the road network editing will be disabled.', {max: rnEditThresholdDisplay})}</p></div>}
 
             <ReactTooltip />

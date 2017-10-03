@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import c from 'classnames';
 import _ from 'lodash';
 import ReactPaginate from 'react-paginate';
+import ReactTooltip from 'react-tooltip';
 
 import {
   fetchScenarioResults,
@@ -14,15 +15,19 @@ import {
   invalidateScenarioPoi,
   invalidateScenarioResultsRaw,
   invalidateScenarioResultsGeo,
-  showAlert
+  showAlert,
+  fetchProjectScenarios,
+  fetchScenarioCompare,
+  invalidateScenarioCompare
 } from '../../actions';
-import { round, toTimeStr } from '../../utils/utils';
+import { round, toTimeStr, clone } from '../../utils/utils';
 import { t } from '../../utils/i18n';
 import { poiOsmTypes } from '../../utils/constants';
 import { showGlobalLoadingCounted, hideGlobalLoadingCounted } from '../global-loading';
 
 import ResultsMap from './scenario-results-map';
 import Dropdown from '../dropdown';
+import Alert from '../alert';
 
 const ScenarioResults = React.createClass({
 
@@ -36,6 +41,8 @@ const ScenarioResults = React.createClass({
     scenarioPoi: T.object,
     poiTypes: T.array,
     popInd: T.array,
+    scenarios: T.object,
+    scenarioResCompare: T.object,
     _fetchScenarioResults: T.func,
     _fetchScenarioResultsRaw: T.func,
     _fetchScenarioResultsGeo: T.func,
@@ -43,6 +50,9 @@ const ScenarioResults = React.createClass({
     _invalidateScenarioResultsRaw: T.func,
     _invalidateScenarioResultsGeo: T.func,
     _invalidateScenarioPoi: T.func,
+    _fetchProjectScenarios: T.func,
+    _fetchScenarioCompare: T.func,
+    _invalidateScenarioCompare: T.func,
     _showAlert: T.func
   },
 
@@ -58,12 +68,18 @@ const ScenarioResults = React.createClass({
       },
       rawPage: 1,
       activePoiType: this.props.poiTypes[0].key,
-      activePopInd: this.props.popInd[0].key
+      activePopInd: this.props.popInd[0].key,
+      compare: null,
+      showCompareAlert: true
     };
   },
 
   componentDidMount: function () {
     this.requestRawResultsDebounced = _.debounce(this.requestRawResults, 300);
+
+    showGlobalLoadingCounted();
+    this.props._fetchProjectScenarios(this.props.projectId);
+
     this.requestAllResults();
   },
 
@@ -71,34 +87,30 @@ const ScenarioResults = React.createClass({
     this.props._invalidateScenarioResultsRaw();
     this.props._invalidateScenarioResultsGeo();
     this.props._invalidateScenarioPoi();
+    this.props._invalidateScenarioCompare();
   },
 
   componentWillReceiveProps: function (nextProps) {
-    let currAggregated = this.props.aggregatedResults;
-    let nextAggregated = nextProps.aggregatedResults;
-    let currRaw = this.props.rawResults;
-    let nextRaw = nextProps.rawResults;
-    let currGeoJSON = this.props.geojsonResults;
-    let nextGeoJSON = nextProps.geojsonResults;
-    let currPoi = this.props.scenarioPoi;
-    let nextPoi = nextProps.scenarioPoi;
-
-    if ((!currAggregated.fetched && nextAggregated.fetched) ||
-        (!currRaw.fetched && nextRaw.fetched) ||
-        (!currGeoJSON.fetched && nextGeoJSON.fetched) ||
-        (!currPoi.fetched && nextPoi.fetched)) {
-      hideGlobalLoadingCounted();
-      let e = nextAggregated.error || nextRaw.error || nextGeoJSON.error || nextPoi.error;
-      if (e) {
-        this.props._showAlert('danger', <p>{t('An error occurred while loading the results - {reason}', {reason: e.message})}</p>, true);
+    // Check if resource is loaded and show error if it happened.
+    const checkLoaded = (curr, next) => {
+      if (!curr.fetched && next.fetched) {
+        hideGlobalLoadingCounted();
+        if (next.error) {
+          this.props._showAlert('danger', <p>{t('An error occurred while loading the results - {reason}', {reason: next.error.message})}</p>, true);
+        }
       }
-    }
+    };
+
+    checkLoaded(this.props.aggregatedResults, nextProps.aggregatedResults);
+    checkLoaded(this.props.rawResults, nextProps.rawResults);
+    checkLoaded(this.props.geojsonResults, nextProps.geojsonResults);
+    checkLoaded(this.props.scenarioPoi, nextProps.scenarioPoi);
+    checkLoaded(this.props.scenarios, nextProps.scenarios);
+
+    checkLoaded(this.props.scenarioResCompare, nextProps.scenarioResCompare);
   },
 
   requestAllResults: function () {
-    // Must load 4 items.
-    showGlobalLoadingCounted(4);
-
     let filters = {
       poiType: this.state.activePoiType,
       popInd: this.state.activePopInd
@@ -109,9 +121,14 @@ const ScenarioResults = React.createClass({
       sortDir: this.state.rawSort.asc ? 'asc' : 'desc'
     });
 
+    // A loading is needed for each resource.
+    showGlobalLoadingCounted();
     this.props._fetchScenarioResults(this.props.projectId, this.props.scenarioId, filters);
+    showGlobalLoadingCounted();
     this.props._fetchScenarioResultsRaw(this.props.projectId, this.props.scenarioId, this.state.rawPage, filtersRaw);
+    showGlobalLoadingCounted();
     this.props._fetchScenarioResultsGeo(this.props.projectId, this.props.scenarioId, filters);
+    showGlobalLoadingCounted();
     this.props._fetchScenarioPoi(this.props.projectId, this.props.scenarioId, {type: this.state.activePoiType});
   },
 
@@ -176,6 +193,23 @@ const ScenarioResults = React.createClass({
     this.requestRawResultsDebounced();
   },
 
+  onCompareChange: function (id, event) {
+    event.preventDefault();
+
+    // On compare change, re-enable the compare alert in case it was dismissed.
+    this.setState({compare: id, showCompareAlert: true}, () => {
+      if (id !== null) {
+        showGlobalLoadingCounted();
+        this.props._fetchScenarioCompare(this.props.projectId, id, {
+          poiType: this.state.activePoiType,
+          popInd: this.state.activePopInd
+        });
+      } else {
+        this.props._invalidateScenarioCompare();
+      }
+    });
+  },
+
   onFilterChange: function (field, value, event) {
     event.preventDefault();
 
@@ -188,44 +222,197 @@ const ScenarioResults = React.createClass({
       rawPage: 1
     };
 
-    this.setState(state, () => { this.requestAllResults(); });
+    this.setState(state, () => {
+      this.requestAllResults();
+      if (this.state.compare !== null) {
+        showGlobalLoadingCounted();
+        this.props._fetchScenarioCompare(this.props.projectId, this.state.compare, {
+          poiType: this.state.activePoiType,
+          popInd: this.state.activePopInd
+        });
+      }
+    });
+  },
+
+  getCompareStatus: function () {
+    // Use the results to check what's the compare status.
+    // Return values:
+    // @return null - not comparing or data not loaded.
+    // @return 1 - perfect compare. All data is available both sides
+    // @return 0 - partial compare. Some data omitted.
+    // @return -1 - impossible to compare. There's no common data.
+
+    // Are we comparing?
+    if (this.state.compare !== null) {
+      // Do we have data?
+      if (this.props.scenarioResCompare.fetched) {
+        // Get the features form the base scenario that are also present in the
+        // one we're comparing to.
+        let baseAA = this.props.aggregatedResults.data.accessibilityTime.adminAreas;
+        let comparingAA = this.props.scenarioResCompare.data.analysis.accessibilityTime.adminAreas;
+        let commonAA = baseAA.reduce((acc, aa) => {
+          return comparingAA.find(o => o.id === aa.id) ? acc.concat(aa.id) : acc;
+        }, []);
+
+        if (commonAA.length === baseAA.length) {
+          return 1;
+        } else if (commonAA.length === 0) {
+          return -1;
+        } else if (commonAA.length < baseAA.length) {
+          return 0;
+        }
+      }
+    }
+
+    return null;
+  },
+
+  getMapData: function (comparing) {
+    if (comparing) {
+      // Do we have data for the map?
+      if (this.props.scenarioResCompare.fetched) {
+        // Get the features form the base scenario that are also present in the
+        // one we're comparing to.
+        let baseFeatures = this.props.geojsonResults.data.features;
+        let comparingFeatures = this.props.scenarioResCompare.data.geo.features;
+        let commonFeat = baseFeatures.reduce((acc, feat) => {
+          let cmpfeat = comparingFeatures.find(f => f.properties.i === feat.properties.i);
+          if (cmpfeat) {
+            feat = clone(feat);
+            feat.properties.e2 = cmpfeat.properties.e;
+            feat.properties.eDelta = feat.properties.e - feat.properties.e2;
+
+            acc.push(feat);
+          }
+          return acc;
+        }, []);
+
+        let mapData = clone(this.props.geojsonResults);
+        mapData.receivedAt = this.props.scenarioResCompare.receivedAt;
+        mapData.data.features = commonFeat;
+
+        return mapData;
+      }
+    }
+
+    return this.props.geojsonResults;
+  },
+
+  getAccessibilityData: function (comparing) {
+    let accessibilityTableData = this.props.aggregatedResults.data.accessibilityTime;
+    // Are we comparing?
+    if (comparing) {
+      // Do we have data for the table?
+      if (this.props.scenarioResCompare.fetched) {
+        // Get the features form the base scenario that are also present in the
+        // one we're comparing to.
+        let baseAA = this.props.aggregatedResults.data.accessibilityTime.adminAreas;
+        let comparingAA = this.props.scenarioResCompare.data.analysis.accessibilityTime.adminAreas;
+
+        let commonAA = baseAA.reduce((acc, aa) => {
+          let cmpAA = comparingAA.find(o => o.id === aa.id);
+          if (cmpAA) {
+            aa = clone(aa);
+            aa.dataCompare = cmpAA.data;
+            return acc.concat(aa);
+          }
+          return acc;
+        }, []);
+
+        // Replace Admin Areas.
+        accessibilityTableData = clone(this.props.aggregatedResults.data.accessibilityTime);
+        accessibilityTableData.adminAreas = commonAA;
+      }
+    }
+
+    return accessibilityTableData;
+  },
+
+  renderCompareAlert: function (compareStatus) {
+    if (!this.state.compare || !this.state.showCompareAlert) {
+      return null;
+    }
+    let type;
+    let title;
+    let message;
+
+    if (compareStatus === 0) {
+      type = 'info';
+      title = t('Results Incomplete');
+      message = t('Only the results present in both scenarios are being shown.');
+    } else if (compareStatus === -1) {
+      type = 'danger';
+      title = t('Impossible to Compare');
+      message = t('There are no common results between the selected scenario.');
+    } else {
+      return null;
+    }
+
+    return (
+      <Alert type={type} dismissable onDismiss={() => this.setState({showCompareAlert: false})}>
+        <h6>{title}</h6>
+        <p>{message}</p>
+      </Alert>
+    );
   },
 
   render: function () {
-    let poiName = this.props.poiTypes.find(o => o.key === this.state.activePoiType).label;
-    let popIndName = this.props.popInd.find(o => o.key === this.state.activePopInd).label;
+    const poiName = this.props.poiTypes.find(o => o.key === this.state.activePoiType).label;
+    const popIndName = this.props.popInd.find(o => o.key === this.state.activePopInd).label;
+
+    // Are we comparing?
+    const comparing = this.state.compare !== null;
+    const compareStatus = this.getCompareStatus();
+    const scenarioCompareName = this.state.compare ? this.props.scenarios.data.results.find(o => o.id === this.state.compare).name : null
+
+    const scenarios = this.props.scenarios.data.results
+      // Can't compare to itself.
+      .filter(o => o.id !== this.props.scenarioId)
+      .map(o => ({id: o.id, name: o.name}));
+
+    const mapData = this.getMapData(comparing);
+    const accessibilityData = this.getAccessibilityData(comparing);
 
     return (
       <div className='rwrapper'>
 
         <FiltersBar
           onFilterChange={this.onFilterChange}
+          onCompareChange={this.onCompareChange}
           activePopInd={this.state.activePopInd}
           activePoiType={this.state.activePoiType}
           popInd={this.props.popInd}
           poiTypes={this.props.poiTypes}
+          scenarios={scenarios}
+          compareScenarioId={this.state.compare}
         />
 
-        <ResultsMap
+        {this.renderCompareAlert(compareStatus)}
+
+        {compareStatus !== -1 ? <ResultsMap
           projectId={this.props.projectId}
           scenarioId={this.props.scenarioId}
-          data={this.props.geojsonResults}
+          data={mapData}
           poi={this.props.scenarioPoi}
           bbox={this.props.bbox}
           poiName={poiName}
           popIndName={popIndName}
-        />
+          comparing={comparing}
+          compareScenarioName={scenarioCompareName}
+        /> : null}
 
-        <AccessibilityTable
+        {compareStatus !== -1 ? <AccessibilityTable
           fetched={this.props.aggregatedResults.fetched}
           fetching={this.props.aggregatedResults.fetching}
           receivedAt={this.props.aggregatedResults.receivedAt}
-          data={this.props.aggregatedResults.data.accessibilityTime}
+          data={accessibilityData}
           poiName={poiName}
           error={this.props.aggregatedResults.error}
-        />
+          comparing={comparing}
+          compareScenarioName={scenarioCompareName}
+        /> : null}
 
-        <RawResultsTable
+        {!comparing ? <RawResultsTable
           fetched={this.props.rawResults.fetched}
           fetching={this.props.rawResults.fetching}
           receivedAt={this.props.rawResults.receivedAt}
@@ -238,7 +425,7 @@ const ScenarioResults = React.createClass({
           poiName={poiName}
           filter={this.state.rawFilter}
           onFilter={this.onRawResultsFilter}
-        />
+        /> : null}
       </div>
     );
   }
@@ -268,7 +455,9 @@ function selector (state) {
     aggregatedResults: state.scenarioResults,
     rawResults: state.scenarioResultsRaw,
     geojsonResults: state.scenarioResultsGeo,
-    scenarioPoi: state.scenarioPoi
+    scenarioPoi: state.scenarioPoi,
+    scenarios: state.scenarios,
+    scenarioResCompare: state.scenarioResultsCompare
   };
 }
 
@@ -281,6 +470,9 @@ function dispatcher (dispatch) {
     _invalidateScenarioResultsRaw: (...args) => dispatch(invalidateScenarioResultsRaw(...args)),
     _invalidateScenarioResultsGeo: (...args) => dispatch(invalidateScenarioResultsGeo(...args)),
     _invalidateScenarioPoi: (...args) => dispatch(invalidateScenarioPoi(...args)),
+    _fetchProjectScenarios: (...args) => dispatch(fetchProjectScenarios(...args)),
+    _fetchScenarioCompare: (...args) => dispatch(fetchScenarioCompare(...args)),
+    _invalidateScenarioCompare: (...args) => dispatch(invalidateScenarioCompare(...args)),
     _showAlert: (...args) => dispatch(showAlert(...args))
   };
 }
@@ -301,11 +493,38 @@ class AccessibilityTable extends React.PureComponent {
         </tr>
       );
     }
-
     return (
       <tr key={aa.name}>
         <th>{aa.name}</th>
-        {aa.data.map((o, i) => <td key={i}>{round(o)}%</td>)}
+        {aa.data.map((o, i) => {
+          let content = null;
+
+          if (this.props.comparing && aa.dataCompare) {
+            let diff = o - aa.dataCompare[i];
+            let cName = 'pchange--equal';
+            if (diff <= -25) {
+              cName = 'pchange--down2x';
+            } else if (diff < 0) {
+              cName = 'pchange--down';
+            } else if (diff >= 25) {
+              cName = 'pchange--up2x';
+            } else if (diff > 0) {
+              cName = 'pchange--up';
+            }
+            content = (
+              <span className='value-wrapper' data-tip={`${this.props.compareScenarioName}: ${round(aa.dataCompare[i])}%`} data-effect='solid'>
+                <small className={`pchange ${cName}`}>(increase)</small> {round(o)}%
+                <ReactTooltip />
+              </span>
+            );
+          } else {
+            content = `${round(o)}%`;
+          }
+
+          return (
+            <td key={i}>{content}</td>
+          );
+        })}
       </tr>
     );
   }
@@ -356,7 +575,9 @@ AccessibilityTable.propTypes = {
   receivedAt: T.number,
   data: T.object,
   poiName: T.string,
-  error: T.object
+  error: T.object,
+  comparing: T.bool,
+  compareScenarioName: T.string
 };
 
 // ////////////////////////////////////////////////////////////////////////// //
@@ -367,6 +588,8 @@ class FiltersBar extends React.PureComponent {
   render () {
     let activePopIndLabel = this.props.popInd.find(o => o.key === this.props.activePopInd).label;
     let activePoiTypeLabel = this.props.poiTypes.find(o => o.key === this.props.activePoiType).label;
+    let activeScenarioName = this.props.scenarios.find(o => o.id === this.props.compareScenarioId);
+    activeScenarioName = activeScenarioName ? activeScenarioName.name : 'None';
 
     return (
       <nav className='inpage__sec-nav'>
@@ -387,6 +610,7 @@ class FiltersBar extends React.PureComponent {
                         href='#'
                         title={t('Select Population')}
                         className={c('drop__menu-item', {'drop__menu-item--active': o.key === this.props.activePopInd})}
+                        data-hook='dropdown:close'
                         onClick={e => this.props.onFilterChange('activePopInd', o.key, e)} >
                         <span>{o.label}</span>
                       </a>
@@ -401,7 +625,7 @@ class FiltersBar extends React.PureComponent {
               triggerClassName='button button--achromic drop__toggle--caret'
               triggerActiveClassName='button--active'
               triggerText={activePoiTypeLabel}
-              triggerTitle={t('Change Point of Interest')}
+              triggerTitle={t('Choose a scenario to compare')}
               direction='down'
               alignment='left' >
                 <ul className='drop__menu drop__menu--select' role='menu'>
@@ -411,8 +635,44 @@ class FiltersBar extends React.PureComponent {
                         href='#'
                         title={t('Select Point of Interest')}
                         className={c('drop__menu-item', {'drop__menu-item--active': o.key === this.props.activePoiType})}
+                        data-hook='dropdown:close'
                         onClick={e => this.props.onFilterChange('activePoiType', o.key, e)} >
                         <span>{o.label}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+            </Dropdown>
+          </dd>
+        </dl>
+        <dl className='filters-menu'>
+          <dt>{t('Compare to')}</dt>
+          <dd>
+            <Dropdown
+              triggerClassName='button button--achromic drop__toggle--caret'
+              triggerActiveClassName='button--active'
+              triggerText={activeScenarioName}
+              triggerTitle={t('Change scenario to compare')}
+              direction='down'
+              alignment='left' >
+                <ul className='drop__menu drop__menu--select' role='menu'>
+                  <li><a
+                    href='#'
+                    title={t('Select scenario')}
+                    className={c('drop__menu-item', {'drop__menu-item--active': this.props.compareScenarioId === null})}
+                    data-hook='dropdown:close'
+                    onClick={e => this.props.onCompareChange(null, e)} >
+                    <span>None</span>
+                  </a></li>
+                  {this.props.scenarios.map(o => (
+                    <li key={o.id}>
+                      <a
+                        href='#'
+                        title={t('Select scenario')}
+                        className={c('drop__menu-item', {'drop__menu-item--active': o.id === this.props.compareScenarioId})}
+                        data-hook='dropdown:close'
+                        onClick={e => this.props.onCompareChange(o.id, e)} >
+                        <span>{o.name}</span>
                       </a>
                     </li>
                   ))}
@@ -427,10 +687,13 @@ class FiltersBar extends React.PureComponent {
 
 FiltersBar.propTypes = {
   onFilterChange: T.func,
+  onCompareChange: T.func,
   activePopInd: T.string,
   activePoiType: T.string,
   popInd: T.array,
-  poiTypes: T.array
+  poiTypes: T.array,
+  scenarios: T.array,
+  compareScenarioId: T.number
 };
 
 // ////////////////////////////////////////////////////////////////////////// //

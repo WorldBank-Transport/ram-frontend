@@ -42,6 +42,11 @@ const Dropdown = React.createClass({
         theSelf.parentNode.getAttribute('data-hook') === 'dropdown:btn') {
       return;
     }
+    if (theSelf.tagName === 'SPAN' &&
+        theSelf.parentNode.getAttribute('data-hook') === 'dropdown:close') {
+      this.close();
+      return;
+    }
 
     if (theSelf && theSelf.getAttribute('data-hook') === 'dropdown:btn') {
       if (theSelf !== this.triggerRef) {

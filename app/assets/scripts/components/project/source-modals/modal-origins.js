@@ -4,7 +4,7 @@ import _ from 'lodash';
 import c from 'classnames';
 
 import config from '../../../config';
-import { limitHelper } from '../../../utils/utils';
+import { limitHelper, getPropInsensitive } from '../../../utils/utils';
 import { t } from '../../../utils/i18n';
 import { postFormdata, fetchJSON } from '../../../actions';
 import { showGlobalLoading, hideGlobalLoading } from '../../global-loading';
@@ -71,7 +71,7 @@ class ModalOrigins extends ModalBase {
     readFileAsJSON(file)
       .then(res => {
         let totalFeats = res.features.length;
-        let noNameFeats = res.features.reduce((acc, v) => acc + (v.properties.name ? 0 : 1), 0);
+        let noNameFeats = res.features.reduce((acc, v) => acc + (v.properties[getPropInsensitive(v.properties, 'name')] ? 0 : 1), 0);
 
         if (noNameFeats) {
           this.props._showAlert('warning', <p>{noNameFeats} out of {totalFeats} origins don't have a name. "N/A" will be used.</p>, true);
