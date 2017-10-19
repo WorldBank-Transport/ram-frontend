@@ -49,7 +49,9 @@ const ScenarioCreateModal = React.createClass({
           file: null,
           size: 0,
           uploaded: 0
-        }
+        },
+        poiSource: 'clone',
+        poiSourceScenario: this.props.scenarioList[0].id
       },
       loading: false
     };
@@ -154,12 +156,18 @@ const ScenarioCreateModal = React.createClass({
         description,
         roadNetworkSource,
         roadNetworkSourceScenario,
-        roadNetworkSourceFile
+        roadNetworkSourceFile,
+        poiSource,
+        poiSourceScenario
       } = this.state.data;
 
       let formData = new FormData();
       formData.append('name', name);
       formData.append('roadNetworkSource', roadNetworkSource);
+
+      // POI
+      formData.append('poiSource', poiSource);
+      formData.append('poiSourceScenario', poiSourceScenario);
 
       if (description) {
         formData.append('description', description);
@@ -271,7 +279,7 @@ const ScenarioCreateModal = React.createClass({
             {this.renderDescriptionField()}
 
             <div className='form__group'>
-              <label className='form__label'>Road network</label>
+              <label className='form__label'>{t('Road network')}</label>
 
               <label className='form__option form__option--inline form__option--custom-radio'>
                 <input type='radio' name='road-network' id='road-network-clone' value='clone' onChange={this.onFieldChange.bind(null, 'roadNetworkSource')} checked={this.state.data.roadNetworkSource === 'clone'}/>
@@ -318,6 +326,23 @@ const ScenarioCreateModal = React.createClass({
             ) : null}
 
             {this.state.data.roadNetworkSource === 'osm' && <div className='form__note'><p>{t('Import road network data from OpenStreetMap.')}</p><p>{t('When the resulting import is over {max} the road network editing will be disabled.', {max: rnEditThresholdDisplay})}</p></div>}
+
+            <div className='form__group'>
+              <label className='form__label'>{t('Points of Interest')}</label>
+
+              <label className='form__option form__option--inline form__option--custom-radio'>
+                <input type='radio' name='poi' id='poi-clone' value='clone' onChange={this.onFieldChange.bind(null, 'poiSource')} checked={this.state.data.poiSource === 'clone'}/>
+                <span className='form__option__ui'></span>
+                <span className='form__option__text'>{t('Clone from scenario')}</span>
+              </label>
+            </div>
+
+            <div className='form__group form__group--attached'>
+              <label className='form__label visually-hidden' htmlFor='poi-clone-options'>{t('Clone from scenario')}</label>
+              <select name='poi-clone-options' id='poi-clone-options' className='form__control' value={this.state.data.poiSourceScenario} onChange={this.onFieldChange.bind(null, 'poiSourceScenario')}>
+                {this.props.scenarioList.map(scenario => <option key={scenario.id} value={scenario.id}>{scenario.name}</option>)}
+              </select>
+            </div>
 
             <ReactTooltip />
           </form>
