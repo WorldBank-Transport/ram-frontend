@@ -25,7 +25,9 @@ class ResultsMap extends React.Component {
     this.theMap.addControl(new mapboxgl.AttributionControl(), 'bottom-right');
     this.theMap.scrollZoom.disable();
     this.theMap.fitBounds(bbox);
-    this.theMap.on('style.load', this.setupData.bind(this));
+    this.theMap.on('style.load', () => {
+      this.setupData();
+    });
 
     this.theMap.on('click', 'eta', e => {
       this.showPopover(e.features[0]);
@@ -252,6 +254,21 @@ class ResultsMap extends React.Component {
         source: 'poiData',
         layout: {
           'icon-image': 'marker-15'
+        }
+      });
+    }
+
+    if (!this.theMap.getLayer('satellite')) {
+      this.theMap.addLayer({
+        id: 'satellite',
+        source: {
+          'type': 'raster',
+          'url': 'mapbox://mapbox.satellite',
+          'tileSize': 256
+        },
+        type: 'raster',
+        'layout': {
+          'visibility': 'none'
         }
       });
     }
