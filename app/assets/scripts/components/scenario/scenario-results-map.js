@@ -13,6 +13,7 @@ const clone = data => JSON.parse(JSON.stringify(data));
 class ResultsMap extends React.Component {
   setupMap () {
     this.popover = null;
+    this.mapLoaded = false;
 
     mapboxgl.accessToken = config.mbtoken;
     let { bbox } = this.props;
@@ -26,6 +27,7 @@ class ResultsMap extends React.Component {
     this.theMap.scrollZoom.disable();
     this.theMap.fitBounds(bbox);
     this.theMap.on('style.load', () => {
+      this.mapLoaded = true;
       this.setupData();
     });
 
@@ -159,6 +161,9 @@ class ResultsMap extends React.Component {
   }
 
   setupData () {
+    if (!this.mapLoaded) {
+      return;
+    }
     // if (!this.theMap.getSource('admin-bounds')) {
     //   this.theMap.addSource('admin-bounds', {
     //     type: 'vector',
