@@ -513,7 +513,7 @@ class AccessibilityTable extends React.PureComponent {
             }
             content = (
               <span className='value-wrapper' data-tip={`${this.props.compareScenarioName}: ${round(aa.dataCompare[i])}%`} data-effect='solid'>
-                <small className={`pchange ${cName}`}>(increase)</small> {round(o)}%
+                <small className={`pchange ${cName}`}>{t('(increase)')}</small> {round(o)}%
                 <ReactTooltip />
               </span>
             );
@@ -546,7 +546,7 @@ class AccessibilityTable extends React.PureComponent {
       <article className='card card--analysis-result' key={accessibilityTime.poi}>
         <div className='card__contents'>
           <header className='card__header'>
-            <h1 className='card__title'>Percentage of population with access to {this.props.poiName}</h1>
+            <h1 className='card__title'>{t('Percentage of population with access to {poi}', {poi: this.props.poiName})}</h1>
           </header>
           <div className='card__body'>
             <div className='table-wrapper'>
@@ -589,7 +589,7 @@ class FiltersBar extends React.PureComponent {
     let activePopIndLabel = this.props.popInd.find(o => o.key === this.props.activePopInd).label;
     let activePoiTypeLabel = this.props.poiTypes.find(o => o.key === this.props.activePoiType).label;
     let activeScenarioName = this.props.scenarios.find(o => o.id === this.props.compareScenarioId);
-    activeScenarioName = activeScenarioName ? activeScenarioName.name : 'None';
+    activeScenarioName = activeScenarioName ? activeScenarioName.name : t('None');
 
     return (
       <nav className='inpage__sec-nav'>
@@ -729,7 +729,7 @@ class RawResultsTable extends React.PureComponent {
       });
 
       return (
-        <th><a href='#' className={cl} title={t(`Sort by ${title}`)} onClick={e => this.props.setRawSort(field, e)}>{title}</a></th>
+        <th><a href='#' className={cl} title={t(`Sort by {title}`, {title})} onClick={e => this.props.setRawSort(field, e)}>{title}</a></th>
       );
     };
 
@@ -740,13 +740,13 @@ class RawResultsTable extends React.PureComponent {
         <div className='card__contents'>
           <header className='card__header'>
             <div className='card__headline'>
-              <h1 className='card__title'>Travel times to {this.props.poiName} by origin</h1>
+              <h1 className='card__title'>{t('Travel times to {poi} by origin', {poi: this.props.poiName})}</h1>
             </div>
             <div className='card__actions'>
               <div className='form__group card__search-block'>
                 <label className='form__label visually-hidden' htmlFor='search-origins'>{t('Search origins')}</label>
                 <div className='form__input-group form__input-group--small'>
-                  <div className='form__input-addon'><button type='button' className='button button--primary-plain button--text-hidden' title='Search origins'><i className='collecticon-magnifier-left'></i><span>Search</span></button></div>
+                  <div className='form__input-addon'><button type='button' className='button button--primary-plain button--text-hidden' title={t('Search origins')}><i className='collecticon-magnifier-left'></i><span>{t('Search')}</span></button></div>
                   <input type='text' id='search-origins' name='search-origins' className='form__control' placeholder={t('Origins')} value={this.props.filter.value} onChange={this.onSearchChange.bind(this)} />
                 </div>
               </div>
@@ -757,7 +757,7 @@ class RawResultsTable extends React.PureComponent {
 
             {data.results.length === 0 && (
               <div className='card__status card__status--empty'>
-                <p>No results found.</p>
+                <p>{t('No results found.')}</p>
               </div>
             )}
 
@@ -766,18 +766,18 @@ class RawResultsTable extends React.PureComponent {
                 <table className='table'>
                   <thead>
                     <tr>
-                      {renderTh('Origin', 'origin_name')}
-                      {renderTh('Admin area', 'aa_name')}
+                      {renderTh(t('Origin'), 'origin_name')}
+                      {renderTh(t('Admin area'), 'aa_name')}
                       {renderTh(popLabel, 'pop_value')}
-                      {renderTh('Time to POI', 'time_to_poi')}
+                      {renderTh(t('Time to POI'), 'time_to_poi')}
                     </tr>
                   </thead>
                   <tbody>
                     {data.results.map(o => (
                       <tr key={`${o.origin_id}-${o.poi_type}`}>
-                        <th>{o.origin_name || 'N/A'}</th>
+                        <th>{o.origin_name || t('N/A')}</th>
                         <td>{o.aa_name}</td>
-                        <td>{o.pop_value || 'N/A'}</td>
+                        <td>{o.pop_value || t('N/A')}</td>
                         <td>{toTimeStr(o.time_to_poi)}</td>
                       </tr>
                     ))}
@@ -789,8 +789,8 @@ class RawResultsTable extends React.PureComponent {
             {data.results.length !== 0 && (
               <div className='pagination-wrapper'>
                 <ReactPaginate
-                  previousLabel={<span>previous</span>}
-                  nextLabel={<span>next</span>}
+                  previousLabel={<span>{t('previous')}</span>}
+                  nextLabel={<span>{t('next')}</span>}
                   breakLabel={<span className='pages__page'>...</span>}
                   pageCount={Math.ceil(data.meta.found / data.meta.limit)}
                   forcePage={data.meta.page - 1}

@@ -153,7 +153,11 @@ class ModalPoi extends ModalBase {
         })
         .catch(err => {
           let f = _.find(this.state.fileFields, {id: o});
-          this.props._showAlert('danger', <p>An error occurred while deleting file {f.name}: {err.message}</p>, true);
+          let msg = t('An error occurred while deleting file {filename}: {message}', {
+            filename: f.name,
+            message: err.message
+          });
+          this.props._showAlert('danger', <p>{msg}</p>, true);
           // Rethrow to stop chain.
           throw err;
         });
@@ -186,7 +190,11 @@ class ModalPoi extends ModalBase {
             this.setState({fileFields});
           })
           .catch(err => {
-            this.props._showAlert('danger', <p>An error occurred while uploading file {o.subtype}: {err.message}</p>, true);
+            let msg = t('An error occurred while uploading file {type}: {message}', {
+              type: o.subtype,
+              message: err.message
+            });
+            this.props._showAlert('danger', <p>{msg}</p>, true);
             // Rethrow to stop chain.
             throw err;
           });
@@ -203,7 +211,10 @@ class ModalPoi extends ModalBase {
       // this.xhr = xhr;
       newFilesPromiseFn = () => promise
         .catch(err => {
-          this.props._showAlert('danger', <p>An error occurred while saving the point of interest source: {err.message}</p>, true);
+          let msg = t('An error occurred while saving the point of interest source: {message}', {
+            message: err.message
+          });
+          this.props._showAlert('danger', <p>{msg}</p>, true);
           // Rethrow to stop chain.
           throw err;
         });
@@ -240,7 +251,7 @@ class ModalPoi extends ModalBase {
               <legend className='form__legend'>{t('File {idx}', {idx: i + 1})}</legend>
             </div>
             <div className='form__inner-actions'>
-              <button type='button' className='fia-trash' title='Delete file' onClick={this.removeUploadedFile.bind(this, fileField.id)}><span>Delete</span></button>
+              <button type='button' className='fia-trash' title={t('Delete file')} onClick={this.removeUploadedFile.bind(this, fileField.id)}><span>{t('Delete')}</span></button>
             </div>
           </div>
 
@@ -269,7 +280,7 @@ class ModalPoi extends ModalBase {
             <button
               type='button'
               className={c('fia-trash', {disabled: newFields <= 1})}
-              title='Delete fieldset'
+              title={t('Delete fieldset')}
               onClick={this.removePoiFileField.bind(this, fileField.id)}>
               <span>Delete</span>
             </button>
@@ -314,7 +325,7 @@ class ModalPoi extends ModalBase {
         {this.state.fileFields.map(this.renderFileFieldset.bind(this))}
 
         <div className='form__extra-actions'>
-          <button type='button' className='fea-plus' title='Add new file' onClick={this.addPoiFileField.bind(this)}><span>New file</span></button>
+          <button type='button' className='fea-plus' title={t('Add new file')} onClick={this.addPoiFileField.bind(this)}><span>{t('New file')}</span></button>
         </div>
       </div>
     );
@@ -329,7 +340,7 @@ class ModalPoi extends ModalBase {
           </div>
           <div className='form__inner-actions'>
             <dl className='form__options-menu'>
-              <dt>Select</dt>
+              <dt>{t('Select')}</dt>
               <dd><button type='button' className='fia-global' title={t('Select all')} onClick={this.selectOsmTypes.bind(this, 'all')}><span>{t('All')}</span></button></dd>
               <dd><button type='button' className='fia-global' title={t('Deselect none')} onClick={this.selectOsmTypes.bind(this, 'none')}><span>{t('None')}</span></button></dd>
             </dl>
@@ -357,18 +368,18 @@ class ModalPoi extends ModalBase {
       <ModalBody>
         <form className='form' onSubmit={ e => { e.preventDefault(); this.allowSubmit() && this.onSubmit(); } }>
           <div className='form__group'>
-            <label className='form__label'>Source</label>
+            <label className='form__label'>{t('Source')}</label>
 
             <label className='form__option form__option--inline form__option--custom-radio'>
               <input type='radio' name='source-type' id='file' value='file' checked={this.state.source === 'file'} onChange={this.onSourceChange.bind(this)} />
               <span className='form__option__ui'></span>
-              <span className='form__option__text'>File upload</span>
+              <span className='form__option__text'>{t('File upload')}</span>
             </label>
 
             <label className='form__option form__option--inline form__option--custom-radio'>
               <input type='radio' name='source-type' id='osm' value='osm' checked={this.state.source === 'osm'} onChange={this.onSourceChange.bind(this)} />
               <span className='form__option__ui'></span>
-              <span className='form__option__text'>OSM data</span>
+              <span className='form__option__text'>{t('OSM data')}</span>
             </label>
           </div>
           {this.state.source === 'file' ? this.renderSourceFile() : null}

@@ -171,7 +171,7 @@ const ScenarioGenSettingsModal = React.createClass({
             <div className='form__group form-group-areas'>
               <div className='form__inner-header'>
                 <div className='form__inner-headline'>
-                  <label className='form__label'>Admin areas</label>
+                  <label className='form__label'>{t('Admin areas')}</label>
                 </div>
                 <div className="form__inner-actions">
                   <dl className='form__options-menu'>
