@@ -5,6 +5,7 @@ import mapboxgl from 'mapbox-gl';
 
 import config from '../../config';
 import { toTimeStr } from '../../utils/utils';
+import { t } from '../../utils/i18n';
 
 import LayerControl from '../map-layer-control';
 
@@ -328,7 +329,7 @@ class ResultsMap extends React.Component {
 
     return (
       <div className='legend__block'>
-        <h3 className='legend__title'>Population size</h3>
+        <h3 className='legend__title'>{t('Population size')}</h3>
         <dl className='legend__dl legend__dl--size'>
           {legend}
         </dl>
@@ -340,43 +341,43 @@ class ResultsMap extends React.Component {
     return (
       <div className='legend__block'>
         {this.props.comparing ? (
-          <h3 className='legend__title'>Difference <small>(minutes)</small></h3>
+          <h3 className='legend__title'>{t('Difference {minutes}', {minutes: <small>{t('(minutes)')}</small>}, true)}</h3>
         ) : (
-          <h3 className='legend__title'>Time to POI <small>(minutes)</small></h3>
+          <h3 className='legend__title'>{t('Time to POI {minutes}', {minutes: <small>{t('(minutes)')}</small>}, true)}</h3>
         )}
         {this.props.comparing ? (
           <dl className='legend__dl legend__dl--colors'>
-            <dt className='color color--alpha'>Dark green</dt>
-            <dd>-30 or less</dd>
-            <dt className='color color--beta'>Soft green</dt>
-            <dd>-30 to -10</dd>
-            <dt className='color color--gama'>Light green</dt>
-            <dd>-10 to 0</dd>
-            <dt className='color color--eta'>Brown</dt>
-            <dd>No change</dd>
-            <dt className='color color--delta'>Yellow</dt>
-            <dd>0 to 10</dd>
-            <dt className='color color--epsilon'>Orange</dt>
-            <dd>10 to 30</dd>
-            <dt className='color color--zeta'>Red</dt>
-            <dd>30 or more</dd>
+            <dt className='color color--alpha'>{t('Dark green')}</dt>
+            <dd>{t('-30 or less')}</dd>
+            <dt className='color color--beta'>{t('Soft green')}</dt>
+            <dd>{t('-30 to -10')}</dd>
+            <dt className='color color--gama'>{t('Light green')}</dt>
+            <dd>{t('-10 to 0')}</dd>
+            <dt className='color color--eta'>{t('Brown')}</dt>
+            <dd>{t('No change')}</dd>
+            <dt className='color color--delta'>{t('Yellow')}</dt>
+            <dd>{t('0 to 10')}</dd>
+            <dt className='color color--epsilon'>{t('Orange')}</dt>
+            <dd>{t('10 to 30')}</dd>
+            <dt className='color color--zeta'>{t('Red')}</dt>
+            <dd>{t('30 or more')}</dd>
           </dl>
         ) : (
           <dl className='legend__dl legend__dl--colors'>
-            <dt className='color color--alpha'>Dark green</dt>
-            <dd>0 to 10</dd>
-            <dt className='color color--beta'>Soft green</dt>
-            <dd>10 to 20</dd>
-            <dt className='color color--gama'>Light green</dt>
-            <dd>20 to 30</dd>
-            <dt className='color color--delta'>Yellow</dt>
-            <dd>30 to 60</dd>
-            <dt className='color color--epsilon'>Orange</dt>
-            <dd>60 to 90</dd>
-            <dt className='color color--zeta'>Red</dt>
-            <dd>90 to 120</dd>
-            <dt className='color color--eta'>Brown</dt>
-            <dd>120 or more</dd>
+            <dt className='color color--alpha'>{t('Dark green')}</dt>
+            <dd>{t('0 to 10')}</dd>
+            <dt className='color color--beta'>{t('Soft green')}</dt>
+            <dd>{t('10 to 20')}</dd>
+            <dt className='color color--gama'>{t('Light green')}</dt>
+            <dd>{t('20 to 30')}</dd>
+            <dt className='color color--delta'>{t('Yellow')}</dt>
+            <dd>{t('30 to 60')}</dd>
+            <dt className='color color--epsilon'>{t('Orange')}</dt>
+            <dd>{t('60 to 90')}</dd>
+            <dt className='color color--zeta'>{t('Red')}</dt>
+            <dd>{t('90 to 120')}</dd>
+            <dt className='color color--eta'>{t('Brown')}</dt>
+            <dd>{t('120 or more')}</dd>
           </dl>
         )}
       </div>
@@ -388,7 +389,7 @@ class ResultsMap extends React.Component {
       <article className='card card--analysis-result eta-vis'>
         <div className='card__contents'>
           <header className='card__header'>
-            <h1 className='card__title'>{this.props.comparing ? ('Difference in travel time') : ('Travel time')}</h1>
+            <h1 className='card__title'>{this.props.comparing ? t('Difference in travel time') : t('Travel time')}</h1>
           </header>
 
           <figure className='card__media eta-vis__media'>
@@ -420,10 +421,10 @@ export default ResultsMap;
 
 class MapPopover extends React.Component {
   render () {
-    let label = this.props.comparing ? `Compared to ${this.props.compareScenarioName}` : 'Nearest POI';
+    let label = this.props.comparing ? t('Compared to {name}', {name: this.props.compareScenarioName}) : t('Nearest POI');
     let time;
     if (this.props.comparing) {
-      time = this.props.time === 0 ? 'no difference' : `${toTimeStr(Math.abs(this.props.time))} ${this.props.time < 0 ? 'faster' : 'slower'}`;
+      time = this.props.time === 0 ? t('no difference') : `${toTimeStr(Math.abs(this.props.time))} ${this.props.time < 0 ? t('faster') : t('slower')}`;
     } else {
       time = toTimeStr(this.props.time);
     }
@@ -436,7 +437,7 @@ class MapPopover extends React.Component {
             </div>
             <div className='popover__actions actions'>
               <ul className='actions__menu'>
-                <li><button type='button' className='actions__menu-item poa-xmark' title='Close popover' onClick={this.props.onCloseClick}><span>Dismiss</span></button></li>
+                <li><button type='button' className='actions__menu-item poa-xmark' title='Close popover' onClick={this.props.onCloseClick}><span>{t('Dismiss')}</span></button></li>
               </ul>
             </div>
           </header>

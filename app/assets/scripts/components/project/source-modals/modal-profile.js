@@ -91,7 +91,11 @@ class ModalProfile extends ModalBase {
             this.setState({fileToRemove: null});
           })
           .catch(err => {
-            this.props._showAlert('danger', <p>An error occurred while deleting file {this.state.fileField.name}: {err.message}</p>, true);
+            let msg = t('An error occurred while deleting file {filename}: {message}', {
+              filename: this.state.fileField.name,
+              message: err.message
+            });
+            this.props._showAlert('danger', <p>{msg}</p>, true);
             // Rethrow to stop chain.
             throw err;
           });
@@ -122,7 +126,10 @@ class ModalProfile extends ModalBase {
             this.setState({fileField});
           })
           .catch(err => {
-            this.props._showAlert('danger', <p>An error occurred while uploading profile source: {err.message}</p>, true);
+            let msg = t('An error occurred while uploading profile source file: {message}', {
+              message: err.message
+            });
+            this.props._showAlert('danger', <p>{msg}</p>, true);
             // Rethrow to stop chain.
             throw err;
           });
@@ -139,7 +146,10 @@ class ModalProfile extends ModalBase {
         // this.xhr = xhr;
         return promise
           .catch(err => {
-            this.props._showAlert('danger', <p>An error occurred while saving the profile source: {err.message}</p>, true);
+            let msg = t('An error occurred while saving the profile source: {message}', {
+              message: err.message
+            });
+            this.props._showAlert('danger', <p>{msg}</p>, true);
             // Rethrow to stop chain.
             throw err;
           });

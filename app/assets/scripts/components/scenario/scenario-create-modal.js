@@ -109,7 +109,10 @@ const ScenarioCreateModal = React.createClass({
     this.setState({data});
 
     if (file.size >= rnEditThreshold) {
-      this.props._showAlert('warning', <p>File size is above {rnEditThresholdDisplay}. Road network editing will be disabled.</p>, true);
+      let msg = t('File size is above {size}. Road network editing will be disabled.', {
+        size: rnEditThresholdDisplay
+      });
+      this.props._showAlert('warning', <p>{msg}</p>, true);
     }
   },
 

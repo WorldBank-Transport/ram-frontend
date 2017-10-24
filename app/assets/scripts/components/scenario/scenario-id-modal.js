@@ -95,7 +95,7 @@ const ScenarioIDModal = React.createClass({
         <ModalBody>
 
         <section className='ideditor-wrapper'>
-          <h1 className='visually-hidden'>iD editor</h1>
+          <h1 className='visually-hidden'>{t('iD editor')}</h1>
           <iframe src={config.iDEditor} className={c({'visually-hidden': !this.state.editorLoaded})} frameBorder='0' ref='editor'></iframe>
         </section>
 

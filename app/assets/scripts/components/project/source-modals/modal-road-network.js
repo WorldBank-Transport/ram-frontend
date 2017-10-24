@@ -54,7 +54,10 @@ class ModalRoadNetwork extends ModalBase {
     this.setState({ fileField });
 
     if (file.size >= rnEditThreshold) {
-      this.props._showAlert('warning', <p>File size is above {rnEditThresholdDisplay}. Road network editing will be disabled.</p>, true);
+      let msg = t('File size is above {size}. Road network editing will be disabled.', {
+        size: rnEditThresholdDisplay
+      });
+      this.props._showAlert('warning', <p>{msg}</p>, true);
     }
   }
 
@@ -96,7 +99,11 @@ class ModalRoadNetwork extends ModalBase {
             this.setState({fileToRemove: null});
           })
           .catch(err => {
-            this.props._showAlert('danger', <p>An error occurred while deleting file {this.state.fileField.name}: {err.message}</p>, true);
+            let msg = t('An error occurred while deleting file {filename}: {message}', {
+              filename: this.state.fileField.name,
+              message: err.message
+            });
+            this.props._showAlert('danger', <p>{msg}</p>, true);
             // Rethrow to stop chain.
             throw err;
           });
@@ -127,7 +134,10 @@ class ModalRoadNetwork extends ModalBase {
             this.setState({fileField});
           })
           .catch(err => {
-            this.props._showAlert('danger', <p>An error occurred while uploading the road network file: {err.message}</p>, true);
+            let msg = t('An error occurred while uploading the road network file: {message}', {
+              message: err.message
+            });
+            this.props._showAlert('danger', <p>{msg}</p>, true);
             // Rethrow to stop chain.
             throw err;
           });
@@ -144,7 +154,10 @@ class ModalRoadNetwork extends ModalBase {
         // this.xhr = xhr;
         return promise
           .catch(err => {
-            this.props._showAlert('danger', <p>An error occurred while saving the road network source: {err.message}</p>, true);
+            let msg = t('An error occurred while saving the road network source: {message}', {
+              message: err.message
+            });
+            this.props._showAlert('danger', <p>{msg}</p>, true);
             // Rethrow to stop chain.
             throw err;
           });
@@ -199,18 +212,18 @@ class ModalRoadNetwork extends ModalBase {
       <ModalBody>
         <form className='form' onSubmit={ e => { e.preventDefault(); this.allowSubmit() && this.onSubmit(); } }>
           <div className='form__group'>
-            <label className='form__label'>Source</label>
+            <label className='form__label'>{t('Source')}</label>
 
             <label className='form__option form__option--inline form__option--custom-radio'>
               <input type='radio' name='source-type' id='file' value='file' checked={this.state.source === 'file'} onChange={this.onSourceChange.bind(this)} />
               <span className='form__option__ui'></span>
-              <span className='form__option__text'>File upload</span>
+              <span className='form__option__text'>{t('File upload')}</span>
             </label>
 
             <label className='form__option form__option--inline form__option--custom-radio'>
               <input type='radio' name='source-type' id='osm' value='osm' checked={this.state.source === 'osm'} onChange={this.onSourceChange.bind(this)} />
               <span className='form__option__ui'></span>
-              <span className='form__option__text'>OSM data</span>
+              <span className='form__option__text'>{t('OSM data')}</span>
             </label>
           </div>
           {this.state.source === 'file' ? this.renderSourceFile() : null}
