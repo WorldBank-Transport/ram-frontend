@@ -32,11 +32,14 @@ export default class LayerControl {
       case 'origins':
         this.theMap.setLayoutProperty('eta', 'visibility', active ? 'visible' : 'none');
         break;
-      case 'admin-bounds':
-        this.theMap.setLayoutProperty('admin-bounds', 'visibility', active ? 'visible' : 'none');
-        break;
-      case 'road-network':
-        this.theMap.setLayoutProperty('road-network', 'visibility', active ? 'visible' : 'none');
+      // case 'admin-bounds':
+      //   this.theMap.setLayoutProperty('admin-bounds', 'visibility', active ? 'visible' : 'none');
+      //   break;
+      // case 'road-network':
+      //   this.theMap.setLayoutProperty('road-network', 'visibility', active ? 'visible' : 'none');
+      //   break;
+      case 'satellite':
+        this.theMap.setLayoutProperty('satellite', 'visibility', active ? 'visible' : 'none');
         break;
     }
   }
@@ -52,8 +55,9 @@ class LayerControlDropdown extends React.Component {
     this.state = {
       origins: true,
       poi: true,
-      'admin-bounds': false,
-      'road-network': false
+      // 'admin-bounds': false,
+      // 'road-network': false,
+      satellite: false
     };
   }
 
@@ -61,6 +65,17 @@ class LayerControlDropdown extends React.Component {
     this.setState({ [what]: !this.state[what] });
     this.props.onLayerChange(what, !this.state[what]);
   }
+
+  // <label htmlFor='switch-bounds' className='form__option form__option--switch' title={t('Toggle on/off')}>
+  //   <input type='checkbox' name='switch-bounds' id='switch-bounds' value='on' checked={this.state['admin-bounds']} onChange={this.toggleLayer.bind(this, 'admin-bounds')}/>
+  //   <span className='form__option__text'>{t('Admin boundaries')}</span>
+  //   <span className='form__option__ui'></span>
+  // </label>
+  // <label htmlFor='switch-rn' className='form__option form__option--switch' title={t('Toggle on/off')}>
+  //   <input type='checkbox' name='switch-rn' id='switch-rn' value='on' checked={this.state['road-network']} onChange={this.toggleLayer.bind(this, 'road-network')}/>
+  //   <span className='form__option__text'>{t('Road network')}</span>
+  //   <span className='form__option__ui'></span>
+  // </label>
 
   render () {
     return (
@@ -73,24 +88,19 @@ class LayerControlDropdown extends React.Component {
         direction='down'
         alignment='left' >
           <h6 className='drop__title'>{t('Toggle layers')}</h6>
-          <label htmlFor='switch1' className='form__option form__option--switch' title={t('Toggle on/off')}>
-            <input type='checkbox' name='switch1' id='switch1' value='on' checked={this.state.origins} onChange={this.toggleLayer.bind(this, 'origins')}/>
+          <label htmlFor='switch-origins' className='form__option form__option--switch' title={t('Toggle on/off')}>
+            <input type='checkbox' name='switch-origins' id='switch-origins' value='on' checked={this.state.origins} onChange={this.toggleLayer.bind(this, 'origins')}/>
             <span className='form__option__text'>{t('Origins')}</span>
             <span className='form__option__ui'></span>
           </label>
-          <label htmlFor='switch2' className='form__option form__option--switch' title={t('Toggle on/off')}>
-            <input type='checkbox' name='switch2' id='switch2' value='on' checked={this.state.poi} onChange={this.toggleLayer.bind(this, 'poi')}/>
+          <label htmlFor='switch-poi' className='form__option form__option--switch' title={t('Toggle on/off')}>
+            <input type='checkbox' name='switch-poi' id='switch-poi' value='on' checked={this.state.poi} onChange={this.toggleLayer.bind(this, 'poi')}/>
             <span className='form__option__text'>{t('Destinations')}</span>
             <span className='form__option__ui'></span>
           </label>
-          <label htmlFor='switch3' className='form__option form__option--switch' title={t('Toggle on/off')}>
-            <input type='checkbox' name='switch3' id='switch3' value='on' checked={this.state['admin-bounds']} onChange={this.toggleLayer.bind(this, 'admin-bounds')}/>
-            <span className='form__option__text'>{t('Admin boundaries')}</span>
-            <span className='form__option__ui'></span>
-          </label>
-          <label htmlFor='switch4' className='form__option form__option--switch' title={t('Toggle on/off')}>
-            <input type='checkbox' name='switch4' id='switch4' value='on' checked={this.state['road-network']} onChange={this.toggleLayer.bind(this, 'road-network')}/>
-            <span className='form__option__text'>{t('Road network')}</span>
+          <label htmlFor='switch-satellite' className='form__option form__option--switch' title={t('Toggle on/off')}>
+            <input type='checkbox' name='switch-satellite' id='switch-satellite' value='on' checked={this.state['satellite']} onChange={this.toggleLayer.bind(this, 'satellite')}/>
+            <span className='form__option__text'>{t('Satellite')}</span>
             <span className='form__option__ui'></span>
           </label>
       </Dropdown>

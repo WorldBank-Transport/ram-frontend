@@ -14,6 +14,7 @@ const clone = data => JSON.parse(JSON.stringify(data));
 class ResultsMap extends React.Component {
   setupMap () {
     this.popover = null;
+    this.mapLoaded = false;
 
     mapboxgl.accessToken = config.mbtoken;
     let { bbox } = this.props;
@@ -26,7 +27,10 @@ class ResultsMap extends React.Component {
     this.theMap.addControl(new mapboxgl.AttributionControl(), 'bottom-right');
     this.theMap.scrollZoom.disable();
     this.theMap.fitBounds(bbox);
-    this.theMap.on('style.load', this.setupData.bind(this));
+    this.theMap.on('style.load', () => {
+      this.mapLoaded = true;
+      this.setupData();
+    });
 
     this.theMap.on('click', 'eta', e => {
       this.showPopover(e.features[0]);
@@ -158,63 +162,66 @@ class ResultsMap extends React.Component {
   }
 
   setupData () {
-    if (!this.theMap.getSource('admin-bounds')) {
-      this.theMap.addSource('admin-bounds', {
-        type: 'vector',
-        tiles: [`${config.api}/projects/${this.props.projectId}/tiles/admin-bounds/{z}/{x}/{y}`]
-      });
-      this.theMap.addLayer({
-        'id': 'admin-bounds',
-        'type': 'line',
-        'source': 'admin-bounds',
-        'source-layer': 'bounds',
-        'layout': {
-          'visibility': 'none'
-        },
-        'paint': {
-          'line-color': '#526980',
-          'line-width': {
-            'stops': [
-              [4, 1],
-              [14, 2]
-            ]
-          },
-          'line-opacity': 0.48
-        }
-      }, 'eta');
+    if (!this.mapLoaded) {
+      return;
     }
+    // if (!this.theMap.getSource('admin-bounds')) {
+    //   this.theMap.addSource('admin-bounds', {
+    //     type: 'vector',
+    //     tiles: [`${config.api}/projects/${this.props.projectId}/tiles/admin-bounds/{z}/{x}/{y}`]
+    //   });
+    //   this.theMap.addLayer({
+    //     'id': 'admin-bounds',
+    //     'type': 'line',
+    //     'source': 'admin-bounds',
+    //     'source-layer': 'bounds',
+    //     'layout': {
+    //       'visibility': 'none'
+    //     },
+    //     'paint': {
+    //       'line-color': '#526980',
+    //       'line-width': {
+    //         'stops': [
+    //           [4, 1],
+    //           [14, 2]
+    //         ]
+    //       },
+    //       'line-opacity': 0.48
+    //     }
+    //   }, 'eta');
+    // }
 
-    if (!this.theMap.getSource('road-network')) {
-      this.theMap.addSource('road-network', {
-        type: 'vector',
-        tiles: [`${config.api}/projects/${this.props.projectId}/scenarios/${this.props.scenarioId}/tiles/road-network/{z}/{x}/{y}`]
-      });
-      this.theMap.addLayer({
-        'id': 'road-network',
-        'type': 'line',
-        'source': 'road-network',
-        'source-layer': 'road-network',
-        'layout': {
-          'visibility': 'none'
-        },
-        'paint': {
-          'line-color': '#75584E',
-          'line-width': 2
-        },
-        'filter': [
-          'all',
-          [
-            '==',
-            '$type',
-            'LineString'
-          ],
-          [
-            'has',
-            'highway'
-          ]
-        ]
-      }, 'place-neighbourhood');
-    }
+    // if (!this.theMap.getSource('road-network')) {
+    //   this.theMap.addSource('road-network', {
+    //     type: 'vector',
+    //     tiles: [`${config.api}/projects/${this.props.projectId}/scenarios/${this.props.scenarioId}/tiles/road-network/{z}/{x}/{y}`]
+    //   });
+    //   this.theMap.addLayer({
+    //     'id': 'road-network',
+    //     'type': 'line',
+    //     'source': 'road-network',
+    //     'source-layer': 'road-network',
+    //     'layout': {
+    //       'visibility': 'none'
+    //     },
+    //     'paint': {
+    //       'line-color': '#75584E',
+    //       'line-width': 2
+    //     },
+    //     'filter': [
+    //       'all',
+    //       [
+    //         '==',
+    //         '$type',
+    //         'LineString'
+    //       ],
+    //       [
+    //         'has',
+    //         'highway'
+    //       ]
+    //     ]
+    //   }, 'place-neighbourhood');
+    // }
 
     if (this.props.data.fetched && !this.theMap.getSource('etaData')) {
       this.theMap.addSource('etaData', {
@@ -253,6 +260,21 @@ class ResultsMap extends React.Component {
         source: 'poiData',
         layout: {
           'icon-image': 'marker-15'
+        }
+      });
+    }
+
+    if (!this.theMap.getLayer('satellite')) {
+      this.theMap.addLayer({
+        id: 'satellite',
+        source: {
+          'type': 'raster',
+          'url': 'mapbox://mapbox.satellite',
+          'tileSize': 256
+        },
+        type: 'raster',
+        'layout': {
+          'visibility': 'none'
         }
       });
     }
