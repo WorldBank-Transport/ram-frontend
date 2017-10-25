@@ -1,1 +1,0 @@
-Tio estas la helpopaĝo.
