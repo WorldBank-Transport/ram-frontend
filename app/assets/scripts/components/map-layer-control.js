@@ -37,6 +37,7 @@ export default class LayerControl {
         break;
       case 'road-network':
         this.theMap.setLayoutProperty('road-network', 'visibility', active ? 'visible' : 'none');
+        this.theMap.setLayoutProperty('road-network-cap', 'visibility', active ? 'visible' : 'none');
         break;
       case 'satellite':
         this.theMap.setLayoutProperty('satellite', 'visibility', active ? 'visible' : 'none');
@@ -55,8 +56,8 @@ class LayerControlDropdown extends React.Component {
     this.state = {
       origins: true,
       poi: true,
-      'admin-bounds': false,
-      'road-network': false,
+      'admin-bounds': true,
+      'road-network': true,
       satellite: false
     };
   }
