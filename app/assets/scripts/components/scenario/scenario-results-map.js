@@ -21,7 +21,7 @@ class ResultsMap extends React.Component {
 
     this.theMap = new mapboxgl.Map({
       container: this.refs.map,
-      style: 'mapbox://styles/mapbox/light-v9',
+      style: 'mapbox://styles/ruralroads/cj9fm2v4p85ex2rlo8ja3ybxh',
       attributionControl: false
     });
     this.theMap.addControl(new mapboxgl.AttributionControl(), 'bottom-right');
@@ -175,18 +175,16 @@ class ResultsMap extends React.Component {
         'type': 'line',
         'source': 'admin-bounds',
         'source-layer': 'admin-bounds',
-        'layout': {
-          'visibility': 'none'
-        },
         'paint': {
-          'line-color': '#526980',
+          'line-color': '#53697F',
+          'line-dasharray': [4, 1, 2, 1],
           'line-width': {
             'stops': [
               [4, 1],
-              [14, 2]
+              [12, 2]
             ]
           },
-          'line-opacity': 0.48
+          'line-opacity': 0.32
         }
       }, 'eta');
     }
@@ -201,12 +199,15 @@ class ResultsMap extends React.Component {
         'type': 'line',
         'source': 'road-network',
         'source-layer': 'road-network',
-        'layout': {
-          'visibility': 'none'
-        },
         'paint': {
-          'line-color': '#75584E',
-          'line-width': 2
+          'line-color': '#FFFFFF',
+          'line-width':  {
+            'stops': [
+              [4, 1],
+              [10, 2],
+              [12, 4]
+            ]
+          }
         },
         'filter': [
           'all',
@@ -221,6 +222,36 @@ class ResultsMap extends React.Component {
           ]
         ]
       }, 'place-neighbourhood');
+      this.theMap.addLayer({
+        'id': 'road-network-cap',
+        'type': 'line',
+        'source': 'road-network',
+        'source-layer': 'road-network',
+        'paint': {
+          'line-color': '#53697F',
+          'line-width': 0.5,
+          'line-gap-width': {
+            'stops': [
+              [4, 1],
+              [10, 2],
+              [12, 4]
+            ]
+          },
+          'line-opacity': 0.32
+        },
+        'filter': [
+          'all',
+          [
+            '==',
+            '$type',
+            'LineString'
+          ],
+          [
+            'has',
+            'highway'
+          ]
+        ]
+      }, 'road-network');
     }
 
     if (this.props.data.fetched && !this.theMap.getSource('etaData')) {
@@ -276,7 +307,7 @@ class ResultsMap extends React.Component {
         'layout': {
           'visibility': 'none'
         }
-      });
+      }, 'road-network-cap');
     }
   }
 
