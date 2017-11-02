@@ -74,7 +74,7 @@ class ModalOrigins extends ModalBase {
         let noNameFeats = res.features.reduce((acc, v) => acc + (v.properties[getPropInsensitive(v.properties, 'name')] ? 0 : 1), 0);
 
         if (noNameFeats) {
-          let msg = t('{noNameFeats} out of {totalFeats} origins don\'t have a name. "N/A" will be used.', {
+          let msg = t('{noNameOrigins} out of {totalOrigins} origins don\'t have a name. "N/A" will be used.', {
             noNameOrigins: noNameFeats,
             totalOrigins: totalFeats
           });

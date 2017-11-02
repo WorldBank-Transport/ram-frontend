@@ -74,7 +74,7 @@ export function t (string, replace = {}, isReactEnabled = null) {
   }
 
   let res = STRINGS[currentLang][string] || string;
-  let regex = new RegExp(`({[a-z0-9-]+})`);
+  let regex = new RegExp(`({[a-zA-Z0-9-_]+})`);
   let pieces = res.split(regex).filter(o => o !== '');
   Object.keys(replace).forEach(repKey => {
     let index = pieces.indexOf(`{${repKey}}`);
