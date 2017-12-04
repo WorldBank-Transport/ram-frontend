@@ -21,7 +21,7 @@ import {
   invalidateScenarioCompare
 } from '../../actions';
 import { round, toTimeStr, clone } from '../../utils/utils';
-import { t } from '../../utils/i18n';
+import { t, getLanguage } from '../../utils/i18n';
 import { poiOsmTypes } from '../../utils/constants';
 import { showGlobalLoadingCounted, hideGlobalLoadingCounted } from '../global-loading';
 
@@ -363,7 +363,7 @@ const ScenarioResults = React.createClass({
     // Are we comparing?
     const comparing = this.state.compare !== null;
     const compareStatus = this.getCompareStatus();
-    const scenarioCompareName = this.state.compare ? this.props.scenarios.data.results.find(o => o.id === this.state.compare).name : null
+    const scenarioCompareName = this.state.compare ? this.props.scenarios.data.results.find(o => o.id === this.state.compare).name : null;
 
     const scenarios = this.props.scenarios.data.results
       // Can't compare to itself.
@@ -385,6 +385,7 @@ const ScenarioResults = React.createClass({
           poiTypes={this.props.poiTypes}
           scenarios={scenarios}
           compareScenarioId={this.state.compare}
+          lang={getLanguage()}
         />
 
         {this.renderCompareAlert(compareStatus)}
@@ -410,6 +411,7 @@ const ScenarioResults = React.createClass({
           error={this.props.aggregatedResults.error}
           comparing={comparing}
           compareScenarioName={scenarioCompareName}
+          lang={getLanguage()}
         /> : null}
 
         {!comparing ? <RawResultsTable
@@ -425,6 +427,7 @@ const ScenarioResults = React.createClass({
           poiName={poiName}
           filter={this.state.rawFilter}
           onFilter={this.onRawResultsFilter}
+          lang={getLanguage()}
         /> : null}
       </div>
     );
@@ -442,7 +445,7 @@ function selector (state) {
     // When the POI come from osm we can use the labels defined in constants.js
     poiTypes = poiSource.osmOptions.osmPoiTypes.map(o => ({
       key: o,
-      label: poiOsmTypes.find(poi => poi.key === o).value
+      label: poiOsmTypes().find(poi => poi.key === o).value
     }));
   }
 

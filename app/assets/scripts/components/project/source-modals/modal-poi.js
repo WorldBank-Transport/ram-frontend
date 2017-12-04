@@ -9,7 +9,7 @@ import { t } from '../../../utils/i18n';
 import { postFormdata, fetchJSON } from '../../../actions';
 import { showGlobalLoading, hideGlobalLoading } from '../../global-loading';
 import { FileInput } from '../../file-input';
-import { poiOsmTypes } from '../../../utils/constants';
+import { getPoiOsmTypes } from '../../../utils/constants';
 
 import { ModalBody } from '../../modal';
 import ModalBase from './modal-base';
@@ -95,7 +95,7 @@ class ModalPoi extends ModalBase {
     if (what === 'none') {
       this.setState({ selectedPoiTypes: [] });
     } else if (what === 'all') {
-      this.setState({ selectedPoiTypes: poiOsmTypes.map(o => o.key) });
+      this.setState({ selectedPoiTypes: getPoiOsmTypes().map(o => o.key) });
     }
   }
 
@@ -348,7 +348,7 @@ class ModalPoi extends ModalBase {
         </div>
 
         <div className='form__hascol form__hascol--3'>
-          {poiOsmTypes.map(o => (
+          {getPoiOsmTypes().map(o => (
             <label key={o.key} className='form__option form__option--custom-checkbox' title={o.value}>
               <input type='checkbox' name={o.key} value={o.key} onChange={this.onOsmPoiChange.bind(this)} checked={this.state.selectedPoiTypes.indexOf(o.key) !== -1} />
               <span className='form__option__ui'></span>

@@ -25,7 +25,7 @@ import {
 import { prettyPrint } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
 import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
-import { projectStatusMatrix } from '../utils/constants';
+import { getProjectStatusMatrix } from '../utils/constants';
 
 import StickyHeader from '../components/sticky-header';
 import Breadcrumb from '../components/breadcrumb';
@@ -302,7 +302,7 @@ const ProjectPagePending = React.createClass({
         <StickyHeader className='inpage__header'>
           <div className='inpage__headline'>
             {this.renderBreadcrumb()}
-            <h1 className='inpage__title' title={data.name}>{data.name} <span className='label label--light label--danger'>{projectStatusMatrix[data.status]}</span></h1>
+            <h1 className='inpage__title' title={data.name}>{data.name} <span className='label label--light label--danger'>{getProjectStatusMatrix()[data.status]}</span></h1>
             {data.description ? (
               <p className='inpage__description'>{data.description}</p>
             ) : null}

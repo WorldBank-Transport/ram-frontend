@@ -16,7 +16,7 @@ import {
 } from '../actions';
 import { t, getLanguage } from '../utils/i18n';
 import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
-import { projectStatusMatrix } from '../utils/constants';
+import { getProjectStatusMatrix } from '../utils/constants';
 
 import StickyHeader from '../components/sticky-header';
 import ProjectFormModal from '../components/project/project-form-modal';
@@ -105,7 +105,7 @@ const Home = React.createClass({
                 <dt>Updated</dt>
                 <dd className='detail detail--updated'><TimeAgo datetime={project.updated_at} /></dd>
                 <dt>Status</dt>
-                <dd className='status'><span className={c('label', {'label--success': project.status === 'active', 'label--danger': project.status === 'pending'})}>{projectStatusMatrix[project.status]}</span></dd>
+                <dd className='status'><span className={c('label', {'label--success': project.status === 'active', 'label--danger': project.status === 'pending'})}>{getProjectStatusMatrix()[project.status]}</span></dd>
               </dl>
             </footer>
           </div>
