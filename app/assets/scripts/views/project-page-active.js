@@ -22,7 +22,7 @@ import {
 import { fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
 import { showGlobalLoading, hideGlobalLoading } from '../components/global-loading';
-import { projectStatusMatrix } from '../utils/constants';
+import { getProjectStatusMatrix } from '../utils/constants';
 
 import StickyHeader from '../components/sticky-header';
 import Breadcrumb from '../components/breadcrumb';
@@ -345,7 +345,7 @@ const ProjectPageActive = React.createClass({
         <StickyHeader className='inpage__header'>
           <div className='inpage__headline'>
             {this.renderBreadcrumb()}
-            <h1 className='inpage__title' title={dataProject.name}>{dataProject.name} <span className='label label--light label--success'>{projectStatusMatrix[dataProject.status]}</span></h1>
+            <h1 className='inpage__title' title={dataProject.name}>{dataProject.name} <span className='label label--light label--success'>{getProjectStatusMatrix()[dataProject.status]}</span></h1>
             {dataProject.description ? (
               <p className='inpage__description'>{dataProject.description}</p>
             ) : null}

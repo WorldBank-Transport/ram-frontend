@@ -3,7 +3,7 @@ import React, { PropTypes as T } from 'react';
 import { Link } from 'react-router';
 import c from 'classnames';
 
-import { fileTypesMatrix } from '../../utils/constants';
+import { getfFileTypesMatrix } from '../../utils/constants';
 import { t, getLanguage } from '../../utils/i18n';
 import config from '../../config';
 
@@ -91,7 +91,7 @@ class PorjectSourceData extends React.Component {
   }
 
   render () {
-    let { display, description, helpPath } = fileTypesMatrix[this.props.type];
+    let { display, description, helpPath } = getfFileTypesMatrix()[this.props.type];
 
     let downloadLink;
     switch (this.props.type) {

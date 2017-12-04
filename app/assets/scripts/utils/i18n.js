@@ -282,8 +282,8 @@ const STRINGS = {
     '{chars} characters left': '{chars}ໂຕໜັງສືທີ່ເຫຼືອ',
     '{count} scenarios': '{count} ສະຖານະການ',
     '{count} source files': '{count} ນັບແຫຼ່ງຂໍ້ມູນ',
-    '{min} min': '{minutes} ນາທີ',
-    '{noNameFeats} out of {totalFeats} origins don\'t have a name. \"N/A\" will be used.': '{noNameFeats} ຢູ່ໃນ {totalFeats} ລາຍການຕົ້ນຕໍແມ່ນບໍ່ມີຊື່. ໃຫ້ໃ​ຊ້​ຄຳ​ວ່າ N/A'
+    '{min} min': '{min} ນາທີ',
+    '{noNameFeats} out of {totalFeats} origins don\'t have a name. "N/A" will be used.': '{noNameFeats} ຢູ່ໃນ {totalFeats} ລາຍການຕົ້ນຕໍແມ່ນບໍ່ມີຊື່. ໃຫ້ໃ​ຊ້​ຄຳ​ວ່າ N/A'
   },
   vi: {
     '-10 to 0': '-10 đến 0',
@@ -550,7 +550,7 @@ const STRINGS = {
     '{count} scenarios': '{count} kịch bản',
     '{count} source files': '{count} tập tin nguồn',
     '{min} min': '{min} tối thiểu',
-    '{noNameFeats} out of {totalFeats} origins don\'t have a name. \"N/A\" will be used.': '{noNameFeats} trong số {totalFeats} điểm đầu không có tên. "N/A" sẽ được sử dụng.'
+    '{noNameFeats} out of {totalFeats} origins don\'t have a name. "N/A" will be used.': '{noNameFeats} trong số {totalFeats} điểm đầu không có tên. "N/A" sẽ được sử dụng.'
   },
   zh: {
     '-10 to 0': '-10到0',
@@ -816,8 +816,8 @@ const STRINGS = {
     '{chars} characters left': '{chars}剩余字符',
     '{count} scenarios': '{count}场景',
     '{count} source files': '{count}源文件',
-    '{min} min': '{minutes}分钟',
-    '{noNameFeats} out of {totalFeats} origins don\'t have a name. \"N/A\" will be used.': '{totalFeats}出处的{noNameFeats}没有名称。将使用“N / A”。'
+    '{min} min': '{min}分钟',
+    '{noNameFeats} out of {totalFeats} origins don\'t have a name. "N/A" will be used.': '{totalFeats}出处的{noNameFeats}没有名称。将使用“N / A”。'
   }
 };
 

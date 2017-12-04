@@ -5,7 +5,10 @@ let rnEditThresholdVal = 20; // MB
 export const rnEditThreshold = rnEditThresholdVal * Math.pow(1024, 2); // bytes
 export const rnEditThresholdDisplay = `${rnEditThresholdVal}MB`;
 
-export const fileTypesMatrix = {
+// These constants need to be returned as the result of a function because, the
+// translations need to be computed based on the current language. Otherwise
+// they'd always be returned in English.
+export const getfFileTypesMatrix = () => ({
   'admin-bounds': {
     display: t('Administrative Boundaries'),
     description: t('Boundaries for the administrative areas for which analysis is generated.'),
@@ -31,14 +34,14 @@ export const fileTypesMatrix = {
     description: t('A lua file with the OSRM Profile.'),
     helpPath: '/help#profile'
   }
-};
+});
 
-export const projectStatusMatrix = {
+export const getProjectStatusMatrix = () => ({
   active: t('Active'),
   pending: t('Draft')
-};
+});
 
-export const poiOsmTypes = [
+export const getPoiOsmTypes = () => ([
   {
     key: 'health',
     value: t('Health facilities')
@@ -51,4 +54,4 @@ export const poiOsmTypes = [
     key: 'financial',
     value: t('Financial institutions')
   }
-];
+]);
