@@ -201,7 +201,7 @@ class ResultsMap extends React.Component {
         'source-layer': 'road-network',
         'paint': {
           'line-color': '#FFFFFF',
-          'line-width':  {
+          'line-width': {
             'stops': [
               [4, 1],
               [10, 2],
