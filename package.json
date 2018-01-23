@@ -1,7 +1,7 @@
 {
   "name": "ram-frontend",
-  "version": "0.4.0",
-  "description": "World Bank project to assess rural accessibility",
+  "version": "0.5.0",
+  "description": "User interface of the Rural Accessibility Map",
   "repository": {
     "type": "git",
     "url": "https://github.com/WorldBank-Transport/ram-frontend"
