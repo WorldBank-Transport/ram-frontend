@@ -69,8 +69,6 @@ const ScenarioHeaderActions = React.createClass({
           <span>{t('Network')}</span>
       </button>
     );
-
-    /* <button data-tip={t('Coming soon')} data-effect='solid' title={t('Edit network')} className='ipa-pencil visually-disabled' type='button' ><span>{t('Network')}</span></button> */
   },
 
   renderGenerateAbort: function (isGenerating, isPending) {

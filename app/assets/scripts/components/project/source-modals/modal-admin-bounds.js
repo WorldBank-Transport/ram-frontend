@@ -82,7 +82,11 @@ class ModalAdminBounds extends ModalBase {
             this.setState({fileToRemove: null});
           })
           .catch(err => {
-            this.props._showAlert('danger', <p>An error occurred while deleting file {this.state.fileField.name}: {err.message}</p>, true);
+            let msg = t('An error occurred while deleting file {filename}: {message}', {
+              filename: this.state.fileField.name,
+              message: err.message
+            });
+            this.props._showAlert('danger', <p>{msg}</p>, true);
             // Rethrow to stop chain.
             throw err;
           });
@@ -113,7 +117,10 @@ class ModalAdminBounds extends ModalBase {
             this.setState({fileField});
           })
           .catch(err => {
-            this.props._showAlert('danger', <p>An error occurred while uploading admin boundaries file: {err.message}</p>, true);
+            let msg = t('An error occurred while uploading admin boundaries file: {message}', {
+              message: err.message
+            });
+            this.props._showAlert('danger', <p>{msg}</p>, true);
             // Rethrow to stop chain.
             throw err;
           });
@@ -143,14 +150,14 @@ class ModalAdminBounds extends ModalBase {
             <FileDisplay
               id='admin-bounds'
               name='admin-bounds'
-              label={'Source'}
+              label={t('Source')}
               value={fileField.name}
               onRemoveClick={this.onFileRemove.bind(this, fileField.id)} />
           ) : (
             <FileInput
               id='admin-bounds'
               name='admin-bounds'
-              label={'Source'}
+              label={t('Source')}
               value={fileField.file}
               placeholder={t('Choose a file')}
               onFileSelect={this.onFileSelected.bind(this, fileField.id)} >

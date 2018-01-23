@@ -23,9 +23,11 @@
 }
 
 .drop__content {
+  @extend %drop-skin;
   position: absolute;
   z-index: 1000;
-  width: 12rem;
+  width: 100%;
+  max-width: 14rem;
   margin: 0;
   padding: $global-spacing;
   overflow: hidden;
@@ -33,9 +35,6 @@
   color: $base-font-color;
   font-size: 1rem;
   line-height: 1.5;
-  background: #fff;
-  box-shadow: 0 4px 16px 2px rgba($base-color, 0.08);
-  border-radius: $base-border-radius;
 
   /* Animation */
 
@@ -277,8 +276,8 @@
   margin: (-$global-spacing) (-$global-spacing) $global-spacing (-$global-spacing);
   box-shadow: 0 1px 0 0 $base-alpha-color;
   padding: ($global-spacing / 2) 0;
-  max-width: 16rem;
   font-weight: $base-font-regular;
+  min-width: 12rem;
 
   &:last-child {
     margin-bottom: (-$global-spacing);

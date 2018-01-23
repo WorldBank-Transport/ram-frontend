@@ -3,7 +3,7 @@ import React, { PropTypes as T } from 'react';
 import c from 'classnames';
 
 import { t } from '../../../utils/i18n';
-import { fileTypesMatrix } from '../../../utils/constants';
+import { getfFileTypesMatrix } from '../../../utils/constants';
 
 import { Modal, ModalHeader, ModalFooter } from '../../modal';
 
@@ -11,7 +11,7 @@ class ModalBase extends React.Component {
   allowSubmit () { return true; }
 
   renderHeader () {
-    let { display, description } = fileTypesMatrix[this.props.type];
+    let { display, description } = getfFileTypesMatrix()[this.props.type];
     return (
       <ModalHeader>
         <div className='modal__headline'>

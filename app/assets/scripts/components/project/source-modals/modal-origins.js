@@ -4,7 +4,7 @@ import _ from 'lodash';
 import c from 'classnames';
 
 import config from '../../../config';
-import { limitHelper } from '../../../utils/utils';
+import { limitHelper, getPropInsensitive } from '../../../utils/utils';
 import { t } from '../../../utils/i18n';
 import { postFormdata, fetchJSON } from '../../../actions';
 import { showGlobalLoading, hideGlobalLoading } from '../../global-loading';
@@ -71,10 +71,14 @@ class ModalOrigins extends ModalBase {
     readFileAsJSON(file)
       .then(res => {
         let totalFeats = res.features.length;
-        let noNameFeats = res.features.reduce((acc, v) => acc + (v.properties.name ? 0 : 1), 0);
+        let noNameFeats = res.features.reduce((acc, v) => acc + (v.properties[getPropInsensitive(v.properties, 'name')] ? 0 : 1), 0);
 
         if (noNameFeats) {
-          this.props._showAlert('warning', <p>{noNameFeats} out of {totalFeats} origins don't have a name. "N/A" will be used.</p>, true);
+          let msg = t('{noNameOrigins} out of {totalOrigins} origins don\'t have a name. "N/A" will be used.', {
+            noNameOrigins: noNameFeats,
+            totalOrigins: totalFeats
+          });
+          this.props._showAlert('warning', <p>{msg}</p>, true);
         }
 
         // Get the indicator common to every feature. Number indicators only.
@@ -95,7 +99,7 @@ class ModalOrigins extends ModalBase {
         indicators = intersect;
 
         if (!indicators.length) {
-          throw new Error('Invalid file selected: There are no available fields that could be used as population estimate');
+          throw new Error(t('Invalid file selected: There are no available fields that could be used as population estimate'));
         }
 
         // Select the first available indicator.
@@ -108,7 +112,7 @@ class ModalOrigins extends ModalBase {
       })
       .catch(err => {
         hideGlobalLoading();
-        let msg = err instanceof Error ? err.message : 'Invalid file selected: Not a valid GeoJSON file';
+        let msg = err instanceof Error ? err.message : t('Invalid file selected: Not a valid GeoJSON file');
 
         return this.props._showAlert('danger', <p>{msg}</p>, true);
       });
@@ -178,7 +182,11 @@ class ModalOrigins extends ModalBase {
             this.setState({fileToRemove: null});
           })
           .catch(err => {
-            this.props._showAlert('danger', <p>An error occurred while deleting file {this.state.fileField.name}: {err.message}</p>, true);
+            let msg = t('An error occurred while deleting file {filename}: {message}', {
+              filename: this.state.fileField.name,
+              message: err.message
+            });
+            this.props._showAlert('danger', <p>{msg}</p>, true);
             // Rethrow to stop chain.
             throw err;
           });
@@ -224,7 +232,10 @@ class ModalOrigins extends ModalBase {
             this.setState({fileField});
           })
           .catch(err => {
-            this.props._showAlert('danger', <p>An error occurred while uploading a population file: {err.message}</p>, true);
+            let msg = t('An error occurred while uploading a population file: {message}', {
+              message: err.message
+            });
+            this.props._showAlert('danger', <p>{msg}</p>, true);
             // Rethrow to stop chain.
             throw err;
           });
@@ -256,7 +267,7 @@ class ModalOrigins extends ModalBase {
               <legend className='form__legend'>{t('Population estimate {idx}', {idx: i + 1})}</legend>
             </div>
             <div className='form__inner-actions'>
-              <button type='button' className={c('fia-trash', {disabled: fileField.indicators.length <= 1})} title='Delete fieldset' onClick={this.onIndicatorRemove.bind(this, i)}><span>Delete</span></button>
+              <button type='button' className={c('fia-trash', {disabled: fileField.indicators.length <= 1})} title={t('Delete fieldset')} onClick={this.onIndicatorRemove.bind(this, i)}><span>{t('Delete')}</span></button>
             </div>
           </div>
 
@@ -290,14 +301,14 @@ class ModalOrigins extends ModalBase {
             <FileDisplay
               id='origins'
               name='origins'
-              label={'Source'}
+              label={t('Source')}
               value={fileField.name}
               onRemoveClick={this.onFileRemove.bind(this, fileField.id)} />
           ) : (
             <FileInput
               id='origins'
               name='origins'
-              label={'Source'}
+              label={t('Source')}
               value={fileField.file}
               placeholder={t('Choose a file')}
               onFileSelect={this.onFileSelected.bind(this, fileField.id)} >
@@ -310,7 +321,7 @@ class ModalOrigins extends ModalBase {
           )}
           {this.renderIndicators()}
           <div className='form__extra-actions'>
-            <button type='button' className={c('fea-plus', {disabled: fileField.file === null})} title='Add new population estimate' onClick={this.addIndicatorField.bind(this)}><span>New population estimate</span></button>
+            <button type='button' className={c('fea-plus', {disabled: fileField.file === null})} title={t('Add new population estimate')} onClick={this.addIndicatorField.bind(this)}><span>{t('New population estimate')}</span></button>
           </div>
         </form>
       </ModalBody>

@@ -136,8 +136,8 @@ const ScenarioGenSettingsModal = React.createClass({
     return (
       <label key={val.id} className='form__option form__option--custom-checkbox' title={val.name}>
         <input type='checkbox' name={`checkbox-${val.id}`} value={val.id} onChange={this.onFieldChange.bind(null, 'selectedAreas')} checked={this.state.data.selectedAreas.indexOf(val.id) !== -1}/>
-        <span className='form__option__text truncated'>{val.name}</span>
         <span className='form__option__ui'></span>
+        <span className='form__option__text truncated'>{val.name}</span>
       </label>
     );
   },
@@ -171,7 +171,7 @@ const ScenarioGenSettingsModal = React.createClass({
             <div className='form__group form-group-areas'>
               <div className='form__inner-header'>
                 <div className='form__inner-headline'>
-                  <label className='form__label'>Admin areas</label>
+                  <label className='form__label'>{t('Admin areas')}</label>
                 </div>
                 <div className="form__inner-actions">
                   <dl className='form__options-menu'>

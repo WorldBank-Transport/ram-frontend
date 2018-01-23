@@ -108,10 +108,10 @@ export function showGlobalLoadingCounted (count = null) {
 
   theGlobalLoadingCount = count === null ? theGlobalLoadingCount + 1 : count;
 
-  theGlobalLoading.setState(Object.assign({}, {
+  theGlobalLoading.setState({
     showTimestamp: Date.now(),
     revealed: true
-  }));
+  });
 }
 
 export function hideGlobalLoadingCounted (force = false) {
@@ -119,7 +119,7 @@ export function hideGlobalLoadingCounted (force = false) {
     throw new Error('<GlobalLoading /> component not mounted');
   }
 
-  const hide = () => theGlobalLoading.setState(Object.assign({}, {revealed: false}));
+  const hide = () => theGlobalLoading.setState({revealed: false});
 
   if (force) {
     theGlobalLoadingCount = 0;
