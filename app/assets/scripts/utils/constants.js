@@ -1,7 +1,8 @@
 'use strict';
 import { t } from '../utils/i18n';
 
-let rnEditThresholdVal = 20; // MB
+// Set value to 0 to disable rn editing. Must also be disabled in backend.
+let rnEditThresholdVal = 0; // MB
 export const rnEditThreshold = rnEditThresholdVal * Math.pow(1024, 2); // bytes
 export const rnEditThresholdDisplay = `${rnEditThresholdVal}MB`;
 

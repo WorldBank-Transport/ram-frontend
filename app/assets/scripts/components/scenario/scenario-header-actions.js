@@ -7,12 +7,14 @@ import config from '../../config';
 import Dropdown from '../dropdown';
 import { t } from '../../utils/i18n';
 import { scenarioHasResults } from '../../utils/utils';
+import { rnEditThreshold } from '../../utils/constants';
 import { showConfirm } from '../confirmation-prompt';
 
 import ScenarioDeleteAction from './scenario-delete-action';
 
 const tipTexts = {
   rnNotAllowed: t('Road network is too big and can\'t be edited.'),
+  rnDisabled: t('Road network editing was disabled by the administrator.'),
   generating: t('Generation is in progress.'),
   pending: t('Scenario still being created.')
 };
@@ -50,7 +52,8 @@ const ScenarioHeaderActions = React.createClass({
     let txt;
 
     if (!isRnAllowed) {
-      txt = tipTexts.rnNotAllowed;
+      // Different message is the rn edition was disabled via constants.
+      txt = rnEditThreshold <= 0 ? tipTexts.rnDisabled : tipTexts.rnNotAllowed;
     } else if (isGenerating) {
       txt = tipTexts.generating;
     } else if (isPending) {

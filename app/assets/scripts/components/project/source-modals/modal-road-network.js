@@ -72,7 +72,7 @@ class ModalRoadNetwork extends ModalBase {
 
     this.setState({ fileField });
 
-    if (file.size >= rnEditThreshold) {
+    if (rnEditThreshold > 0 && file.size >= rnEditThreshold) {
       let msg = t('File size is above {size}. Road network editing will be disabled.', {
         size: rnEditThresholdDisplay
       });
@@ -245,6 +245,18 @@ class ModalRoadNetwork extends ModalBase {
       {id: 'wbcatalog', name: t('WB Catalog')}
     ];
 
+    let notes = [];
+
+    if (this.state.source === 'osm') {
+      notes.push(<p key='rn-osm'>{t('Import road network data for the project\'s Administrative Boundaries from OpenStreetMap. For more fine-grained control, upload a file with custom road network data.')}</p>);
+    }
+
+    if (rnEditThreshold <= 0) {
+      notes.push(<p key='rn-disabled'>{t('Road network editing was disabled by the administrator.')}</p>);
+    } else if (this.state.source === 'osm') {
+      notes.push(<p key='rn-osm-thresh'>{t('When the resulting import is over {max} the road network editing will be disabled.', {max: rnEditThresholdDisplay})}</p>);
+    }
+
     return (
       <ModalBody>
         <form className='form' onSubmit={ e => { e.preventDefault(); this.allowSubmit() && this.onSubmit(); } }>
@@ -256,8 +268,8 @@ class ModalRoadNetwork extends ModalBase {
               onChange={this.onSourceChange} />
           </div>
           {this.state.source === 'file' ? this.renderSourceFile() : null}
-          {this.state.source === 'osm' && <div className='form__note'><p>{t('Import road network data for the project\'s Administrative Boundaries from OpenStreetMap. For more fine-grained control, upload a file with custom road network data.')}</p><p>{t('When the resulting import is over {max} the road network editing will be disabled.', {max: rnEditThresholdDisplay})}</p></div>}
           {this.state.source === 'wbcatalog' ? this.renderSourceCatalog() : null}
+          {!!notes.length && <div className='form__note'>{notes}</div>}
         </form>
       </ModalBody>
     );
