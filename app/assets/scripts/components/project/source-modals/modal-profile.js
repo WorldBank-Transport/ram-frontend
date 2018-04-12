@@ -10,11 +10,16 @@ import { showGlobalLoading, hideGlobalLoading } from '../../global-loading';
 import { ModalBody } from '../../modal';
 import ModalBase from './modal-base';
 import { FileInput, FileDisplay } from '../../file-input';
+import SourceSelector from './source-selector';
+import CatalogSource from './catalog-source';
 
 class ModalProfile extends ModalBase {
   constructor (props) {
     super(props);
     this.initState(props);
+
+    this.onSourceChange = this.onSourceChange.bind(this);
+    this.onWbCatalogOptSelect = this.onWbCatalogOptSelect.bind(this);
   }
 
   componentWillReceiveProps (nextProps) {
@@ -38,8 +43,21 @@ class ModalProfile extends ModalBase {
     this.state = {
       source: props.sourceData.type || 'default',
       fileField,
-      fileToRemove: null
+      fileToRemove: null,
+      wbCatalogOption: ''
     };
+  }
+
+  // @common All source modals.
+  onSourceChange (event) {
+    const source = event.target.value;
+    this.setState({ source });
+  }
+
+  // @common All source modals.
+  onWbCatalogOptSelect (event) {
+    const wbCatalogOption = event.target.value;
+    this.setState({ wbCatalogOption });
   }
 
   onFileSelected (id, file) {
@@ -51,10 +69,6 @@ class ModalProfile extends ModalBase {
     fileField.uploaded = 0;
 
     this.setState({ fileField });
-  }
-
-  onSourceChange (event) {
-    this.setState({ source: event.target.value });
   }
 
   onFileRemove (id, event) {
@@ -199,28 +213,35 @@ class ModalProfile extends ModalBase {
     }
   }
 
+  renderSourceCatalog () {
+    return (
+      <CatalogSource
+        type='profile'
+        selectedOption={this.state.wbCatalogOption}
+        onChange={this.onWbCatalogOptSelect} />
+    );
+  }
+
   renderBody () {
+    const sourceOptions = [
+      {id: 'default', name: t('Default profile')},
+      {id: 'file', name: t('Custom upload')},
+      {id: 'wbcatalog', name: t('WB Catalog')}
+    ];
+
     return (
       <ModalBody>
         <form className='form' onSubmit={ e => { e.preventDefault(); this.allowSubmit() && this.onSubmit(); } }>
           <div className='form__group'>
             <label className='form__label'>Source</label>
-
-            <label className='form__option form__option--inline form__option--custom-radio'>
-              <input type='radio' name='source-type' id='default' value='default' checked={this.state.source === 'default'} onChange={this.onSourceChange.bind(this)} />
-              <span className='form__option__text'>{t('Default profile')}</span>
-              <span className='form__option__ui'></span>
-            </label>
-
-            <label className='form__option form__option--inline form__option--custom-radio'>
-              <input type='radio' name='source-type' id='file' value='file' checked={this.state.source === 'file'} onChange={this.onSourceChange.bind(this)} />
-              <span className='form__option__text'>{t('Custom upload')}</span>
-              <span className='form__option__ui'></span>
-            </label>
-
+            <SourceSelector
+              options={sourceOptions}
+              selectedOption={this.state.source}
+              onChange={this.onSourceChange} />
           </div>
           {this.state.source === 'file' ? this.renderSourceFile() : null}
           {this.state.source === 'default' && <p>{t('The default OSRM profile assumes OSM-style road network data. For a customized profile, download the {link} and upload it.', {link: <a href={`${config.api}/files/source-data/default.profile.lua`} title={t('Download default profile.lua file')} target='_blank'>{t('default file')}</a>})}</p>}
+          {this.state.source === 'wbcatalog' ? this.renderSourceCatalog() : null}
         </form>
       </ModalBody>
     );

@@ -12,6 +12,8 @@ import { FileInput, FileDisplay } from '../../file-input';
 
 import { ModalBody } from '../../modal';
 import ModalBase from './modal-base';
+import SourceSelector from './source-selector';
+import CatalogSource from './catalog-source';
 
 var labelLimit = limitHelper(20);
 
@@ -19,6 +21,9 @@ class ModalOrigins extends ModalBase {
   constructor (props) {
     super(props);
     this.initState(props);
+
+    this.onSourceChange = this.onSourceChange.bind(this);
+    this.onWbCatalogOptSelect = this.onWbCatalogOptSelect.bind(this);
   }
 
   componentWillReceiveProps (nextProps) {
@@ -38,8 +43,10 @@ class ModalOrigins extends ModalBase {
     }
 
     this.state = {
+      source: props.sourceData.type || 'file',
       fileField,
-      fileToRemove: null
+      fileToRemove: null,
+      wbCatalogOption: ''
     };
   }
 
@@ -54,6 +61,18 @@ class ModalOrigins extends ModalBase {
       }],
       availableInd: []
     };
+  }
+
+  // @common All source modals.
+  onSourceChange (event) {
+    const source = event.target.value;
+    this.setState({ source });
+  }
+
+  // @common All source modals.
+  onWbCatalogOptSelect (event) {
+    const wbCatalogOption = event.target.value;
+    this.setState({ wbCatalogOption });
   }
 
   onFileSelected (id, file, event) {
@@ -290,39 +309,69 @@ class ModalOrigins extends ModalBase {
     });
   }
 
-  renderBody () {
+  renderSourceFile () {
     let { fileField } = this.state;
     let hasFile = !!fileField.created_at;
 
     return (
+      <div>
+        {hasFile ? (
+          <FileDisplay
+            id='origins'
+            name='origins'
+            label={t('Source')}
+            value={fileField.name}
+            onRemoveClick={this.onFileRemove.bind(this, fileField.id)} />
+        ) : (
+          <FileInput
+            id='origins'
+            name='origins'
+            label={t('Source')}
+            value={fileField.file}
+            placeholder={t('Choose a file')}
+            onFileSelect={this.onFileSelected.bind(this, fileField.id)} >
+
+            {fileField.file !== null
+              ? <p className='form__help'>{Math.round(fileField.uploaded / (1024 * 1024))}MB / {Math.round(fileField.size / (1024 * 1024))}MB</p>
+              : null
+            }
+          </FileInput>
+        )}
+        {this.renderIndicators()}
+        <div className='form__extra-actions'>
+          <button type='button' className={c('fea-plus', {disabled: fileField.file === null})} title={t('Add new population estimate')} onClick={this.addIndicatorField.bind(this)}><span>{t('New population estimate')}</span></button>
+        </div>
+      </div>
+    );
+  }
+
+  renderSourceCatalog () {
+    return (
+      <CatalogSource
+        type='origins'
+        selectedOption={this.state.wbCatalogOption}
+        onChange={this.onWbCatalogOptSelect} />
+    );
+  }
+
+  renderBody () {
+    const sourceOptions = [
+      {id: 'file', name: t('Custom upload')},
+      {id: 'wbcatalog', name: t('WB Catalog')}
+    ];
+
+    return (
       <ModalBody>
         <form className='form' onSubmit={ e => { e.preventDefault(); this.allowSubmit() && this.onSubmit(); } }>
-          {hasFile ? (
-            <FileDisplay
-              id='origins'
-              name='origins'
-              label={t('Source')}
-              value={fileField.name}
-              onRemoveClick={this.onFileRemove.bind(this, fileField.id)} />
-          ) : (
-            <FileInput
-              id='origins'
-              name='origins'
-              label={t('Source')}
-              value={fileField.file}
-              placeholder={t('Choose a file')}
-              onFileSelect={this.onFileSelected.bind(this, fileField.id)} >
-
-              {fileField.file !== null
-                ? <p className='form__help'>{Math.round(fileField.uploaded / (1024 * 1024))}MB / {Math.round(fileField.size / (1024 * 1024))}MB</p>
-                : null
-              }
-            </FileInput>
-          )}
-          {this.renderIndicators()}
-          <div className='form__extra-actions'>
-            <button type='button' className={c('fea-plus', {disabled: fileField.file === null})} title={t('Add new population estimate')} onClick={this.addIndicatorField.bind(this)} disabled={fileField.file === null}><span>{t('New population estimate')}</span></button>
-          </div>
+          <div className='form__group'>
+            <label className='form__label'>Source</label>
+            <SourceSelector
+              options={sourceOptions}
+              selectedOption={this.state.source}
+              onChange={this.onSourceChange} />
+            </div>
+          {this.state.source === 'file' ? this.renderSourceFile() : null}
+          {this.state.source === 'wbcatalog' ? this.renderSourceCatalog() : null}
         </form>
       </ModalBody>
     );
