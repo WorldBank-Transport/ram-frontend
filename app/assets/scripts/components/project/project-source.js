@@ -83,6 +83,10 @@ class PorjectSourceData extends React.Component {
       return <p className='card__subtitle'>{t('Default settings')}</p>;
     }
 
+    if (this.props.sourceData.type === 'wbcatalog') {
+      return <p className='card__subtitle'>{t('Data from WB Catalog')}</p>;
+    }
+
     if (!this.props.sourceData.files.length) {
       return <p className='card__subtitle'>{t('No source files')}</p>;
     }
