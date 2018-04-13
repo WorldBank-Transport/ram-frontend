@@ -42,11 +42,16 @@ class ModalOrigins extends ModalBase {
       fileField = this.getBaseFileField();
     }
 
+    let wbCatalogOption = '';
+    if (props.sourceData.wbCatalogOptions) {
+      wbCatalogOption = props.sourceData.wbCatalogOptions[0].key;
+    }
+
     this.state = {
       source: props.sourceData.type || 'file',
       fileField,
       fileToRemove: null,
-      wbCatalogOption: ''
+      wbCatalogOption: wbCatalogOption
     };
   }
 

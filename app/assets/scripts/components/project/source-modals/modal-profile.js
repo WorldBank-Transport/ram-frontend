@@ -40,11 +40,16 @@ class ModalProfile extends ModalBase {
       };
     }
 
+    let wbCatalogOption = '';
+    if (props.sourceData.wbCatalogOptions) {
+      wbCatalogOption = props.sourceData.wbCatalogOptions[0].key;
+    }
+
     this.state = {
       source: props.sourceData.type || 'default',
       fileField,
       fileToRemove: null,
-      wbCatalogOption: ''
+      wbCatalogOption: wbCatalogOption
     };
   }
 
