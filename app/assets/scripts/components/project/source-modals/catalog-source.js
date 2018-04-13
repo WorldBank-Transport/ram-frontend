@@ -63,7 +63,7 @@ export class CatalogSource extends React.Component {
         catalogOptCache[this.props.type] = response;
         this.setState({options: response});
         // Of there are options simulate a change event.
-        response.length && this.props.onChange(response[0].key);
+        response.length && this.props.onChange(response[0].id.toString());
       });
     }
   }
@@ -116,6 +116,10 @@ export class CatalogPoiSource extends React.Component {
         hideGlobalLoading();
         catalogOptCache.poi = response;
         this.setState({options: response});
+        response.length && this.props.onChange([{
+          key: this.state.options[0].id.toString(),
+          label: ''
+        }]);
       });
     }
   }
@@ -123,7 +127,7 @@ export class CatalogPoiSource extends React.Component {
   addCatalogSource () {
     let source = _.clone(this.props.selectedOptions);
     source = source.concat({
-      key: this.state.options[0].key,
+      key: this.state.options[0].id.toString(),
       label: ''
     });
     this.props.onChange(source);
