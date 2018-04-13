@@ -50,7 +50,11 @@ export class CatalogSource extends React.Component {
   componentDidMount () {
     if (!this.state.options) {
       showGlobalLoading();
-      fetchJSON(`${config.api}/projects/setup-options`, {
+      const url = this.props.type === 'road-network'
+        ? `${config.api}/scenarios/wbcatalog-source-data`
+        : `${config.api}/projects/wbcatalog-source-data`;
+
+      fetchJSON(url, {
         method: 'POST',
         body: JSON.stringify({name: this.props.type})
       })
@@ -104,7 +108,7 @@ export class CatalogPoiSource extends React.Component {
   componentDidMount () {
     if (!this.state.options) {
       showGlobalLoading();
-      fetchJSON(`${config.api}/projects/setup-options`, {
+      fetchJSON(`${config.api}/scenarios/wbcatalog-source-data`, {
         method: 'POST',
         body: JSON.stringify({name: 'poi'})
       })
