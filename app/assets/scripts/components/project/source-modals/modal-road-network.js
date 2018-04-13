@@ -94,10 +94,13 @@ class ModalRoadNetwork extends ModalBase {
   allowSubmit () {
     if (this.state.source === 'osm') {
       return true;
+    } else if (this.state.source === 'file') {
+      // New file, one to remove or both.
+      return this.state.fileToRemove || this.state.fileField.file;
+    } else if (this.state.source === 'wbcatalog') {
+      return !!this.state.wbCatalogOption;
     }
-
-    // All files need a subtype and a file.
-    return this.state.fileToRemove || this.state.fileField.file;
+    return false;
   }
 
   onSubmit () {
@@ -157,11 +160,15 @@ class ModalRoadNetwork extends ModalBase {
       };
     }
 
-    if (this.state.source === 'osm') {
+    if (this.state.source === 'osm' || this.state.source === 'wbcatalog') {
       newFilesPromiseFn = () => {
         let formData = new FormData();
-        formData.append('source-type', 'osm');
+        formData.append('source-type', this.state.source);
         formData.append('source-name', 'road-network');
+        if (this.state.source === 'wbcatalog') {
+          // Using key for consistency reasons across all sources.
+          formData.append('wbcatalog-options[key]', this.state.wbCatalogOption);
+        }
 
         let { promise } = postFormdata(`${config.api}/projects/${this.props.projectId}/scenarios/${this.props.scenarioId}/source-data`, formData, () => {});
         // this.xhr = xhr;

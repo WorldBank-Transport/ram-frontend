@@ -84,8 +84,13 @@ class ModalAdminBounds extends ModalBase {
   }
 
   allowSubmit () {
-    // All files need a subtype and a file.
-    return this.state.fileToRemove || this.state.fileField.file;
+    if (this.state.source === 'file') {
+      // New file, one to remove or both.
+      return this.state.fileToRemove || this.state.fileField.file;
+    } else if (this.state.source === 'wbcatalog') {
+      return !!this.state.wbCatalogOption;
+    }
+    return false;
   }
 
   onSubmit () {
@@ -113,7 +118,7 @@ class ModalAdminBounds extends ModalBase {
 
     // Data to submit.
     let newFilesPromiseFn = () => Promise.resolve();
-    if (this.state.fileField.file) {
+    if (this.state.source === 'file' && this.state.fileField.file) {
       newFilesPromiseFn = () => {
         let formData = new FormData();
         formData.append('source-type', 'file');
@@ -136,6 +141,28 @@ class ModalAdminBounds extends ModalBase {
           })
           .catch(err => {
             let msg = t('An error occurred while uploading admin boundaries file: {message}', {
+              message: err.message
+            });
+            this.props._showAlert('danger', <p>{msg}</p>, true);
+            // Rethrow to stop chain.
+            throw err;
+          });
+      };
+    }
+
+    if (this.state.source === 'wbcatalog') {
+      newFilesPromiseFn = () => {
+        let formData = new FormData();
+        formData.append('source-type', this.state.source);
+        formData.append('source-name', 'admin-bounds');
+        // Using key for consistency reasons across all sources.
+        formData.append('wbcatalog-options[key]', this.state.wbCatalogOption);
+
+        let { promise } = postFormdata(`${config.api}/projects/${this.props.projectId}/source-data`, formData, () => {});
+        // this.xhr = xhr;
+        return promise
+          .catch(err => {
+            let msg = t('An error occurred while saving the admin boundaries source: {message}', {
               message: err.message
             });
             this.props._showAlert('danger', <p>{msg}</p>, true);

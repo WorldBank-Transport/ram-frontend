@@ -172,20 +172,25 @@ class ModalOrigins extends ModalBase {
   }
 
   allowSubmit () {
-    if (this.state.fileToRemove && !this.state.fileField.file) {
-      return true;
-    }
-    // Are all attributes valid?
-    let validAttr = this.state.fileField.indicators.every(o => o.key !== '' && o.label !== '');
-    // Are all lengths valid?
-    let validLength = this.state.fileField.indicators.every(o => labelLimit(o.label.length).isOk());
-    // Check for doubles.
-    let doubles = _(this.state.fileField.indicators)
-      .groupBy('key')
-      .values()
-      .some(o => o.length > 1);
+    if (this.state.source === 'file') {
+      if (this.state.fileToRemove && !this.state.fileField.file) {
+        return true;
+      }
+      // Are all attributes valid?
+      let validAttr = this.state.fileField.indicators.every(o => o.key !== '' && o.label !== '');
+      // Are all lengths valid?
+      let validLength = this.state.fileField.indicators.every(o => labelLimit(o.label.length).isOk());
+      // Check for doubles.
+      let doubles = _(this.state.fileField.indicators)
+        .groupBy('key')
+        .values()
+        .some(o => o.length > 1);
 
-    return validAttr && validLength && !doubles;
+      return validAttr && validLength && !doubles;
+    } else if (this.state.source === 'wbcatalog') {
+      return !!this.state.wbCatalogOption;
+    }
+    return false;
   }
 
   onSubmit () {
@@ -213,7 +218,7 @@ class ModalOrigins extends ModalBase {
 
     // Data to submit.
     let newFilesPromiseFn = () => Promise.resolve();
-    if (this.state.fileField.file || this.state.fileField.created_at) {
+    if (this.state.source === 'file' && (this.state.fileField.file || this.state.fileField.created_at)) {
       newFilesPromiseFn = () => {
         let formData = new FormData();
         formData.append('source-type', 'file');
@@ -251,6 +256,28 @@ class ModalOrigins extends ModalBase {
           })
           .catch(err => {
             let msg = t('An error occurred while uploading a population file: {message}', {
+              message: err.message
+            });
+            this.props._showAlert('danger', <p>{msg}</p>, true);
+            // Rethrow to stop chain.
+            throw err;
+          });
+      };
+    }
+
+    if (this.state.source === 'wbcatalog') {
+      newFilesPromiseFn = () => {
+        let formData = new FormData();
+        formData.append('source-type', this.state.source);
+        formData.append('source-name', 'origins');
+        // Using key for consistency reasons across all sources.
+        formData.append('wbcatalog-options[key]', this.state.wbCatalogOption);
+
+        let { promise } = postFormdata(`${config.api}/projects/${this.props.projectId}/source-data`, formData, () => {});
+        // this.xhr = xhr;
+        return promise
+          .catch(err => {
+            let msg = t('An error occurred while saving the population source: {message}', {
               message: err.message
             });
             this.props._showAlert('danger', <p>{msg}</p>, true);

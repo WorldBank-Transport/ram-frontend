@@ -86,10 +86,13 @@ class ModalProfile extends ModalBase {
   allowSubmit () {
     if (this.state.source === 'default') {
       return true;
+    } else if (this.state.source === 'file') {
+      // New file, one to remove or both.
+      return this.state.fileToRemove || this.state.fileField.file;
+    } else if (this.state.source === 'wbcatalog') {
+      return !!this.state.wbCatalogOption;
     }
-
-    // All files need a subtype and a file.
-    return this.state.fileToRemove || this.state.fileField.file;
+    return false;
   }
 
   onSubmit () {
@@ -149,11 +152,15 @@ class ModalProfile extends ModalBase {
       };
     }
 
-    if (this.state.source === 'default') {
+    if (this.state.source === 'default' || this.state.source === 'wbcatalog') {
       newFilesPromiseFn = () => {
         let formData = new FormData();
-        formData.append('source-type', 'default');
+        formData.append('source-type', this.state.source);
         formData.append('source-name', 'profile');
+        if (this.state.source === 'wbcatalog') {
+          // Using key for consistency reasons across all sources.
+          formData.append('wbcatalog-options[key]', this.state.wbCatalogOption);
+        }
 
         let { promise } = postFormdata(`${config.api}/projects/${this.props.projectId}/source-data`, formData, () => {});
         // this.xhr = xhr;

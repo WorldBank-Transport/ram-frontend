@@ -18,6 +18,7 @@ import { CatalogPoiSource } from './catalog-source';
 
 const WBC_LABEL_LIMIT = 20;
 var subtypeLimit = limitHelper(15);
+var wbcLabelLimit = limitHelper(WBC_LABEL_LIMIT);
 
 class ModalPoi extends ModalBase {
   constructor (props) {
@@ -130,7 +131,7 @@ class ModalPoi extends ModalBase {
   allowSubmit () {
     if (this.state.source === 'osm') {
       return this.state.selectedPoiTypes.length > 0;
-    } else {
+    } else if (this.state.source === 'file') {
       // Is there just one new file?
       // The last new field input can't be removed so it must be checked
       // in separate.
@@ -155,7 +156,21 @@ class ModalPoi extends ModalBase {
 
       // All files need a subtype and a file.
       return this.state.filesToRemove.length || this.state.fileFields.every(f => f.created_at || (f.file && f.subtype && subtypeLimit(f.subtype.length).isOk()));
+    } else if (this.state.source === 'wbcatalog') {
+      // Are all keys valid?
+      let validAttr = this.state.wbCatalogOptions.every(o => o.key !== '' && o.label !== '');
+      // Are all lengths valid?
+      let validLength = this.state.wbCatalogOptions.every(o => wbcLabelLimit(o.label.length).isOk());
+      // Check for doubles.
+      let doubles = _(this.state.wbCatalogOptions)
+        .groupBy('key')
+        .values()
+        .some(o => o.length > 1);
+
+      return validAttr && validLength && !doubles;
     }
+
+    return false;
   }
 
   onSubmit () {
@@ -215,13 +230,22 @@ class ModalPoi extends ModalBase {
             throw err;
           });
       });
-    } else if (this.state.source === 'osm') {
+    } else if (this.state.source === 'osm' || this.state.source === 'wbcatalog') {
       let formData = new FormData();
-      formData.append('source-type', 'osm');
+      formData.append('source-type', this.state.source);
       formData.append('source-name', 'poi');
-      this.state.selectedPoiTypes.forEach(o => {
-        formData.append('osmPoiTypes', o);
-      });
+      if (this.state.source === 'osm') {
+        this.state.selectedPoiTypes.forEach(o => {
+          formData.append('osmPoiTypes', o);
+        });
+      }
+      if (this.state.source === 'wbcatalog') {
+        // Submit keys and labels as arrays. The order is guaranteed.
+        this.state.wbCatalogOptions.forEach(o => {
+          formData.append('wbcatalog-options[key]', o.key);
+          formData.append('wbcatalog-options[label]', o.label);
+        });
+      }
 
       let { promise } = postFormdata(`${config.api}/projects/${this.props.projectId}/scenarios/${this.props.scenarioId}/source-data`, formData, () => {});
       // this.xhr = xhr;
