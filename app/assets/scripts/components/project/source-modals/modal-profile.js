@@ -11,7 +11,7 @@ import { ModalBody } from '../../modal';
 import ModalBase from './modal-base';
 import { FileInput, FileDisplay } from '../../file-input';
 import SourceSelector from './source-selector';
-import CatalogSource from './catalog-source';
+import { CatalogSource } from './catalog-source';
 
 class ModalProfile extends ModalBase {
   constructor (props) {
@@ -55,9 +55,8 @@ class ModalProfile extends ModalBase {
   }
 
   // @common All source modals.
-  onWbCatalogOptSelect (event) {
-    const wbCatalogOption = event.target.value;
-    this.setState({ wbCatalogOption });
+  onWbCatalogOptSelect (option) {
+    this.setState({ wbCatalogOption: option });
   }
 
   onFileSelected (id, file) {
