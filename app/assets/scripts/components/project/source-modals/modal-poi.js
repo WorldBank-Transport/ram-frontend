@@ -16,6 +16,7 @@ import ModalBase from './modal-base';
 import SourceSelector from './source-selector';
 import { CatalogPoiSource } from './catalog-source';
 
+const WBC_LABEL_LIMIT = 20;
 var subtypeLimit = limitHelper(15);
 
 class ModalPoi extends ModalBase {
@@ -42,7 +43,7 @@ class ModalPoi extends ModalBase {
       selectedPoiTypes,
       fileFields,
       filesToRemove: [],
-      wbCatalog: [
+      wbCatalogOptions: [
         {key: '', label: ''}
       ]
     };
@@ -81,7 +82,7 @@ class ModalPoi extends ModalBase {
 
   // @common All source modals.
   onWbCatalogOptSelect (options) {
-    this.setState({ wbCatalog: options });
+    this.setState({ wbCatalogOptions: options });
   }
 
   onFileSelected (id, file, event) {
@@ -350,7 +351,8 @@ class ModalPoi extends ModalBase {
   renderSourceCatalog () {
     return (
       <CatalogPoiSource
-        selectedOptions={this.state.wbCatalog}
+        selectedOptions={this.state.wbCatalogOptions}
+        labelLimitSize={WBC_LABEL_LIMIT}
         onChange={this.onWbCatalogOptSelect} />
     );
   }

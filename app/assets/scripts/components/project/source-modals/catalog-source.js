@@ -9,8 +9,6 @@ import { limitHelper } from '../../../utils/utils';
 import { fetchJSON } from '../../../actions';
 import { showGlobalLoading, hideGlobalLoading } from '../../global-loading';
 
-let labelLimit = limitHelper(20);
-
 // Cache for the catalog options.
 // This could be moved to the global state and passed along using selectors, but
 // since this information is only going to be used by this component is
@@ -161,8 +159,10 @@ export class CatalogPoiSource extends React.Component {
       return <p>{t('There are options available in the World Bank Catalog.')}</p>
     }
 
+    const labelLimit = limitHelper(this.props.labelLimitSize);
+
     return selectedOptions.map((o, i) => {
-      let limit = labelLimit(o.label.length);
+      const limit = labelLimit(o.label.length);
       return (
         <fieldset className='form__fieldset' key={`${o.key}-${i}`}>
           <div className='form__inner-header'>
@@ -207,6 +207,7 @@ export class CatalogPoiSource extends React.Component {
 if (config.environment !== 'production') {
   CatalogPoiSource.propTypes = {
     selectedOptions: T.array,
+    labelLimitSize: T.number,
     onChange: T.func
   };
 }
