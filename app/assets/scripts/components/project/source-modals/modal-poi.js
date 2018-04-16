@@ -44,7 +44,9 @@ class ModalPoi extends ModalBase {
       selectedPoiTypes,
       fileFields,
       filesToRemove: [],
-      wbCatalogOptions: props.sourceData.wbCatalogOptions || [{key: '', label: ''}]
+      wbCatalogOptions: props.sourceData.wbCatalogOptions.length
+        ? props.sourceData.wbCatalogOptions
+        : [{key: '', label: ''}]
     };
   }
 

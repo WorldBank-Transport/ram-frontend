@@ -43,7 +43,7 @@ class ModalOrigins extends ModalBase {
     }
 
     let wbCatalogOption = '';
-    if (props.sourceData.wbCatalogOptions) {
+    if (props.sourceData.wbCatalogOptions && props.sourceData.wbCatalogOptions.length) {
       wbCatalogOption = props.sourceData.wbCatalogOptions[0].key;
     }
 
