@@ -46,26 +46,30 @@ export class CatalogSource extends React.Component {
   }
 
   componentDidMount () {
+    let resolver;
     if (!this.state.options) {
       showGlobalLoading();
       const url = this.props.type === 'road-network'
         ? `${config.api}/scenarios/wbcatalog-source-data`
         : `${config.api}/projects/wbcatalog-source-data`;
 
-      fetchJSON(url, {
+      resolver = fetchJSON(url, {
         method: 'POST',
         body: JSON.stringify({name: this.props.type})
       })
-      .then(response => {
-        hideGlobalLoading();
-        catalogOptCache[this.props.type] = response;
-        this.setState({options: response});
-        if (!this.props.selectedOption && response.length) {
-          // If there are options simulate a change event.
-          this.props.onChange(response[0].id.toString());
-        }
-      });
+      .then((response) => { hideGlobalLoading(); return response; });
+    } else {
+      resolver = Promise.resolve(this.state.options);
     }
+
+    resolver.then(response => {
+      catalogOptCache[this.props.type] = response;
+      this.setState({options: response});
+      if (!this.props.selectedOption && response.length) {
+        // If there are options simulate a change event.
+        this.props.onChange(response[0].id.toString());
+      }
+    });
   }
 
   render () {
@@ -75,7 +79,7 @@ export class CatalogSource extends React.Component {
     if (!options) return null; // Is loading.
 
     if (!options.length) {
-      return <p>{t('There are options available in the World Bank Catalog.')}</p>
+      return <p>{t('There are options available in the World Bank Catalog.')}</p>;
     }
 
     return (
@@ -106,25 +110,29 @@ export class CatalogPoiSource extends React.Component {
   }
 
   componentDidMount () {
+    let resolver;
     if (!this.state.options) {
       showGlobalLoading();
-      fetchJSON(`${config.api}/scenarios/wbcatalog-source-data`, {
+      resolver = fetchJSON(`${config.api}/scenarios/wbcatalog-source-data`, {
         method: 'POST',
         body: JSON.stringify({name: 'poi'})
       })
-      .then(response => {
-        hideGlobalLoading();
-        catalogOptCache.poi = response;
-        this.setState({options: response});
-        if (!this.props.selectedOptions.length && response.length) {
-          // If there are options simulate a change event.
-          this.props.onChange([{
-            key: this.state.options[0].id.toString(),
-            label: ''
-          }]);
-        }
-      });
+      .then((response) => { hideGlobalLoading(); return response; });
+    } else {
+      resolver = Promise.resolve(this.state.options);
     }
+
+    resolver.then(response => {
+      catalogOptCache.poi = response;
+      this.setState({options: response});
+      if (!this.props.selectedOptions[0].key && response.length) {
+        // If there are options simulate a change event.
+        this.props.onChange([{
+          key: this.state.options[0].id.toString(),
+          label: ''
+        }]);
+      }
+    });
   }
 
   addCatalogSource () {
@@ -161,7 +169,7 @@ export class CatalogPoiSource extends React.Component {
     if (!options) return null; // Is loading.
 
     if (!options.length) {
-      return <p>{t('There are options available in the World Bank Catalog.')}</p>
+      return <p>{t('There are options available in the World Bank Catalog.')}</p>;
     }
 
     const labelLimit = limitHelper(this.props.labelLimitSize);
