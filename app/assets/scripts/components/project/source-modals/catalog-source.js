@@ -20,7 +20,7 @@ const CatalogSourceSelect = ({options, selectedOption, onChange, label}) => {
     <div className='form__group'>
       <label className={c('form__label', {'visually-hidden': !label})} htmlFor='wbc-profile'>{label || t('Catalog option')}</label>
       <select id='wbc-profile' name='wbc-profile' className='form__control' value={selectedOption} onChange={(event) => onChange(event.target.value)}>
-        {options.map(option => <option key={`prof-${option.id}`} value={option.id}>{option.value}</option>)}
+        {options.map(option => <option key={`res-${option.resource_id}`} value={option.resource_id}>{option.name}</option>)}
       </select>
     </div>
   );
@@ -55,7 +55,7 @@ export class CatalogSource extends React.Component {
 
       resolver = fetchJSON(url, {
         method: 'POST',
-        body: JSON.stringify({name: this.props.type})
+        body: JSON.stringify({sourceName: this.props.type})
       })
       .then((response) => { hideGlobalLoading(); return response; });
     } else {
@@ -67,14 +67,23 @@ export class CatalogSource extends React.Component {
       this.setState({options: response});
       if (!this.props.selectedOption && response.length) {
         // If there are options simulate a change event.
-        this.props.onChange(response[0].id.toString());
+        this.props.onChange(response[0].resource_id.toString());
       }
+    })
+    .catch(err => {
+      console.log('err', err);
+      hideGlobalLoading();
+      this.setState({error: err});
     });
   }
 
   render () {
     const { selectedOption } = this.props;
     const options = this.state.options;
+
+    if (this.state.error) {
+      return <p>{t('An error occurred getting data from World Bank Catalog.')}</p>;
+    }
 
     if (!options) return null; // Is loading.
 
@@ -115,7 +124,7 @@ export class CatalogPoiSource extends React.Component {
       showGlobalLoading();
       resolver = fetchJSON(`${config.api}/scenarios/wbcatalog-source-data`, {
         method: 'POST',
-        body: JSON.stringify({name: 'poi'})
+        body: JSON.stringify({sourceName: 'poi'})
       })
       .then((response) => { hideGlobalLoading(); return response; });
     } else {
@@ -128,17 +137,21 @@ export class CatalogPoiSource extends React.Component {
       if (!this.props.selectedOptions[0].key && response.length) {
         // If there are options simulate a change event.
         this.props.onChange([{
-          key: this.state.options[0].id.toString(),
+          key: this.state.options[0].resource_id.toString(),
           label: ''
         }]);
       }
+    })
+    .catch(err => {
+      hideGlobalLoading();
+      this.setState({error: err});
     });
   }
 
   addCatalogSource () {
     let source = _.clone(this.props.selectedOptions);
     source = source.concat({
-      key: this.state.options[0].id.toString(),
+      key: this.state.options[0].resource_id.toString(),
       label: ''
     });
     this.props.onChange(source);
@@ -165,6 +178,10 @@ export class CatalogPoiSource extends React.Component {
   renderCatalogSources () {
     const { selectedOptions } = this.props;
     const options = this.state.options;
+
+    if (this.state.error) {
+      return <p>{t('An error occurred getting data from World Bank Catalog.')}</p>;
+    }
 
     if (!options) return null; // Is loading.
 
