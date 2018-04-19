@@ -313,6 +313,7 @@ const ScenarioCreateModal = React.createClass({
             <div className='form__group'>
               <label className='form__label'>{t('Road network')}</label>
               <SourceSelector
+                displayCols={2}
                 options={sourceOptions}
                 selectedOption={this.state.data.roadNetworkSource}
                 onChange={this.onFieldChange.bind(null, 'roadNetworkSource')} />
