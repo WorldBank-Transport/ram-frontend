@@ -16,4 +16,8 @@ if (process.env.DS_ENV === 'offline') {
   config = require('./config/offline');
 }
 
+config.api = process.env.API || config.api;
+config.iDEditor = process.env.IDEDITOR || config.iDEditor;
+config.mbtoken = process.env.MBTOKEN || config.mbtoken;
+
 module.exports = config;
