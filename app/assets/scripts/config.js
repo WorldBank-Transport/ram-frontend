@@ -1,34 +1,19 @@
 'use strict';
-var defaultsDeep = require('lodash').defaultsDeep;
-/*
- * App configuration.
- *
- * Uses settings in config/production.js, with any properties set by
- * config/staging.js or config/local.js overriding them depending upon the
- * environment.
- *
- * This file should not be modified.  Instead, modify one of:
- *
- *  - config/production.js
- *      Production settings (base).
- *  - config/staging.js
- *      Overrides to production if ENV is staging.
- *  - config/local.js
- *      Overrides if local.js exists.
- *      This last file is gitignored, so you can safely change it without
- *      polluting the repo.
- */
+const _ = require('lodash');
 
-var configurations = require('./config/*.js', {mode: 'hash'});
-var config = configurations.local || {};
+// Empty template as base.
+var config = require('./config/base');
 
+// local config overrides when present.
+try {
+  _.merge(config, require('./config/local'));
+} catch (e) {
+  // Local file is not mandatory.
+}
+
+// In an offline setup, the other config files are ignored
 if (process.env.DS_ENV === 'offline') {
-  config = configurations.offline;
-} else {
-  if (process.env.DS_ENV === 'staging') {
-    defaultsDeep(config, configurations.staging);
-  }
-  defaultsDeep(config, configurations.production);
+  config = require('./config/offline');
 }
 
 module.exports = config;
