@@ -28,27 +28,30 @@ yarn install
 ### Usage
 
 #### Config files
-All the config files can be found in `app/assets/scripts/config`.
-After installing the projects there will be 3 main files:
-  - `local.js` - Used only for local development. On production this file should not exist or be empty.
-  - `staging.js`
-  - `production.js`
+The config files can be found in `app/assets/scripts/config`. After installing the project, there will be an empty `local.js` that you can use to set the config. This file should not be committed.
 
-The `production.js` file serves as base and the other 2 will override it as needed:
-  - `staging.js` will be loaded whenever the env variable `DS_ENV` is set to staging.
-  - `local.js` will be loaded if it exists.
+The configuration is overridable by environment variables, expressed between []:
 
-The following options must be set: (The used file will depend on the context):
-  - `api` - The address for the rra api
+- `api` - The address for the API. [API]
+- `iDEditor` - The address of the iDEditor. Defaults to the `master` branch of the [RAM fork of iD](https://github.com/WorldBank-Transport/ram-id), hosted on GH Pages. (Default: https://id.ruralaccess.info). [IDEDITOR]
+- `mbtoken` - The Mapbox Token to load map tiles from. [MBTOKEN]
+- `auth` - The configuration for optional authentication with Auth0. By default, no 
+authentication is set (Default: {})
+- `auth.domain` - See instructions below [AUTH_DOMAIN]
+- `auth.clientID` - See instructions below [AUTH_CLIENTID]
+- `auth.redirectUri` - See instructions below [AUTH_REDIRECTURI]
+- `auth.audience` - See instructions below [AUTH_AUDIENCE]
 
 Example:
 ```
 module.exports = {
-  api: 'http://localhost:4000'
+  api: 'http://localhost:4000',
+  idEditor: 'https://id.ruralaccess.info',
+  mbtoken: 'asfd23rlmksjdf023rnnsafd',
+  auth: {}
 };
 ```
 
-#### Authentication with Auth0
 For authentication using Auth0, you must setup a client on Auth0 and get your client key. The API must also be setup as in the API section on Auth0.
 
 The config should have the `auth` key with the following settings:

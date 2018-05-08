@@ -5,5 +5,6 @@
 module.exports = {
   api: null,
   iDEditor: 'http://id.ruralaccess.info',
-  mbtoken: null
+  mbtoken: null,
+  auth: {}
 };
