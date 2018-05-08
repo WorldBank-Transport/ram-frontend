@@ -1,4 +1,0 @@
-module.exports = {
-  api: 'http://localhost:4000',
-  iDEditor: 'http://localhost:8080'
-};
