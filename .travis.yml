@@ -20,17 +20,11 @@ addons:
     packages:
     - g++-4.8
 
-cache:
-  apt: true
-  yarn: true
-  directories:
-  - node_modules
+# Skip the installation step
+install: true
 
 services:
   - docker
-
-before_script:
-- yarn test
 
 deploy:
 - provider: script

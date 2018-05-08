@@ -1,0 +1,6 @@
+.git
+.tmp
+.eslintrc
+.travis.yml
+.gitignore
+.gitattributes
