@@ -490,14 +490,14 @@ class AccessibilityTable extends React.PureComponent {
   renderAccessibilityTableRow (poi, aa) {
     if (!aa.data.length) {
       return (
-        <tr key={aa.name}>
+        <tr key={aa.id}>
           <th>{aa.name}</th>
           <td className='table__empty-cell' colSpan={poi.analysisMins.length}>{t('No data.')}</td>
         </tr>
       );
     }
     return (
-      <tr key={aa.name}>
+      <tr key={aa.id}>
         <th>{aa.name}</th>
         {aa.data.map((o, i) => {
           let content = null;
