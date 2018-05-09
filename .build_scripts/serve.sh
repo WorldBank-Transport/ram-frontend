@@ -20,6 +20,8 @@ mv ./dist/* /usr/share/nginx/html
 # Make sure nginx stays up once the container is done
 echo "daemon off;" >> /etc/nginx/nginx.conf || true
 
+echo 'Starting nginx, access the RAM frontend through your browser.'
+
 # Start nginx
 nginx
 

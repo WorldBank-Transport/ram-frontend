@@ -4,3 +4,5 @@
 .travis.yml
 .gitignore
 .gitattributes
+node_modules
+dist

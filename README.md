@@ -80,3 +80,19 @@ yarn build
 ```
 This will package the app and place all the contents in the `dist` directory.
 The app can then be run by any web server.
+
+## Docker
+The RAM frontend is also available in a [Docker container](https://hub.docker.com/r/wbtransport/rra-frontend/). This container builds the site and serves the interface through nginx. [Environment variables](#config-files) will be picked up when the container is run:
+
+``` yml
+version: '3'
+services:
+  ram-frontend:
+    image: wbtransport/ram-frontend
+    environment:
+      API: 'https://new.api.io'
+    ports:
+      - 8080:80
+```
+
+To run the full RAM stack in Docker, you can use the `docker-compose.yml` file that's available in the [RAM backend repo](https://github.com/WorldBank-Transport/ram-backend/blob/develop/docker-compose.yml).
