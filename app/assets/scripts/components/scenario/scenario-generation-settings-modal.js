@@ -191,7 +191,7 @@ const ScenarioGenSettingsModal = React.createClass({
         </ModalBody>
         <ModalFooter>
           <button className='mfa-xmark' type='button' onClick={this.onClose}><span>{t('Cancel')}</span></button>
-          <button className={c('mfa-tick', {disabled: !isAAselected})} type='submit' onClick={this.onSubmit}><span>{t('Analyze')}</span></button>
+          <button className={c('mfa-tick', {disabled: !isAAselected})} type='submit' onClick={this.onSubmit} disabled={!isAAselected}><span>{t('Analyze')}</span></button>
         </ModalFooter>
       </Modal>
     );
