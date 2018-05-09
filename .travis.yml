@@ -20,34 +20,13 @@ addons:
     packages:
     - g++-4.8
 
-cache:
-  apt: true
-  yarn: true
-  directories:
-  - node_modules
+# Skip the installation step
+install: true
 
 services:
   - docker
 
-before_script:
-- yarn test
-
-script:
-- yarn run build
-
 deploy:
-- provider: s3
-  access_key_id: AKIAILREAKXPJOWAXTBQ
-  secret_access_key:
-    secure: tIcdJM91mqbv7zQCUSRNkT8OEViNBLltR6StE3QyOkUrnmMLZZ0uliSwxztuaM/BxnM5g3M4mO+MOL674HEGSyJueKlaPfFBdJAU7f3amphWdCI8KnN/SToOF9UMI3aKUFTDuYAefkD5mXCiyDehbboLCTj/USOMBGkz7McVCeNHQUy3EwtgJ2cRE6s6b22nQ+NkeTmzwXJKjYgyYh4mf+wuIJ3mVuXeUpl+pzNObNaWd4ncvgYlHGabVard6zVvqp/rGbmf/JiMZeziuxJSlFn6Hd9QM/fc2KsWy/SUYlHue4AODu33EjUwS6Hhgiw92Lf3aAq73qM2CE8WDxQBgajIiCoP2PYToMRvVneLyQ0oq3briLbRbBXdIzpB7oihxvablqUoIoNymhap96xoU+YXsW6FE1mGb6o8inGSvfR/qGykRbhB4KwRschzH+SoWp6AGucKt2i7coEDIhOcnaiq3Lphuak8uoeT4bfceMU2W/GwaM6fUk3IGyG0XsJmamXgotKcyzY4n4FPqC4riuNwOSw/OuURL17va5MWAHumQ5HCJ+EZjI3470CRcTI7+Z1AZDg7SZuqqffsRQ8Zdoyjl6Ek+/cYS3jRDl8NHETFe7p/prD1I4vcvUcB34mB0IVCrO98codSNzr+Q1gNi2xBI1FcuPaJRMMI2d/ztS0=
-  bucket: staging.ruralaccess.info
-  acl: public_read
-  local-dir: "./dist/"
-  skip-cleanup: true
-  region: us-east-1
-  on:
-    repo: WorldBank-Transport/ram-frontend
-    branch: "${STAGING_BRANCH}"
 - provider: script
   skip_cleanup: true
   script: ".build_scripts/deploy.sh"

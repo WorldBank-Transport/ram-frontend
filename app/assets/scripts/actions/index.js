@@ -1,5 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import { stringify as buildAPIQS } from 'qs';
+import { isEmpty } from 'lodash';
 
 import config from '../config';
 
@@ -449,7 +450,7 @@ function fetchDispatchFactory (url, options, requestFn, receiveFn) {
 }
 
 export function fetchJSON (url, options) {
-  if (config.auth) {
+  if (!isEmpty(config.auth)) {
     // Get the access token from storage
     const accessToken = localStorage.getItem('access_token');
     if (!accessToken) {
