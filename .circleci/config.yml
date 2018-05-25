@@ -22,6 +22,22 @@ jobs:
           fingerprints:
             - "ed:c1:81:ac:c3:74:2f:61:0c:8e:40:fd:7a:f2:7e:07"
 
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+      - run: yarn install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+
+      - run: yarn lint
+
       - run:
           name: Build Docker image for dev version
           command: |
