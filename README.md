@@ -82,7 +82,7 @@ This will package the app and place all the contents in the `dist` directory.
 The app can then be run by any web server.
 
 ## Docker
-The RAM frontend is also available in a [Docker container](https://hub.docker.com/r/wbtransport/rra-frontend/). This container builds the site and serves the interface through nginx. [Environment variables](#config-files) will be picked up when the container is run:
+The RAM frontend is also available in a [Docker container](https://hub.docker.com/r/wbtransport/ram-frontend/). This container builds the site and serves the interface through nginx. [Environment variables](#config-files) will be picked up when the container is run:
 
 ``` yml
 version: '3'
