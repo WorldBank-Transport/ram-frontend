@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: node:8
+      - image: circleci/node:8
 
     working_directory: ~/repo
 
@@ -17,38 +17,39 @@ jobs:
 
     steps:
       - checkout
+      - setup_remote_docker
 
       - add_ssh_keys:
           fingerprints:
             - "ed:c1:81:ac:c3:74:2f:61:0c:8e:40:fd:7a:f2:7e:07"
 
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+      # # Download and cache dependencies
+      # - restore_cache:
+      #     keys:
+      #     - v1-dependencies-{{ checksum "package.json" }}
+      #     # fallback to using the latest cache if no exact match is found
+      #     - v1-dependencies-
 
       - run: yarn install
 
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+      # - save_cache:
+      #     paths:
+      #       - node_modules
+      #     key: v1-dependencies-{{ checksum "package.json" }}
 
       - run: yarn lint
 
       - run:
           name: Build Docker image for dev version
           command: |
-            if [ "${CIRCLE_BRANCH}" == "${STAGING_BRANCH}" ]; then
+            if [ ${CIRCLE_BRANCH} == ${STAGING_BRANCH} ]; then
               echo "Building Docker image"
-              docker build -t "${DOCKER_IMAGE}" .
+              docker build -t ${DOCKER_IMAGE} .
               docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWD
 
               echo "Pushing image to Docker Hub as :latest-dev"
-              docker tag "${$DOCKER_IMAGE}" "${DOCKER_ORG}"/"${DOCKER_IMAGE}":latest-dev
-              docker push "${DOCKER_ORG}"/"${DOCKER_IMAGE}":latest-dev
+              docker tag ${DOCKER_IMAGE} ${DOCKER_ORG}/${DOCKER_IMAGE}:latest-dev
+              docker push ${DOCKER_ORG}/${DOCKER_IMAGE}:latest-dev
             else
               echo "This is not the "${STAGING_BRANCH}" branch. No need to build and push latest-dev."
             fi
@@ -61,21 +62,21 @@ jobs:
               
               # Attempt to add a git tag based on version in package.json. If
               # the tag already exists, git will fail and stop the build.
-              if ! git tag "${VERSION}" master
+              if ! git tag ${VERSION} master
               then
                 echo >&2 "Failed to tag a new release, skipping build. Did you update the version in package.json?"
                 exit 1
               else
                 # Push tag to Github
-                git push origin "${VERSION}"
+                git push origin ${VERSION}
 
                 echo Building Docker image
-                docker build -t "${DOCKER_IMAGE}" .
+                docker build -t ${DOCKER_IMAGE} .
                 docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWD
 
-                echo Pushing image to Docker Hub with "${VERSION}" tag
-                docker tag "${$DOCKER_IMAGE}" "${DOCKER_ORG}"/"${DOCKER_IMAGE}":"${VERSION}"
-                docker push "${DOCKER_ORG}"/"${DOCKER_IMAGE}":"${VERSION}"
+                echo Pushing image to Docker Hub with ${VERSION} tag
+                docker tag ${DOCKER_IMAGE} ${DOCKER_ORG}/${DOCKER_IMAGE}:${VERSION}
+                docker push ${DOCKER_ORG}/${DOCKER_IMAGE}:${VERSION}
               fi
             else
               echo "This is not the "${PRODUCTION_BRANCH}" branch. No need to build and push new version."
