@@ -1,10 +1,11 @@
 import auth0 from 'auth0-js';
 import config from '../config.js';
+import { isEmpty } from 'lodash';
 import { logoutSuccess } from '../actions';
 
 export default class Auth {
   constructor (store) {
-    if (config.auth) {
+    if (!isEmpty(config.auth)) {
       let {domain, clientID, redirectUri, audience} = config.auth;
 
       this.auth0 = new auth0.WebAuth({

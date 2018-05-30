@@ -246,7 +246,8 @@ gulp.task('images', function () {
     .pipe($.cache($.imagemin([
       $.imagemin.gifsicle({interlaced: true}),
       $.imagemin.jpegtran({progressive: true}),
-      $.imagemin.optipng({optimizationLevel: 5}),
+      // Temporarily disabled to avoid issues running this in Docker
+      // $.imagemin.optipng({optimizationLevel: 5}),
       // don't remove IDs from SVGs, they are often used
       // as hooks for embedding and styling
       $.imagemin.svgo({plugins: [{cleanupIDs: false}]})
