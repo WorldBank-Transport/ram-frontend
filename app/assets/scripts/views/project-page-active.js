@@ -31,6 +31,7 @@ import ProjectFormModal from '../components/project/project-form-modal';
 import ProjectHeaderActions from '../components/project/project-header-actions';
 import ScenarioCreateModal from '../components/scenario/scenario-create-modal';
 import ScenarioDeleteAction from '../components/scenario/scenario-delete-action';
+import ProjectExportModal from '../components/project/project-export-modal';
 import FatalError from '../components/fatal-error';
 import PorjectSourceData from '../components/project/project-source';
 
@@ -398,6 +399,10 @@ const ProjectPageActive = React.createClass({
           startSubmitScenario={this.props._startSubmitScenario}
           finishSubmitScenario={this.props._finishSubmitScenario}
           resetForm={this.props._resetScenarioFrom}
+        />
+
+        <ProjectExportModal
+          revealed={true}
         />
 
         <ReactTooltip />
