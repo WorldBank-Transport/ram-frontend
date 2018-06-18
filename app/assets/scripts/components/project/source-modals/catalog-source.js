@@ -226,9 +226,11 @@ export class CatalogPoiSource extends React.Component {
     return (
       <div>
         {this.renderCatalogSources()}
-        <div className='form__extra-actions'>
-          <button type='button' className='fea-plus' title={t('Add new catalog source')} onClick={this.addCatalogSource.bind(this)}><span>{t('New catalog source')}</span></button>
-        </div>
+        {this.state.options && this.state.options.length ? (
+          <div className='form__extra-actions'>
+            <button type='button' className='fea-plus' title={t('Add new catalog source')} onClick={this.addCatalogSource.bind(this)}><span>{t('New catalog source')}</span></button>
+          </div>
+        ) : null}
       </div>
     );
   }
