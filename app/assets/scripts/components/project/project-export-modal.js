@@ -1,18 +1,231 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
 import c from 'classnames';
+import _ from 'lodash';
+import ReactTags from 'react-tag-autocomplete';
 
 import { t } from '../../utils/i18n';
+import { limitHelper } from '../../utils/utils';
+import countries from '../../utils/countries';
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '../modal';
 
+const nameLimit = limitHelper(80);
 class ProjectExportModal extends React.Component {
-  allowSubmit () {
-    return false;
+  constructor (props) {
+    super(props);
+
+    this.state = this.getInitialState();
+
+    // Bind all functions to avoid constant rebinds.
+    this.onChangeTitle = this.onFieldChange.bind(this, 'title');
+    this.onChangeDate = this.onFieldChange.bind(this, 'date');
+    this.onChangeCountry = this.onFieldChange.bind(this, 'country');
+    this.onChangeTopics = this.onFieldChange.bind(this, 'topics');
+    this.onChangeAuthors = this.onFieldChange.bind(this, 'authors');
+    this.onChangeContactName = this.onFieldChange.bind(this, 'contactName');
+    this.onChangeContactEmail = this.onFieldChange.bind(this, 'contactEmail');
+    this.onClose = this.onClose.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
   }
 
-  onSubmit () {
+  getInitialState () {
+    return {
+      errors: {
+        title: null
+      },
+      data: {
+        title: '',
+        country: '',
+        date: '',
+        description: '',
+        topics: [],
+        authors: [],
 
+        contactName: '',
+        contactEmail: ''
+      }
+    };
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (!this.props.revealed && !nextProps.revealed) {
+      // If the modal is not, nor is going to be revealed, do nothing.
+      return;
+    }
+
+    if (this.props.rahForm.processing && !nextProps.rahForm.processing) {
+      this.props._hideGlobalLoading();
+    }
+    if (this.props.rahForm.processing && !nextProps.rahForm.processing) {
+      if (!nextProps.rahForm.error) {
+        this.props._showAlert('success', <p>{t('Project successfully exported')}</p>, true, 4500);
+        this.onClose();
+      } else {
+        this.props._showAlert('danger', <p>{nextProps.rahForm.error.message}</p>, true);
+      }
+      return;
+    }
+  }
+
+  onFieldChange (field, e) {
+    const val = e.target ? e.target.value : e;
+    let data = Object.assign({}, this.state.data, {[field]: val});
+    this.setState({data});
+  }
+
+  allowSubmit () {
+    if (this.state.loading) return false;
+
+    const { title, country, description, topics, authors, contactName, contactEmail } = this.state.data;
+
+    if (title.length === 0 || !nameLimit(title.length).isOk()) return false;
+    if (!country.length) return false;
+    if (!description.length) return false;
+    if (!topics.length) return false;
+    if (!authors.length) return false;
+    if (contactName.length < 3) return false;
+    const atPos = contactEmail.indexOf('@');
+    if (atPos === -1 || atPos !== contactEmail.lastIndexOf('@')) return false;
+
+    return true;
+  }
+
+  onSubmit (e) {
+    e.preventDefault && e.preventDefault();
+
+    const d = this.state.data;
+    var payload = {
+      title: d.title || null,
+      country: d.country || null,
+      date: d.date || null,
+      description: d.description || null,
+      topics: d.topics.length ? d.topics : null,
+      authors: d.authors.length ? d.authors : null,
+
+      contactName: d.contactName || null,
+      contactEmail: d.contactEmail || null
+    };
+
+    this.props._showGlobalLoading();
+    // On create we only want to send properties that were filled in.
+    payload = _.pickBy(payload, v => v !== null);
+    this.props._postRAHExport(this.props.projectId, payload);
+  }
+
+  onClose () {
+    this.props.onCloseClick();
+  }
+
+  renderTitleField () {
+    let limit = nameLimit(this.state.data.title.length);
+
+    return (
+      <BasicInput
+        type='text'
+        id='project__title'
+        label={t('Title')}
+        className={limit.c('form__control form__control--medium')}
+        placeholder={t('Untitled project')}
+        value={this.state.data.title}
+        onChange={this.onChangeTitle}
+        autoFocus
+        help={<p className='form__help'>{t('{chars} characters left', {chars: limit.remaining})}</p>} >
+
+      {this.state.errors.title ? <p className='form__error'>{t('A project name is required.')}</p> : null}
+      </BasicInput>
+    );
+  }
+
+  renderCountryField () {
+    return (
+      <div className='form__group'>
+        <label className='form__label' htmlFor='project__location'>{t('Location')}</label>
+        <select name='project__location' id='project__location' className='form__control' value={this.state.data.country} onChange={this.onChangeCountry}>
+          <option>{t('Select a country')}</option>
+          {countries.map(c => <option key={c.code} value={c.name}>{t(c.name)}</option>)}
+        </select>
+      </div>
+    );
+  }
+
+  renderDateField () {
+    return (
+      <BasicInput
+        type='date'
+        id='project__date'
+        label={t('Date')}
+        placeholder={t('Select a date')}
+        value={this.state.data.date}
+        onChange={this.onChangeDate}
+      />
+    );
+  }
+
+  renderTopicsField () {
+    return (
+      <TagsInput
+        id='project__topics'
+        title={t('Topics')}
+        placeholder={t('Give it one or more topics. E.g. "road upgrade"')}
+        suggestionsUrl={'https://gist.githubusercontent.com/danielfdsilva/91a55a6c50bc1a8e8ac2d42ba2c6f16f/raw/7532c1a1723009e8c268c8b5dee8172175f371ae/topics.json'}
+        tags={this.state.data.topics}
+        onChange={this.onChangeTopics}/>
+    );
+  }
+
+  renderAuthorsField () {
+    return (
+      <TagsInput
+        id='project__authors'
+        title={t('Authors')}
+        placeholder={t('Who created this?')}
+        suggestionsUrl={'https://gist.githubusercontent.com/danielfdsilva/91a55a6c50bc1a8e8ac2d42ba2c6f16f/raw/7532c1a1723009e8c268c8b5dee8172175f371ae/topics.json'}
+        tags={this.state.data.authors}
+        onChange={this.onChangeAuthors}/>
+    );
+  }
+
+  renderDescriptionField () {
+    return (
+      <div className='form__group'>
+        <label className='form__label' htmlFor='project__description'>{t('Description')}</label>
+        <textarea id='project__description' name='project__description' rows='4' className='form__control' placeholder={t('Say something about this project')} value={this.state.data.description} onChange={this.onFieldChange.bind(this, 'description')}></textarea>
+        <p className='form__help'>{t('Markdown is allowed.')} <a href='https://daringfireball.net/projects/markdown/syntax' title={t('Learn more')} target='_blank'>{t('What is this?')}</a></p>
+      </div>
+    );
+  }
+
+  renderContactFieldset () {
+    return (
+      <fieldset className='form__fieldset'>
+        <legend className='form__legend'>{t('Contact person')}</legend>
+
+        <div className='form__hascol form__hascol--2'>
+          <BasicInput
+            type='text'
+            id='contact-person__name'
+            label={t('Name')}
+            placeholder={t('Tell us who you are')}
+            value={this.state.data.contactName}
+            onChange={this.onChangeContactName}
+          />
+
+          <BasicInput
+            type='email'
+            id='contact-person__email'
+            label={t('Email')}
+            placeholder={t('Let’s connect')}
+            value={this.state.data.contactEmail}
+            onChange={this.onChangeContactEmail}
+          />
+        </div>
+
+        <div className='form__note'>
+          <p>{t('Note that your information will become public.')}</p>
+        </div>
+      </fieldset>
+    );
   }
 
   render () {
@@ -20,7 +233,7 @@ class ProjectExportModal extends React.Component {
       <Modal
         id='modal-project-export'
         className='modal--small'
-        onCloseClick={() => {}}
+        onCloseClick={this.onClose}
         revealed={this.props.revealed} >
 
         <ModalHeader>
@@ -36,64 +249,20 @@ class ProjectExportModal extends React.Component {
             <fieldset className='form__fieldset'>
               <legend className='form__legend'>{t('Project')}</legend>
 
-              <div className='form__group'>
-                <label className='form__label' htmlFor='project__title'>{t('Title')}</label>
-                <input type='text' id='project__title' name='project__title' className='form__control' placeholder={t('Untitled project')} />
-              </div>
+              {this.renderTitleField()}
 
               <div className='form__hascol form__hascol--2'>
-                <div className='form__group'>
-                  <label className='form__label' htmlFor='project__date'>{t('Date')}</label>
-                  <input type='date' id='project__date' name='project__date' className='form__control' placeholder={t('Select a date')} />
-                </div>
-                <div className='form__group'>
-                  <label className='form__label' htmlFor='project__location'>{t('Location')}</label>
-                  <select name='project__location' id='project__location' className='form__control'>
-                    <option>{t('Select a country')}</option>
-                    <option value='Country #1'>Country #1</option>
-                    <option value='Country #2'>Country #2</option>
-                  </select>
-                </div>
+                {this.renderDateField()}
+                {this.renderCountryField()}
               </div>
 
-              <div className='form__group'>
-                <label className='form__label' htmlFor='project__topics'>{t('Topics')}</label>
-                <input type='text' id='project__topics' name='project__topics' className='form__control' placeholder={t('Give it one or more topics. E.g. "road upgrade"')} />
-                <p className='form__help'>{t('Comma separated')}</p>
-              </div>
+              {this.renderTopicsField()}
+              {this.renderDescriptionField()}
 
-              <div className='form__group'>
-                <label className='form__label' htmlFor='project__description'>{t('Description')}</label>
-                <textarea id='project__description' name='project__description' rows='4' className='form__control' placeholder={t('Say something about this project')}></textarea>
-                <p className='form__help'>{t('Markdown is allowed.')} <a href='https://daringfireball.net/projects/markdown/syntax' title={t('Learn more')} target='_blank'>{t('What is this?')}</a></p>
-              </div>
-
-              <div className='form__group'>
-                <label className='form__label' htmlFor='project__authors'>{t('Authors')}</label>
-                <input type='text' id='project__authors' name='project__authors' className='form__control' placeholder={t('Who created this?')} />
-                <p className='form__help'>{t('Comma separated')}</p>
-              </div>
+              {this.renderAuthorsField()}
             </fieldset>
 
-            <fieldset className='form__fieldset'>
-              <legend className='form__legend'>{t('Contact person')}</legend>
-
-              <div className='form__hascol form__hascol--2'>
-                <div className='form__group'>
-                  <label className='form__label' htmlFor='contact-person__name'>{t('Name')}</label>
-                  <input type='text' id='contact-person__name' name='contact-person__name' className='form__control' placeholder={t('Tell us who you are')} />
-                </div>
-
-                <div className='form__group'>
-                  <label className='form__label' htmlFor='contact-person__email'>{t('Email')}</label>
-                  <input type='email' id='contact-person__email' name='contact-person__email' className='form__control' placeholder={t('Let’s connect')} />
-                </div>
-              </div>
-
-              <div className='form__note'>
-                <p>{t('Note that your information will become public.')}</p>
-              </div>
-            </fieldset>
+            {this.renderContactFieldset()}
           </form>
         </ModalBody>
         <ModalFooter>
@@ -106,8 +275,106 @@ class ProjectExportModal extends React.Component {
 }
 
 ProjectExportModal.propTypes = {
-  message: T.string,
-  revealed: T.bool
+  _showGlobalLoading: T.func,
+  _hideGlobalLoading: T.func,
+  _showAlert: T.func,
+  _postRAHExport: T.func,
+  revealed: T.bool,
+  projectId: T.string,
+  rahForm: T.object,
+  onCloseClick: T.func
 };
 
 export default ProjectExportModal;
+
+import { fetchJSON } from '../../actions/';
+
+class TagsInput extends React.PureComponent {
+  constructor (props) {
+    super(props);
+    this.state = {
+      suggestions: []
+    };
+  }
+
+  componentDidMount () {
+    fetchJSON(this.props.suggestionsUrl)
+      .then(data => {
+        this.setState({suggestions: data});
+      });
+  }
+
+  handleDeleteTag (i) {
+    const tags = this.props.tags.slice(0);
+    tags.splice(i, 1);
+    this.props.onChange(tags);
+  }
+
+  handleAddTag (tag) {
+    const tags = [].concat(this.props.tags, tag);
+    this.props.onChange(tags);
+  }
+
+  render () {
+    return (
+      <div className='form__group'>
+        <label className='form__label' htmlFor={this.props.id}>{this.props.title}</label>
+        <ReactTags
+          tags={this.props.tags}
+          suggestions={this.state.suggestions}
+          placeholder={this.props.placeholder}
+          delimiterChars={[',', ', ']}
+          allowNew
+          autoresize={false}
+          handleDelete={this.handleDeleteTag.bind(this)}
+          handleAddition={this.handleAddTag.bind(this)} />
+        <p className='form__help'>{t('Use comma or enter to separate items')}</p>
+      </div>
+    );
+  }
+}
+
+TagsInput.propTypes = {
+  tags: T.array,
+  id: T.string,
+  title: T.string,
+  placeholder: T.string,
+  suggestionsUrl: T.string,
+  onChange: T.func
+};
+
+class BasicInput extends React.PureComponent {
+  render () {
+    return (
+      <div className='form__group'>
+        <label className='form__label' htmlFor={this.props.id}>{this.props.label}</label>
+        <input
+          type={this.props.type}
+          id={this.props.id}
+          name={this.props.id}
+          className={this.props.className || 'form__control'}
+          placeholder={this.props.placeholder}
+          value={this.props.value}
+          onChange={this.props.onChange}
+          autoFocus={this.props.autoFocus} />
+
+        {this.props.help}
+        {this.props.children}
+      </div>
+    );
+  }
+}
+
+BasicInput.propTypes = {
+  type: T.string,
+  id: T.string,
+  title: T.string,
+  label: T.string,
+  className: T.string,
+  placeholder: T.string,
+  value: T.string,
+  autoFocus: T.bool,
+  onChange: T.func,
+  help: T.node,
+  children: T.node
+};

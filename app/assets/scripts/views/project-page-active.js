@@ -17,7 +17,8 @@ import {
   deleteScenario,
   showAlert,
   startSubmitScenario,
-  finishSubmitScenario
+  finishSubmitScenario,
+  postRAHExport
 } from '../actions';
 import { fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
@@ -50,18 +51,21 @@ const ProjectPageActive = React.createClass({
     _showAlert: T.func,
     _startSubmitScenario: T.func,
     _finishSubmitScenario: T.func,
+    _postRAHExport: T.func,
 
     params: T.object,
     project: T.object,
     scenarios: T.object,
     projectForm: T.object,
-    scenarioForm: T.object
+    scenarioForm: T.object,
+    rahForm: T.object
   },
 
   getInitialState: function () {
     return {
       projectFormModal: false,
-      scenarioCreateModal: false
+      scenarioCreateModal: false,
+      projectExportModal: false
     };
   },
 
@@ -88,6 +92,9 @@ const ProjectPageActive = React.createClass({
       case 'new-scenario':
         this.setState({scenarioCreateModal: false});
         break;
+      case 'export-rah':
+        this.setState({projectExportModal: false});
+        break;
     }
   },
 
@@ -104,6 +111,9 @@ const ProjectPageActive = React.createClass({
         break;
       case 'new-scenario':
         this.setState({scenarioCreateModal: true});
+        break;
+      case 'export-rah':
+        this.setState({projectExportModal: true});
         break;
       default:
         throw new Error(`Project action not implemented: ${what}`);
@@ -402,7 +412,14 @@ const ProjectPageActive = React.createClass({
         />
 
         <ProjectExportModal
-          revealed={true}
+          _showGlobalLoading={showGlobalLoading}
+          _hideGlobalLoading={hideGlobalLoading}
+          _showAlert={this.props._showAlert}
+          _postRAHExport={this.props._postRAHExport}
+          revealed={this.state.projectExportModal}
+          projectId={this.props.params.projectId}
+          rahForm={this.props.rahForm}
+          onCloseClick={this.closeModal.bind(null, 'export-rah')}
         />
 
         <ReactTooltip />
@@ -420,7 +437,8 @@ function selector (state) {
     project: state.projectItem,
     scenarios: state.scenarios,
     projectForm: state.projectForm,
-    scenarioForm: state.scenarioForm
+    scenarioForm: state.scenarioForm,
+    rahForm: state.rahForm
   };
 }
 
@@ -437,7 +455,8 @@ function dispatcher (dispatch) {
     _duplicateScenario: (...args) => dispatch(duplicateScenario(...args)),
     _showAlert: (...args) => dispatch(showAlert(...args)),
     _startSubmitScenario: (...args) => dispatch(startSubmitScenario(...args)),
-    _finishSubmitScenario: (...args) => dispatch(finishSubmitScenario(...args))
+    _finishSubmitScenario: (...args) => dispatch(finishSubmitScenario(...args)),
+    _postRAHExport: (...args) => dispatch(postRAHExport(...args))
   };
 }
 

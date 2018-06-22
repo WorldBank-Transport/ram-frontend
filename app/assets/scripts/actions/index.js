@@ -66,6 +66,10 @@ export const REQUEST_SCENARIO_COMPARE = 'REQUEST_SCENARIO_COMPARE';
 export const RECEIVE_SCENARIO_COMPARE = 'RECEIVE_SCENARIO_COMPARE';
 export const INVALIDATE_SCENARIO_COMPARE = 'INVALIDATE_SCENARIO_COMPARE';
 
+export const RESET_RAH_FORM = 'RESET_RAH_FORM';
+export const START_SUBMIT_RAH = 'START_SUBMIT_RAH';
+export const FINISH_SUBMIT_RAH = 'FINISH_SUBMIT_RAH';
+
 // Auth
 
 export function loginSuccess () {
@@ -409,6 +413,24 @@ export function fetchScenarioCompare (projectId, scenarioId, filters) {
       }));
     }, err => dispatch(receiveScenarioCompare(null, err)));
   };
+}
+
+// Scenario Form
+
+export function resetRAHFrom () {
+  return { type: RESET_RAH_FORM };
+}
+
+export function startSubmitRAH () {
+  return { type: START_SUBMIT_RAH };
+}
+
+export function finishSubmitRAH (data, error = null) {
+  return { type: FINISH_SUBMIT_RAH, data, error, receivedAt: Date.now() };
+}
+
+export function postRAHExport (projId, data) {
+  return postAndDispatch(`${config.api}/projects/${projId}/rah-export`, data, startSubmitRAH, finishSubmitRAH);
 }
 
 // Fetcher function
