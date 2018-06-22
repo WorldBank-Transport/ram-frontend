@@ -51,6 +51,10 @@ const ProjectHeaderActions = React.createClass({
   render: function () {
     return (
       <div className='inpage__actions'>
+        {this.props.projectStatus === 'active'
+          ? <button title={t('Export to Accessibility Hub')} className='ipa-export' type='button' onClick={this.props.onAction.bind(null, 'export-rah')}><span>{t('Export')}</span></button>
+          : null
+        }
         <Dropdown
           triggerClassName='ipa-ellipsis'
           triggerActiveClassName='button--active'

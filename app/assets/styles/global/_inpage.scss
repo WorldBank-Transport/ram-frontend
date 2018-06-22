@@ -197,6 +197,14 @@
   }
 }
 
+.ipa-export {
+  @extend .button--achromic, .button--text-hidden;
+
+  &::before {
+    @extend %collecticon-download-3;
+  }
+}
+
 
 /* Inpage Secondary Nav
    ========================================================================== */
