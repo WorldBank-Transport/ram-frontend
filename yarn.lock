@@ -6492,6 +6492,10 @@ react-sticky@^6.0.0:
     prop-types "^15.5.8"
     raf "^3.3.0"
 
+react-tag-autocomplete@^5.5.1:
+  version "5.5.1"
+  resolved "https://registry.yarnpkg.com/react-tag-autocomplete/-/react-tag-autocomplete-5.5.1.tgz#6b3f253d3d69eb546925118cdf43138a9aafe113"
+
 react-tether@^0.5.6:
   version "0.5.7"
   resolved "https://registry.yarnpkg.com/react-tether/-/react-tether-0.5.7.tgz#418ea61041b65b958271478489b71a3572f01422"
