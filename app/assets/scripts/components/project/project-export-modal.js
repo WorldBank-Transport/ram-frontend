@@ -32,7 +32,15 @@ class ProjectExportModal extends React.Component {
   getInitialState () {
     return {
       errors: {
-        title: null
+        title: null,
+        country: null,
+        date: null,
+        description: null,
+        topics: null,
+        authors: null,
+
+        contactName: null,
+        contactEmail: null
       },
       data: {
         title: '',
@@ -74,25 +82,46 @@ class ProjectExportModal extends React.Component {
     this.setState({data});
   }
 
-  allowSubmit () {
-    if (this.state.loading) return false;
+  checkErrors () {
+    let control = true;
+    let errors = this.getInitialState().errors;
+    const { title, contactEmail } = this.state.data;
 
-    const { title, country, description, topics, authors, contactName, contactEmail } = this.state.data;
+    const fields = ['country', 'description', 'date', 'topics', 'authors', 'contactName'];
 
-    if (title.length === 0 || !nameLimit(title.length).isOk()) return false;
-    if (!country.length) return false;
-    if (!description.length) return false;
-    if (!topics.length) return false;
-    if (!authors.length) return false;
-    if (contactName.length < 3) return false;
+    if (title.length === 0 || !nameLimit(title.length).isOk()) {
+      errors.title = true;
+      control = false;
+    }
+
+    fields.forEach(f => {
+      if (!this.state.data[f].length) {
+        errors[f] = true;
+        control = false;
+      }
+    });
+
     const atPos = contactEmail.indexOf('@');
-    if (atPos === -1 || atPos !== contactEmail.lastIndexOf('@')) return false;
+    if (atPos === -1 || atPos !== contactEmail.lastIndexOf('@')) {
+      errors.contactEmail = true;
+      control = false;
+    }
 
+    this.setState({errors});
+    return control;
+  }
+
+  allowSubmit () {
+    if (this.props.rahForm.processing) return false;
     return true;
   }
 
   onSubmit (e) {
     e.preventDefault && e.preventDefault();
+
+    if (!this.checkErrors()) {
+      return false;
+    }
 
     const d = this.state.data;
     var payload = {
@@ -132,7 +161,7 @@ class ProjectExportModal extends React.Component {
         autoFocus
         help={<p className='form__help'>{t('{chars} characters left', {chars: limit.remaining})}</p>} >
 
-      {this.state.errors.title ? <p className='form__error'>{t('A project name is required.')}</p> : null}
+      {this.state.errors.title ? <p className='form__error'>{t('A valid project name is required.')}</p> : null}
       </BasicInput>
     );
   }
@@ -145,6 +174,8 @@ class ProjectExportModal extends React.Component {
           <option>{t('Select a country')}</option>
           {countries.map(c => <option key={c.code} value={c.name}>{t(c.name)}</option>)}
         </select>
+
+        {this.state.errors.country ? <p className='form__error'>{t('A country is required')}</p> : null}
       </div>
     );
   }
@@ -157,8 +188,9 @@ class ProjectExportModal extends React.Component {
         label={t('Date')}
         placeholder={t('Select a date')}
         value={this.state.data.date}
-        onChange={this.onChangeDate}
-      />
+        onChange={this.onChangeDate} >
+        {this.state.errors.date ? <p className='form__error'>{t('A valid date is required.')}</p> : null}
+      </BasicInput>
     );
   }
 
@@ -170,7 +202,9 @@ class ProjectExportModal extends React.Component {
         placeholder={t('Give it one or more topics. E.g. "road upgrade"')}
         suggestionsUrl={'https://gist.githubusercontent.com/danielfdsilva/91a55a6c50bc1a8e8ac2d42ba2c6f16f/raw/7532c1a1723009e8c268c8b5dee8172175f371ae/topics.json'}
         tags={this.state.data.topics}
-        onChange={this.onChangeTopics}/>
+        onChange={this.onChangeTopics} >
+        {this.state.errors.topics ? <p className='form__error'>{t('At least one topic is required.')}</p> : null}
+      </TagsInput>
     );
   }
 
@@ -182,7 +216,9 @@ class ProjectExportModal extends React.Component {
         placeholder={t('Who created this?')}
         suggestionsUrl={'https://gist.githubusercontent.com/danielfdsilva/91a55a6c50bc1a8e8ac2d42ba2c6f16f/raw/7532c1a1723009e8c268c8b5dee8172175f371ae/topics.json'}
         tags={this.state.data.authors}
-        onChange={this.onChangeAuthors}/>
+        onChange={this.onChangeAuthors} >
+        {this.state.errors.authors ? <p className='form__error'>{t('At least one author is required.')}</p> : null}
+      </TagsInput>
     );
   }
 
@@ -192,6 +228,7 @@ class ProjectExportModal extends React.Component {
         <label className='form__label' htmlFor='project__description'>{t('Description')}</label>
         <textarea id='project__description' name='project__description' rows='4' className='form__control' placeholder={t('Say something about this project')} value={this.state.data.description} onChange={this.onFieldChange.bind(this, 'description')}></textarea>
         <p className='form__help'>{t('Markdown is allowed.')} <a href='https://daringfireball.net/projects/markdown/syntax' title={t('Learn more')} target='_blank'>{t('What is this?')}</a></p>
+        {this.state.errors.description ? <p className='form__error'>{t('A description is required')}</p> : null}
       </div>
     );
   }
@@ -208,8 +245,9 @@ class ProjectExportModal extends React.Component {
             label={t('Name')}
             placeholder={t('Tell us who you are')}
             value={this.state.data.contactName}
-            onChange={this.onChangeContactName}
-          />
+            onChange={this.onChangeContactName} >
+            {this.state.errors.contactName ? <p className='form__error'>{t('A valid name is required.')}</p> : null}
+            </BasicInput>
 
           <BasicInput
             type='email'
@@ -217,8 +255,9 @@ class ProjectExportModal extends React.Component {
             label={t('Email')}
             placeholder={t('Let’s connect')}
             value={this.state.data.contactEmail}
-            onChange={this.onChangeContactEmail}
-          />
+            onChange={this.onChangeContactEmail} >
+            {this.state.errors.contactEmail ? <p className='form__error'>{t('A valid email is required.')}</p> : null}
+            </BasicInput>
         </div>
 
         <div className='form__note'>
@@ -329,6 +368,7 @@ class TagsInput extends React.PureComponent {
           handleDelete={this.handleDeleteTag.bind(this)}
           handleAddition={this.handleAddTag.bind(this)} />
         <p className='form__help'>{t('Use comma or enter to separate items')}</p>
+        {this.props.children}
       </div>
     );
   }
@@ -340,6 +380,7 @@ TagsInput.propTypes = {
   title: T.string,
   placeholder: T.string,
   suggestionsUrl: T.string,
+  children: T.node,
   onChange: T.func
 };
 
