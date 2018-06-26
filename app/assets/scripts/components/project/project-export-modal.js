@@ -142,7 +142,13 @@ class ProjectExportModal extends React.Component {
     this.props._postRAHExport(this.props.projectId, payload);
   }
 
+  componentWillUnmount () {
+    this.props.resetForm();
+  }
+
   onClose () {
+    this.props.resetForm();
+    this.setState(this.getInitialState());
     this.props.onCloseClick();
   }
 
@@ -318,6 +324,7 @@ ProjectExportModal.propTypes = {
   _hideGlobalLoading: T.func,
   _showAlert: T.func,
   _postRAHExport: T.func,
+  resetForm: T.func,
   revealed: T.bool,
   projectId: T.string,
   rahForm: T.object,

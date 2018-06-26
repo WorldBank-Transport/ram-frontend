@@ -18,7 +18,8 @@ import {
   showAlert,
   startSubmitScenario,
   finishSubmitScenario,
-  postRAHExport
+  postRAHExport,
+  resetRAHForm
 } from '../actions';
 import { fetchStatus } from '../utils/utils';
 import { t, getLanguage } from '../utils/i18n';
@@ -52,6 +53,7 @@ const ProjectPageActive = React.createClass({
     _startSubmitScenario: T.func,
     _finishSubmitScenario: T.func,
     _postRAHExport: T.func,
+    _resetRAHForm: T.func,
 
     params: T.object,
     project: T.object,
@@ -420,6 +422,7 @@ const ProjectPageActive = React.createClass({
           projectId={this.props.params.projectId}
           rahForm={this.props.rahForm}
           onCloseClick={this.closeModal.bind(null, 'export-rah')}
+          resetForm={this.props._resetRAHForm}
         />
 
         <ReactTooltip />
@@ -456,7 +459,8 @@ function dispatcher (dispatch) {
     _showAlert: (...args) => dispatch(showAlert(...args)),
     _startSubmitScenario: (...args) => dispatch(startSubmitScenario(...args)),
     _finishSubmitScenario: (...args) => dispatch(finishSubmitScenario(...args)),
-    _postRAHExport: (...args) => dispatch(postRAHExport(...args))
+    _postRAHExport: (...args) => dispatch(postRAHExport(...args)),
+    _resetRAHForm: (...args) => dispatch(resetRAHForm(...args))
   };
 }
 

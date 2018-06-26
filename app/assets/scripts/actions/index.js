@@ -417,7 +417,7 @@ export function fetchScenarioCompare (projectId, scenarioId, filters) {
 
 // Scenario Form
 
-export function resetRAHFrom () {
+export function resetRAHForm () {
   return { type: RESET_RAH_FORM };
 }
 
