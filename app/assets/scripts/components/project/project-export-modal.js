@@ -277,7 +277,7 @@ class ProjectExportModal extends React.Component {
     return (
       <Modal
         id='modal-project-export'
-        className='modal--small'
+        className='modal--medium'
         onCloseClick={this.onClose}
         revealed={this.props.revealed} >
 
