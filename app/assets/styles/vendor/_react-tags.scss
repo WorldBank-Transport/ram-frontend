@@ -34,7 +34,7 @@
  *     </div>
  *   </div>
  */
- 
+
  .react-tags {
   position: relative;
   box-shadow: inset 0 -1px 0 0 rgba($base-color, 0.16);
@@ -83,28 +83,13 @@
 }
 
 .react-tags__selected-tag {
-  display: inline-block;
-  box-sizing: border-box;
-  margin: 0 6px 6px 0;
-  padding: 6px 8px;
-  border: 1px solid #D1D1D1;
-  border-radius: 2px;
-  background: #F1F1F1;
+  @extend .button, .button--small, .button--primary-raised-light;
 
-  /* match the font styles */
-  font-size: inherit;
-  line-height: inherit;
-}
+  margin: 0 ($global-spacing / 4) ($global-spacing / 4) 0;
 
-.react-tags__selected-tag:after {
-  content: '\2715';
-  color: #AAA;
-  margin-left: 8px;
-}
-
-.react-tags__selected-tag:hover,
-.react-tags__selected-tag:focus {
-  border-color: #B1B1B1;
+  &::after {
+    @extend %collecticon-sm-xmark;
+  }
 }
 
 
