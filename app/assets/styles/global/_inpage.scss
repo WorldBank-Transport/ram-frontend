@@ -165,7 +165,8 @@
 
 .ipa-ellipsis,
 .ipa-download,
-.ipa-pencil {
+.ipa-pencil,
+.ipa-export {
    @extend .button--achromic;
 }
 
@@ -197,12 +198,8 @@
   }
 }
 
-.ipa-export {
-  @extend .button--achromic, .button--text-hidden;
-
-  &::before {
-    @extend %collecticon-download-3;
-  }
+.ipa-export::before {
+  @extend %collecticon-share;
 }
 
 

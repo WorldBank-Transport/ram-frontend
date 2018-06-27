@@ -51,10 +51,6 @@ const ProjectHeaderActions = React.createClass({
   render: function () {
     return (
       <div className='inpage__actions'>
-        {this.props.projectStatus === 'active'
-          ? <button title={t('Export to Accessibility Hub')} className='ipa-export' type='button' onClick={this.props.onAction.bind(null, 'export-rah')}><span>{t('Export')}</span></button>
-          : null
-        }
         <Dropdown
           triggerClassName='ipa-ellipsis'
           triggerActiveClassName='button--active'
@@ -69,6 +65,11 @@ const ProjectHeaderActions = React.createClass({
               <li><a href='#' title={t('Delete project')} className='drop__menu-item drop__menu-item--danger dmi-trash' data-hook='dropdown:close' onClick={this.onDelete}>{t('Delete project')}</a></li>
             </ul>
         </Dropdown>
+
+        {this.props.projectStatus === 'active'
+          ? <button title={t('Export to Accessibility Hub')} className='ipa-export' type='button' onClick={this.props.onAction.bind(null, 'export-rah')}><span>{t('Export')}</span></button>
+          : null
+        }
 
         {this.props.projectStatus === 'active'
           ? <button title={t('Create new scenario')} className='ipa-plus ipa-main' type='button' onClick={this.props.onAction.bind(null, 'new-scenario')}><span>{t('New scenario')}</span></button>
