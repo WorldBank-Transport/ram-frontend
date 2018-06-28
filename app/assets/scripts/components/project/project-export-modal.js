@@ -221,7 +221,7 @@ class ProjectExportModal extends React.Component {
       <TagsInput
         id='project__topics'
         title={t('Topics')}
-        placeholder={t('Give it one or more topics. E.g. "road upgrade"')}
+        placeholder={!this.state.data.topics.length ? t('Give it one or more topics. E.g. "road upgrade"') : ''}
         suggestionsUrl={'https://gist.githubusercontent.com/danielfdsilva/91a55a6c50bc1a8e8ac2d42ba2c6f16f/raw/7532c1a1723009e8c268c8b5dee8172175f371ae/topics.json'}
         tags={this.state.data.topics}
         onChange={this.onChangeTopics}
@@ -235,7 +235,7 @@ class ProjectExportModal extends React.Component {
       <TagsInput
         id='project__authors'
         title={t('Authors')}
-        placeholder={t('Who created this?')}
+        placeholder={!this.state.data.authors.length ? t('Who created this?') : ''}
         suggestionsUrl={'https://gist.githubusercontent.com/danielfdsilva/91a55a6c50bc1a8e8ac2d42ba2c6f16f/raw/7532c1a1723009e8c268c8b5dee8172175f371ae/topics.json'}
         tags={this.state.data.authors}
         onChange={this.onChangeAuthors}

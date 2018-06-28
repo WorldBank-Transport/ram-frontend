@@ -109,16 +109,17 @@
 .react-tags__search input {
   /* prevent autoresize overflowing the container */
   max-width: 100%;
-
+  
   /* remove styles and layout from this element */
   margin: 0;
-  padding: 0;
   border: 0;
   outline: none;
-
+  
   /* match the font styles */
   font-size: inherit;
   line-height: inherit;
+
+  padding: 0 0 0.25rem 0;
 }
 
 .react-tags__search input::-ms-clear {
