@@ -341,6 +341,12 @@ class TagsInput extends React.PureComponent {
     this.state = {
       suggestions: []
     };
+
+    this.handleBlur = this.handleBlur.bind(this);
+    this.handleDeleteTag = this.handleDeleteTag.bind(this);
+    this.handleAddTag = this.handleAddTag.bind(this);
+
+    this.reactTags = null;
   }
 
   componentDidMount () {
@@ -348,6 +354,13 @@ class TagsInput extends React.PureComponent {
       .then(data => {
         this.setState({suggestions: data});
       });
+  }
+
+  handleBlur () {
+    const tag = this.reactTags.state.query;
+    if (tag) {
+      this.reactTags.addTag({name: tag});
+    }
   }
 
   handleDeleteTag (i) {
@@ -366,15 +379,17 @@ class TagsInput extends React.PureComponent {
       <div className='form__group'>
         <label className='form__label' htmlFor={this.props.id}>{this.props.title}</label>
         <ReactTags
+          ref={el => { this.reactTags = el; }}
           tags={this.props.tags}
           suggestions={this.state.suggestions}
           placeholder={this.props.placeholder}
           delimiterChars={[',', ', ']}
           allowNew
-          handleDelete={this.handleDeleteTag.bind(this)}
-          handleAddition={this.handleAddTag.bind(this)} />
           autoresize={true}
           autofocus={false}
+          handleBlur={this.handleBlur}
+          handleDelete={this.handleDeleteTag}
+          handleAddition={this.handleAddTag} />
         <p className='form__help'>{t('Use comma or enter to separate items')}</p>
         {this.props.children}
       </div>
