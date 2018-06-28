@@ -82,44 +82,57 @@ class ProjectExportModal extends React.Component {
     this.setState({data});
   }
 
-  checkErrors () {
+  checkErrorField (field, setState = true) {
+    const errors = this.state.errors;
     let control = true;
-    let errors = this.getInitialState().errors;
-    const { title, contactEmail } = this.state.data;
-
-    const fields = ['country', 'description', 'date', 'topics', 'authors', 'contactName'];
-
-    if (title.length === 0 || !nameLimit(title.length).isOk()) {
-      errors.title = true;
-      control = false;
+    switch (field) {
+      case 'title':
+        const title = this.state.data.title;
+        if (title.length === 0 || !nameLimit(title.length).isOk()) {
+          control = false;
+        }
+        break;
+      case 'country':
+      case 'description':
+      case 'date':
+      case 'topics':
+      case 'authors':
+      case 'contactName':
+        if (!this.state.data[field].length) {
+          control = false;
+        }
+        break;
+      case 'contactEmail':
+        const contactEmail = this.state.data.contactEmail;
+        const atPos = contactEmail.indexOf('@');
+        if (atPos === -1 || atPos !== contactEmail.lastIndexOf('@')) {
+          control = false;
+        }
+        break;
     }
 
-    fields.forEach(f => {
-      if (!this.state.data[f].length) {
-        errors[f] = true;
-        control = false;
-      }
-    });
-
-    const atPos = contactEmail.indexOf('@');
-    if (atPos === -1 || atPos !== contactEmail.lastIndexOf('@')) {
-      errors.contactEmail = true;
-      control = false;
+    if (setState) {
+      this.setState({errors: Object.assign({}, errors, {[field]: !control})});
     }
 
-    this.setState({errors});
     return control;
   }
 
   allowSubmit () {
     if (this.props.rahForm.processing) return false;
-    return true;
+
+    // Check errors.
+    const fields = Object.keys(this.state.data);
+    return fields.every(f => this.checkErrorField(f, false));
   }
 
   onSubmit (e) {
     e.preventDefault && e.preventDefault();
 
-    if (!this.checkErrors()) {
+    // Check errors.
+    const fields = Object.keys(this.state.data);
+
+    if (!fields.every(f => this.checkErrorField(f))) {
       return false;
     }
 
@@ -164,11 +177,10 @@ class ProjectExportModal extends React.Component {
         placeholder={t('Untitled project')}
         value={this.state.data.title}
         onChange={this.onChangeTitle}
+        onBlur={this.checkErrorField.bind(this, 'title')}
+        hasError={this.state.errors.title}
         autoFocus
-        help={<p className='form__help'>{t('{chars} characters left', {chars: limit.remaining})}</p>} >
-
-      {this.state.errors.title ? <p className='form__error'>{t('A valid project name is required.')}</p> : null}
-      </BasicInput>
+        help={<p className='form__help'>{t('{chars} characters left', {chars: limit.remaining})}</p>} />
     );
   }
 
@@ -176,12 +188,16 @@ class ProjectExportModal extends React.Component {
     return (
       <div className='form__group'>
         <label className='form__label' htmlFor='project__location'>{t('Location')}</label>
-        <select name='project__location' id='project__location' className='form__control' value={this.state.data.country} onChange={this.onChangeCountry}>
-          <option>{t('Select a country')}</option>
+        <select
+          name='project__location'
+          id='project__location'
+          className={c('form__control', {'form__control--danger': this.state.errors.country})}
+          value={this.state.data.country}
+          onChange={this.onChangeCountry}
+          onBlur={this.checkErrorField.bind(this, 'country')} >
+          <option value=''>{t('Select a country')}</option>
           {countries.map(c => <option key={c.code} value={c.name}>{t(c.name)}</option>)}
         </select>
-
-        {this.state.errors.country ? <p className='form__error'>{t('A country is required')}</p> : null}
       </div>
     );
   }
@@ -194,9 +210,9 @@ class ProjectExportModal extends React.Component {
         label={t('Date')}
         placeholder={t('Select a date')}
         value={this.state.data.date}
-        onChange={this.onChangeDate} >
-        {this.state.errors.date ? <p className='form__error'>{t('A valid date is required.')}</p> : null}
-      </BasicInput>
+        onChange={this.onChangeDate}
+        onBlur={this.checkErrorField.bind(this, 'date')}
+        hasError={this.state.errors.date} />
     );
   }
 
@@ -208,9 +224,9 @@ class ProjectExportModal extends React.Component {
         placeholder={t('Give it one or more topics. E.g. "road upgrade"')}
         suggestionsUrl={'https://gist.githubusercontent.com/danielfdsilva/91a55a6c50bc1a8e8ac2d42ba2c6f16f/raw/7532c1a1723009e8c268c8b5dee8172175f371ae/topics.json'}
         tags={this.state.data.topics}
-        onChange={this.onChangeTopics} >
-        {this.state.errors.topics ? <p className='form__error'>{t('At least one topic is required.')}</p> : null}
-      </TagsInput>
+        onChange={this.onChangeTopics}
+        onBlur={this.checkErrorField.bind(this, 'topics')}
+        hasError={this.state.errors.topics} />
     );
   }
 
@@ -222,9 +238,9 @@ class ProjectExportModal extends React.Component {
         placeholder={t('Who created this?')}
         suggestionsUrl={'https://gist.githubusercontent.com/danielfdsilva/91a55a6c50bc1a8e8ac2d42ba2c6f16f/raw/7532c1a1723009e8c268c8b5dee8172175f371ae/topics.json'}
         tags={this.state.data.authors}
-        onChange={this.onChangeAuthors} >
-        {this.state.errors.authors ? <p className='form__error'>{t('At least one author is required.')}</p> : null}
-      </TagsInput>
+        onChange={this.onChangeAuthors}
+        onBlur={this.checkErrorField.bind(this, 'authors')}
+        hasError={this.state.errors.authors} />
     );
   }
 
@@ -232,9 +248,17 @@ class ProjectExportModal extends React.Component {
     return (
       <div className='form__group'>
         <label className='form__label' htmlFor='project__description'>{t('Description')}</label>
-        <textarea id='project__description' name='project__description' rows='4' className='form__control' placeholder={t('Say something about this project')} value={this.state.data.description} onChange={this.onFieldChange.bind(this, 'description')}></textarea>
+        <textarea
+          id='project__description'
+          name='project__description'
+          rows='4'
+          className={c('form__control', {'form__control--danger': this.state.errors.description})}
+          placeholder={t('Say something about this project')}
+          value={this.state.data.description}
+          onChange={this.onFieldChange.bind(this, 'description')}
+          onBlur={this.checkErrorField.bind(this, 'description')}>
+        </textarea>
         <p className='form__help'>{t('Markdown is allowed.')} <a href='https://daringfireball.net/projects/markdown/syntax' title={t('Learn more')} target='_blank'>{t('What is this?')}</a></p>
-        {this.state.errors.description ? <p className='form__error'>{t('A description is required')}</p> : null}
       </div>
     );
   }
@@ -251,9 +275,9 @@ class ProjectExportModal extends React.Component {
             label={t('Name')}
             placeholder={t('Tell us who you are')}
             value={this.state.data.contactName}
-            onChange={this.onChangeContactName} >
-            {this.state.errors.contactName ? <p className='form__error'>{t('A valid name is required.')}</p> : null}
-            </BasicInput>
+            onChange={this.onChangeContactName}
+            onBlur={this.checkErrorField.bind(this, 'contactName')}
+            hasError={this.state.errors.contactName} />
 
           <BasicInput
             type='email'
@@ -261,9 +285,9 @@ class ProjectExportModal extends React.Component {
             label={t('Email')}
             placeholder={t('Let’s connect')}
             value={this.state.data.contactEmail}
-            onChange={this.onChangeContactEmail} >
-            {this.state.errors.contactEmail ? <p className='form__error'>{t('A valid email is required.')}</p> : null}
-            </BasicInput>
+            onChange={this.onChangeContactEmail}
+            onBlur={this.checkErrorField.bind(this, 'contactEmail')}
+            hasError={this.state.errors.contactEmail} />
         </div>
 
         <div className='form__note'>
@@ -361,6 +385,8 @@ class TagsInput extends React.PureComponent {
     if (tag) {
       this.reactTags.addTag({name: tag});
     }
+    // Allow state to reconvile before firing the event.
+    setTimeout(() => { this.props.onBlur(); }, 1);
   }
 
   handleDeleteTag (i) {
@@ -380,6 +406,7 @@ class TagsInput extends React.PureComponent {
         <label className='form__label' htmlFor={this.props.id}>{this.props.title}</label>
         <ReactTags
           ref={el => { this.reactTags = el; }}
+          classNames={{root: c('react-tags', {'form__control--danger': this.props.hasError})}}
           tags={this.props.tags}
           suggestions={this.state.suggestions}
           placeholder={this.props.placeholder}
@@ -403,12 +430,18 @@ TagsInput.propTypes = {
   title: T.string,
   placeholder: T.string,
   suggestionsUrl: T.string,
+  hasError: T.bool,
   children: T.node,
-  onChange: T.func
+  onChange: T.func,
+  onBlur: T.func
 };
 
 class BasicInput extends React.PureComponent {
   render () {
+    const classNames = c(this.props.className || 'form__control', {
+      'form__control--danger': this.props.hasError
+    });
+
     return (
       <div className='form__group'>
         <label className='form__label' htmlFor={this.props.id}>{this.props.label}</label>
@@ -416,10 +449,11 @@ class BasicInput extends React.PureComponent {
           type={this.props.type}
           id={this.props.id}
           name={this.props.id}
-          className={this.props.className || 'form__control'}
+          className={classNames}
           placeholder={this.props.placeholder}
           value={this.props.value}
           onChange={this.props.onChange}
+          onBlur={this.props.onBlur}
           autoFocus={this.props.autoFocus} />
 
         {this.props.help}
@@ -438,7 +472,9 @@ BasicInput.propTypes = {
   placeholder: T.string,
   value: T.string,
   autoFocus: T.bool,
+  hasError: T.bool,
   onChange: T.func,
+  onBlur: T.func,
   help: T.node,
   children: T.node
 };
