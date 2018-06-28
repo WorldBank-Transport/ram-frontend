@@ -371,9 +371,10 @@ class TagsInput extends React.PureComponent {
           placeholder={this.props.placeholder}
           delimiterChars={[',', ', ']}
           allowNew
-          autoresize={false}
           handleDelete={this.handleDeleteTag.bind(this)}
           handleAddition={this.handleAddTag.bind(this)} />
+          autoresize={true}
+          autofocus={false}
         <p className='form__help'>{t('Use comma or enter to separate items')}</p>
         {this.props.children}
       </div>
