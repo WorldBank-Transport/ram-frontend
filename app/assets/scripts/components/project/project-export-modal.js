@@ -7,6 +7,7 @@ import ReactTags from 'react-tag-autocomplete';
 import { t } from '../../utils/i18n';
 import { limitHelper } from '../../utils/utils';
 import countries from '../../utils/countries';
+import { rahUrl } from '../../config';
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '../modal';
 
@@ -196,7 +197,7 @@ class ProjectExportModal extends React.Component {
           onChange={this.onChangeCountry}
           onBlur={this.checkErrorField.bind(this, 'country')} >
           <option value=''>{t('Select a country')}</option>
-          {countries.map(c => <option key={c.code} value={c.name}>{t(c.name)}</option>)}
+          {countries.map(c => <option key={c.code} value={c.code}>{t(c.name)}</option>)}
         </select>
       </div>
     );
@@ -222,7 +223,7 @@ class ProjectExportModal extends React.Component {
         id='project__topics'
         title={t('Topics')}
         placeholder={!this.state.data.topics.length ? t('Give it one or more topics. E.g. "road upgrade"') : ''}
-        suggestionsUrl={'https://gist.githubusercontent.com/danielfdsilva/91a55a6c50bc1a8e8ac2d42ba2c6f16f/raw/7532c1a1723009e8c268c8b5dee8172175f371ae/topics.json'}
+        suggestionsUrl={`${rahUrl}/assets/content/topics.json`}
         tags={this.state.data.topics}
         onChange={this.onChangeTopics}
         onBlur={this.checkErrorField.bind(this, 'topics')}
@@ -236,7 +237,7 @@ class ProjectExportModal extends React.Component {
         id='project__authors'
         title={t('Authors')}
         placeholder={!this.state.data.authors.length ? t('Who created this?') : ''}
-        suggestionsUrl={'https://gist.githubusercontent.com/danielfdsilva/91a55a6c50bc1a8e8ac2d42ba2c6f16f/raw/7532c1a1723009e8c268c8b5dee8172175f371ae/topics.json'}
+        suggestionsUrl={`${rahUrl}/assets/content/authors.json`}
         tags={this.state.data.authors}
         onChange={this.onChangeAuthors}
         onBlur={this.checkErrorField.bind(this, 'authors')}
