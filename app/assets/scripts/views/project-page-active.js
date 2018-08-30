@@ -236,7 +236,8 @@ const ProjectPageActive = React.createClass({
         type={key}
         projectId={projectId}
         sourceData={o}
-        editable={false} />
+        editable={false}
+        profileSpeedCustomize={key === 'profile'} />
     ));
   },
 
