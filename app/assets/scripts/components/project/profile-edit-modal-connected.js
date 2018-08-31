@@ -4,11 +4,70 @@ import c from 'classnames';
 import _ from 'lodash';
 
 import { t } from '../../utils/i18n';
-import { limitHelper, toTimeStr } from '../../utils/utils';
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '../modal';
 
-const nameLimit = limitHelper(80);
+/**
+ * Compute a path by giving a series os indexes to drill down.
+ * This function has variadic arguments, with a minimum of 1.
+ * All arguments must be numeric except the last which can also be (key|value)
+ * when the function has 2 or more arguments.
+ *
+ * @returns {string} Path
+ */
+const computePath = function () {
+  const args = Array.from(arguments);
+  if (args.length === 0) throw new Error('Insufficient args');
+
+  const isFinal = (arg) => arg === 'key' || arg === 'value';
+
+  return args.reduce((path, arg, i) => {
+    const next = args[i + 1];
+    // If the next arg is final only include the index.
+    if (isFinal(next)) return `${path}[${arg}]`;
+    return isFinal(arg) ? `${path}.${arg}` : `${path}[${arg}].values`;
+  }, '');
+};
+
+/**
+ * Get all field paths by recursively going through the data.
+ * Expects data to have the following structure:
+ * {
+ *  values: [
+ *    {key, value}
+ *    ...
+ *  ]
+ * }
+ *
+ * or for multilevel:
+ * {
+ *  values: [
+ *    {
+ *      values: [
+ *        {key, value}
+ *        ...
+ *      ]
+ *    }
+ *    ...
+ *  ]
+ * }
+ *
+ * @param {Object} data Data object to check
+ * @param {int} idx Index of the object
+ *
+ * @returns {array} Paths
+ */
+const getPaths = (data, idx) => {
+  if (typeof data.value !== 'undefined') {
+    return [`[${idx}].key`, `[${idx}].value`];
+  } else {
+    return data.values.reduce((acc, val, valIdx) => {
+      const paths = getPaths(val, valIdx).map(p => `[${idx}].values${p}`);
+      return acc.concat(paths);
+    }, []);
+  }
+};
+
 class ProfileEditModal extends React.Component {
   constructor (props) {
     super(props);
@@ -37,6 +96,7 @@ class ProfileEditModal extends React.Component {
 
   getInitialState () {
     return {
+      errors: [],
       data: [
         {
           section: 'speeds',
@@ -74,6 +134,16 @@ class ProfileEditModal extends React.Component {
     }
   }
 
+  componentWillUnmount () {
+    // this.props.resetForm();
+  }
+
+  onClose () {
+    // this.props.resetForm();
+    this.setState(this.getInitialState());
+    this.props.onCloseClick();
+  }
+
   onFieldChange (path, e) {
     // Path is as used by the lodash method.
     e.preventDefault();
@@ -89,7 +159,6 @@ class ProfileEditModal extends React.Component {
     let stateData = _.cloneDeep(this.state.data);
     _.get(stateData, path).splice(index, 1);
     this.setState({data: stateData});
-    console.log('stateData', stateData);
   }
 
   onTagAdd (path, isMulti, e) {
@@ -104,40 +173,55 @@ class ProfileEditModal extends React.Component {
     this.setState({data: stateData});
   }
 
-  checkErrorField (field, setState = true) {
+  checkErrorField (path, setState = true) {
+    const val = _.get(this.state.data, path, '').toString();
+    const errors = _.cloneDeep(this.state.errors);
+    let control = true;
+
+    // Value or Key
+    if (path.match(/\.value$/)) {
+      // Values can only have numbers.
+      control = !!val.match(/^[0-9]+(\.[0-9]+)?$/);
+    } else {
+      // Keys can have alphanumeric values, dashes, underscores and colons.
+      control = !!val.match(/^[a-zA-Z0-9-_:]+$/);
+    }
+
+    if (setState) {
+      _.set(errors, path, !control);
+      this.setState({errors});
+    }
+
+    return control;
   }
 
   allowSubmit () {
     // if (this.props.rahForm.processing) return false;
 
-    // // Check errors.
-    // const fields = Object.keys(this.state.data);
-    // return fields.every(f => this.checkErrorField(f, false));
+    const paths = this.state.data.reduce((acc, o, oi) => {
+      return acc.concat(getPaths(o, oi));
+    }, []);
+
+    // Check errors.
+    return paths.every(f => this.checkErrorField(f, false));
   }
 
   onSubmit (e) {
     e.preventDefault && e.preventDefault();
   }
 
-  componentWillUnmount () {
-    // this.props.resetForm();
-  }
-
-  onClose () {
-    // this.props.resetForm();
-    this.setState(this.getInitialState());
-    this.props.onCloseClick();
-  }
-
   renderSection ({multi, key, label}) {
     const sectionIdx = _.findIndex(this.state.data, o => o.section === key);
     if (sectionIdx === -1) return null;
 
-    return multi ? this.renderSectionMulti(key, label, this.state.data[sectionIdx], sectionIdx) : this.renderSectionSingle(key, label, this.state.data[sectionIdx], sectionIdx);
+    return multi
+      ? this.renderSectionMulti(key, label, this.state.data[sectionIdx], sectionIdx)
+      : this.renderSectionSingle(key, label, this.state.data[sectionIdx], sectionIdx);
   }
 
   renderSectionSingle (sectionKey, sectionLabel, sectionData, sectionIdx) {
     const attributes = sectionData.values;
+
     return (
       <div key={sectionKey}>
         <label className={c('form__label')}>{sectionLabel}</label>
@@ -145,23 +229,31 @@ class ProfileEditModal extends React.Component {
         {attributes.map((data, attrIdx) => {
           const attrKey = data.key;
           const attrValue = data.value;
+          // Object paths to access the object. Used by lodash methods to
+          // add/remove/change/validate values.
+          const attrKeyPath = computePath(sectionIdx, attrIdx, 'key');
+          const attrValuePath = computePath(sectionIdx, attrIdx, 'value');
 
           return (
             <fieldset key={`${sectionKey}-${attrIdx}`} className={c('form__fieldset')}>
-              <FieldsetHeader title={t('Tag {idx}', {idx: attrIdx + 1})} onRemoveClick={this.onTagRemove.bind(this, `[${sectionIdx}].values`, attrIdx)} />
+              <FieldsetHeader title={t('Tag {idx}', {idx: attrIdx + 1})} onRemoveClick={this.onTagRemove.bind(this, computePath(sectionIdx), attrIdx)} />
 
               <div className='form__hascol form__hascol--2'>
                 <InputField
                   id={`${sectionKey}-${attrKey}-tag`}
                   label='Tag name'
                   value={attrKey.toString()}
-                  onValueChange={this.onFieldChange.bind(this, [sectionIdx, 'values', attrIdx, 'key'])} />
+                  onBlur={this.checkErrorField.bind(this, attrKeyPath)}
+                  hasError={_.get(this.state.errors, attrKeyPath, false)}
+                  onValueChange={this.onFieldChange.bind(this, attrKeyPath)} />
 
                 <InputField
                   id={`${sectionKey}-${attrKey}-value`}
                   label='Speed'
                   value={attrValue.toString()}
-                  onValueChange={this.onFieldChange.bind(this, [sectionIdx, 'values', attrIdx, 'value'])} />
+                  onBlur={this.checkErrorField.bind(this, attrValuePath)}
+                  hasError={_.get(this.state.errors, attrValuePath, false)}
+                  onValueChange={this.onFieldChange.bind(this, attrValuePath)} />
               </div>
             </fieldset>
           );
@@ -184,31 +276,43 @@ class ProfileEditModal extends React.Component {
         {attributes.map((data, attrIdx) => {
           const attrKey = data.key;
           const attrValues = data.values;
+          // Object paths to access the object. Used by lodash methods to
+          // add/remove/change/validate values.
+          const attrKeyPath = computePath(sectionIdx, attrIdx, 'key');
 
           return (
             <fieldset key={`${sectionKey}-${attrIdx}`} className={c('form__fieldset')}>
-              <FieldsetHeader title={t('Tag {idx}', {idx: attrIdx + 1})} onRemoveClick={this.onTagRemove.bind(this, `[${sectionIdx}].values`, attrIdx)} />
+              <FieldsetHeader title={t('Tag {idx}', {idx: attrIdx + 1})} onRemoveClick={this.onTagRemove.bind(this, computePath(sectionIdx), attrIdx)} />
               <InputField
                 id={`${sectionKey}-${attrIdx}-tag`}
                 label='Tag name'
                 value={attrKey.toString()}
-                onValueChange={this.onFieldChange.bind(this, [sectionIdx, 'values', attrIdx, 'key'])} />
+                onBlur={this.checkErrorField.bind(this, attrKeyPath)}
+                hasError={_.get(this.state.errors, attrKeyPath, false)}
+                onValueChange={this.onFieldChange.bind(this, attrKeyPath)} />
 
               {attrValues.map((valData, valIdx) => {
+                const valDataKeyPath = computePath(sectionIdx, attrIdx, valIdx, 'key');
+                const valDataValuePath = computePath(sectionIdx, attrIdx, valIdx, 'value');
+
                 return (
                   <fieldset key={`${sectionKey}-${attrIdx}-${valIdx}`} className={c('form__fieldset')}>
-                    <FieldsetHeader title={t('Tag value {idx}', {idx: valIdx + 1})} onRemoveClick={this.onTagRemove.bind(this, `[${sectionIdx}].values[${attrIdx}].values`, valIdx)} />
+                    <FieldsetHeader title={t('Tag value {idx}', {idx: valIdx + 1})} onRemoveClick={this.onTagRemove.bind(this, computePath(sectionIdx, attrIdx), valIdx)} />
                     <div className='form__hascol form__hascol--2'>
                       <InputField
                         id={`${sectionKey}-${attrIdx}-${valIdx}-tag`}
                         label='Tag value'
                         value={valData.key.toString()}
-                        onValueChange={this.onFieldChange.bind(this, [sectionIdx, 'values', attrIdx, 'values', valIdx, 'key'])} />
+                        onBlur={this.checkErrorField.bind(this, valDataKeyPath)}
+                        hasError={_.get(this.state.errors, valDataKeyPath, false)}
+                        onValueChange={this.onFieldChange.bind(this, valDataKeyPath)} />
                       <InputField
                         id={`${sectionKey}-${attrIdx}-${valIdx}-value`}
                         label='Speed'
                         value={valData.value.toString()}
-                        onValueChange={this.onFieldChange.bind(this, [sectionIdx, 'values', attrIdx, 'values', valIdx, 'value'])} />
+                        onBlur={this.checkErrorField.bind(this, valDataValuePath)}
+                        hasError={_.get(this.state.errors, valDataValuePath, false)}
+                        onValueChange={this.onFieldChange.bind(this, valDataValuePath)} />
                     </div>
                   </fieldset>
                 );
@@ -250,7 +354,7 @@ class ProfileEditModal extends React.Component {
         </ModalBody>
         <ModalFooter>
           <button className='mfa-xmark' type='button' onClick={this.onClose}><span>{t('Cancel')}</span></button>
-          <button className={c('mfa-tick', {'disabled': !this.allowSubmit()})} type='submit' onClick={this.onSubmit}><span>{t('Export')}</span></button>
+          <button className={c('mfa-tick', {'disabled': !this.allowSubmit()})} type='submit' onClick={this.onSubmit}><span>{t('Save')}</span></button>
         </ModalFooter>
       </Modal>
     );
@@ -279,17 +383,30 @@ const FieldsetHeader = ({title, onRemoveClick}) => (
   </div>
 );
 
-const InputField = ({id, label, value, onValueChange}) => (
-  <div className='form__group'>
-    <label className='form__label' htmlFor={id}>{label}</label>
-    <input type='text' id={id} name={id} className='form__control' value={value} onChange={onValueChange} />
-    {/* <p className='form__help'>{t('{chars} characters left', {chars: limit.remaining})}</p> */}
-  </div>
-);
+FieldsetHeader.propTypes = {
+  title: T.string,
+  onRemoveClick: T.func
+};
+
+const InputField = ({id, label, value, onValueChange, onBlur, hasError}) => {
+  const classNames = c('form__control', {
+    'form__control--danger': hasError
+  });
+
+  return (
+    <div className='form__group'>
+      <label className='form__label' htmlFor={id}>{label}</label>
+      <input type='text' id={id} name={id} className={classNames} value={value} onChange={onValueChange} onBlur={onBlur} />
+      {/* <p className='form__help'>{t('{chars} characters left', {chars: limit.remaining})}</p> */}
+    </div>
+  );
+};
 
 InputField.propTypes = {
   id: T.string,
   label: T.string,
   value: T.string,
-  onValueChange: T.func
+  hasError: T.bool,
+  onValueChange: T.func,
+  onBlur: T.func
 };
