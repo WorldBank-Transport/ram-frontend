@@ -365,6 +365,7 @@ const ProjectPageActive = React.createClass({
           </div>
           <ProjectHeaderActions
             project={dataProject}
+            scenarios={this.props.scenarios.data.results}
             projectStatus='active'
             onAction={this.onProjectAction} />
         </StickyHeader>

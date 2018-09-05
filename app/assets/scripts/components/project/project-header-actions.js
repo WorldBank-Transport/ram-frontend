@@ -11,7 +11,8 @@ const ProjectHeaderActions = React.createClass({
   propTypes: {
     onAction: T.func,
     projectStatus: T.string,
-    project: T.object
+    project: T.object,
+    scenarios: T.array
   },
 
   onDelete: function (e) {
@@ -48,6 +49,31 @@ const ProjectHeaderActions = React.createClass({
     );
   },
 
+  renderRahExportButton: function () {
+    if (this.props.projectStatus !== 'active') return null;
+    // Check if there are results by checking if the analysis succeded.
+    // Note: The scenario api returns paginated results. It is theoretically
+    // possible that different pages have different results but in pratice this
+    // is unlikely to be a problem because there are never that many scenarios.
+    const allowExport = this.props.scenarios.some(sc => sc.gen_analysis &&
+      sc.gen_analysis.status === 'complete' &&
+      !sc.gen_analysis.errored);
+
+    return (
+      <button
+        data-tip={t('There are no results to export')}
+        data-tip-disable={allowExport}
+        data-effect='solid'
+        type='button'
+        title={t('Export to Accessibility Hub')}
+        className={c('ipa-export', {'visually-disabled': !allowExport})}
+        disabled={!allowExport}
+        onClick={this.props.onAction.bind(null, 'export-rah')}>
+        <span>{t('Export')}</span>
+      </button>
+    );
+  },
+
   render: function () {
     return (
       <div className='inpage__actions'>
@@ -66,10 +92,7 @@ const ProjectHeaderActions = React.createClass({
             </ul>
         </Dropdown>
 
-        {this.props.projectStatus === 'active'
-          ? <button title={t('Export to Accessibility Hub')} className='ipa-export' type='button' onClick={this.props.onAction.bind(null, 'export-rah')}><span>{t('Export')}</span></button>
-          : null
-        }
+        {this.renderRahExportButton()}
 
         {this.props.projectStatus === 'active'
           ? <button title={t('Create new scenario')} className='ipa-plus ipa-main' type='button' onClick={this.props.onAction.bind(null, 'new-scenario')}><span>{t('New scenario')}</span></button>
