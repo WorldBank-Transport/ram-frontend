@@ -28,7 +28,7 @@ class ModalBase extends React.Component {
     return (
       <ModalFooter>
         <button className='mfa-xmark' type='button' onClick={this.props.onCloseClick}><span>{t('Cancel')}</span></button>
-        <button className={c('mfa-tick', {disabled: !this.allowSubmit()})} type='submit' onClick={this.onSubmit.bind(this)}><span>{t('Save')}</span></button>
+        <button className={c('mfa-tick', {disabled: !this.allowSubmit()})} type='submit' onClick={this.onSubmit.bind(this)} disabled={!this.allowSubmit()}><span>{t('Save')}</span></button>
       </ModalFooter>
     );
   }

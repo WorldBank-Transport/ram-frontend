@@ -281,7 +281,8 @@ class ModalPoi extends ModalBase {
               type='button'
               className={c('fia-trash', {disabled: newFields <= 1})}
               title={t('Delete fieldset')}
-              onClick={this.removePoiFileField.bind(this, fileField.id)}>
+              onClick={this.removePoiFileField.bind(this, fileField.id)}
+              disabled={newFields <= 1}>
               <span>Delete</span>
             </button>
           </div>

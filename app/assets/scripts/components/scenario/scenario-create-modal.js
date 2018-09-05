@@ -352,7 +352,7 @@ const ScenarioCreateModal = React.createClass({
         </ModalBody>
         <ModalFooter>
           <button className='mfa-xmark' type='button' onClick={this.onClose}><span>{t('Cancel')}</span></button>
-          <button className={c('mfa-tick', {'disabled': !this.allowSubmit()})} type='submit' onClick={this.onSubmit}><span>{t('Create')}</span></button>
+          <button className={c('mfa-tick', {'disabled': !this.allowSubmit()})} type='submit' onClick={this.onSubmit} disabled={!this.allowSubmit()}><span>{t('Create')}</span></button>
         </ModalFooter>
       </Modal>
     );

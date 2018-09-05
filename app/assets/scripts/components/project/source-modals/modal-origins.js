@@ -267,7 +267,7 @@ class ModalOrigins extends ModalBase {
               <legend className='form__legend'>{t('Population estimate {idx}', {idx: i + 1})}</legend>
             </div>
             <div className='form__inner-actions'>
-              <button type='button' className={c('fia-trash', {disabled: fileField.indicators.length <= 1})} title={t('Delete fieldset')} onClick={this.onIndicatorRemove.bind(this, i)}><span>{t('Delete')}</span></button>
+              <button type='button' className={c('fia-trash', {disabled: fileField.indicators.length <= 1})} title={t('Delete fieldset')} onClick={this.onIndicatorRemove.bind(this, i)} disabled={fileField.indicators.length <= 1}><span>{t('Delete')}</span></button>
             </div>
           </div>
 
@@ -321,7 +321,7 @@ class ModalOrigins extends ModalBase {
           )}
           {this.renderIndicators()}
           <div className='form__extra-actions'>
-            <button type='button' className={c('fea-plus', {disabled: fileField.file === null})} title={t('Add new population estimate')} onClick={this.addIndicatorField.bind(this)}><span>{t('New population estimate')}</span></button>
+            <button type='button' className={c('fea-plus', {disabled: fileField.file === null})} title={t('Add new population estimate')} onClick={this.addIndicatorField.bind(this)} disabled={fileField.file === null}><span>{t('New population estimate')}</span></button>
           </div>
         </form>
       </ModalBody>

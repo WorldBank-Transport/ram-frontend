@@ -43,8 +43,10 @@ const ProjectHeaderActions = React.createClass({
       }
     }
 
+    const disabled = !readyToEndSetup || isFinishingSetup;
+
     return (
-      <button title={t('Finish setup')} className={c('ipa-tick ipa-main', {disabled: !readyToEndSetup || isFinishingSetup})} type='button' onClick={this.props.onAction.bind(null, 'finish')}><span>{t('Finish setup')}</span></button>
+      <button title={t('Finish setup')} className={c('ipa-tick ipa-main', {disabled})} type='button' onClick={this.props.onAction.bind(null, 'finish')} disabled={disabled}><span>{t('Finish setup')}</span></button>
     );
   },
 
