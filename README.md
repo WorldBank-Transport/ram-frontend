@@ -35,6 +35,7 @@ The configuration is overridable by environment variables, expressed between []:
 - `api` - The address for the API. [API]
 - `iDEditor` - The address of the iDEditor. Defaults to the `master` branch of the [RAM fork of iD](https://github.com/WorldBank-Transport/ram-id), hosted on GH Pages. (Default: https://id.ruralaccess.info). [IDEDITOR]
 - `mbtoken` - The Mapbox Token to load map tiles from. [MBTOKEN]
+- `rahUrl` - The url for the Rural Accessibility Hub. [RAH_URL]
 - `auth` - The configuration for optional authentication with Auth0. By default, no authentication is set (Default: {})
 - `auth.domain` - See instructions below [AUTH_DOMAIN]
 - `auth.clientID` - See instructions below [AUTH_CLIENTID]
@@ -47,6 +48,7 @@ module.exports = {
   api: 'http://localhost:4000',
   idEditor: 'https://id.ruralaccess.info',
   mbtoken: 'asfd23rlmksjdf023rnnsafd',
+  rahUrl: 'http://rah.surge.sh' 
   auth: {}
 };
 ```

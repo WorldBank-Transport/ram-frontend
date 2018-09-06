@@ -13,6 +13,7 @@ import scenarioResultsCompare from './scenario-results-compare';
 import scenarioPoi from './scenario-poi';
 import scenarioResultsRaw from './scenario-results-raw';
 import scenarioResultsGeo from './scenario-results-geo';
+import rahForm from './rah-form';
 import { systemAlertsReducer } from '../components/system-alerts';
 import auth from './auth';
 
@@ -29,6 +30,7 @@ export const reducers = {
   scenarioResultsCompare,
   scenarioPoi,
   systemAlertsReducer,
+  rahForm,
   auth
 };
 
