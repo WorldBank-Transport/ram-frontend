@@ -35,6 +35,7 @@ The configuration is overridable by environment variables, expressed between []:
 - `api` - The address for the API. [API]
 - `iDEditor` - The address of the iDEditor. Defaults to the `master` branch of the [RAM fork of iD](https://github.com/WorldBank-Transport/ram-id), hosted on GH Pages. (Default: https://id.ruralaccess.info). [IDEDITOR]
 - `mbtoken` - The Mapbox Token to load map tiles from. [MBTOKEN]
+- `rahUrl` - The url for the Rural Accessibility Hub. [RAH_URL]
 - `auth` - The configuration for optional authentication with Auth0. By default, no authentication is set (Default: {})
 - `auth.domain` - See instructions below [AUTH_DOMAIN]
 - `auth.clientID` - See instructions below [AUTH_CLIENTID]
@@ -47,6 +48,7 @@ module.exports = {
   api: 'http://localhost:4000',
   idEditor: 'https://id.ruralaccess.info',
   mbtoken: 'asfd23rlmksjdf023rnnsafd',
+  rahUrl: 'http://rah.surge.sh' 
   auth: {}
 };
 ```
@@ -72,7 +74,7 @@ Compiles the sass files, javascript, and launches the server making the site ava
 The system will watch files and execute tasks whenever one of them changes.
 The site will automatically refresh since it is bundled with livereload.
 
-# Deployment
+## Deployment
 To prepare the app for deployment run:
 
 ```
@@ -81,7 +83,7 @@ yarn build
 This will package the app and place all the contents in the `dist` directory.
 The app can then be run by any web server.
 
-## Docker
+### Docker
 The RAM frontend is also available in a [Docker container](https://hub.docker.com/r/wbtransport/ram-frontend/). This container builds the site and serves the interface through nginx. [Environment variables](#config-files) will be picked up when the container is run:
 
 ``` yml
@@ -96,3 +98,13 @@ services:
 ```
 
 To run the full RAM stack in Docker, you can use the `docker-compose.yml` file that's available in the [RAM backend repo](https://github.com/WorldBank-Transport/ram-backend/blob/develop/docker-compose.yml).
+
+### Releasing a new version
+The process to release a new version:
+
+- still on `develop`, bump the version in `package.json`
+- set up PR, have somebody do a review and merge `develop` into `master`
+- CircleCI will add a new tag to git using the version in `package.json`
+- if the tagging was successful, CircleCI will build the Docker image, tag it with the version number and push it to Docker Hub. If the tagging failed (because the version wasn't updated in `package.json`), the build fails
+
+Once this is done, you can [add a new release on Github](https://github.com/WorldBank-Transport/ram-frontend/releases/new) with useful notes that describe it.

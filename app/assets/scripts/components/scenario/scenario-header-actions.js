@@ -46,7 +46,7 @@ const ScenarioHeaderActions = React.createClass({
   },
 
   renderRNButton: function (isGenerating, isPending, isRnAllowed) {
-    let disable = !isGenerating && !isPending && isRnAllowed;
+    let isEnabled = !isGenerating && !isPending && isRnAllowed;
     let txt;
 
     if (!isRnAllowed) {
@@ -60,19 +60,19 @@ const ScenarioHeaderActions = React.createClass({
     return (
       <button
         data-tip={txt}
-        data-tip-disable={disable}
+        data-tip-disable={isEnabled}
         data-effect='solid'
         title={t('Edit network')}
-        className={c('ipa-pencil', {'visually-disabled': isGenerating || isPending || !isRnAllowed})}
+        className={c('ipa-pencil', {'visually-disabled': !isEnabled})}
         type='button'
-        onClick={this.onEditClick.bind(null, !isGenerating)}>
+        onClick={this.onEditClick.bind(null, !isGenerating)}
+        disabled={!isEnabled}>
           <span>{t('Network')}</span>
       </button>
     );
   },
 
   renderGenerateAbort: function (isGenerating, isPending) {
-    let disable = !isPending;
     let txt;
 
     if (isPending) {
@@ -91,12 +91,13 @@ const ScenarioHeaderActions = React.createClass({
     ) : (
       <button
         data-tip={txt}
-        data-tip-disable={disable}
+        data-tip-disable={!isPending}
         data-effect='solid'
         title={t('Generate analysis')}
         className={c('ipa-arrow-loop ipa-main', {'visually-disabled': isPending})}
         type='button'
-        onClick={this.onGenerateClick}>
+        onClick={this.onGenerateClick}
+        disabled={isPending}>
         <span>{t('Analysis')}</span>
       </button>
     );

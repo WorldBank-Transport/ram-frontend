@@ -11,7 +11,8 @@ const ProjectHeaderActions = React.createClass({
   propTypes: {
     onAction: T.func,
     projectStatus: T.string,
-    project: T.object
+    project: T.object,
+    scenarios: T.array
   },
 
   onDelete: function (e) {
@@ -43,8 +44,35 @@ const ProjectHeaderActions = React.createClass({
       }
     }
 
+    const disabled = !readyToEndSetup || isFinishingSetup;
+
     return (
-      <button title={t('Finish setup')} className={c('ipa-tick ipa-main', {disabled: !readyToEndSetup || isFinishingSetup})} type='button' onClick={this.props.onAction.bind(null, 'finish')}><span>{t('Finish setup')}</span></button>
+      <button title={t('Finish setup')} className={c('ipa-tick ipa-main', {disabled})} type='button' onClick={this.props.onAction.bind(null, 'finish')} disabled={disabled}><span>{t('Finish setup')}</span></button>
+    );
+  },
+
+  renderRahExportButton: function () {
+    if (this.props.projectStatus !== 'active') return null;
+    // Check if there are results by checking if the analysis succeded.
+    // Note: The scenario api returns paginated results. It is theoretically
+    // possible that different pages have different results but in pratice this
+    // is unlikely to be a problem because there are never that many scenarios.
+    const allowExport = this.props.scenarios.some(sc => sc.gen_analysis &&
+      sc.gen_analysis.status === 'complete' &&
+      !sc.gen_analysis.errored);
+
+    return (
+      <button
+        data-tip={t('There are no results to export')}
+        data-tip-disable={allowExport}
+        data-effect='solid'
+        type='button'
+        title={t('Export to Accessibility Hub')}
+        className={c('ipa-export', {'visually-disabled': !allowExport})}
+        disabled={!allowExport}
+        onClick={this.props.onAction.bind(null, 'export-rah')}>
+        <span>{t('Export')}</span>
+      </button>
     );
   },
 
@@ -65,6 +93,8 @@ const ProjectHeaderActions = React.createClass({
               <li><a href='#' title={t('Delete project')} className='drop__menu-item drop__menu-item--danger dmi-trash' data-hook='dropdown:close' onClick={this.onDelete}>{t('Delete project')}</a></li>
             </ul>
         </Dropdown>
+
+        {this.renderRahExportButton()}
 
         {this.props.projectStatus === 'active'
           ? <button title={t('Create new scenario')} className='ipa-plus ipa-main' type='button' onClick={this.props.onAction.bind(null, 'new-scenario')}><span>{t('New scenario')}</span></button>

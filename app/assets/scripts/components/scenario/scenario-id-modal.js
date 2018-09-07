@@ -102,7 +102,7 @@ const ScenarioIDModal = React.createClass({
         </ModalBody>
         <ModalFooter>
           <button className='mfa-xmark' type='button' onClick={this.onClose}><span>{t('Cancel')}</span></button>
-          <button data-tip data-for='tip-no-save' className={c('mfa-tick', {'visually-disabled': !this.state.saveEnabled})} type='submit' onClick={this.onSaveClick}><span>{t('Save')}</span></button>
+          <button data-tip data-for='tip-no-save' className={c('mfa-tick', {'visually-disabled': !this.state.saveEnabled})} type='submit' onClick={this.onSaveClick} disabled={!this.state.saveEnabled}><span>{t('Save')}</span></button>
 
         <ReactTooltip id='tip-no-save' effect='solid' disable={this.state.saveEnabled}>
           {t('Nothing to save')}

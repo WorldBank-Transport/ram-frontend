@@ -207,7 +207,7 @@ const ProjectFormModal = React.createClass({
         </ModalBody>
         <ModalFooter>
           <button className='mfa-xmark' type='button' onClick={this.onClose}><span>{t('Cancel')}</span></button>
-          <button className={c('mfa-tick', {'disabled': !this.allowSubmit()})} type='submit' onClick={this.onSubmit}><span>{this.props.editing ? t('Save') : t('Create')}</span></button>
+          <button className={c('mfa-tick', {'disabled': !this.allowSubmit()})} type='submit' onClick={this.onSubmit} disabled={!this.allowSubmit()}><span>{this.props.editing ? t('Save') : t('Create')}</span></button>
         </ModalFooter>
       </Modal>
     );

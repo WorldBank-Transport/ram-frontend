@@ -1,6 +1,6 @@
 {
   "name": "ram-frontend",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "User interface of the Rural Accessibility Map",
   "repository": {
     "type": "git",
@@ -96,6 +96,7 @@
     "react-router-redux": "^4.0.8",
     "react-router-scroll": "^0.4.1",
     "react-sticky": "^6.0.0",
+    "react-tag-autocomplete": "^5.5.1",
     "react-tether": "^0.5.6",
     "react-tooltip": "^3.2.9",
     "react-widgets": "^3.4.6",

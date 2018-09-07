@@ -165,7 +165,8 @@
 
 .ipa-ellipsis,
 .ipa-download,
-.ipa-pencil {
+.ipa-pencil,
+.ipa-export {
    @extend .button--achromic;
 }
 
@@ -195,6 +196,10 @@
   &::before {
     @extend %collecticon-sm-xmark;
   }
+}
+
+.ipa-export::before {
+  @extend %collecticon-share;
 }
 
 
