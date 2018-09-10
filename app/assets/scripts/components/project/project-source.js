@@ -145,7 +145,7 @@ class PorjectSourceData extends React.Component {
                 ) : null}
                 {this.props.profileSpeedCustomize ? (
                   <li>
-                    <ProfileSpeedEdit />
+                    <ProfileSpeedEdit projectId={this.props.projectId} />
                   </li>
                 ) : null}
               </ul>
@@ -212,9 +212,14 @@ class ProfileSpeedEdit extends React.Component {
         <Portal>
           <ProfileEditModal
             revealed={this.state.modalOpen}
+            projectId={this.props.projectId}
             onCloseClick={this.closeModal.bind(this)} />
         </Portal>
       </div>
     );
   }
 }
+
+ProfileSpeedEdit.propTypes = {
+  projectId: T.number
+};

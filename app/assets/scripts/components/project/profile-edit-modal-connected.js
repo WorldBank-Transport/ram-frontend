@@ -1,9 +1,12 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
+import { connect } from 'react-redux';
 import c from 'classnames';
 import _ from 'lodash';
 
 import { t } from '../../utils/i18n';
+import { showGlobalLoading, hideGlobalLoading } from '../global-loading';
+import { fetchProfileSettings } from '../../actions';
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '../modal';
 
@@ -68,16 +71,34 @@ const getPaths = (data, idx) => {
   }
 };
 
+const settingsToState = (settings) => {
+  if (!settings) return [];
+
+  const keys = Object.keys(settings);
+  return keys.map(k => {
+    if (typeof settings[k] === 'object') {
+      return {
+        key: k,
+        values: settingsToState(settings[k])
+      };
+    }
+
+    return {
+      key: k,
+      value: settings[k]
+    };
+  });
+};
+
 class ProfileEditModal extends React.Component {
   constructor (props) {
     super(props);
 
-    this.state = this.getInitialState();
-    this.onClose = this.onClose.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
-    this.renderSection = this.renderSection.bind(this);
-
     this.sections = [
+      {
+        label: 'Speeds',
+        key: 'speed_profile'
+      },
       {
         label: 'Surface Speeds',
         key: 'surface_speeds'
@@ -87,43 +108,67 @@ class ProfileEditModal extends React.Component {
         key: 'tracktype_speeds'
       },
       {
-        label: 'Speeds',
-        key: 'speeds',
-        multi: true
+        label: 'Smoothness Speeds',
+        key: 'smoothness_speeds'
+      },
+      {
+        label: 'Maxspeed Default',
+        key: 'maxspeed_table_default'
+      },
+      {
+        label: 'Maxspeed',
+        key: 'maxspeed_table'
       }
+      //   {
+      //     label: 'Speeds',
+      //     key: 'speeds',
+      //     multi: true
+      //   }
     ];
+
+    this.state = this.getInitialState(props);
+    this.onClose = this.onClose.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
+    this.renderSection = this.renderSection.bind(this);
   }
 
-  getInitialState () {
+  getInitialState (props) {
+    const settings = props.profileSettings.data || [];
     return {
       errors: [],
-      data: [
-        {
-          section: 'speeds',
-          values: [
-            {
-              key: 'highway',
-              values: [
-                {
-                  key: 'primary',
-                  value: 100
-                }
-              ]
-            }
-          ]
-        },
-        {
-          section: 'surface_speeds',
-          values: [
-            { key: 'asphalt', value: 100 },
-            { key: 'dirt', value: 20 }
-          ]
-        },
-        {
-          section: 'tracktype_speeds',
-          values: []
-        }
-      ]
+      data: this.sections.map(({key}) => {
+        return {
+          section: key,
+          values: settingsToState(settings[key])
+        };
+      })
+      // data: [
+        // {
+        //   section: 'speeds',
+        //   values: [
+        //     {
+        //       key: 'highway',
+        //       values: [
+        //         {
+        //           key: 'primary',
+        //           value: 100
+        //         }
+        //       ]
+        //     }
+        //   ]
+        // },
+        // {
+        //   section: 'surface_speeds',
+        //   values: [
+        //     { key: 'asphalt', value: 100 },
+        //     { key: 'dirt', value: 20 }
+        //   ]
+        // },
+        // {
+        //   section: 'tracktype_speeds',
+        //   values: []
+        // }
+      // ]
     };
   }
 
@@ -131,6 +176,21 @@ class ProfileEditModal extends React.Component {
     if (!this.props.revealed && !nextProps.revealed) {
       // If the modal is not, nor is going to be revealed, do nothing.
       return;
+    }
+
+    if (!this.props.revealed && nextProps.revealed) {
+      showGlobalLoading();
+      this.props._fetchProfileSettings(this.props.projectId)
+        .then(() => {
+          hideGlobalLoading();
+        });
+    }
+
+    if (this.props.profileSettings.fetching &&
+      !nextProps.profileSettings.fetching &&
+      nextProps.profileSettings.fetched &&
+      !nextProps.profileSettings.error) {
+      this.setState(this.getInitialState(nextProps));
     }
   }
 
@@ -332,6 +392,8 @@ class ProfileEditModal extends React.Component {
   }
 
   render () {
+    const { fetched, fetching } = this.props.profileSettings;
+
     return (
       <Modal
         id='modal-project-export'
@@ -348,9 +410,11 @@ class ProfileEditModal extends React.Component {
           </div>
         </ModalHeader>
         <ModalBody>
-          <form className='form'>
-            {this.sections.map(this.renderSection)}
-          </form>
+          {fetched && !fetching ? (
+            <form className='form'>
+              {this.sections.map(this.renderSection)}
+            </form>
+          ) : null}
         </ModalBody>
         <ModalFooter>
           <button className='mfa-xmark' type='button' onClick={this.onClose}><span>{t('Cancel')}</span></button>
@@ -362,15 +426,29 @@ class ProfileEditModal extends React.Component {
 }
 
 ProfileEditModal.propTypes = {
-  _postRAHExport: T.func,
-  resetForm: T.func,
   revealed: T.bool,
-  projectId: T.string,
-  rahForm: T.object,
-  onCloseClick: T.func
+  onCloseClick: T.func,
+  _fetchProfileSettings: T.func,
+  profileSettings: T.object,
+  projectId: T.number
 };
 
-export default ProfileEditModal;
+// /////////////////////////////////////////////////////////////////// //
+// Connect functions
+
+function selector (state) {
+  return {
+    profileSettings: state.profileSettings
+  };
+}
+
+function dispatcher (dispatch) {
+  return {
+    _fetchProfileSettings: (...args) => dispatch(fetchProfileSettings(...args))
+  };
+}
+
+export default connect(selector, dispatcher)(ProfileEditModal);
 
 const FieldsetHeader = ({title, onRemoveClick}) => (
   <div className='form__inner-header'>
