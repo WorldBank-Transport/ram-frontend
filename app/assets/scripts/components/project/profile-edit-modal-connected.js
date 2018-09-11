@@ -6,7 +6,7 @@ import _ from 'lodash';
 
 import { t } from '../../utils/i18n';
 import { showGlobalLoading, hideGlobalLoading } from '../global-loading';
-import { fetchProfileSettings } from '../../actions';
+import { fetchProfileSettings, postProfileSettings, resetProfileSettingsForm, showAlert } from '../../actions';
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '../modal';
 
@@ -71,6 +71,26 @@ const getPaths = (data, idx) => {
   }
 };
 
+/**
+ * Converts profile settings object from the API to state compliant structure.
+ * Supports nested values for multi level settings.
+ * Form:
+ * {
+ *  foo: 'bar',
+ *  baz: 'boo',
+ *  nested: {
+ *    a: 1
+ *  }
+ * }
+ * To:
+ * [
+ *   { key: 'foo', value: 'bar' },
+ *   { key: 'baz', value: 'boo' },
+ *   { key: 'nested', values: [{ key: a, value: 1 }] }
+ * ]
+ *
+ * @param {object} settings Settings object
+ */
 const settingsToState = (settings) => {
   if (!settings) return [];
 
@@ -89,6 +109,49 @@ const settingsToState = (settings) => {
     };
   });
 };
+
+/**
+ * Converts the state data array to API profile settings compliant structure.
+ * Supports nested values for multi level settings.
+ * Form:
+ * [
+ *   { key: 'foo', value: 'bar' },
+ *   { key: 'baz', value: 'boo' },
+ *   { key: 'nested', values: [{ key: a, value: 1 }] }
+ * ]
+ * To:
+ * {
+ *  foo: 'bar',
+ *  baz: 'boo',
+ *  nested: {
+ *    a: 1
+ *  }
+ * }
+ *
+ * @param {object} settings Settings object
+ */
+const stateToSettings = (state) => {
+  if (!state) return {};
+
+  return state.reduce((acc, d) => {
+    return Object.assign({}, acc, {
+      [d.key]: typeof d.values !== 'undefined'
+        ? stateToSettings(d.values)
+        : d.value
+    });
+  }, {});
+};
+
+// How the profile edit modal works:
+// Section are gorups of speeds that can be edited (ex: "Surface Speeds",
+// "Tracktype Speeds", "Smoothness Speeds", etc) These are required by the api
+// and defined on the server. The labels to use for each one of the sections are
+// defined on the class constructor.
+// A section can have the `multi` flag set, which means that two levels are
+// allowed.
+// In summary, to add a new section:
+// 1) Add it in the api.
+// 2) Add it to the sections list alongside a label.
 
 class ProfileEditModal extends React.Component {
   constructor (props) {
@@ -126,50 +189,46 @@ class ProfileEditModal extends React.Component {
       //   }
     ];
 
-    this.state = this.getInitialState(props);
+    this.state = this.getInitialState();
     this.onClose = this.onClose.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
     this.renderSection = this.renderSection.bind(this);
   }
 
-  getInitialState (props) {
-    const settings = props.profileSettings.data || [];
-    return {
-      errors: [],
-      data: this.sections.map(({key}) => {
-        return {
-          section: key,
-          values: settingsToState(settings[key])
-        };
-      })
-      // data: [
-        // {
-        //   section: 'speeds',
-        //   values: [
-        //     {
-        //       key: 'highway',
-        //       values: [
-        //         {
-        //           key: 'primary',
-        //           value: 100
-        //         }
-        //       ]
-        //     }
-        //   ]
-        // },
-        // {
-        //   section: 'surface_speeds',
-        //   values: [
-        //     { key: 'asphalt', value: 100 },
-        //     { key: 'dirt', value: 20 }
-        //   ]
-        // },
-        // {
-        //   section: 'tracktype_speeds',
-        //   values: []
-        // }
-      // ]
-    };
+  getInitialState () {
+    // Normal section structure:
+    // {
+    //   section: 'surface_speeds',
+    //   values: [
+    //     { key: 'asphalt', value: 100 },
+    //     { key: 'dirt', value: 20 }
+    //   ]
+    // }
+    //
+    // Section structure when `multi` is true:
+    // {
+    //   section: 'speeds',
+    //   values: [
+    //     {
+    //       key: 'highway',
+    //       values: [
+    //         {
+    //           key: 'primary',
+    //           value: 100
+    //         }
+    //       ]
+    //     }
+    //   ]
+    // }
+
+    return { errors: [], data: [] };
+  }
+
+  computeDataFromSettings (settings) {
+    return this.sections.map(({key}) => ({
+      section: key,
+      values: settingsToState(settings[key])
+    }));
   }
 
   componentWillReceiveProps (nextProps) {
@@ -178,6 +237,7 @@ class ProfileEditModal extends React.Component {
       return;
     }
 
+    // When the modal is open fetch the profile data from the API.
     if (!this.props.revealed && nextProps.revealed) {
       showGlobalLoading();
       this.props._fetchProfileSettings(this.props.projectId)
@@ -186,20 +246,34 @@ class ProfileEditModal extends React.Component {
         });
     }
 
+    // Once the profile settings are fetched, compute the state.
     if (this.props.profileSettings.fetching &&
       !nextProps.profileSettings.fetching &&
-      nextProps.profileSettings.fetched &&
-      !nextProps.profileSettings.error) {
-      this.setState(this.getInitialState(nextProps));
+      nextProps.profileSettings.fetched) {
+      if (nextProps.profileSettings.error) {
+        this.props._showAlert('danger', <p>{nextProps.profileSettings.error.message}</p>, true);
+        return this.onClose();
+      }
+      this.setState({data: this.computeDataFromSettings(nextProps.profileSettings.data)});
+    }
+
+    // Once the form has been submitted display the error/success message.
+    if (this.props.profileSettingsForm.processing && !nextProps.profileSettingsForm.processing) {
+      if (!nextProps.profileSettingsForm.error) {
+        this.props._showAlert('success', <p>{t('Profile settings successfully updated')}</p>, true, 4500);
+        this.onClose();
+      } else {
+        this.props._showAlert('danger', <p>{nextProps.profileSettingsForm.error.message}</p>, true);
+      }
     }
   }
 
   componentWillUnmount () {
-    // this.props.resetForm();
+    this.props._resetProfileSettingsForm();
   }
 
   onClose () {
-    // this.props.resetForm();
+    this.props._resetProfileSettingsForm();
     this.setState(this.getInitialState());
     this.props.onCloseClick();
   }
@@ -256,8 +330,9 @@ class ProfileEditModal extends React.Component {
   }
 
   allowSubmit () {
-    // if (this.props.rahForm.processing) return false;
+    if (this.props.profileSettingsForm.processing) return false;
 
+    // Get all the paths for keys and values.
     const paths = this.state.data.reduce((acc, o, oi) => {
       return acc.concat(getPaths(o, oi));
     }, []);
@@ -268,6 +343,17 @@ class ProfileEditModal extends React.Component {
 
   onSubmit (e) {
     e.preventDefault && e.preventDefault();
+
+    // Prepare payload.
+    const payload = this.state.data.reduce((acc, d) => {
+      return Object.assign({}, acc, {
+        [d.section]: stateToSettings(d.values)
+      });
+    }, {});
+
+    showGlobalLoading();
+    this.props._postProfileSettings(this.props.projectId, payload)
+      .then(() => hideGlobalLoading());
   }
 
   renderSection ({multi, key, label}) {
@@ -429,8 +515,12 @@ ProfileEditModal.propTypes = {
   revealed: T.bool,
   onCloseClick: T.func,
   _fetchProfileSettings: T.func,
+  _postProfileSettings: T.func,
+  _resetProfileSettingsForm: T.func,
+  _showAlert: T.func,
   profileSettings: T.object,
-  projectId: T.number
+  projectId: T.number,
+  profileSettingsForm: T.object
 };
 
 // /////////////////////////////////////////////////////////////////// //
@@ -438,17 +528,25 @@ ProfileEditModal.propTypes = {
 
 function selector (state) {
   return {
-    profileSettings: state.profileSettings
+    profileSettings: state.profileSettings,
+    profileSettingsForm: state.profileSettingsForm
   };
 }
 
 function dispatcher (dispatch) {
   return {
-    _fetchProfileSettings: (...args) => dispatch(fetchProfileSettings(...args))
+    _fetchProfileSettings: (...args) => dispatch(fetchProfileSettings(...args)),
+    _postProfileSettings: (...args) => dispatch(postProfileSettings(...args)),
+    _resetProfileSettingsForm: (...args) => dispatch(resetProfileSettingsForm(...args)),
+    _showAlert: (...args) => dispatch(showAlert(...args))
   };
 }
 
 export default connect(selector, dispatcher)(ProfileEditModal);
+
+//
+// Helper components.
+//
 
 const FieldsetHeader = ({title, onRemoveClick}) => (
   <div className='form__inner-header'>
@@ -475,7 +573,6 @@ const InputField = ({id, label, value, onValueChange, onBlur, hasError}) => {
     <div className='form__group'>
       <label className='form__label' htmlFor={id}>{label}</label>
       <input type='text' id={id} name={id} className={classNames} value={value} onChange={onValueChange} onBlur={onBlur} />
-      {/* <p className='form__help'>{t('{chars} characters left', {chars: limit.remaining})}</p> */}
     </div>
   );
 };

@@ -1,4 +1,8 @@
-import { REQUEST_PROFILE_SETTINGS, RECEIVE_PROFILE_SETTINGS, INVALIDATE_PROFILE_SETTINGS } from '../actions';
+import {
+  REQUEST_PROFILE_SETTINGS,
+  RECEIVE_PROFILE_SETTINGS,
+  INVALIDATE_PROFILE_SETTINGS
+} from '../actions';
 
 const initialState = {
   fetching: false,
