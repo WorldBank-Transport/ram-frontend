@@ -142,52 +142,16 @@ const stateToSettings = (state) => {
   }, {});
 };
 
-// How the profile edit modal works:
+// How the profile edit works:
 // Section are gorups of speeds that can be edited (ex: "Surface Speeds",
 // "Tracktype Speeds", "Smoothness Speeds", etc) These are required by the api
-// and defined on the server. The labels to use for each one of the sections are
-// defined on the class constructor.
+// and defined on the server alongside the labels.
 // A section can have the `multi` flag set, which means that two levels are
 // allowed.
-// In summary, to add a new section:
-// 1) Add it in the api.
-// 2) Add it to the sections list alongside a label.
 
 class ProfileEditModal extends React.Component {
   constructor (props) {
     super(props);
-
-    this.sections = [
-      {
-        label: 'Speeds',
-        key: 'speed_profile'
-      },
-      {
-        label: 'Surface Speeds',
-        key: 'surface_speeds'
-      },
-      {
-        label: 'Tracktype Speeds',
-        key: 'tracktype_speeds'
-      },
-      {
-        label: 'Smoothness Speeds',
-        key: 'smoothness_speeds'
-      },
-      {
-        label: 'Maxspeed Default',
-        key: 'maxspeed_table_default'
-      },
-      {
-        label: 'Maxspeed',
-        key: 'maxspeed_table'
-      }
-      //   {
-      //     label: 'Speeds',
-      //     key: 'speeds',
-      //     multi: true
-      //   }
-    ];
 
     this.state = this.getInitialState();
     this.onClose = this.onClose.bind(this);
@@ -224,10 +188,10 @@ class ProfileEditModal extends React.Component {
     return { errors: [], data: [] };
   }
 
-  computeDataFromSettings (settings) {
-    return this.sections.map(({key}) => ({
+  computeDataFromSettings (profileSettings) {
+    return profileSettings.sections.map(({key}) => ({
       section: key,
-      values: settingsToState(settings[key])
+      values: settingsToState(profileSettings.settings[key])
     }));
   }
 
@@ -478,7 +442,7 @@ class ProfileEditModal extends React.Component {
   }
 
   render () {
-    const { fetched, fetching } = this.props.profileSettings;
+    const { fetched, fetching, data } = this.props.profileSettings;
 
     return (
       <Modal
@@ -498,7 +462,7 @@ class ProfileEditModal extends React.Component {
         <ModalBody>
           {fetched && !fetching ? (
             <form className='form'>
-              {this.sections.map(this.renderSection)}
+              {data.sections.map(this.renderSection)}
             </form>
           ) : null}
         </ModalBody>
