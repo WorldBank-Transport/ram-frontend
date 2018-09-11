@@ -230,14 +230,14 @@ const ProjectPageActive = React.createClass({
 
   renderSourceData: function () {
     const projectId = this.props.project.data.id;
-    return _.map(this.props.project.data.sourceData, (o, key) => (
+    return _.map(this.props.project.data.sourceData, (sourceData, key) => (
       <PorjectSourceData
         key={key}
         type={key}
         projectId={projectId}
-        sourceData={o}
+        sourceData={sourceData}
         editable={false}
-        profileSpeedCustomize={key === 'profile'} />
+        profileSpeedCustomize={key === 'profile' && sourceData.type === 'default'} />
     ));
   },
 

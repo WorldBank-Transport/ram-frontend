@@ -32,6 +32,8 @@ class PorjectSourceData extends React.Component {
       e.preventDefault();
       return this.openModal();
     }
+
+    if (!this.props.sourceData.files.length) e.preventDefault();
   }
 
   closeModal (needRefresh) {
