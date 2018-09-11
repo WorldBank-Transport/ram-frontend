@@ -253,6 +253,7 @@ class ModalProfile extends ModalBase {
           {this.state.source === 'file' ? this.renderSourceFile() : null}
           {this.state.source === 'default' && <p>{t('The default OSRM profile assumes OSM-style road network data. For a customized profile, download the {link} and upload it.', {link: <a href={`${config.api}/files/source-data/default.profile.lua`} title={t('Download default profile.lua file')} target='_blank'>{t('default file')}</a>})}</p>}
           {this.state.source === 'wbcatalog' ? this.renderSourceCatalog() : null}
+          {this.state.source !== 'default' && <div className='form__note'><p>{t('Using a non default profile will disable speed editing.')}</p></div>}
         </form>
       </ModalBody>
     );
