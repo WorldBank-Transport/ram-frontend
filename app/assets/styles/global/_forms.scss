@@ -344,7 +344,7 @@ textarea.form__control {
   position: relative;
   border: 0;
   border-radius: $base-border-radius;
-  margin: 0 (-$global-spacing) $global-spacing (-$global-spacing);
+  margin: 0 0 $global-spacing 0;
   padding: $global-spacing;
   background: rgba($base-color, 0.04);
 
@@ -364,34 +364,60 @@ textarea.form__control {
   padding: ($global-spacing / 4) 0;
 }
 
-.form__fieldset-header {
-  display: flex;
-  width: 100%;
-  margin-bottom: ($global-spacing / 2);
+.form__fieldset--section {
+  .form__legend {
+    font-size: 1rem;
+  }
+}
 
-  > *:last-child {
+.form__fieldset--group {
+  .form__legend {
+    font-size: 0.875rem;
+  }
+}
+
+.form__fieldset--unit {
+  .form__legend {
+    font-size: 0.75rem;
+  }
+  .form__inner-header {
     margin-bottom: 0;
   }
 }
 
-.form__fieldset-headline {
-  > *:last-child {
-    margin-bottom: 0;
+
+/* Fieldset expand/collapse states
+   ========================================================================== */
+
+.fia-expand-collapse {
+  transition: all 0.16s ease 0s;
+}
+
+.form__fieldset--collapsed {
+  .fia-expand-collapse {
+    transform: rotate(180deg);
   }
 }
 
-.form__fieldset-group {
-  flex: 1 1 auto;
-  text-align: right;
-  font-size: 0;
-  white-space: nowrap;
-
-  * {
-    vertical-align: top;
+.form__inner-body {
+  /* Collapsed layer-group state */
+  .form__fieldset--collapsed & {
+    opacity: 0;
+    overflow-y: hidden;
+    max-height: 0;
   }
 
-  > *:last-child {
-    margin-right: -$global-spacing / 4;
+  /* Expanded layer-group state */
+  .form__fieldset--expanded & {
+    opacity: 1;
+    max-height: 120rem;
+    overflow: visible;
+  }
+}
+
+.form__fieldset--collapsed {
+  .form__inner-header {
+    margin-bottom: 0;
   }
 }
 
@@ -669,6 +695,7 @@ label[for] {
   display: flex;
   width: 100%;
   margin-bottom: ($global-spacing / 2);
+  transition: all 0.16s ease 0s;
 
   > *:last-child {
     margin-bottom: 0;
@@ -676,6 +703,14 @@ label[for] {
 }
 
 .form__inner-headline {
+  > *:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.form__inner-body {
+  transition: all 0.16s ease 0s;
+
   > *:last-child {
     margin-bottom: 0;
   }
@@ -718,6 +753,14 @@ label[for] {
   @extend .button--primary-plain;
 }
 
+.fia-expand-collapse {
+  @extend .button--primary-plain, .button--text-hidden;
+
+  &::before {
+    @extend %collecticon-sm-chevron-up;
+  }
+}
+
 .form__options-menu {
   display: inline-block;
   margin: 0 0 ($global-spacing / 2) 0;
@@ -746,14 +789,10 @@ label[for] {
   * {
     vertical-align: top;
   }
-
-  > *:first-child {
-    margin-left: -$global-spacing;
-  }
 }
 
 .fea-plus {
-  @extend .button, .button--primary-plain;
+  @extend .button, .button--small, .button--primary-plain;
 
   &::before {
     @extend %collecticon-sm-plus;

@@ -156,6 +156,7 @@ class ProfileEditModal extends React.Component {
     this.state = this.getInitialState();
     this.onClose = this.onClose.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    this.onSectionExpand = this.onSectionExpand.bind(this);
     this.renderSection = this.renderSection.bind(this);
   }
 
@@ -185,7 +186,7 @@ class ProfileEditModal extends React.Component {
     //   ]
     // }
 
-    return { errors: [], data: [] };
+    return { expandedSections: [0], errors: [], data: [] };
   }
 
   computeDataFromSettings (profileSettings) {
@@ -271,6 +272,14 @@ class ProfileEditModal extends React.Component {
     this.setState({data: stateData});
   }
 
+  onSectionExpand (sectionIdx) {
+    if (this.state.expandedSections.indexOf(sectionIdx) === -1) {
+      this.setState({expandedSections: this.state.expandedSections.concat(sectionIdx)});
+    } else {
+      this.setState({expandedSections: this.state.expandedSections.filter(idx => idx !== sectionIdx)});
+    }
+  }
+
   checkErrorField (path, setState = true) {
     const val = _.get(this.state.data, path, '').toString();
     const errors = _.cloneDeep(this.state.errors);
@@ -320,6 +329,14 @@ class ProfileEditModal extends React.Component {
       .then(() => hideGlobalLoading());
   }
 
+  getSectionClasses (sectionIdx) {
+    const isExpanded = this.state.expandedSections.indexOf(sectionIdx) !== -1;
+    return c('form__fieldset form__fieldset--section', {
+      'form__fieldset--expanded': isExpanded,
+      'form__fieldset--collapsed': !isExpanded
+    });
+  }
+
   renderSection ({multi, key, label}) {
     const sectionIdx = _.findIndex(this.state.data, o => o.section === key);
     if (sectionIdx === -1) return null;
@@ -333,46 +350,49 @@ class ProfileEditModal extends React.Component {
     const attributes = sectionData.values;
 
     return (
-      <div key={sectionKey}>
-        <label className={c('form__label')}>{sectionLabel}</label>
+      <fieldset className={this.getSectionClasses(sectionIdx)} key={sectionKey}>
+        <FieldsetHeader title={sectionLabel} type='expandable' onActionClick={this.onSectionExpand.bind(this, sectionIdx)} />
+        <div className='form__inner-body'>
+          {attributes.map((data, attrIdx) => {
+            const attrKey = data.key;
+            const attrValue = data.value;
+            // Object paths to access the object. Used by lodash methods to
+            // add/remove/change/validate values.
+            const attrKeyPath = computePath(sectionIdx, attrIdx, 'key');
+            const attrValuePath = computePath(sectionIdx, attrIdx, 'value');
 
-        {attributes.map((data, attrIdx) => {
-          const attrKey = data.key;
-          const attrValue = data.value;
-          // Object paths to access the object. Used by lodash methods to
-          // add/remove/change/validate values.
-          const attrKeyPath = computePath(sectionIdx, attrIdx, 'key');
-          const attrValuePath = computePath(sectionIdx, attrIdx, 'value');
+            return (
+              <fieldset key={`${sectionKey}-${attrIdx}`} className='form__fieldset form__fieldset--unit'>
+                <FieldsetHeader title={t('Tag {idx}', {idx: attrIdx + 1})} type='delete' onActionClick={this.onTagRemove.bind(this, computePath(sectionIdx), attrIdx)} />
 
-          return (
-            <fieldset key={`${sectionKey}-${attrIdx}`} className={c('form__fieldset')}>
-              <FieldsetHeader title={t('Tag {idx}', {idx: attrIdx + 1})} onRemoveClick={this.onTagRemove.bind(this, computePath(sectionIdx), attrIdx)} />
+                <div className='form__hascol form__hascol--2'>
+                  <InputField
+                    id={`${sectionKey}-${attrKey}-tag`}
+                    label='Tag name'
+                    value={attrKey.toString()}
+                    placeholder='road_type'
+                    onBlur={this.checkErrorField.bind(this, attrKeyPath)}
+                    hasError={_.get(this.state.errors, attrKeyPath, false)}
+                    onValueChange={this.onFieldChange.bind(this, attrKeyPath)} />
 
-              <div className='form__hascol form__hascol--2'>
-                <InputField
-                  id={`${sectionKey}-${attrKey}-tag`}
-                  label='Tag name'
-                  value={attrKey.toString()}
-                  onBlur={this.checkErrorField.bind(this, attrKeyPath)}
-                  hasError={_.get(this.state.errors, attrKeyPath, false)}
-                  onValueChange={this.onFieldChange.bind(this, attrKeyPath)} />
+                  <InputField
+                    id={`${sectionKey}-${attrKey}-value`}
+                    label='Speed'
+                    value={attrValue.toString()}
+                    placeholder='0'
+                    onBlur={this.checkErrorField.bind(this, attrValuePath)}
+                    hasError={_.get(this.state.errors, attrValuePath, false)}
+                    onValueChange={this.onFieldChange.bind(this, attrValuePath)} />
+                </div>
+              </fieldset>
+            );
+          })}
 
-                <InputField
-                  id={`${sectionKey}-${attrKey}-value`}
-                  label='Speed'
-                  value={attrValue.toString()}
-                  onBlur={this.checkErrorField.bind(this, attrValuePath)}
-                  hasError={_.get(this.state.errors, attrValuePath, false)}
-                  onValueChange={this.onFieldChange.bind(this, attrValuePath)} />
-              </div>
-            </fieldset>
-          );
-        })}
-
-        <div className='form__extra-actions'>
-          <button type='button' className={c('fea-plus')} title={t('Add new tag')} onClick={this.onTagAdd.bind(this, [sectionIdx, 'values'], false)}><span>{t('New Tag')}</span></button>
+          <div className='form__extra-actions'>
+            <button type='button' className={c('fea-plus')} title={t('Add new tag')} onClick={this.onTagAdd.bind(this, [sectionIdx, 'values'], false)}><span>{t('New tag')}</span></button>
+          </div>
         </div>
-      </div>
+      </fieldset>
     );
   }
 
@@ -380,69 +400,73 @@ class ProfileEditModal extends React.Component {
     const attributes = sectionData.values;
 
     return (
-      <div key={sectionKey}>
-        <label className={c('form__label')}>{sectionLabel}</label>
+      <fieldset className={this.getSectionClasses(sectionIdx)} key={sectionKey}>
+        <FieldsetHeader title={sectionLabel} type='expandable' onActionClick={this.onSectionExpand.bind(this, sectionIdx)} />
+        <div className='form__inner-body'>
+          {attributes.map((data, attrIdx) => {
+            const attrKey = data.key;
+            const attrValues = data.values;
+            // Object paths to access the object. Used by lodash methods to
+            // add/remove/change/validate values.
+            const attrKeyPath = computePath(sectionIdx, attrIdx, 'key');
 
-        {attributes.map((data, attrIdx) => {
-          const attrKey = data.key;
-          const attrValues = data.values;
-          // Object paths to access the object. Used by lodash methods to
-          // add/remove/change/validate values.
-          const attrKeyPath = computePath(sectionIdx, attrIdx, 'key');
+            return (
+              <fieldset key={`${sectionKey}-${attrIdx}`} className='form__fieldset form__fieldset--group'>
+                <FieldsetHeader title={t('Attribute {idx}', {idx: attrIdx + 1})} type='delete' onActionClick={this.onTagRemove.bind(this, computePath(sectionIdx), attrIdx)} />
+                <InputField
+                  id={`${sectionKey}-${attrIdx}-attribute`}
+                  label='Attribute name'
+                  value={attrKey.toString()}
+                  placeholder='highway'
+                  onBlur={this.checkErrorField.bind(this, attrKeyPath)}
+                  hasError={_.get(this.state.errors, attrKeyPath, false)}
+                  onValueChange={this.onFieldChange.bind(this, attrKeyPath)} />
 
-          return (
-            <fieldset key={`${sectionKey}-${attrIdx}`} className={c('form__fieldset')}>
-              <FieldsetHeader title={t('Tag {idx}', {idx: attrIdx + 1})} onRemoveClick={this.onTagRemove.bind(this, computePath(sectionIdx), attrIdx)} />
-              <InputField
-                id={`${sectionKey}-${attrIdx}-tag`}
-                label='Tag name'
-                value={attrKey.toString()}
-                onBlur={this.checkErrorField.bind(this, attrKeyPath)}
-                hasError={_.get(this.state.errors, attrKeyPath, false)}
-                onValueChange={this.onFieldChange.bind(this, attrKeyPath)} />
+                {attrValues.map((valData, valIdx) => {
+                  const valDataKeyPath = computePath(sectionIdx, attrIdx, valIdx, 'key');
+                  const valDataValuePath = computePath(sectionIdx, attrIdx, valIdx, 'value');
 
-              {attrValues.map((valData, valIdx) => {
-                const valDataKeyPath = computePath(sectionIdx, attrIdx, valIdx, 'key');
-                const valDataValuePath = computePath(sectionIdx, attrIdx, valIdx, 'value');
+                  return (
+                    <fieldset key={`${sectionKey}-${attrIdx}-${valIdx}`} className='form__fieldset form__fieldset--unit'>
+                      <FieldsetHeader title={t('Tag {idx}', {idx: valIdx + 1})} type='delete' onActionClick={this.onTagRemove.bind(this, computePath(sectionIdx, attrIdx), valIdx)} />
+                      <div className='form__hascol form__hascol--2'>
+                        <InputField
+                          id={`${sectionKey}-${attrIdx}-${valIdx}-tag`}
+                          label='Tag name'
+                          value={valData.key.toString()}
+                          placeholder='road_type'
+                          onBlur={this.checkErrorField.bind(this, valDataKeyPath)}
+                          hasError={_.get(this.state.errors, valDataKeyPath, false)}
+                          onValueChange={this.onFieldChange.bind(this, valDataKeyPath)} />
+                        <InputField
+                          id={`${sectionKey}-${attrIdx}-${valIdx}-value`}
+                          label='Speed'
+                          placeholder='0'
+                          value={valData.value.toString()}
+                          onBlur={this.checkErrorField.bind(this, valDataValuePath)}
+                          hasError={_.get(this.state.errors, valDataValuePath, false)}
+                          onValueChange={this.onFieldChange.bind(this, valDataValuePath)} />
+                      </div>
+                    </fieldset>
+                  );
+                })}
+                  <div className='form__extra-actions'>
+                    <button type='button' className={c('fea-plus')} title={t('Add new tag')} onClick={this.onTagAdd.bind(this, [sectionIdx, 'values', attrIdx, 'values'], false)}><span>{t('New tag')}</span></button>
+                  </div>
+              </fieldset>
+            );
+          })}
 
-                return (
-                  <fieldset key={`${sectionKey}-${attrIdx}-${valIdx}`} className={c('form__fieldset')}>
-                    <FieldsetHeader title={t('Tag value {idx}', {idx: valIdx + 1})} onRemoveClick={this.onTagRemove.bind(this, computePath(sectionIdx, attrIdx), valIdx)} />
-                    <div className='form__hascol form__hascol--2'>
-                      <InputField
-                        id={`${sectionKey}-${attrIdx}-${valIdx}-tag`}
-                        label='Tag value'
-                        value={valData.key.toString()}
-                        onBlur={this.checkErrorField.bind(this, valDataKeyPath)}
-                        hasError={_.get(this.state.errors, valDataKeyPath, false)}
-                        onValueChange={this.onFieldChange.bind(this, valDataKeyPath)} />
-                      <InputField
-                        id={`${sectionKey}-${attrIdx}-${valIdx}-value`}
-                        label='Speed'
-                        value={valData.value.toString()}
-                        onBlur={this.checkErrorField.bind(this, valDataValuePath)}
-                        hasError={_.get(this.state.errors, valDataValuePath, false)}
-                        onValueChange={this.onFieldChange.bind(this, valDataValuePath)} />
-                    </div>
-                  </fieldset>
-                );
-              })}
-                <div className='form__extra-actions'>
-                  <button type='button' className={c('fea-plus')} title={t('Add new tag')} onClick={this.onTagAdd.bind(this, [sectionIdx, 'values', attrIdx, 'values'], false)}><span>{t('New Tag Value')}</span></button>
-                </div>
-            </fieldset>
-          );
-        })}
-
-        <div className='form__extra-actions'>
-          <button type='button' className={c('fea-plus')} title={t('Add new tag')} onClick={this.onTagAdd.bind(this, [sectionIdx, 'values'], true)}><span>{t('New Tag')}</span></button>
+          <div className='form__extra-actions'>
+            <button type='button' className={c('fea-plus')} title={t('Add new attribute')} onClick={this.onTagAdd.bind(this, [sectionIdx, 'values'], true)}><span>{t('New attribute')}</span></button>
+          </div>
         </div>
-      </div>
+      </fieldset>
     );
   }
 
   render () {
-    const { fetched, fetching, data } = this.props.profileSettings;
+    const { fetched, fetching, error, data } = this.props.profileSettings;
 
     return (
       <Modal
@@ -460,7 +484,7 @@ class ProfileEditModal extends React.Component {
           </div>
         </ModalHeader>
         <ModalBody>
-          {fetched && !fetching ? (
+          {fetched && !fetching && !error ? (
             <form className='form'>
               {data.sections.map(this.renderSection)}
             </form>
@@ -512,31 +536,36 @@ export default connect(selector, dispatcher)(ProfileEditModal);
 // Helper components.
 //
 
-const FieldsetHeader = ({title, onRemoveClick}) => (
+const FieldsetHeader = ({title, type, onActionClick}) => (
   <div className='form__inner-header'>
     <div className='form__inner-headline'>
       <legend className='form__legend'>{title}</legend>
     </div>
     <div className='form__inner-actions'>
-      <button type='button' className={c('fia-trash', {disabled: false})} title={t('Delete fieldset')} onClick={onRemoveClick}><span>{t('Delete')}</span></button>
+      {type === 'expandable' ? (
+        <button type='button' className='fia-expand-collapse' title={t('Expand/Collapse fieldset')} onClick={onActionClick}><span>{t('Expand/Collapse')}</span></button>
+      ) : (
+        <button type='button' className='fia-trash' title={t('Delete fieldset')} onClick={onActionClick}><span>{t('Delete')}</span></button>
+      )}
     </div>
   </div>
 );
 
 FieldsetHeader.propTypes = {
   title: T.string,
-  onRemoveClick: T.func
+  type: T.string,
+  onActionClick: T.func
 };
 
-const InputField = ({id, label, value, onValueChange, onBlur, hasError}) => {
+const InputField = ({id, label, value, onValueChange, onBlur, hasError, placeholder}) => {
   const classNames = c('form__control', {
     'form__control--danger': hasError
   });
 
   return (
     <div className='form__group'>
-      <label className='form__label' htmlFor={id}>{label}</label>
-      <input type='text' id={id} name={id} className={classNames} value={value} onChange={onValueChange} onBlur={onBlur} />
+      <label className='form__label visually-hidden' htmlFor={id}>{label}</label>
+      <input type='text' id={id} name={id} className={classNames} value={value} onChange={onValueChange} onBlur={onBlur} placeholder={placeholder}/>
     </div>
   );
 };
@@ -545,6 +574,7 @@ InputField.propTypes = {
   id: T.string,
   label: T.string,
   value: T.string,
+  placeholder: T.string,
   hasError: T.bool,
   onValueChange: T.func,
   onBlur: T.func
