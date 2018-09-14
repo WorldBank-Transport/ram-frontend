@@ -186,7 +186,7 @@ class ProfileEditModal extends React.Component {
     //   ]
     // }
 
-    return { expandedSections: [0], errors: [], data: [] };
+    return { expandedSections: [], errors: [], data: [] };
   }
 
   computeDataFromSettings (profileSettings) {
