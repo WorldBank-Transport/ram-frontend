@@ -410,7 +410,7 @@ textarea.form__control {
   /* Expanded layer-group state */
   .form__fieldset--expanded & {
     opacity: 1;
-    max-height: 120rem;
+    max-height: calc(100vh * 100);
     overflow: visible;
   }
 }
