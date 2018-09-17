@@ -365,7 +365,6 @@ const ProjectPageActive = React.createClass({
           </div>
           <ProjectHeaderActions
             project={dataProject}
-            scenarios={this.props.scenarios.data.results}
             projectStatus='active'
             onAction={this.onProjectAction} />
         </StickyHeader>
@@ -420,6 +419,7 @@ const ProjectPageActive = React.createClass({
           _showAlert={this.props._showAlert}
           _postRAHExport={this.props._postRAHExport}
           revealed={this.state.projectExportModal}
+          scenarios={this.props.scenarios.data.results}
           projectId={this.props.params.projectId}
           rahForm={this.props.rahForm}
           onCloseClick={this.closeModal.bind(null, 'export-rah')}
