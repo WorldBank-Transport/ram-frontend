@@ -365,8 +365,34 @@ textarea.form__control {
 }
 
 .form__fieldset--section {
+  .form__inner-headline {
+    flex: 1;
+  }
+
   .form__legend {
     font-size: 1rem;
+  }
+}
+
+.button-expand-collapse {
+  position: relative;
+  display: block;
+  margin: -1rem;
+  padding: 1rem;
+
+  &, &:visited {
+    color: inherit;
+  }
+
+  &::after {
+    @extend %collecticon-sm-chevron-down;
+    transition: all 0.16s ease 0s;
+    font-size: 1rem;
+    position: absolute;
+    top: 50%;
+    right: $global-spacing;
+    transform: translate(0, -50%);
+    color: $link-color;
   }
 }
 
@@ -389,12 +415,8 @@ textarea.form__control {
 /* Fieldset expand/collapse states
    ========================================================================== */
 
-.fia-expand-collapse {
-  transition: all 0.16s ease 0s;
-}
-
-.form__fieldset--collapsed {
-  .fia-expand-collapse {
+.form__fieldset--expanded {
+  .button-expand-collapse::after {
     transform: rotate(180deg);
   }
 }

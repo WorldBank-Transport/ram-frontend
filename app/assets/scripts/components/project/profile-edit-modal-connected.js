@@ -272,7 +272,8 @@ class ProfileEditModal extends React.Component {
     this.setState({data: stateData});
   }
 
-  onSectionExpand (sectionIdx) {
+  onSectionExpand (sectionIdx, e) {
+    e && e.preventDefault();
     if (this.state.expandedSections.indexOf(sectionIdx) === -1) {
       this.setState({expandedSections: this.state.expandedSections.concat(sectionIdx)});
     } else {
@@ -539,15 +540,19 @@ export default connect(selector, dispatcher)(ProfileEditModal);
 const FieldsetHeader = ({title, type, onActionClick}) => (
   <div className='form__inner-header'>
     <div className='form__inner-headline'>
+    {type === 'expandable' ? (
+      <legend className='form__legend'>
+        <a href='#' title={t('Expand/Collapse fieldset')} className='button-expand-collapse' onClick={onActionClick}><span>{title}</span></a>
+      </legend>
+    ) : (
       <legend className='form__legend'>{title}</legend>
+    )}
     </div>
-    <div className='form__inner-actions'>
-      {type === 'expandable' ? (
-        <button type='button' className='fia-expand-collapse' title={t('Expand/Collapse fieldset')} onClick={onActionClick}><span>{t('Expand/Collapse')}</span></button>
-      ) : (
+    {type === 'delete' ? (
+      <div className='form__inner-actions'>
         <button type='button' className='fia-trash' title={t('Delete fieldset')} onClick={onActionClick}><span>{t('Delete')}</span></button>
-      )}
-    </div>
+      </div>
+    ) : null}
   </div>
 );
 
