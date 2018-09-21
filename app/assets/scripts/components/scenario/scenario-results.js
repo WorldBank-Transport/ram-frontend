@@ -447,6 +447,11 @@ function selector (state) {
       key: o,
       label: poiOsmTypes().find(poi => poi.key === o).value
     }));
+  } else if (poiSource.type === 'wbcatalog') {
+    poiTypes = poiSource.wbCatalogOptions.resources.map(o => ({
+      key: o.label,
+      label: o.label
+    }));
   }
 
   return {
