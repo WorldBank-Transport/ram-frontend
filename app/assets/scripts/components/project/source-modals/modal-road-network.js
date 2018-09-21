@@ -31,7 +31,7 @@ class ModalRoadNetwork extends ModalBase {
 
   initState (props) {
     let fileField;
-    if (props.sourceData.files.length) {
+    if (props.sourceData.type === 'file' && props.sourceData.files.length) {
       fileField = props.sourceData.files[0];
     } else {
       fileField = {
@@ -41,10 +41,7 @@ class ModalRoadNetwork extends ModalBase {
       };
     }
 
-    let wbCatalogOption = '';
-    if (props.sourceData.wbCatalogOptions && props.sourceData.wbCatalogOptions.length) {
-      wbCatalogOption = props.sourceData.wbCatalogOptions[0].key;
-    }
+    const wbCatalogOption = _.get(props.sourceData, 'wbCatalogOptions.resources[0].key', '');
 
     this.state = {
       source: props.sourceData.type || 'file',

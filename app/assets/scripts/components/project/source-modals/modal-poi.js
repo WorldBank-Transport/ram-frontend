@@ -36,16 +36,24 @@ class ModalPoi extends ModalBase {
   }
 
   initState (props) {
-    let fileFields = props.sourceData.files.concat(this.getBasePoiFileField());
-    let selectedPoiTypes = props.sourceData.osmOptions.osmPoiTypes || [];
+    let fileFields = [];
+    // Only add the files if the source is file. This avoids the field being
+    // filled with catalog files after a failed setup.
+    if (props.sourceData.type === 'file') {
+      fileFields = props.sourceData.files;
+    }
+
+    fileFields = fileFields.concat(this.getBasePoiFileField());
+    const selectedPoiTypes = props.sourceData.osmOptions.osmPoiTypes || [];
+    const catalogRes = _.get(props.sourceData, 'wbCatalogOptions.resources', []);
 
     this.state = {
       source: props.sourceData.type || 'file',
       selectedPoiTypes,
       fileFields,
       filesToRemove: [],
-      wbCatalogOptions: props.sourceData.wbCatalogOptions.length
-        ? props.sourceData.wbCatalogOptions
+      wbCatalogOptions: catalogRes.length
+        ? catalogRes
         : [{key: '', label: ''}]
     };
   }
