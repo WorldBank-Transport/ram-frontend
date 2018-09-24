@@ -36,6 +36,7 @@ The configuration is overridable by environment variables, expressed between []:
 - `iDEditor` - The address of the iDEditor. Defaults to the `master` branch of the [RAM fork of iD](https://github.com/WorldBank-Transport/ram-id), hosted on GH Pages. (Default: https://id.ruralaccess.info). [IDEDITOR]
 - `mbtoken` - The Mapbox Token to load map tiles from. [MBTOKEN]
 - `rahUrl` - The url for the Rural Accessibility Hub. [RAH_URL]
+- `roadNetEditMax` - Maximum value over which the road network editing is disabled. Must match the value of the same config on the backend. [ROAD_NET_EDIT_MAX]
 - `auth` - The configuration for optional authentication with Auth0. By default, no authentication is set (Default: {})
 - `auth.domain` - See instructions below [AUTH_DOMAIN]
 - `auth.clientID` - See instructions below [AUTH_CLIENTID]

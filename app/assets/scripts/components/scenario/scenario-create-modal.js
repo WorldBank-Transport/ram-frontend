@@ -7,7 +7,7 @@ import ReactTooltip from 'react-tooltip';
 
 import config from '../../config';
 import { t, getLanguage } from '../../utils/i18n';
-import { rnEditThreshold, rnEditThresholdDisplay } from '../../utils/constants';
+import { roadNetEditMax, roadNetEditMaxDisplay } from '../../utils/constants';
 import { limitHelper } from '../../utils/utils';
 import { postFormdata } from '../../actions';
 import SourceSelector from '../project/source-modals/source-selector';
@@ -118,9 +118,9 @@ const ScenarioCreateModal = React.createClass({
     let data = Object.assign({}, this.state.data, {roadNetworkSourceFile});
     this.setState({data});
 
-    if (rnEditThreshold > 0 && file.size >= rnEditThreshold) {
+    if (roadNetEditMax > 0 && file.size >= roadNetEditMax) {
       let msg = t('File size is above {size}. Road network editing will be disabled.', {
-        size: rnEditThresholdDisplay
+        size: roadNetEditMaxDisplay
       });
       this.props._showAlert('warning', <p>{msg}</p>, true);
     }
@@ -288,10 +288,10 @@ const ScenarioCreateModal = React.createClass({
       notes.push(<p key='rn-osm'>{t('Import road network data from OpenStreetMap.')}</p>);
     }
 
-    if (rnEditThreshold <= 0) {
+    if (roadNetEditMax <= 0) {
       notes.push(<p key='rn-disabled'>{t('Road network editing was disabled by the administrator.')}</p>);
     } else if (this.state.data.roadNetworkSource === 'osm') {
-      notes.push(<p key='rn-osm-thresh'>{t('When the resulting import is over {max} the road network editing will be disabled.', {max: rnEditThresholdDisplay})}</p>);
+      notes.push(<p key='rn-osm-thresh'>{t('When the resulting import is over {max} the road network editing will be disabled.', {max: roadNetEditMaxDisplay})}</p>);
     }
 
     const sourceOptions = [
@@ -357,9 +357,9 @@ const ScenarioCreateModal = React.createClass({
             </FileInput>
             ) : null}
 
-            {!!notes.length && <div className='form__note'>{notes}</div>}
-
             {this.state.data.roadNetworkSource === 'wbcatalog' ? this.renderSourceCatalog() : null}
+
+            {!!notes.length && <div className='form__note'>{notes}</div>}
 
             <div className='form__group'>
               <label className='form__label'>{t('Points of Interest')}</label>

@@ -7,7 +7,7 @@ import config from '../../config';
 import Dropdown from '../dropdown';
 import { t } from '../../utils/i18n';
 import { scenarioHasResults } from '../../utils/utils';
-import { rnEditThreshold } from '../../utils/constants';
+import { roadNetEditMax } from '../../utils/constants';
 import { showConfirm } from '../confirmation-prompt';
 
 import ScenarioDeleteAction from './scenario-delete-action';
@@ -53,7 +53,7 @@ const ScenarioHeaderActions = React.createClass({
 
     if (!isRnAllowed) {
       // Different message is the rn edition was disabled via constants.
-      txt = rnEditThreshold <= 0 ? tipTexts.rnDisabled : tipTexts.rnNotAllowed;
+      txt = roadNetEditMax <= 0 ? tipTexts.rnDisabled : tipTexts.rnNotAllowed;
     } else if (isGenerating) {
       txt = tipTexts.generating;
     } else if (isPending) {
