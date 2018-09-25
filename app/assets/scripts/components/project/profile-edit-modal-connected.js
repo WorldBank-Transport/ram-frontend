@@ -478,9 +478,9 @@ class ProfileEditModal extends React.Component {
 
         <ModalHeader>
           <div className='modal__headline'>
-            <h1 className='modal__title'>{t('Edit OSRM Profile')}</h1>
+            <h1 className='modal__title'>{t('Edit speed profile')}</h1>
             <div className='modal__description'>
-              <p>{t('Edit profile speeds')}</p>
+              <p>{t('Customize the speed profile that is used to run the analysis. For more information on how to set this up consult the {helpLink}.', {helpLink: <a href='http://ruralaccess.info/setting-up-a-project/osrm-profile/' title={t('View help page')} target='_blank'>{t('help page')}</a>})}</p>
             </div>
           </div>
         </ModalHeader>
