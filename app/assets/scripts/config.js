@@ -20,6 +20,7 @@ config.api = process.env.API || config.api;
 config.iDEditor = process.env.IDEDITOR || config.iDEditor;
 config.mbtoken = process.env.MBTOKEN || config.mbtoken;
 config.rahUrl = process.env.RAH_URL || config.rahUrl;
+config.roadNetEditMax = process.env.ROAD_NET_EDIT_MAX || config.roadNetEditMax;
 
 // auth is an empty object, unless one of the environment vars is set
 if (process.env.AUTH_DOMAIN) config.auth.domain = process.env.AUTH_DOMAIN;

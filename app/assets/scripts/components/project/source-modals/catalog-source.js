@@ -85,7 +85,16 @@ export class CatalogSource extends React.Component {
       return <p>{t('An error occurred getting data from World Bank Catalog.')}</p>;
     }
 
-    if (!options) return null; // Is loading.
+    if (!options) {
+      // Is loading.
+      return (
+        <div className='form__group'>
+          <select id='wbc-profile' name='wbc-profile' className='form__control' disabled>
+            <option>Loading data</option>
+          </select>
+        </div>
+      );
+    }
 
     if (!options.length) {
       return <p>{t('There are options available in the World Bank Catalog.')}</p>;

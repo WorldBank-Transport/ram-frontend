@@ -1,9 +1,9 @@
 'use strict';
 import { t } from '../utils/i18n';
+import { roadNetEditMax as rnConfMax } from '../config';
 
-let rnEditThresholdVal = 20; // MB
-export const rnEditThreshold = rnEditThresholdVal * Math.pow(1024, 2); // bytes
-export const rnEditThresholdDisplay = `${rnEditThresholdVal}MB`;
+export const roadNetEditMax = rnConfMax;
+export const roadNetEditMaxDisplay = `${rnConfMax / Math.pow(1024, 2)}MB`;
 
 // These constants need to be returned as the result of a function because, the
 // translations need to be computed based on the current language. Otherwise
