@@ -3,6 +3,7 @@ import React, { PropTypes as T } from 'react';
 import c from 'classnames';
 import _ from 'lodash';
 import ReactTags from 'react-tag-autocomplete';
+import ReactTooltip from 'react-tooltip';
 
 import { t } from '../../utils/i18n';
 import { limitHelper } from '../../utils/utils';
@@ -26,6 +27,7 @@ class ProjectExportModal extends React.Component {
     this.onChangeAuthors = this.onFieldChange.bind(this, 'authors');
     this.onChangeContactName = this.onFieldChange.bind(this, 'contactName');
     this.onChangeContactEmail = this.onFieldChange.bind(this, 'contactEmail');
+    this.onChangeIncludeResults = this.onChangeIncludeResults.bind(this);
     this.onClose = this.onClose.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
   }
@@ -50,11 +52,23 @@ class ProjectExportModal extends React.Component {
         description: '',
         topics: [],
         authors: [],
+        includeResults: this.hasResults(),
 
         contactName: '',
         contactEmail: ''
       }
     };
+  }
+
+  hasResults () {
+    // Check if there are results by checking if the analysis succeded for each
+    // of the project scenarios.
+    // Note: The scenario api returns paginated results. It is theoretically
+    // possible that different pages have different results but in pratice this
+    // is unlikely to be a problem because there are never that many scenarios.
+    return this.props.scenarios.some(sc => sc.gen_analysis &&
+      sc.gen_analysis.status === 'complete' &&
+      !sc.gen_analysis.errored);
   }
 
   componentWillReceiveProps (nextProps) {
@@ -79,8 +93,13 @@ class ProjectExportModal extends React.Component {
 
   onFieldChange (field, e) {
     const val = e.target ? e.target.value : e;
-    let data = Object.assign({}, this.state.data, {[field]: val});
+    const data = Object.assign({}, this.state.data, {[field]: val});
     this.setState({data});
+  }
+
+  onChangeIncludeResults (e) {
+    const prev = this.state.data.includeResults;
+    this.onFieldChange('includeResults', !prev);
   }
 
   checkErrorField (field, setState = true) {
@@ -109,6 +128,10 @@ class ProjectExportModal extends React.Component {
         if (atPos === -1 || atPos !== contactEmail.lastIndexOf('@')) {
           control = false;
         }
+        break;
+      case 'includeResults':
+        // Whatever is fine
+        control = true;
         break;
     }
 
@@ -145,6 +168,7 @@ class ProjectExportModal extends React.Component {
       description: d.description || null,
       topics: d.topics.length ? d.topics : null,
       authors: d.authors.length ? d.authors : null,
+      includeResults: d.includeResults,
 
       contactName: d.contactName || null,
       contactEmail: d.contactEmail || null
@@ -298,6 +322,23 @@ class ProjectExportModal extends React.Component {
     );
   }
 
+  renderIncludeResultsToggle () {
+    const hasResults = this.hasResults();
+    const labelProps = {
+      className: c('form__option form__option--switch option fos-io', {'visually-disabled': !hasResults}),
+      'data-tip': t('This project doesn\'t have results to export'),
+      'data-tip-disable': hasResults,
+      'data-effect': 'solid'
+    };
+
+    return (
+      <label htmlFor='include-results' title={t('Toggle export results')} {...labelProps}>
+        <input name='include-results' id='include-results' value='includeResults' type='checkbox' checked={this.hasResults() && this.state.data.includeResults} onChange={this.onChangeIncludeResults}/>
+        <span className='form__option__ui'></span><span className='form__option__text'>{t('Export underlying result data to RAH')}</span>
+      </label>
+    );
+  }
+
   render () {
     return (
       <Modal
@@ -319,6 +360,8 @@ class ProjectExportModal extends React.Component {
             <fieldset className='form__fieldset'>
               <legend className='form__legend'>{t('Project')}</legend>
 
+              <ReactTooltip />
+
               {this.renderTitleField()}
 
               <div className='form__hascol form__hascol--2'>
@@ -330,6 +373,8 @@ class ProjectExportModal extends React.Component {
               {this.renderDescriptionField()}
 
               {this.renderAuthorsField()}
+
+              {this.renderIncludeResultsToggle()}
             </fieldset>
 
             {this.renderContactFieldset()}
@@ -349,6 +394,7 @@ ProjectExportModal.propTypes = {
   _hideGlobalLoading: T.func,
   _showAlert: T.func,
   _postRAHExport: T.func,
+  scenarios: T.array,
   resetForm: T.func,
   revealed: T.bool,
   projectId: T.string,
