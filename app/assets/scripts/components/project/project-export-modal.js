@@ -334,7 +334,7 @@ class ProjectExportModal extends React.Component {
     return (
       <label htmlFor='include-results' title={t('Toggle export results')} {...labelProps}>
         <input name='include-results' id='include-results' value='includeResults' type='checkbox' checked={this.hasResults() && this.state.data.includeResults} onChange={this.onChangeIncludeResults}/>
-        <span className='form__option__ui'></span><span className='form__option__text'>{t('Export results')}</span>
+        <span className='form__option__ui'></span><span className='form__option__text'>{t('Export underlying result data to RAH')}</span>
       </label>
     );
   }
