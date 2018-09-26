@@ -48,7 +48,7 @@ module.exports = {
   api: 'http://localhost:4000',
   idEditor: 'https://id.ruralaccess.info',
   mbtoken: 'asfd23rlmksjdf023rnnsafd',
-  rahUrl: 'http://rah.surge.sh' 
+  rahUrl: 'http://hub.ruralaccess.info' 
   auth: {}
 };
 ```
