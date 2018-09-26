@@ -549,6 +549,8 @@ label[for] {
    ========================================================================== */
 
 .form__option--switch {
+  display: inline-flex;
+  margin-top: 0;
 
   input {
     @extend .visually-hidden;
