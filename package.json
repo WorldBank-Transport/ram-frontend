@@ -79,7 +79,7 @@
     "watchify": "^3.9.0"
   },
   "dependencies": {
-    "auth0-js": "^8.8.0",
+    "auth0-js": "^9.8.0",
     "babel-polyfill": "^6.23.0",
     "classnames": "^2.2.5",
     "isomorphic-fetch": "^2.2.1",

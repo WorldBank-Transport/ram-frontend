@@ -22,7 +22,7 @@ export default class Auth {
   }
 
   parseHash (hash, callback) {
-    this.auth0.parseHash(hash, (err, authResult) => {
+    this.auth0.parseHash({hash}, (err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult);
         callback(null);
