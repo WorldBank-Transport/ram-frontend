@@ -82,7 +82,7 @@ export class CatalogSource extends React.Component {
     const options = this.state.options;
 
     if (this.state.error) {
-      return <p>{t('An error occurred getting data from World Bank Catalog.')}</p>;
+      return <p>{t('An error occurred getting data from WB Data Catalog.')}</p>;
     }
 
     if (!options) {
@@ -97,7 +97,7 @@ export class CatalogSource extends React.Component {
     }
 
     if (!options.length) {
-      return <p>{t('There are options available in the World Bank Catalog.')}</p>;
+      return <p>{t('The WB Data Catalog doesn\'t have a dataset for this category.')}</p>;
     }
 
     return (
@@ -195,7 +195,7 @@ export class CatalogPoiSource extends React.Component {
     if (!options) return null; // Is loading.
 
     if (!options.length) {
-      return <p>{t('There are options available in the World Bank Catalog.')}</p>;
+      return <p>{t('The WB Data Catalog doesn\'t have a dataset for this category.')}</p>;
     }
 
     const labelLimit = limitHelper(this.props.labelLimitSize);
