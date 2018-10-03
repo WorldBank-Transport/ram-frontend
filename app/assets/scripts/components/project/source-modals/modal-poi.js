@@ -13,13 +13,20 @@ import { getPoiOsmTypes } from '../../../utils/constants';
 
 import { ModalBody } from '../../modal';
 import ModalBase from './modal-base';
+import SourceSelector from './source-selector';
+import { CatalogPoiSource } from './catalog-source';
 
+const WBC_LABEL_LIMIT = 20;
 var subtypeLimit = limitHelper(15);
+var wbcLabelLimit = limitHelper(WBC_LABEL_LIMIT);
 
 class ModalPoi extends ModalBase {
   constructor (props) {
     super(props);
     this.initState(props);
+
+    this.onSourceChange = this.onSourceChange.bind(this);
+    this.onWbCatalogOptSelect = this.onWbCatalogOptSelect.bind(this);
   }
 
   componentWillReceiveProps (nextProps) {
@@ -29,14 +36,25 @@ class ModalPoi extends ModalBase {
   }
 
   initState (props) {
-    let fileFields = props.sourceData.files.concat(this.getBasePoiFileField());
-    let selectedPoiTypes = props.sourceData.osmOptions.osmPoiTypes || [];
+    let fileFields = [];
+    // Only add the files if the source is file. This avoids the field being
+    // filled with catalog files after a failed setup.
+    if (props.sourceData.type === 'file') {
+      fileFields = props.sourceData.files;
+    }
+
+    fileFields = fileFields.concat(this.getBasePoiFileField());
+    const selectedPoiTypes = props.sourceData.osmOptions.osmPoiTypes || [];
+    const catalogRes = _.get(props.sourceData, 'wbCatalogOptions.resources', []);
 
     this.state = {
       source: props.sourceData.type || 'file',
       selectedPoiTypes,
       fileFields,
-      filesToRemove: []
+      filesToRemove: [],
+      wbCatalogOptions: catalogRes.length
+        ? catalogRes
+        : [{key: '', label: ''}]
     };
   }
 
@@ -65,6 +83,17 @@ class ModalPoi extends ModalBase {
     this.setState({filesToRemove: this.state.filesToRemove.concat(id)});
   }
 
+  // @common All source modals.
+  onSourceChange (event) {
+    const source = event.target.value;
+    this.setState({ source });
+  }
+
+  // @common All source modals.
+  onWbCatalogOptSelect (options) {
+    this.setState({ wbCatalogOptions: options });
+  }
+
   onFileSelected (id, file, event) {
     let fileFields = _.clone(this.state.fileFields);
     const idx = _.findIndex(fileFields, ['id', id]);
@@ -85,10 +114,6 @@ class ModalPoi extends ModalBase {
     fileFields[idx].subtype = subtype;
 
     this.setState({ fileFields });
-  }
-
-  onSourceChange (event) {
-    this.setState({ source: event.target.value });
   }
 
   selectOsmTypes (what) {
@@ -114,7 +139,7 @@ class ModalPoi extends ModalBase {
   allowSubmit () {
     if (this.state.source === 'osm') {
       return this.state.selectedPoiTypes.length > 0;
-    } else {
+    } else if (this.state.source === 'file') {
       // Is there just one new file?
       // The last new field input can't be removed so it must be checked
       // in separate.
@@ -139,7 +164,21 @@ class ModalPoi extends ModalBase {
 
       // All files need a subtype and a file.
       return this.state.filesToRemove.length || this.state.fileFields.every(f => f.created_at || (f.file && f.subtype && subtypeLimit(f.subtype.length).isOk()));
+    } else if (this.state.source === 'wbcatalog') {
+      // Are all keys valid?
+      let validAttr = this.state.wbCatalogOptions.every(o => o.key !== '' && o.label !== '');
+      // Are all lengths valid?
+      let validLength = this.state.wbCatalogOptions.every(o => wbcLabelLimit(o.label.length).isOk());
+      // Check for doubles.
+      let doubles = _(this.state.wbCatalogOptions)
+        .groupBy('key')
+        .values()
+        .some(o => o.length > 1);
+
+      return validAttr && validLength && !doubles;
     }
+
+    return false;
   }
 
   onSubmit () {
@@ -199,13 +238,22 @@ class ModalPoi extends ModalBase {
             throw err;
           });
       });
-    } else if (this.state.source === 'osm') {
+    } else if (this.state.source === 'osm' || this.state.source === 'wbcatalog') {
       let formData = new FormData();
-      formData.append('source-type', 'osm');
+      formData.append('source-type', this.state.source);
       formData.append('source-name', 'poi');
-      this.state.selectedPoiTypes.forEach(o => {
-        formData.append('osmPoiTypes', o);
-      });
+      if (this.state.source === 'osm') {
+        this.state.selectedPoiTypes.forEach(o => {
+          formData.append('osmPoiTypes', o);
+        });
+      }
+      if (this.state.source === 'wbcatalog') {
+        // Submit keys and labels as arrays. The order is guaranteed.
+        this.state.wbCatalogOptions.forEach(o => {
+          formData.append('wbcatalog-options[key]', o.key);
+          formData.append('wbcatalog-options[label]', o.label);
+        });
+      }
 
       let { promise } = postFormdata(`${config.api}/projects/${this.props.projectId}/scenarios/${this.props.scenarioId}/source-data`, formData, () => {});
       // this.xhr = xhr;
@@ -332,6 +380,15 @@ class ModalPoi extends ModalBase {
     );
   }
 
+  renderSourceCatalog () {
+    return (
+      <CatalogPoiSource
+        selectedOptions={this.state.wbCatalogOptions}
+        labelLimitSize={WBC_LABEL_LIMIT}
+        onChange={this.onWbCatalogOptSelect} />
+    );
+  }
+
   renderSourceOsm () {
     return (
       <div className='form__group'>
@@ -365,26 +422,25 @@ class ModalPoi extends ModalBase {
   }
 
   renderBody () {
+    const sourceOptions = [
+      {id: 'file', name: t('Custom upload')},
+      {id: 'osm', name: t('OSM data')},
+      {id: 'wbcatalog', name: t('WB Catalog')}
+    ];
+
     return (
       <ModalBody>
         <form className='form' onSubmit={ e => { e.preventDefault(); this.allowSubmit() && this.onSubmit(); } }>
           <div className='form__group'>
             <label className='form__label'>{t('Source')}</label>
-
-            <label className='form__option form__option--inline form__option--custom-radio'>
-              <input type='radio' name='source-type' id='file' value='file' checked={this.state.source === 'file'} onChange={this.onSourceChange.bind(this)} />
-              <span className='form__option__ui'></span>
-              <span className='form__option__text'>{t('File upload')}</span>
-            </label>
-
-            <label className='form__option form__option--inline form__option--custom-radio'>
-              <input type='radio' name='source-type' id='osm' value='osm' checked={this.state.source === 'osm'} onChange={this.onSourceChange.bind(this)} />
-              <span className='form__option__ui'></span>
-              <span className='form__option__text'>{t('OSM data')}</span>
-            </label>
+            <SourceSelector
+              options={sourceOptions}
+              selectedOption={this.state.source}
+              onChange={this.onSourceChange} />
           </div>
           {this.state.source === 'file' ? this.renderSourceFile() : null}
           {this.state.source === 'osm' ? this.renderSourceOsm() : null}
+          {this.state.source === 'wbcatalog' ? this.renderSourceCatalog() : null}
         </form>
       </ModalBody>
     );

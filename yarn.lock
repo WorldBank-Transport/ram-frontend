@@ -6431,9 +6431,9 @@ react-router@^3.0.2:
     prop-types "^15.5.6"
     warning "^3.0.0"
 
-react-sticky@^6.0.0:
-  version "6.0.2"
-  resolved "https://registry.yarnpkg.com/react-sticky/-/react-sticky-6.0.2.tgz#d301c1b5307649220dbc045fcbacd077885c5ede"
+react-sticky@^6.0.2:
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/react-sticky/-/react-sticky-6.0.3.tgz#7a18b643e1863da113d7f7036118d2a75d9ecde4"
   dependencies:
     prop-types "^15.5.8"
     raf "^3.3.0"

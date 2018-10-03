@@ -10,11 +10,16 @@ import { FileInput, FileDisplay } from '../../file-input';
 
 import { ModalBody } from '../../modal';
 import ModalBase from './modal-base';
+import SourceSelector from './source-selector';
+import { CatalogSource } from './catalog-source';
 
 class ModalAdminBounds extends ModalBase {
   constructor (props) {
     super(props);
     this.initState(props);
+
+    this.onSourceChange = this.onSourceChange.bind(this);
+    this.onWbCatalogOptSelect = this.onWbCatalogOptSelect.bind(this);
   }
 
   componentWillReceiveProps (nextProps) {
@@ -25,7 +30,7 @@ class ModalAdminBounds extends ModalBase {
 
   initState (props) {
     let fileField;
-    if (props.sourceData.files.length) {
+    if (props.sourceData.type === 'file' && props.sourceData.files.length) {
       fileField = props.sourceData.files[0];
     } else {
       fileField = {
@@ -35,10 +40,25 @@ class ModalAdminBounds extends ModalBase {
       };
     }
 
+    const wbCatalogOption = _.get(props.sourceData, 'wbCatalogOptions.resources[0].key', '');
+
     this.state = {
+      source: props.sourceData.type || 'file',
       fileField,
-      fileToRemove: null
+      fileToRemove: null,
+      wbCatalogOption: wbCatalogOption
     };
+  }
+
+  // @common All source modals.
+  onSourceChange (event) {
+    const source = event.target.value;
+    this.setState({ source });
+  }
+
+  // @common All source modals.
+  onWbCatalogOptSelect (option) {
+    this.setState({ wbCatalogOption: option });
   }
 
   onFileSelected (id, file, event) {
@@ -66,8 +86,13 @@ class ModalAdminBounds extends ModalBase {
   }
 
   allowSubmit () {
-    // All files need a subtype and a file.
-    return this.state.fileToRemove || this.state.fileField.file;
+    if (this.state.source === 'file') {
+      // New file, one to remove or both.
+      return this.state.fileToRemove || this.state.fileField.file;
+    } else if (this.state.source === 'wbcatalog') {
+      return !!this.state.wbCatalogOption;
+    }
+    return false;
   }
 
   onSubmit () {
@@ -95,7 +120,7 @@ class ModalAdminBounds extends ModalBase {
 
     // Data to submit.
     let newFilesPromiseFn = () => Promise.resolve();
-    if (this.state.fileField.file) {
+    if (this.state.source === 'file' && this.state.fileField.file) {
       newFilesPromiseFn = () => {
         let formData = new FormData();
         formData.append('source-type', 'file');
@@ -127,6 +152,28 @@ class ModalAdminBounds extends ModalBase {
       };
     }
 
+    if (this.state.source === 'wbcatalog') {
+      newFilesPromiseFn = () => {
+        let formData = new FormData();
+        formData.append('source-type', this.state.source);
+        formData.append('source-name', 'admin-bounds');
+        // Using key for consistency reasons across all sources.
+        formData.append('wbcatalog-options[key]', this.state.wbCatalogOption);
+
+        let { promise } = postFormdata(`${config.api}/projects/${this.props.projectId}/source-data`, formData, () => {});
+        // this.xhr = xhr;
+        return promise
+          .catch(err => {
+            let msg = t('An error occurred while saving the admin boundaries source: {message}', {
+              message: err.message
+            });
+            this.props._showAlert('danger', <p>{msg}</p>, true);
+            // Rethrow to stop chain.
+            throw err;
+          });
+      };
+    }
+
     deleteFilesPromiseFn()
       .then(() => newFilesPromiseFn())
       .then(res => {
@@ -140,34 +187,59 @@ class ModalAdminBounds extends ModalBase {
       });
   }
 
-  renderBody () {
+  renderSourceFile () {
     let { fileField } = this.state;
     let hasFile = !!fileField.created_at;
+
+    return hasFile ? (
+      <FileDisplay
+        id='admin-bounds'
+        name='admin-bounds'
+        value={fileField.name}
+        onRemoveClick={this.onFileRemove.bind(this, fileField.id)} />
+    ) : (
+      <FileInput
+        id='admin-bounds'
+        name='admin-bounds'
+        value={fileField.file}
+        placeholder={t('Choose a file')}
+        onFileSelect={this.onFileSelected.bind(this, fileField.id)} >
+
+        {fileField.file !== null
+          ? <p className='form__help'>{Math.round(fileField.uploaded / (1024 * 1024))}MB / {Math.round(fileField.size / (1024 * 1024))}MB</p>
+          : null
+        }
+      </FileInput>
+    );
+  }
+
+  renderSourceCatalog () {
+    return (
+      <CatalogSource
+        type='admin'
+        selectedOption={this.state.wbCatalogOption}
+        onChange={this.onWbCatalogOptSelect} />
+    );
+  }
+
+  renderBody () {
+    const sourceOptions = [
+      {id: 'file', name: t('Custom upload')},
+      {id: 'wbcatalog', name: t('WB Catalog')}
+    ];
+
     return (
       <ModalBody>
         <form className='form' onSubmit={ e => { e.preventDefault(); this.allowSubmit() && this.onSubmit(); } }>
-          {hasFile ? (
-            <FileDisplay
-              id='admin-bounds'
-              name='admin-bounds'
-              label={t('Source')}
-              value={fileField.name}
-              onRemoveClick={this.onFileRemove.bind(this, fileField.id)} />
-          ) : (
-            <FileInput
-              id='admin-bounds'
-              name='admin-bounds'
-              label={t('Source')}
-              value={fileField.file}
-              placeholder={t('Choose a file')}
-              onFileSelect={this.onFileSelected.bind(this, fileField.id)} >
-
-              {fileField.file !== null
-                ? <p className='form__help'>{Math.round(fileField.uploaded / (1024 * 1024))}MB / {Math.round(fileField.size / (1024 * 1024))}MB</p>
-                : null
-              }
-            </FileInput>
-          )}
+          <div className='form__group'>
+            <label className='form__label'>Source</label>
+            <SourceSelector
+              options={sourceOptions}
+              selectedOption={this.state.source}
+              onChange={this.onSourceChange} />
+          </div>
+          {this.state.source === 'file' ? this.renderSourceFile() : null}
+          {this.state.source === 'wbcatalog' ? this.renderSourceCatalog() : null}
         </form>
       </ModalBody>
     );

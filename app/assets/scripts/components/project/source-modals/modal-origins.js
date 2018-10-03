@@ -12,6 +12,8 @@ import { FileInput, FileDisplay } from '../../file-input';
 
 import { ModalBody } from '../../modal';
 import ModalBase from './modal-base';
+import SourceSelector from './source-selector';
+import { CatalogSource } from './catalog-source';
 
 var labelLimit = limitHelper(20);
 
@@ -19,6 +21,9 @@ class ModalOrigins extends ModalBase {
   constructor (props) {
     super(props);
     this.initState(props);
+
+    this.onSourceChange = this.onSourceChange.bind(this);
+    this.onWbCatalogOptSelect = this.onWbCatalogOptSelect.bind(this);
   }
 
   componentWillReceiveProps (nextProps) {
@@ -29,7 +34,7 @@ class ModalOrigins extends ModalBase {
 
   initState (props) {
     let fileField;
-    if (props.sourceData.files.length) {
+    if (props.sourceData.type === 'file' && props.sourceData.files.length) {
       fileField = props.sourceData.files[0];
       fileField.indicators = fileField.data.indicators;
       fileField.availableInd = fileField.data.availableInd;
@@ -37,9 +42,13 @@ class ModalOrigins extends ModalBase {
       fileField = this.getBaseFileField();
     }
 
+    const wbCatalogOption = _.get(props.sourceData, 'wbCatalogOptions.resources[0].key', '');
+
     this.state = {
+      source: props.sourceData.type || 'file',
       fileField,
-      fileToRemove: null
+      fileToRemove: null,
+      wbCatalogOption: wbCatalogOption
     };
   }
 
@@ -54,6 +63,17 @@ class ModalOrigins extends ModalBase {
       }],
       availableInd: []
     };
+  }
+
+  // @common All source modals.
+  onSourceChange (event) {
+    const source = event.target.value;
+    this.setState({ source });
+  }
+
+  // @common All source modals.
+  onWbCatalogOptSelect (option) {
+    this.setState({ wbCatalogOption: option });
   }
 
   onFileSelected (id, file, event) {
@@ -154,20 +174,25 @@ class ModalOrigins extends ModalBase {
   }
 
   allowSubmit () {
-    if (this.state.fileToRemove && !this.state.fileField.file) {
-      return true;
-    }
-    // Are all attributes valid?
-    let validAttr = this.state.fileField.indicators.every(o => o.key !== '' && o.label !== '');
-    // Are all lengths valid?
-    let validLength = this.state.fileField.indicators.every(o => labelLimit(o.label.length).isOk());
-    // Check for doubles.
-    let doubles = _(this.state.fileField.indicators)
-      .groupBy('key')
-      .values()
-      .some(o => o.length > 1);
+    if (this.state.source === 'file') {
+      if (this.state.fileToRemove && !this.state.fileField.file) {
+        return true;
+      }
+      // Are all attributes valid?
+      let validAttr = this.state.fileField.indicators.every(o => o.key !== '' && o.label !== '');
+      // Are all lengths valid?
+      let validLength = this.state.fileField.indicators.every(o => labelLimit(o.label.length).isOk());
+      // Check for doubles.
+      let doubles = _(this.state.fileField.indicators)
+        .groupBy('key')
+        .values()
+        .some(o => o.length > 1);
 
-    return validAttr && validLength && !doubles;
+      return validAttr && validLength && !doubles;
+    } else if (this.state.source === 'wbcatalog') {
+      return !!this.state.wbCatalogOption;
+    }
+    return false;
   }
 
   onSubmit () {
@@ -195,7 +220,7 @@ class ModalOrigins extends ModalBase {
 
     // Data to submit.
     let newFilesPromiseFn = () => Promise.resolve();
-    if (this.state.fileField.file || this.state.fileField.created_at) {
+    if (this.state.source === 'file' && (this.state.fileField.file || this.state.fileField.created_at)) {
       newFilesPromiseFn = () => {
         let formData = new FormData();
         formData.append('source-type', 'file');
@@ -233,6 +258,28 @@ class ModalOrigins extends ModalBase {
           })
           .catch(err => {
             let msg = t('An error occurred while uploading a population file: {message}', {
+              message: err.message
+            });
+            this.props._showAlert('danger', <p>{msg}</p>, true);
+            // Rethrow to stop chain.
+            throw err;
+          });
+      };
+    }
+
+    if (this.state.source === 'wbcatalog') {
+      newFilesPromiseFn = () => {
+        let formData = new FormData();
+        formData.append('source-type', this.state.source);
+        formData.append('source-name', 'origins');
+        // Using key for consistency reasons across all sources.
+        formData.append('wbcatalog-options[key]', this.state.wbCatalogOption);
+
+        let { promise } = postFormdata(`${config.api}/projects/${this.props.projectId}/source-data`, formData, () => {});
+        // this.xhr = xhr;
+        return promise
+          .catch(err => {
+            let msg = t('An error occurred while saving the population source: {message}', {
               message: err.message
             });
             this.props._showAlert('danger', <p>{msg}</p>, true);
@@ -290,39 +337,69 @@ class ModalOrigins extends ModalBase {
     });
   }
 
-  renderBody () {
+  renderSourceFile () {
     let { fileField } = this.state;
     let hasFile = !!fileField.created_at;
 
     return (
+      <div>
+        {hasFile ? (
+          <FileDisplay
+            id='origins'
+            name='origins'
+            label={t('Source')}
+            value={fileField.name}
+            onRemoveClick={this.onFileRemove.bind(this, fileField.id)} />
+        ) : (
+          <FileInput
+            id='origins'
+            name='origins'
+            label={t('Source')}
+            value={fileField.file}
+            placeholder={t('Choose a file')}
+            onFileSelect={this.onFileSelected.bind(this, fileField.id)} >
+
+            {fileField.file !== null
+              ? <p className='form__help'>{Math.round(fileField.uploaded / (1024 * 1024))}MB / {Math.round(fileField.size / (1024 * 1024))}MB</p>
+              : null
+            }
+          </FileInput>
+        )}
+        {this.renderIndicators()}
+        <div className='form__extra-actions'>
+          <button type='button' className={c('fea-plus', {disabled: fileField.file === null})} title={t('Add new population estimate')} onClick={this.addIndicatorField.bind(this)}><span>{t('New population estimate')}</span></button>
+        </div>
+      </div>
+    );
+  }
+
+  renderSourceCatalog () {
+    return (
+      <CatalogSource
+        type='origins'
+        selectedOption={this.state.wbCatalogOption}
+        onChange={this.onWbCatalogOptSelect} />
+    );
+  }
+
+  renderBody () {
+    const sourceOptions = [
+      {id: 'file', name: t('Custom upload')},
+      {id: 'wbcatalog', name: t('WB Catalog')}
+    ];
+
+    return (
       <ModalBody>
         <form className='form' onSubmit={ e => { e.preventDefault(); this.allowSubmit() && this.onSubmit(); } }>
-          {hasFile ? (
-            <FileDisplay
-              id='origins'
-              name='origins'
-              label={t('Source')}
-              value={fileField.name}
-              onRemoveClick={this.onFileRemove.bind(this, fileField.id)} />
-          ) : (
-            <FileInput
-              id='origins'
-              name='origins'
-              label={t('Source')}
-              value={fileField.file}
-              placeholder={t('Choose a file')}
-              onFileSelect={this.onFileSelected.bind(this, fileField.id)} >
-
-              {fileField.file !== null
-                ? <p className='form__help'>{Math.round(fileField.uploaded / (1024 * 1024))}MB / {Math.round(fileField.size / (1024 * 1024))}MB</p>
-                : null
-              }
-            </FileInput>
-          )}
-          {this.renderIndicators()}
-          <div className='form__extra-actions'>
-            <button type='button' className={c('fea-plus', {disabled: fileField.file === null})} title={t('Add new population estimate')} onClick={this.addIndicatorField.bind(this)} disabled={fileField.file === null}><span>{t('New population estimate')}</span></button>
-          </div>
+          <div className='form__group'>
+            <label className='form__label'>Source</label>
+            <SourceSelector
+              options={sourceOptions}
+              selectedOption={this.state.source}
+              onChange={this.onSourceChange} />
+            </div>
+          {this.state.source === 'file' ? this.renderSourceFile() : null}
+          {this.state.source === 'wbcatalog' ? this.renderSourceCatalog() : null}
         </form>
       </ModalBody>
     );
