@@ -70,6 +70,13 @@ export const RESET_RAH_FORM = 'RESET_RAH_FORM';
 export const START_SUBMIT_RAH = 'START_SUBMIT_RAH';
 export const FINISH_SUBMIT_RAH = 'FINISH_SUBMIT_RAH';
 
+export const REQUEST_PROFILE_SETTINGS = 'REQUEST_PROFILE_SETTINGS';
+export const RECEIVE_PROFILE_SETTINGS = 'RECEIVE_PROFILE_SETTINGS';
+export const INVALIDATE_PROFILE_SETTINGS = 'INVALIDATE_PROFILE_SETTINGS';
+export const RESET_PROFILE_SETTINGS_FORM = 'RESET_PROFILE_SETTINGS_FORM';
+export const START_SUBMIT_PROFILE_SETTINGS = 'START_SUBMIT_PROFILE_SETTINGS';
+export const FINISH_SUBMIT_PROFILE_SETTINGS = 'FINISH_SUBMIT_PROFILE_SETTINGS';
+
 // Auth
 
 export function loginSuccess () {
@@ -433,6 +440,41 @@ export function postRAHExport (projId, data) {
   return postAndDispatch(`${config.api}/projects/${projId}/rah-export`, data, startSubmitRAH, finishSubmitRAH);
 }
 
+// Profile Data
+
+export function invalidateProfileSettings () {
+  return { type: INVALIDATE_PROFILE_SETTINGS };
+}
+
+export function requestProfileSettings () {
+  return { type: REQUEST_PROFILE_SETTINGS };
+}
+
+export function receiveProfileSettings (settings, error = null) {
+  return { type: RECEIVE_PROFILE_SETTINGS, data: settings, error, receivedAt: Date.now() };
+}
+
+export function fetchProfileSettings (projectId) {
+  const url = `${config.api}/projects/${projectId}/source-data/editor?type=profile`;
+  return getAndDispatch(url, requestProfileSettings, receiveProfileSettings);
+}
+
+export function resetProfileSettingsForm () {
+  return { type: RESET_PROFILE_SETTINGS_FORM };
+}
+
+export function startSubmitProfileSettings () {
+  return { type: START_SUBMIT_PROFILE_SETTINGS };
+}
+
+export function finishSubmitProfileSettings () {
+  return { type: FINISH_SUBMIT_PROFILE_SETTINGS };
+}
+export function postProfileSettings (projectId, data) {
+  const url = `${config.api}/projects/${projectId}/source-data/editor?type=profile`;
+  return postAndDispatch(url, data, startSubmitProfileSettings, finishSubmitProfileSettings);
+}
+
 // Fetcher function
 
 function getAndDispatch (url, requestFn, receiveFn) {
@@ -466,7 +508,7 @@ function fetchDispatchFactory (url, options, requestFn, receiveFn) {
   return function (dispatch, getState) {
     dispatch(requestFn());
 
-    fetchJSON(url, options)
+    return fetchJSON(url, options)
       .then(json => dispatch(receiveFn(json)), err => dispatch(receiveFn(null, err)));
   };
 }
