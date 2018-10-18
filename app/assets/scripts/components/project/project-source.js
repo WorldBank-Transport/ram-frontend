@@ -1,11 +1,10 @@
 'use strict';
 import React, { PropTypes as T } from 'react';
-import { Link } from 'react-router';
 import c from 'classnames';
 import { Portal } from 'react-portal';
 
 import { getfFileTypesMatrix } from '../../utils/constants';
-import { t, getLanguage } from '../../utils/i18n';
+import { t } from '../../utils/i18n';
 import config from '../../config';
 
 import ModalPoi from './source-modals/modal-poi';
@@ -127,9 +126,9 @@ class PorjectSourceData extends React.Component {
             <div className='card__actions actions'>
               <ul className='actions__menu'>
                 <li>
-                  <Link className='actions__menu-item ca-question' title={t('Learn more')} target='_blank' to={`/${getLanguage()}${helpPath}`}>
+                  <a className='actions__menu-item ca-question' title={t('Learn more')} target='_blank' href={helpPath}>
                     <span>{t('What is this?')}</span>
-                  </Link>
+                  </a>
                 </li>
               </ul>
               <ul className='actions__menu'>
