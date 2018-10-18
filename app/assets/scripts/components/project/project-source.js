@@ -2,6 +2,7 @@
 import React, { PropTypes as T } from 'react';
 import { Link } from 'react-router';
 import c from 'classnames';
+import { Portal } from 'react-portal';
 
 import { getfFileTypesMatrix } from '../../utils/constants';
 import { t, getLanguage } from '../../utils/i18n';
@@ -12,6 +13,7 @@ import ModalProfile from './source-modals/modal-profile';
 import ModalAdminBounds from './source-modals/modal-admin-bounds';
 import ModalRoadNetwork from './source-modals/modal-road-network';
 import ModalOrigins from './source-modals/modal-origins';
+import ProfileEditModal from './profile-edit-modal-connected';
 
 class PorjectSourceData extends React.Component {
   constructor (props) {
@@ -30,6 +32,8 @@ class PorjectSourceData extends React.Component {
       e.preventDefault();
       return this.openModal();
     }
+
+    if (!this.props.sourceData.files.length) e.preventDefault();
   }
 
   closeModal (needRefresh) {
@@ -141,6 +145,11 @@ class PorjectSourceData extends React.Component {
                     </button>
                   </li>
                 ) : null}
+                {this.props.profileSpeedCustomize ? (
+                  <li>
+                    <ProfileSpeedEdit projectId={this.props.projectId} />
+                  </li>
+                ) : null}
               </ul>
             </div>
           </header>
@@ -163,6 +172,7 @@ PorjectSourceData.defaultProps = {
 
 PorjectSourceData.propTypes = {
   editable: T.bool,
+  profileSpeedCustomize: T.bool,
   type: T.string,
   complete: T.bool,
   sourceData: T.object,
@@ -173,3 +183,45 @@ PorjectSourceData.propTypes = {
 };
 
 export default PorjectSourceData;
+
+// The profile source data has a specific modal to customize the speeds that
+// can be accessed when the project is active. All it's related functionalities
+// are inside this new component to avoid polluting the source data one.
+class ProfileSpeedEdit extends React.Component {
+  constructor (props) {
+    super(props);
+
+    this.state = {
+      modalOpen: false
+    };
+  }
+
+  openModal () {
+    this.setState({modalOpen: true});
+  }
+
+  closeModal () {
+    this.setState({modalOpen: false});
+  }
+
+  render () {
+    return (
+      <div>
+        <button className='actions__menu-item ca-pencil' type='button' title={t('Customize profile speeds')} onClick={this.openModal.bind(this)}>
+          <span>{t('Customize')}</span>
+        </button>
+
+        <Portal>
+          <ProfileEditModal
+            revealed={this.state.modalOpen}
+            projectId={this.props.projectId}
+            onCloseClick={this.closeModal.bind(this)} />
+        </Portal>
+      </div>
+    );
+  }
+}
+
+ProfileSpeedEdit.propTypes = {
+  projectId: T.number
+};

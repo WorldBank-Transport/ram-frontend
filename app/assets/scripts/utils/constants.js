@@ -12,27 +12,27 @@ export const getfFileTypesMatrix = () => ({
   'admin-bounds': {
     display: t('Administrative Boundaries'),
     description: t('Boundaries for the administrative areas for which analysis is generated.'),
-    helpPath: '/help#administrative-boundaries'
+    helpPath: 'http://ruralaccess.info/setting-up-a-project/admin-boundaries/'
   },
   origins: {
     display: t('Population data'),
     description: t('Population point data that will be used as origins.'),
-    helpPath: '/help#population-data'
+    helpPath: 'http://ruralaccess.info/setting-up-a-project/population/'
   },
   poi: {
     display: t('Points of Interest'),
     description: t('The POI used as destinations. Each scenario supports multiple types.'),
-    helpPath: '/help#points-of-interest'
+    helpPath: 'http://ruralaccess.info/setting-up-a-project/poi/'
   },
   'road-network': {
     display: t('Road Network'),
     description: t('The road network data used for routing.'),
-    helpPath: '/help#road-network'
+    helpPath: 'http://ruralaccess.info/setting-up-a-project/road-network/'
   },
   profile: {
     display: t('Profile'),
     description: t('A lua file with the OSRM Profile.'),
-    helpPath: '/help#profile'
+    helpPath: 'http://ruralaccess.info/setting-up-a-project/osrm-profile/'
   }
 });
 

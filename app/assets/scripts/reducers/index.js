@@ -16,6 +16,8 @@ import scenarioResultsGeo from './scenario-results-geo';
 import rahForm from './rah-form';
 import { systemAlertsReducer } from '../components/system-alerts';
 import auth from './auth';
+import profileSettings from './profile-settings';
+import profileSettingsForm from './profile-settings-form';
 
 export const reducers = {
   projects,
@@ -31,7 +33,9 @@ export const reducers = {
   scenarioPoi,
   systemAlertsReducer,
   rahForm,
-  auth
+  auth,
+  profileSettings,
+  profileSettingsForm
 };
 
 export default combineReducers(Object.assign({}, reducers, {
