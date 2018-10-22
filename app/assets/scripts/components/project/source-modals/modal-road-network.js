@@ -4,18 +4,23 @@ import _ from 'lodash';
 
 import config from '../../../config';
 import { t } from '../../../utils/i18n';
-import { rnEditThreshold, rnEditThresholdDisplay } from '../../../utils/constants';
+import { roadNetEditMax, roadNetEditMaxDisplay } from '../../../utils/constants';
 import { postFormdata, fetchJSON } from '../../../actions';
 import { showGlobalLoading, hideGlobalLoading } from '../../global-loading';
 
 import { ModalBody } from '../../modal';
 import ModalBase from './modal-base';
 import { FileInput, FileDisplay } from '../../file-input';
+import SourceSelector from './source-selector';
+import { CatalogSource } from './catalog-source';
 
 class ModalRoadNetwork extends ModalBase {
   constructor (props) {
     super(props);
     this.initState(props);
+
+    this.onSourceChange = this.onSourceChange.bind(this);
+    this.onWbCatalogOptSelect = this.onWbCatalogOptSelect.bind(this);
   }
 
   componentWillReceiveProps (nextProps) {
@@ -26,7 +31,7 @@ class ModalRoadNetwork extends ModalBase {
 
   initState (props) {
     let fileField;
-    if (props.sourceData.files.length) {
+    if (props.sourceData.type === 'file' && props.sourceData.files.length) {
       fileField = props.sourceData.files[0];
     } else {
       fileField = {
@@ -36,11 +41,25 @@ class ModalRoadNetwork extends ModalBase {
       };
     }
 
+    const wbCatalogOption = _.get(props.sourceData, 'wbCatalogOptions.resources[0].key', '');
+
     this.state = {
       source: props.sourceData.type || 'file',
       fileField,
-      fileToRemove: null
+      fileToRemove: null,
+      wbCatalogOption: wbCatalogOption
     };
+  }
+
+  // @common All source modals.
+  onSourceChange (event) {
+    const source = event.target.value;
+    this.setState({ source });
+  }
+
+  // @common All source modals.
+  onWbCatalogOptSelect (option) {
+    this.setState({ wbCatalogOption: option });
   }
 
   onFileSelected (id, file, event) {
@@ -53,16 +72,12 @@ class ModalRoadNetwork extends ModalBase {
 
     this.setState({ fileField });
 
-    if (file.size >= rnEditThreshold) {
+    if (roadNetEditMax > 0 && file.size >= roadNetEditMax) {
       let msg = t('File size is above {size}. Road network editing will be disabled.', {
-        size: rnEditThresholdDisplay
+        size: roadNetEditMaxDisplay
       });
       this.props._showAlert('warning', <p>{msg}</p>, true);
     }
-  }
-
-  onSourceChange (event) {
-    this.setState({ source: event.target.value });
   }
 
   onFileRemove (id, event) {
@@ -81,10 +96,13 @@ class ModalRoadNetwork extends ModalBase {
   allowSubmit () {
     if (this.state.source === 'osm') {
       return true;
+    } else if (this.state.source === 'file') {
+      // New file, one to remove or both.
+      return this.state.fileToRemove || this.state.fileField.file;
+    } else if (this.state.source === 'wbcatalog') {
+      return !!this.state.wbCatalogOption;
     }
-
-    // All files need a subtype and a file.
-    return this.state.fileToRemove || this.state.fileField.file;
+    return false;
   }
 
   onSubmit () {
@@ -144,11 +162,15 @@ class ModalRoadNetwork extends ModalBase {
       };
     }
 
-    if (this.state.source === 'osm') {
+    if (this.state.source === 'osm' || this.state.source === 'wbcatalog') {
       newFilesPromiseFn = () => {
         let formData = new FormData();
-        formData.append('source-type', 'osm');
+        formData.append('source-type', this.state.source);
         formData.append('source-name', 'road-network');
+        if (this.state.source === 'wbcatalog') {
+          // Using key for consistency reasons across all sources.
+          formData.append('wbcatalog-options[key]', this.state.wbCatalogOption);
+        }
 
         let { promise } = postFormdata(`${config.api}/projects/${this.props.projectId}/scenarios/${this.props.scenarioId}/source-data`, formData, () => {});
         // this.xhr = xhr;
@@ -207,27 +229,47 @@ class ModalRoadNetwork extends ModalBase {
     }
   }
 
+  renderSourceCatalog () {
+    return (
+      <CatalogSource
+        type='road-network'
+        selectedOption={this.state.wbCatalogOption}
+        onChange={this.onWbCatalogOptSelect} />
+    );
+  }
+
   renderBody () {
+    const sourceOptions = [
+      {id: 'file', name: t('Custom upload')},
+      {id: 'osm', name: t('OSM data')},
+      {id: 'wbcatalog', name: t('WB Catalog')}
+    ];
+
+    let notes = [];
+
+    if (this.state.source === 'osm') {
+      notes.push(<p key='rn-osm'>{t('Import road network data for the project\'s Administrative Boundaries from OpenStreetMap. For more fine-grained control, upload a file with custom road network data.')}</p>);
+    }
+
+    if (roadNetEditMax <= 0) {
+      notes.push(<p key='rn-disabled'>{t('Road network editing was disabled by the administrator.')}</p>);
+    } else if (this.state.source === 'osm') {
+      notes.push(<p key='rn-osm-thresh'>{t('When the resulting import is over {max} the road network editing will be disabled.', {max: roadNetEditMaxDisplay})}</p>);
+    }
+
     return (
       <ModalBody>
         <form className='form' onSubmit={ e => { e.preventDefault(); this.allowSubmit() && this.onSubmit(); } }>
           <div className='form__group'>
             <label className='form__label'>{t('Source')}</label>
-
-            <label className='form__option form__option--inline form__option--custom-radio'>
-              <input type='radio' name='source-type' id='file' value='file' checked={this.state.source === 'file'} onChange={this.onSourceChange.bind(this)} />
-              <span className='form__option__ui'></span>
-              <span className='form__option__text'>{t('File upload')}</span>
-            </label>
-
-            <label className='form__option form__option--inline form__option--custom-radio'>
-              <input type='radio' name='source-type' id='osm' value='osm' checked={this.state.source === 'osm'} onChange={this.onSourceChange.bind(this)} />
-              <span className='form__option__ui'></span>
-              <span className='form__option__text'>{t('OSM data')}</span>
-            </label>
+            <SourceSelector
+              options={sourceOptions}
+              selectedOption={this.state.source}
+              onChange={this.onSourceChange} />
           </div>
           {this.state.source === 'file' ? this.renderSourceFile() : null}
-          {this.state.source === 'osm' && <div className='form__note'><p>{t('Import road network data for the project\'s Administrative Boundaries from OpenStreetMap. For more fine-grained control, upload a file with custom road network data.')}</p><p>{t('When the resulting import is over {max} the road network editing will be disabled.', {max: rnEditThresholdDisplay})}</p></div>}
+          {this.state.source === 'wbcatalog' ? this.renderSourceCatalog() : null}
+          {!!notes.length && <div className='form__note'>{notes}</div>}
         </form>
       </ModalBody>
     );

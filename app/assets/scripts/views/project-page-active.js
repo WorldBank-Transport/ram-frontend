@@ -230,13 +230,14 @@ const ProjectPageActive = React.createClass({
 
   renderSourceData: function () {
     const projectId = this.props.project.data.id;
-    return _.map(this.props.project.data.sourceData, (o, key) => (
+    return _.map(this.props.project.data.sourceData, (sourceData, key) => (
       <PorjectSourceData
         key={key}
         type={key}
         projectId={projectId}
-        sourceData={o}
-        editable={false} />
+        sourceData={sourceData}
+        editable={false}
+        profileSpeedCustomize={key === 'profile' && sourceData.type === 'default'} />
     ));
   },
 
@@ -365,7 +366,6 @@ const ProjectPageActive = React.createClass({
           </div>
           <ProjectHeaderActions
             project={dataProject}
-            scenarios={this.props.scenarios.data.results}
             projectStatus='active'
             onAction={this.onProjectAction} />
         </StickyHeader>
@@ -420,6 +420,7 @@ const ProjectPageActive = React.createClass({
           _showAlert={this.props._showAlert}
           _postRAHExport={this.props._postRAHExport}
           revealed={this.state.projectExportModal}
+          scenarios={this.props.scenarios.data.results}
           projectId={this.props.params.projectId}
           rahForm={this.props.rahForm}
           onCloseClick={this.closeModal.bind(null, 'export-rah')}

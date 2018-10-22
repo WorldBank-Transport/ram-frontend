@@ -313,7 +313,7 @@ const ScenarioResults = React.createClass({
           let cmpAA = comparingAA.find(o => o.id === aa.id);
           if (cmpAA) {
             aa = clone(aa);
-            aa.dataCompare = cmpAA.data;
+            aa.dataCompare = cmpAA;
             return acc.concat(aa);
           }
           return acc;
@@ -447,6 +447,11 @@ function selector (state) {
       key: o,
       label: poiOsmTypes().find(poi => poi.key === o).value
     }));
+  } else if (poiSource.type === 'wbcatalog') {
+    poiTypes = poiSource.wbCatalogOptions.resources.map(o => ({
+      key: o.label,
+      label: o.label
+    }));
   }
 
   return {
@@ -486,46 +491,133 @@ module.exports = connect(selector, dispatcher)(ScenarioResults);
 //                        Accessibility Table                                 //
 // ////////////////////////////////////////////////////////////////////////// //
 
+const AccessibilityTableEmptyRow = ({header, colSpan}) => (
+  <tr>
+    <th>{header}</th>
+    <td className='table__empty-cell' colSpan={colSpan}>{t('No data.')}</td>
+  </tr>
+);
+AccessibilityTableEmptyRow.propTypes = {
+  colSpan: T.number,
+  header: T.string
+};
+
+const AccessibilityTableCompareCell = ({value, compareValue, scenarioCompareName}) => {
+  const diff = value - compareValue;
+  let compareClass = 'pchange--equal';
+  if (diff <= -25) {
+    compareClass = 'pchange--down2x';
+  } else if (diff < 0) {
+    compareClass = 'pchange--down';
+  } else if (diff >= 25) {
+    compareClass = 'pchange--up2x';
+  } else if (diff > 0) {
+    compareClass = 'pchange--up';
+  }
+  return (
+    <td>
+      <span className='value-wrapper' data-tip={`${scenarioCompareName}: ${round(compareValue)}%`} data-effect='solid'>
+        <small className={`pchange ${compareClass}`}>{t('(increase)')}</small> {value}%
+        <ReactTooltip />
+      </span>
+    </td>
+  );
+};
+AccessibilityTableCompareCell.propTypes = {
+  value: T.number,
+  compareValue: T.number,
+  scenarioCompareName: T.string
+};
+
 class AccessibilityTable extends React.PureComponent {
-  renderAccessibilityTableRow (poi, aa) {
-    if (!aa.data.length) {
+  getCompareClass (curr, compare) {
+    const diff = curr - compare;
+    if (diff <= -25) {
+      return 'pchange--down2x';
+    } else if (diff < 0) {
+      return 'pchange--down';
+    } else if (diff >= 25) {
+      return 'pchange--up2x';
+    } else if (diff > 0) {
+      return 'pchange--up';
+    }
+    return 'pchange--equal';
+  }
+
+  renderAccessibilityTableRow (accessibilityTime, aa) {
+    // The server returns the raw amount of people that have access to the poi.
+    // The percentage has to be calculated client side. This is to prevent
+    // skewed values when comparing scenarios.
+    if (!aa.pop.length) {
       return (
-        <tr key={aa.id}>
-          <th>{aa.name}</th>
-          <td className='table__empty-cell' colSpan={poi.analysisMins.length}>{t('No data.')}</td>
-        </tr>
+        <AccessibilityTableEmptyRow
+          key={aa.id}
+          colSpan={accessibilityTime.analysisMins.length}
+          header={aa.name} />
       );
     }
     return (
       <tr key={aa.id}>
         <th>{aa.name}</th>
-        {aa.data.map((o, i) => {
-          let content = null;
+        {aa.pop.map((o, i) => {
+          const value = round(o / aa.totalPop * 100);
 
           if (this.props.comparing && aa.dataCompare) {
-            let diff = o - aa.dataCompare[i];
-            let cName = 'pchange--equal';
-            if (diff <= -25) {
-              cName = 'pchange--down2x';
-            } else if (diff < 0) {
-              cName = 'pchange--down';
-            } else if (diff >= 25) {
-              cName = 'pchange--up2x';
-            } else if (diff > 0) {
-              cName = 'pchange--up';
-            }
-            content = (
-              <span className='value-wrapper' data-tip={`${this.props.compareScenarioName}: ${round(aa.dataCompare[i])}%`} data-effect='solid'>
-                <small className={`pchange ${cName}`}>{t('(increase)')}</small> {round(o)}%
-                <ReactTooltip />
-              </span>
+            return (
+              <AccessibilityTableCompareCell
+                key={i}
+                value={value}
+                compareValue={round(aa.dataCompare.pop[i] / aa.dataCompare.totalPop * 100)}
+                scenarioCompareName={this.props.compareScenarioName} />
             );
-          } else {
-            content = `${round(o)}%`;
           }
 
           return (
-            <td key={i}>{content}</td>
+            <td key={i}>{value}%</td>
+          );
+        })}
+      </tr>
+    );
+  }
+
+  renderAccessibilityTotalsRow (accessibilityTime) {
+    // The server returns the raw amount of people that have access to the poi.
+    // The percentage has to be calculated client side. This is to prevent
+    // skewed values when comparing scenarios.
+    const sumPop = (propPath) => accessibilityTime.adminAreas.reduce((acc, aa) => acc + _.get(aa, propPath, 0), 0);
+    // Use the total pop count to determine if there's data.
+    const totalPop = sumPop('totalPop');
+    if (!totalPop) {
+      return (
+        <AccessibilityTableEmptyRow
+          colSpan={accessibilityTime.analysisMins.length}
+          header={t('Total')} />
+      );
+    }
+
+    return (
+      <tr>
+        <th>{t('Total')}</th>
+        {accessibilityTime.analysisMins.map((o, i) => {
+          const popForMin = sumPop(['pop', i]);
+          const value = round(popForMin / totalPop * 100);
+
+          if (this.props.comparing) {
+            const totalPopCompare = sumPop(['dataCompare', 'totalPop']);
+            if (totalPopCompare) {
+              const popForMinCompare = sumPop(['dataCompare', 'pop', i]);
+              return (
+                <AccessibilityTableCompareCell
+                  key={i}
+                  value={value}
+                  compareValue={round(popForMinCompare / totalPopCompare * 100)}
+                  scenarioCompareName={this.props.compareScenarioName} />
+              );
+            }
+          }
+
+          return (
+            <td key={i}>{value}%</td>
           );
         })}
       </tr>
@@ -533,17 +625,15 @@ class AccessibilityTable extends React.PureComponent {
   }
 
   render () {
-    if (!this.props.receivedAt) {
-      if (!this.props.fetched || this.props.fetching) {
-        return null;
-      }
+    if (!this.props.receivedAt && (!this.props.fetched || this.props.fetching)) {
+      return null;
     }
 
     if (this.props.error) {
       return null;
     }
 
-    let accessibilityTime = this.props.data;
+    const accessibilityTime = this.props.data;
 
     return (
       <article className='card card--analysis-result' key={accessibilityTime.poi}>
@@ -553,7 +643,7 @@ class AccessibilityTable extends React.PureComponent {
           </header>
           <div className='card__body'>
             <div className='table-wrapper'>
-              <table className='table'>
+              <table className='table table--has-total'>
                 <thead>
                   <tr>
                     <th>{t('Admin area')}</th>
@@ -562,6 +652,7 @@ class AccessibilityTable extends React.PureComponent {
                 </thead>
                 <tbody>
                 {accessibilityTime.adminAreas.map(aa => this.renderAccessibilityTableRow(accessibilityTime, aa))}
+                {this.renderAccessibilityTotalsRow(accessibilityTime)}
                 </tbody>
               </table>
             </div>

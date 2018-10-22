@@ -7,9 +7,11 @@ import ReactTooltip from 'react-tooltip';
 
 import config from '../../config';
 import { t, getLanguage } from '../../utils/i18n';
-import { rnEditThreshold, rnEditThresholdDisplay } from '../../utils/constants';
+import { roadNetEditMax, roadNetEditMaxDisplay } from '../../utils/constants';
 import { limitHelper } from '../../utils/utils';
 import { postFormdata } from '../../actions';
+import SourceSelector from '../project/source-modals/source-selector';
+import { CatalogSource } from '../project/source-modals/catalog-source';
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from '../modal';
 import { FileInput } from '../file-input';
@@ -50,6 +52,7 @@ const ScenarioCreateModal = React.createClass({
           size: 0,
           uploaded: 0
         },
+        roadNetworkSourceWbCatalogOption: '',
         poiSource: 'clone',
         poiSourceScenario: this.props.scenarioList[0].id
       },
@@ -99,6 +102,11 @@ const ScenarioCreateModal = React.createClass({
     this.props.onCloseClick();
   },
 
+  onRNWbCatalogOptSelect: function (option) {
+    let data = Object.assign({}, this.state.data, {roadNetworkSourceWbCatalogOption: option});
+    this.setState({data});
+  },
+
   onFileSelected: function (file) {
     // Store file reference.
     let roadNetworkSourceFile = {
@@ -110,9 +118,9 @@ const ScenarioCreateModal = React.createClass({
     let data = Object.assign({}, this.state.data, {roadNetworkSourceFile});
     this.setState({data});
 
-    if (file.size >= rnEditThreshold) {
+    if (roadNetEditMax > 0 && file.size >= roadNetEditMax) {
       let msg = t('File size is above {size}. Road network editing will be disabled.', {
-        size: rnEditThresholdDisplay
+        size: roadNetEditMaxDisplay
       });
       this.props._showAlert('warning', <p>{msg}</p>, true);
     }
@@ -160,6 +168,7 @@ const ScenarioCreateModal = React.createClass({
         roadNetworkSource,
         roadNetworkSourceScenario,
         roadNetworkSourceFile,
+        roadNetworkSourceWbCatalogOption,
         poiSource,
         poiSourceScenario
       } = this.state.data;
@@ -183,6 +192,10 @@ const ScenarioCreateModal = React.createClass({
         case 'clone':
           formData.append('roadNetworkSourceScenario', roadNetworkSourceScenario);
           break;
+        case 'wbcatalog':
+          formData.append('roadNetworkSourceWbCatalogOption', roadNetworkSourceWbCatalogOption);
+          break;
+        // case 'osm' there nothing to send
       }
 
       let onProgress = progress => {
@@ -258,8 +271,35 @@ const ScenarioCreateModal = React.createClass({
     );
   },
 
+  renderSourceCatalog: function () {
+    return (
+      <CatalogSource
+        type='road-network'
+        selectedOption={this.state.data.roadNetworkSourceWbCatalogOption}
+        onChange={this.onRNWbCatalogOptSelect} />
+    );
+  },
+
   render: function () {
     let processing = this.props.scenarioForm.processing || this.state.loading;
+    let notes = [];
+
+    if (this.state.data.roadNetworkSource === 'osm') {
+      notes.push(<p key='rn-osm'>{t('Import road network data from OpenStreetMap.')}</p>);
+    }
+
+    if (roadNetEditMax <= 0) {
+      notes.push(<p key='rn-disabled'>{t('Road network editing was disabled by the administrator.')}</p>);
+    } else if (this.state.data.roadNetworkSource === 'osm') {
+      notes.push(<p key='rn-osm-thresh'>{t('When the resulting import is over {max} the road network editing will be disabled.', {max: roadNetEditMaxDisplay})}</p>);
+    }
+
+    const sourceOptions = [
+      {id: 'clone', name: t('Clone from scenario')},
+      {id: 'new', name: t('Upload new')},
+      {id: 'osm', name: t('OSM data')},
+      {id: 'wbcatalog', name: t('WB Catalog')}
+    ];
 
     return (
       <Modal
@@ -283,22 +323,11 @@ const ScenarioCreateModal = React.createClass({
 
             <div className='form__group'>
               <label className='form__label'>{t('Road network')}</label>
-
-              <label className='form__option form__option--inline form__option--custom-radio'>
-                <input type='radio' name='road-network' id='road-network-clone' value='clone' onChange={this.onFieldChange.bind(null, 'roadNetworkSource')} checked={this.state.data.roadNetworkSource === 'clone'}/>
-                <span className='form__option__ui'></span>
-                <span className='form__option__text'>{t('Clone from scenario')}</span>
-              </label>
-              <label className='form__option form__option--inline form__option--custom-radio'>
-                <input type='radio' name='road-network' id='road-network-new' value='new' onChange={this.onFieldChange.bind(null, 'roadNetworkSource')} checked={this.state.data.roadNetworkSource === 'new'}/>
-                <span className='form__option__ui'></span>
-                <span className='form__option__text'>{t('Upload new')}</span>
-              </label>
-              <label className='form__option form__option--inline form__option--custom-radio'>
-                <input type='radio' name='road-network' id='road-network-osm' value='osm' onChange={this.onFieldChange.bind(null, 'roadNetworkSource')} checked={this.state.data.roadNetworkSource === 'osm'} />
-                <span className='form__option__ui'></span>
-                <span className='form__option__text'>{t('OSM data')}</span>
-              </label>
+              <SourceSelector
+                displayCols={2}
+                options={sourceOptions}
+                selectedOption={this.state.data.roadNetworkSource}
+                onChange={this.onFieldChange.bind(null, 'roadNetworkSource')} />
             </div>
 
             {this.state.data.roadNetworkSource === 'clone' ? (
@@ -328,7 +357,9 @@ const ScenarioCreateModal = React.createClass({
             </FileInput>
             ) : null}
 
-            {this.state.data.roadNetworkSource === 'osm' && <div className='form__note'><p>{t('Import road network data from OpenStreetMap.')}</p><p>{t('When the resulting import is over {max} the road network editing will be disabled.', {max: rnEditThresholdDisplay})}</p></div>}
+            {this.state.data.roadNetworkSource === 'wbcatalog' ? this.renderSourceCatalog() : null}
+
+            {!!notes.length && <div className='form__note'>{notes}</div>}
 
             <div className='form__group'>
               <label className='form__label'>{t('Points of Interest')}</label>

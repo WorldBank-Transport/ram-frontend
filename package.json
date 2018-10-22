@@ -1,6 +1,6 @@
 {
   "name": "ram-frontend",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "User interface of the Rural Accessibility Map",
   "repository": {
     "type": "git",
@@ -79,7 +79,7 @@
     "watchify": "^3.9.0"
   },
   "dependencies": {
-    "auth0-js": "^8.8.0",
+    "auth0-js": "^9.8.0",
     "babel-polyfill": "^6.23.0",
     "classnames": "^2.2.5",
     "isomorphic-fetch": "^2.2.1",
@@ -91,11 +91,12 @@
     "react-addons-css-transition-group": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-paginate": "^4.4.2",
+    "react-portal": "^4.1.5",
     "react-redux": "^5.0.2",
     "react-router": "^3.0.2",
     "react-router-redux": "^4.0.8",
     "react-router-scroll": "^0.4.1",
-    "react-sticky": "^6.0.0",
+    "react-sticky": "^6.0.2",
     "react-tag-autocomplete": "^5.5.1",
     "react-tether": "^0.5.6",
     "react-tooltip": "^3.2.9",
