@@ -77,6 +77,10 @@ jobs:
                 echo Pushing image to Docker Hub with ${VERSION} tag
                 docker tag ${DOCKER_IMAGE} ${DOCKER_ORG}/${DOCKER_IMAGE}:${VERSION}
                 docker push ${DOCKER_ORG}/${DOCKER_IMAGE}:${VERSION}
+
+                echo Pushing image to Docker Hub with latest tag
+                docker tag ${DOCKER_IMAGE} ${DOCKER_ORG}/${DOCKER_IMAGE}:latest
+                docker push ${DOCKER_ORG}/${DOCKER_IMAGE}:latest
               fi
             else
               echo "This is not the "${PRODUCTION_BRANCH}" branch. No need to build and push new version."
