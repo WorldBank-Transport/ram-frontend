@@ -1,6 +1,6 @@
 {
   "name": "ram-frontend",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "description": "User interface of the Rural Accessibility Map",
   "repository": {
     "type": "git",
@@ -66,7 +66,6 @@
     "gulp-sass": "^3.1.0",
     "gulp-size": "^2.1.0",
     "gulp-sourcemaps": "^2.4.1",
-    "gulp-uglify": "^3.0.0",
     "gulp-useref": "^3.1.2",
     "gulp-util": "^3.0.8",
     "jeet": "7.1.0",
@@ -82,6 +81,7 @@
     "auth0-js": "^9.8.0",
     "babel-polyfill": "^6.23.0",
     "classnames": "^2.2.5",
+    "gulp-minify": "^3.1.0",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.17.4",
     "mapbox-gl": "^0.38.0",
