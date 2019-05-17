@@ -4,7 +4,7 @@ import c from 'classnames';
 import _ from 'lodash';
 
 import config from '../../../config';
-import { limitHelper } from '../../../utils/utils';
+import { limitHelper, readFileAsJSON, coordExtract } from '../../../utils/utils';
 import { t } from '../../../utils/i18n';
 import { postFormdata, fetchJSON } from '../../../actions';
 import { showGlobalLoading, hideGlobalLoading } from '../../global-loading';
@@ -103,7 +103,33 @@ class ModalPoi extends ModalBase {
     fileFields[idx].size = file.size;
     fileFields[idx].uploaded = 0;
 
-    this.setState({ fileFields });
+    showGlobalLoading();
+
+    // File contents.
+    readFileAsJSON(file)
+      .then(res => {
+        const isInvalid = res.features.some(feat => {
+          const invalidLon = coordExtract(feat.geometry.coordinates, 'lon').some(coord => coord > 180 || coord < -180);
+          const invalidLat = coordExtract(feat.geometry.coordinates, 'lat').some(coord => coord > 90 || coord < -90);
+          return invalidLon || invalidLat;
+        });
+
+        hideGlobalLoading();
+
+        if (isInvalid) {
+          let msg = t('Invalid coordinates found on selected file. Ensure that the projection is EPSG:4326 (WGS84)');
+          this.props._showAlert('danger', <p>{msg}</p>, true);
+          return;
+        }
+
+        this.setState({ fileFields });
+      })
+      .catch(err => {
+        hideGlobalLoading();
+        let msg = err instanceof Error ? err.message : t('Invalid file selected: Not a valid GeoJSON file');
+
+        return this.props._showAlert('danger', <p>{msg}</p>, true);
+      });
   }
 
   onSubtypeChange (id, event) {
