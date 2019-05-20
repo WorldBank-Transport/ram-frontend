@@ -4,7 +4,7 @@ import _ from 'lodash';
 import c from 'classnames';
 
 import config from '../../../config';
-import { limitHelper, getPropInsensitive } from '../../../utils/utils';
+import { limitHelper, getPropInsensitive, readFileAsJSON } from '../../../utils/utils';
 import { t } from '../../../utils/i18n';
 import { postFormdata, fetchJSON } from '../../../actions';
 import { showGlobalLoading, hideGlobalLoading } from '../../global-loading';
@@ -413,22 +413,3 @@ ModalOrigins.propTypes = {
 };
 
 export default ModalOrigins;
-
-function readFileAsJSON (file) {
-  return new Promise((resolve, reject) => {
-    let reader = new FileReader();
-
-    reader.onerror = err => reject(err);
-
-    reader.onload = e => {
-      try {
-        let json = JSON.parse(e.target.result);
-        return resolve(json);
-      } catch (err) {
-        return reject(err);
-      }
-    };
-
-    reader.readAsText(file);
-  });
-}

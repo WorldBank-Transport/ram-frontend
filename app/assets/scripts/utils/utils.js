@@ -126,3 +126,44 @@ export function getPropInsensitive (object, prop) {
   // If not found return prop.
   return Object.keys(object).find(k => k.toLowerCase() === prop) || prop;
 }
+
+export function readFileAsJSON (file) {
+  return new Promise((resolve, reject) => {
+    let reader = new FileReader();
+
+    reader.onerror = err => reject(err);
+
+    reader.onload = e => {
+      try {
+        let json = JSON.parse(e.target.result);
+        return resolve(json);
+      } catch (err) {
+        return reject(err);
+      }
+    };
+
+    reader.readAsText(file);
+  });
+}
+
+/**
+ * Extracts all the coordinates of a type from an array.
+ * Assumes Longitude to be the first position and latitude to be the secons.
+ *
+ * @param {array} arr The array which can be flat or deep like a multipolygon
+ * @param {string} what What to search for (lon|lat)
+ *
+ * @returns {array}
+ */
+export function coordExtract (arr, what) {
+  const mapp = {lat: 1, lon: 0};
+  if (arr.length === 2 &&
+    typeof arr[0] === 'number' &&
+    typeof arr[1] === 'number') {
+    return [arr[mapp[what]]];
+  } else {
+    return arr.reduce((acc, v) => {
+      return [...acc, ...coordExtract(v, what)];
+    }, []);
+  }
+}
